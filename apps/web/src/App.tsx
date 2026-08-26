@@ -163,6 +163,19 @@ function Playing({ dictionary }: { dictionary: WordIndex }): React.JSX.Element {
           </button>
         </div>
 
+        {/* Only the bindings the buttons cannot advertise. Enter and Escape are already
+            written on Complete word and Reset, so repeating them here is noise. Hidden on
+            touch devices, where none of it applies. */}
+        <p className="legend">
+          <span>letters select</span>
+          <span>
+            <kbd>shift-X</kbd> clears all selected Xs
+          </span>
+          <span>
+            <kbd>&#x232b;</kbd> undo last letter
+          </span>
+        </p>
+
         <FoundWords state={game.state} />
       </div>
 

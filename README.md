@@ -14,8 +14,8 @@ pnpm wordlist     # packs a word list into apps/web/public (once)
 pnpm dev          # http://localhost:5173
 ```
 
-Type the word. Enter submits, Escape clears, Backspace undoes a letter, and clicking tiles
-works too. **Nerd mode**, the toggle top right, shows every rule and the arithmetic behind
+Type the word. Enter completes it, Escape clears the word, Backspace undoes the last letter,
+shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the toggle top right, shows every rule and the arithmetic behind
 it: how long the whole board stays up, what a round costs in flips, and what each word
 length pays against what its letters cost.
 
