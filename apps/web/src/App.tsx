@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Effect } from '@blinkered/engine'
+import type { Effect, GameEvent } from '@blinkered/engine'
 import type { WordIndex } from '@blinkered/words'
 import { Board } from './Board.js'
 import { Hud } from './Hud.js'
@@ -61,7 +61,7 @@ function Playing({ dictionary }: { dictionary: WordIndex }): React.JSX.Element {
 
   const config = useMemo(() => configOf(settings), [settings])
   const game = useGame(dictionary, spec, settings.keyScheme)
-  const feedback = useFeedback(game.effects, game.epoch)
+  const feedback = useFeedback(game.effects, game.cause, game.epoch)
   const dirty = JSON.stringify(config) !== JSON.stringify(spec.config)
 
   const newGame = (): void => {
@@ -201,8 +201,13 @@ function FoundWords({
 }
 
 /** Turns the most interesting effect of the last dispatch into one line of feedback. */
-function useFeedback(effects: readonly Effect[], epoch: number): Feedback | null {
+function useFeedback(
+  effects: readonly Effect[],
+  cause: GameEvent | null,
+  epoch: number,
+): Feedback | null {
   return useMemo(() => {
+    const letter = cause !== null && 'letter' in cause ? cause.letter.toUpperCase() : null
     for (const effect of [...effects].reverse()) {
       switch (effect.type) {
         case 'WORD_ACCEPTED':
@@ -230,7 +235,15 @@ function useFeedback(effects: readonly Effect[], epoch: number): Feedback | null
                 : 'shuffled',
           }
         case 'INPUT_IGNORED':
-          if (effect.reason === 'no-such-letter') return { kind: 'rejected', epoch, text: 'not up' }
+          // Being refused a letter has to be loud. A player typing ALIAS cannot see how many
+          // A tiles the board holds, and silently building ALIS instead is how a word gets
+          // submitted that nobody meant to submit.
+          if (effect.reason === 'no-such-letter') {
+            return { kind: 'rejected', epoch, text: letter === null ? 'not up' : `no ${letter} up` }
+          }
+          // Nothing to say for 'already-selected'. Under `cycle` the letters are cancelled
+          // and the word line shows that plainly; under `advance` the word simply does not
+          // grow. Neither needs narrating.
           return null
         case 'REVEALED':
         case 'SELECTED':
@@ -240,7 +253,7 @@ function useFeedback(effects: readonly Effect[], epoch: number): Feedback | null
       }
     }
     return null
-  }, [effects, epoch])
+  }, [effects, cause, epoch])
 }
 
 function usePortrait(): boolean {

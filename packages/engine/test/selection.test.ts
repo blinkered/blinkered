@@ -167,3 +167,46 @@ describe('letterAvailability', () => {
     expect(letterAvailability(banana(), 'b')).toEqual({ eligible: [0], selected: [] })
   })
 })
+
+describe('cycling a letter', () => {
+  it('advances through every copy, then clears them all', () => {
+    let current = banana()
+    const seen: string[] = []
+    for (let press = 0; press < 4; press++) {
+      current = play(current, [{ type: 'CYCLE_LETTER', letter: 'A' }]).state
+      seen.push(selectedLetters(current))
+    }
+    expect(seen).toEqual(['A', 'AA', 'AAA', ''])
+  })
+
+  it('is resolved against live state, not against a snapshot', () => {
+    // The ALIAS regression: one A on the board, and typing A twice used to clear it. The
+    // decision now happens inside the reducer, so the result cannot depend on when the view
+    // last re-rendered.
+    const oneA = play(
+      open('ALISX').state,
+      Array.from({ length: 4 }, () => tick),
+    ).state
+    const once = play(oneA, [{ type: 'CYCLE_LETTER', letter: 'A' }]).state
+    expect(selectedLetters(once)).toBe('A')
+    const twice = play(once, [{ type: 'CYCLE_LETTER', letter: 'A' }]).state
+    expect(selectedLetters(twice)).toBe('')
+  })
+
+  it('under advance, a letter the board cannot supply again is simply refused', () => {
+    // Same position, but SELECT_LETTER never destroys what is already in the word.
+    const oneA = play(
+      open('ALISX').state,
+      Array.from({ length: 4 }, () => tick),
+    ).state
+    const once = play(oneA, [letter('A')]).state
+    const again = play(once, [letter('A')])
+    expect(selectedLetters(again.state)).toBe('A')
+    expect(again.effects.at(-1)).toEqual({ type: 'INPUT_IGNORED', reason: 'already-selected' })
+  })
+
+  it('reports a letter that is not up at all', () => {
+    const { effects } = play(banana(), [{ type: 'CYCLE_LETTER', letter: 'Z' }])
+    expect(effects).toEqual([{ type: 'INPUT_IGNORED', reason: 'no-such-letter' }])
+  })
+})

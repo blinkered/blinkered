@@ -1,31 +1,40 @@
-import { letterAvailability } from './selection.js'
-import type { GameEvent, GameState } from './types.js'
+import type { GameEvent } from './types.js'
 
 /**
- * How a bare letter key behaves when the board holds more than one of that letter.
+ * What a bare letter key does when the board holds several copies of that letter.
  *
- * - `cycle`: A selects the first A, A again selects the second, and once every A is
- *   selected the next press clears them all.
- * - `modifier`: A always selects the next unselected A. Ctrl, Alt or Cmd plus A clears
- *   every selected A at once. Shift is not needed, since a bare press already advances.
+ * - `cycle` (default): with N copies of A on the board, each of the first N presses takes
+ *   one of them and the N+1th cancels them all. Typing ALIAS against a board holding one A
+ *   goes A, AL, ALI, LI, LIS. The word being built is on screen throughout, so the
+ *   cancellation is visible and needs no announcing.
+ * - `advance`: the first N presses behave identically, and the N+1th does nothing. Typing is
+ *   never destructive, at the cost of losing one-key cancelling.
  *
- * This is a keyboard ergonomics question, not a rules question, which is why it lives
- * out here rather than in the reducer. Both schemes are a user preference.
+ * Either way the clear modifier clears every copy of a letter at once.
  */
-export type KeyScheme = 'cycle' | 'modifier'
+export type KeyScheme = 'cycle' | 'advance'
 
 export interface KeyPress {
   /** As in KeyboardEvent.key. */
   readonly key: string
-  readonly ctrl?: boolean
-  readonly alt?: boolean
-  readonly meta?: boolean
+  /**
+   * The clear modifier was held. Shift in a browser, because macOS turns Option into an
+   * accented character and Ctrl and Cmd belong to the browser; Ctrl in a terminal.
+   */
+  readonly modified?: boolean
 }
 
 const LETTER = /^[a-z]$/i
 
-/** Translates a keystroke into a game event, or null when the key means nothing here. */
-export function keyToEvent(state: GameState, press: KeyPress, scheme: KeyScheme): GameEvent | null {
+/**
+ * Translates a keystroke into an intent, or null when the key means nothing here.
+ *
+ * Deliberately knows nothing about the game. Choosing between taking another copy and
+ * clearing them all depends on live state, so the reducer makes that call: a view choosing
+ * from a snapshot gives different answers depending on whether it re-rendered between two
+ * keystrokes, which is exactly the kind of bug that only appears when someone types fast.
+ */
+export function keyToEvent(press: KeyPress, scheme: KeyScheme): GameEvent | null {
   switch (press.key) {
     case 'Enter':
       return { type: 'SUBMIT_WORD' }
@@ -39,12 +48,6 @@ export function keyToEvent(state: GameState, press: KeyPress, scheme: KeyScheme)
   if (!LETTER.test(press.key)) return null
   const letter = press.key.toUpperCase()
 
-  if (scheme === 'modifier') {
-    const clearing = press.ctrl === true || press.alt === true || press.meta === true
-    return clearing ? { type: 'CLEAR_LETTER', letter } : { type: 'SELECT_LETTER', letter }
-  }
-
-  const { eligible, selected } = letterAvailability(state, letter)
-  const exhausted = eligible.length > 0 && selected.length === eligible.length
-  return exhausted ? { type: 'CLEAR_LETTER', letter } : { type: 'SELECT_LETTER', letter }
+  if (press.modified === true) return { type: 'CLEAR_LETTER', letter }
+  return scheme === 'cycle' ? { type: 'CYCLE_LETTER', letter } : { type: 'SELECT_LETTER', letter }
 }

@@ -31,7 +31,7 @@ export const FLIP_ECONOMIES: readonly FlipEconomy[] = [
   'fibonacci',
   'overMinimum',
 ]
-export const KEY_SCHEMES: readonly KeyScheme[] = ['cycle', 'modifier']
+export const KEY_SCHEMES: readonly KeyScheme[] = ['cycle', 'advance']
 
 export function configOf(settings: Settings): GameConfig {
   return configFor(settings.difficulty, settings.overrides)

@@ -132,7 +132,7 @@ export function NerdPanel({
           }}
         />
         <Choice
-          label="repeat letters"
+          label="repeated letter key"
           value={settings.keyScheme}
           options={KEY_SCHEMES}
           onChange={(keyScheme: KeyScheme) => {
@@ -140,6 +140,12 @@ export function NerdPanel({
           }}
         />
       </div>
+
+      <p className="nerd-note nerd-dim">
+        {settings.keyScheme === 'advance'
+          ? 'A takes the next unused A. Shift+A clears every A in the word.'
+          : 'A takes the next unused A, and once they are all in the word, clears them. Shift+A clears them too.'}
+      </p>
 
       <h2>What that means</h2>
       <dl className="nerd-derived">

@@ -26,6 +26,12 @@ const anEvent: fc.Arbitrary<GameEvent> = fc.oneof(
       .map((value): GameEvent => ({ type: 'CLEAR_LETTER', letter: value })),
   },
   {
+    weight: 4,
+    arbitrary: fc
+      .constantFrom(...KEYS)
+      .map((value): GameEvent => ({ type: 'CYCLE_LETTER', letter: value })),
+  },
+  {
     weight: 2,
     arbitrary: fc
       .integer({ min: -2, max: BOARD.length + 2 })

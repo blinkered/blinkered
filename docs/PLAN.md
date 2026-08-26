@@ -49,10 +49,14 @@ Under `shuffle` mode (see 1.10) a round can end early, having revealed fewer tha
 - Tapping or clicking an exposed tile appends its letter. Tapping the most recently selected tile undoes it; tapping one from the middle of the word does nothing
 - The keyboard consults **only revealed tiles**. A key for a letter that is on the board but still face down does nothing at all, exactly as if that letter were absent. Anything else would turn the keyboard into an oracle for the hidden board
 
-How a repeated letter key behaves when the board holds several copies is a keyboard ergonomics question, not a rules question, so the engine exposes two primitives (select the next copy, clear every copy of this letter) and a separate keymap decides which keystroke means which. Two schemes ship as a preference:
+How a repeated letter key behaves when the board holds several copies is a keyboard ergonomics question rather than a rules question, so the keymap maps a keystroke to an intent and the reducer resolves it. Two schemes ship as a preference:
 
-- `cycle`: A selects the first A, A again the second, and once every A is selected the next press clears them all
-- `modifier`: A always advances to the next unselected A, and Ctrl, Alt or Cmd plus A clears every selected A at once
+- `cycle` (default): with N copies of A on the board, each of the first N presses takes one and the N+1th cancels them all. Typing ALIAS against a board holding one A goes A, AL, ALI, LI, LIS
+- `advance`: the first N presses behave identically and the N+1th does nothing, so typing is never destructive
+
+Either way the clear modifier clears every copy of a letter at once: Shift in a browser, since macOS turns Option into an accented character and Ctrl and Cmd belong to the browser, and Ctrl in the terminal harness.
+
+**The cycle decision belongs to the reducer, not the view.** Choosing between taking another copy and cancelling them all depends on live game state. When the keymap made that choice from a snapshot of state, identical keystrokes produced different words depending on whether the view had re-rendered between them: typing ALIAS slowly gave LIS and typing it quickly gave ALIS. `CYCLE_LETTER` is therefore a single event that the reducer resolves, and the keymap knows nothing about the game at all.
 
 Each tile contributes at most one letter to a word. A word needing a double letter needs two tiles carrying it.
 

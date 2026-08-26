@@ -50,6 +50,8 @@ function apply(state: GameState, event: GameEvent, dictionary: Dictionary): Redu
       return selectLetter(state, event.letter)
     case 'CLEAR_LETTER':
       return clearLetter(state, event.letter)
+    case 'CYCLE_LETTER':
+      return cycleLetter(state, event.letter)
     case 'UNDO_LETTER':
       return undoLetter(state)
     case 'RESET_WORD':
@@ -141,6 +143,14 @@ function selectLetter(state: GameState, letter: string): Reduction {
   const next = eligible.find((id) => !selected.includes(id))
   if (next === undefined) return ignored(state, 'already-selected')
   return [{ ...state, selection: [...state.selection, next] }, [{ type: 'SELECTED', tileId: next }]]
+}
+
+/** Advance to the next copy, or clear them all once every copy is selected. */
+function cycleLetter(state: GameState, letter: string): Reduction {
+  const { eligible, selected } = letterAvailability(state, letter)
+  if (eligible.length === 0) return ignored(state, 'no-such-letter')
+  if (selected.length === eligible.length) return clearLetter(state, letter)
+  return selectLetter(state, letter)
 }
 
 function clearLetter(state: GameState, letter: string): Reduction {

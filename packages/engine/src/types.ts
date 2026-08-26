@@ -91,6 +91,15 @@ export type GameEvent =
   | { readonly type: 'SELECT_LETTER'; readonly letter: string }
   /** Keyboard input. Deselects every selected tile bearing this letter. */
   | { readonly type: 'CLEAR_LETTER'; readonly letter: string }
+  /**
+   * Keyboard input. Takes the next unselected copy of this letter, or clears them all once
+   * every copy is spoken for.
+   *
+   * One event rather than the view choosing between SELECT and CLEAR, because that choice
+   * depends on live game state: a view deciding from a snapshot gives different results
+   * depending on whether it happened to re-render between two keystrokes.
+   */
+  | { readonly type: 'CYCLE_LETTER'; readonly letter: string }
   /** Backspace. Drops the last letter. */
   | { readonly type: 'UNDO_LETTER' }
   /** Escape. */

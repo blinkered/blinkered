@@ -15,6 +15,8 @@ export interface Session {
   readonly board: GeneratedBoard
   /** Effects from the most recent dispatch, for animation and feedback. */
   readonly effects: readonly Effect[]
+  /** The event that produced those effects, so feedback can name the letter involved. */
+  readonly cause: GameEvent | null
   /** Increments on every dispatch, so a repeated effect still reads as new. */
   readonly epoch: number
 }
@@ -27,7 +29,7 @@ function open(dictionary: WordIndex, spec: GameSpec): Session {
     letters: board.letters,
     seed: spec.seed,
   })
-  return { state, board, effects, epoch: 0 }
+  return { state, board, effects, cause: null, epoch: 0 }
 }
 
 export interface Game extends Session {
@@ -57,7 +59,7 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
       setSession((prev) => {
         if (prev.state.status === 'over') return prev
         const [state, effects] = reduce(prev.state, event, dictionary)
-        return { ...prev, state, effects, epoch: prev.epoch + 1 }
+        return { ...prev, state, effects, cause: event, epoch: prev.epoch + 1 }
       })
     },
     [dictionary],
@@ -89,10 +91,9 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
     }
   }, [paused, over, tickMs, dispatch])
 
-  // The listener is bound once; the latest state is read through a ref so the handler never
-  // closes over a stale board.
-  const stateRef = useRef(session.state)
-  stateRef.current = session.state
+  // The listener is bound once. It no longer needs to read game state at all: keyToEvent
+  // maps a keystroke to an intent and the reducer resolves it against live state, so there
+  // is nothing left here to go stale between keystrokes.
   const schemeRef = useRef(keyScheme)
   schemeRef.current = keyScheme
   const pausedRef = useRef(paused)
@@ -110,11 +111,7 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
       ) {
         return
       }
-      const event = keyToEvent(
-        stateRef.current,
-        { key: press.key, alt: press.altKey },
-        schemeRef.current,
-      )
+      const event = keyToEvent({ key: press.key, modified: press.shiftKey }, schemeRef.current)
       if (event === null) return
       press.preventDefault()
       dispatch(event)

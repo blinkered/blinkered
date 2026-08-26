@@ -18,7 +18,7 @@ import { CLEAR_SCREEN, render, summary } from './render.js'
 const DIFFICULTIES: readonly Difficulty[] = ['easy', 'medium', 'hard', 'insane']
 const MODES: readonly WordCompleteMode[] = ['shuffle', 'spend', 'keep']
 const ECONOMIES: readonly FlipEconomy[] = ['none', 'perLetter', 'fibonacci', 'overMinimum']
-const SCHEMES: readonly KeyScheme[] = ['cycle', 'modifier']
+const SCHEMES: readonly KeyScheme[] = ['cycle', 'advance']
 
 const USAGE = `
 Blinkered, in a terminal. Phase 1 rules harness.
@@ -34,7 +34,7 @@ Blinkered, in a terminal. Phase 1 rules harness.
   --hold=<n>                             extra ticks the full board stays up
   --flips=<n>                            starting flips
   --charge                               bill the full round even when it ends early
-  --keys=cycle|modifier                  how a repeated letter key behaves
+  --keys=cycle|advance                   how a repeated letter key behaves
   --seed=<n>                             board seed
   --ticks=<n>                            run n ticks with no input, print, exit
 `
@@ -172,7 +172,7 @@ function toKeyPress(chunk: string): KeyPress | null {
     const code = chunk.charCodeAt(0)
     // Ctrl-A through Ctrl-Z arrive as 1..26. Ctrl-C and Ctrl-D are handled before this.
     if (code >= 1 && code <= 26) {
-      return { key: String.fromCharCode(96 + code), ctrl: true }
+      return { key: String.fromCharCode(96 + code), modified: true }
     }
     if (/^[a-z]$/i.test(chunk)) return { key: chunk }
   }
@@ -264,7 +264,7 @@ function main(): void {
     }
     const press = toKeyPress(chunk)
     if (press === null) return
-    const event = keyToEvent(state, press, options.scheme)
+    const event = keyToEvent(press, options.scheme)
     if (event === null) return
     dispatch(event)
     // In shuffle mode a submitted word can end the round, and with it the game.
