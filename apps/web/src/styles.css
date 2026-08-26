@@ -10,7 +10,7 @@
   --bad: #f85149;
   --warn: #d29922;
   --radius: 10px;
-  --tile: clamp(3rem, 13vmin, 5.5rem);
+  --tile: clamp(2.5rem, 10vmin, 4.25rem);
   color-scheme: dark;
 }
 
@@ -39,19 +39,28 @@ body {
   padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
 }
 .shell.has-nerd {
-  max-width: 78rem;
+  max-width: 48rem;
 }
 /*
- * The nerd panel wants to be a sidebar at an ordinary window size, not only at a very wide one.
+ * Game and sidebar, snug and centred, with nothing wasted between them.
  *
- * `minmax(0, 1fr)` rather than `1fr` is the load-bearing part: a bare `1fr` track cannot shrink
- * below its content's min-content width, so the title bar alone was holding the play column at
- * around 38rem and pushing the two-column total past what most windows are. With the floor at
- * zero the column shrinks, the title bar wraps if it must, and the breakpoint can come down.
+ * The play column is capped rather than greedy. A `1fr` track takes every pixel left over, so
+ * the game sat centred inside a very wide column with a band of nothing between it and the
+ * sidebar, and at a smaller window the pair overflowed and the sidebar was cut off the right
+ * edge. Capping the column means the two tracks add up to a known width, `justify-content`
+ * centres the pair, and any slack ends up outside them where it is not a gap.
+ *
+ * The title bar sits above this rather than inside the play column, because its own width was
+ * setting that column's floor.
  */
-@media (min-width: 52rem) {
-  .shell.has-nerd {
-    grid-template-columns: minmax(0, 1fr) 18rem;
+.body {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 50rem) {
+  .body.has-nerd {
+    grid-template-columns: minmax(0, 28rem) 17rem;
+    justify-content: center;
     align-items: start;
   }
 }
@@ -117,6 +126,11 @@ h2 {
 }
 .picker-label {
   white-space: nowrap;
+}
+/* The flag, kept out of the `option` text so the native popup stays a normal size. */
+.picker-flag {
+  font-size: 1rem;
+  line-height: 1;
 }
 .picker-select {
   max-width: 12rem;

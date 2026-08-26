@@ -223,89 +223,91 @@ function Session({
 
   return (
     <main className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}>
-      <div className="play">
-        <div className="titlebar">
-          <Title
-            skip={hurried}
-            onDone={() => {
-              setTitleDone(true)
+      <div className="titlebar">
+        <Title
+          skip={hurried}
+          onDone={() => {
+            setTitleDone(true)
+          }}
+        />
+        {/* Always here, and live except while a game is running. Somebody arriving at a page
+            in a language they cannot read has to be able to fix that before anything else. */}
+        <LanguagePicker
+          catalogue={catalogue}
+          value={language}
+          label={messages.gameLanguage}
+          disabled={playing}
+          onChange={(tag) => {
+            onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
+          }}
+        />
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={settings.nerdMode}
+            onChange={(e) => {
+              onChange({ ...settings, nerdMode: e.target.checked })
             }}
           />
-          {/* Always here, and live except while a game is running. Somebody arriving at a page
-              in a language they cannot read has to be able to fix that before anything else. */}
-          <LanguagePicker
-            catalogue={catalogue}
-            value={language}
-            label={messages.gameLanguage}
-            disabled={playing}
-            onChange={(tag) => {
-              onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
-            }}
-          />
-          <label className="toggle">
-            <input
-              type="checkbox"
-              checked={settings.nerdMode}
-              onChange={(e) => {
-                onChange({ ...settings, nerdMode: e.target.checked })
-              }}
+          <span>{messages.nerdMode}</span>
+        </label>
+      </div>
+
+      <div className={`body${settings.nerdMode ? ' has-nerd' : ''}`}>
+        <div className="play">
+          {error !== null ? <p className="error">{error}</p> : null}
+
+          {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
+
+          {phase === 'over' && finished !== null ? (
+            <div className="panel">
+              <p className="veil-title">{messages.outOfFlips}</p>
+              <p className="result-line">
+                {formatFinalResult(messages, {
+                  score: finished.result.score,
+                  words: finished.result.words,
+                  rounds: finished.result.rounds,
+                })}
+              </p>
+              <Leaderboard
+                standing={finished.standing}
+                current={finished.result}
+                messages={messages}
+              />
+              <FoundWords words={finished.words} messages={messages} />
+              {setup(messages.newGame)}
+            </div>
+          ) : null}
+
+          {playing && spec !== null && dictionary !== null ? (
+            <Playing
+              key={spec.seed}
+              dictionary={dictionary}
+              spec={spec}
+              settings={settings}
+              language={language}
+              messages={messages}
+              onRestart={start}
+              onQuit={quit}
+              onFinish={onFinish}
             />
-            <span>{messages.nerdMode}</span>
-          </label>
+          ) : null}
         </div>
 
-        {error !== null ? <p className="error">{error}</p> : null}
-
-        {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
-
-        {phase === 'over' && finished !== null ? (
-          <div className="panel">
-            <p className="veil-title">{messages.outOfFlips}</p>
-            <p className="result-line">
-              {formatFinalResult(messages, {
-                score: finished.result.score,
-                words: finished.result.words,
-                rounds: finished.result.rounds,
-              })}
-            </p>
-            <Leaderboard
-              standing={finished.standing}
-              current={finished.result}
-              messages={messages}
-            />
-            <FoundWords words={finished.words} messages={messages} />
-            {setup(messages.newGame)}
-          </div>
-        ) : null}
-
-        {playing && spec !== null && dictionary !== null ? (
-          <Playing
-            key={spec.seed}
-            dictionary={dictionary}
-            spec={spec}
+        {settings.nerdMode ? (
+          <NerdPanel
             settings={settings}
-            language={language}
+            config={config}
+            dictionary={dictionary}
+            locked={playing}
             messages={messages}
-            onRestart={start}
-            onQuit={quit}
-            onFinish={onFinish}
+            onChange={onChange}
+            onOverride={(overrides) => {
+              onChange(withOverride(settings, overrides))
+            }}
           />
         ) : null}
       </div>
-
-      {settings.nerdMode ? (
-        <NerdPanel
-          settings={settings}
-          config={config}
-          dictionary={dictionary}
-          locked={playing}
-          messages={messages}
-          onChange={onChange}
-          onOverride={(overrides) => {
-            onChange(withOverride(settings, overrides))
-          }}
-        />
-      ) : null}
     </main>
   )
 }

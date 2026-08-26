@@ -1,6 +1,37 @@
 import { LOCALES, localeFor } from '@blinkered/i18n'
 import type { CatalogueEntry } from './dictionary.js'
 
+/**
+ * Flags belong beside the control, not inside its options.
+ *
+ * A native `select` renders its popup as an operating-system menu, and an emoji in an option
+ * drags in a colour emoji font at a size the menu then sizes itself to: sixteen options became
+ * an enormous list that on macOS spilled clear out of the browser window. The options are plain
+ * text now, and the flag sits next to the closed control where it still does its job of making
+ * the picker recognisable before you can read the label.
+ *
+ * The native control stays, rather than being replaced by a custom listbox. It brings keyboard
+ * behaviour, type-ahead and the platform's own picker on a phone, none of which is worth
+ * reimplementing for a cosmetic gain.
+ */
+function flagOf(tag: string): string {
+  return localeFor(tag)?.flag ?? ''
+}
+
+/** The name a speaker of the language would look for, which is the one to sort by. */
+function endonymOf(tag: string, fallback: string): string {
+  return localeFor(tag)?.endonym ?? fallback
+}
+
+/**
+ * Alphabetical by the language's own name for itself.
+ *
+ * The catalogue arrives sorted by BCP 47 tag, which is an ordering for machines: it put Suomi
+ * before Français because `fi` sorts before `fr`, which is unfindable if you are looking for a
+ * word rather than a code.
+ */
+const BY_NAME = new Intl.Collator('en', { sensitivity: 'base' })
+
 interface LanguagePickerProps {
   /** Only the languages this build actually has a word list for. */
   readonly catalogue: readonly CatalogueEntry[]
@@ -15,9 +46,8 @@ interface LanguagePickerProps {
  * Picks the language the board is dealt in.
  *
  * Offers what the deployment has rather than what the engine knows: sixteen alphabets exist,
- * and a language is only playable once a word list has been built for it. A flag and the
- * language's own name for itself, because a Greek speaker looking for Greek is looking for
- * Ελληνικά, not for "Greek".
+ * and a language is only playable once a word list has been built for it. The language's own
+ * name for itself, because a Greek speaker looking for Greek is looking for Ελληνικά.
  */
 export function LanguagePicker({
   catalogue,
@@ -26,9 +56,16 @@ export function LanguagePicker({
   disabled = false,
   onChange,
 }: LanguagePickerProps): React.JSX.Element {
+  const ordered = [...catalogue].sort((left, right) =>
+    BY_NAME.compare(endonymOf(left.tag, left.endonym), endonymOf(right.tag, right.endonym)),
+  )
+
   return (
     <label className="picker">
       <span className="picker-label">{label}</span>
+      <span className="picker-flag" aria-hidden="true">
+        {flagOf(value)}
+      </span>
       <select
         className="picker-select"
         value={value}
@@ -40,14 +77,11 @@ export function LanguagePicker({
           onChange(e.target.value)
         }}
       >
-        {catalogue.map((entry) => {
-          const locale = localeFor(entry.tag)
-          return (
-            <option key={entry.tag} value={entry.tag}>
-              {locale === undefined ? entry.endonym : `${locale.flag}  ${locale.endonym}`}
-            </option>
-          )
-        })}
+        {ordered.map((entry) => (
+          <option key={entry.tag} value={entry.tag}>
+            {endonymOf(entry.tag, entry.endonym)}
+          </option>
+        ))}
       </select>
     </label>
   )
@@ -75,9 +109,19 @@ export function InterfacePicker({
   onChange,
 }: InterfacePickerProps): React.JSX.Element {
   const inline = layout === 'inline'
+  const ordered = [...LOCALES].sort((left, right) => BY_NAME.compare(left.endonym, right.endonym))
+
   return (
     <label className={inline ? 'picker' : 'nerd-row'}>
       <span className={inline ? 'picker-label' : undefined}>{label}</span>
+      {/* Only in the inline layout. A nerd-panel row is a two-column flex with the label at one
+          end and the control at the other, so a third child would be spread into the middle
+          with a gulf on both sides, which is exactly the bug the title bar just had. */}
+      {inline ? (
+        <span className="picker-flag" aria-hidden="true">
+          {flagOf(value)}
+        </span>
+      ) : null}
       <select
         className={inline ? 'picker-select' : undefined}
         value={value}
@@ -85,9 +129,9 @@ export function InterfacePicker({
           onChange(e.target.value)
         }}
       >
-        {LOCALES.map((locale) => (
+        {ordered.map((locale) => (
           <option key={locale.tag} value={locale.tag}>
-            {locale.flag} {locale.endonym}
+            {locale.endonym}
           </option>
         ))}
       </select>
