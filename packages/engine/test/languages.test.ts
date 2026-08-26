@@ -10,6 +10,8 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   de: ['straße', 'STRASSE', 7],
   nl: ['coëfficiënt', 'COEFFICIENT', 11],
   pt: ['ação', 'AÇAO', 4],
+  // Same alphabet as pt, different word list. A spelling the two variants disagree on.
+  'pt-BR': ['ônibus', 'ONIBUS', 6],
   hr: ['džemper', 'DŽEMPER', 6],
   ms: ['makan', 'MAKAN', 5],
   id: ['makan', 'MAKAN', 5],
@@ -36,6 +38,7 @@ describe('the language registry', () => {
       'nl',
       'no',
       'pt',
+      'pt-BR',
       'ru',
       'sv',
     ])

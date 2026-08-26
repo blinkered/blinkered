@@ -40,6 +40,31 @@ export interface Game extends Session {
 }
 
 /**
+ * Whether a keystroke belongs to the game rather than to whatever has focus.
+ *
+ * A text field owns every key it receives, and a `select` owns letters too, since typing one
+ * jumps to the matching option. A button owns almost nothing: it answers to Enter and Space
+ * and ignores the rest. Lumping buttons in with the text fields cost the game its keyboard
+ * every time somebody clicked Pause or picked a language with the mouse, because focus stayed
+ * on the control and every letter after that went nowhere.
+ */
+function playable(press: KeyboardEvent): boolean {
+  const target = press.target
+  if (!(target instanceof HTMLElement)) return true
+  switch (target.tagName) {
+    case 'INPUT':
+    case 'TEXTAREA':
+    case 'SELECT':
+      return false
+    case 'BUTTON':
+      // Let the browser have the two keys that press a button.
+      return press.key !== 'Enter' && press.key !== ' '
+    default:
+      return true
+  }
+}
+
+/**
  * Owns the wall clock, which the engine deliberately does not. Everything else about a game
  * is the engine's pure reducer; this hook only decides when a tick happens.
  */
@@ -104,13 +129,7 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
       if (press.repeat || pausedRef.current) return
       // Leave the browser's own shortcuts alone, and stay out of form controls.
       if (press.metaKey || press.ctrlKey) return
-      const target = press.target
-      if (
-        target instanceof HTMLElement &&
-        /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(target.tagName)
-      ) {
-        return
-      }
+      if (!playable(press)) return
       const event = keyToEvent({ key: press.key, modified: press.shiftKey }, schemeRef.current)
       if (event === null) return
       press.preventDefault()

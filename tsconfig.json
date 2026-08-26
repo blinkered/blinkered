@@ -1,11 +1,26 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/engine" },
-    { "path": "./packages/words" },
-    { "path": "./tools/harness" },
-    { "path": "./tools/derive" },
-    { "path": "./tools/wordlist" },
-    { "path": "./apps/web" }
+    {
+      "path": "./packages/engine"
+    },
+    {
+      "path": "./packages/words"
+    },
+    {
+      "path": "./packages/i18n"
+    },
+    {
+      "path": "./tools/harness"
+    },
+    {
+      "path": "./tools/derive"
+    },
+    {
+      "path": "./tools/dictionary"
+    },
+    {
+      "path": "./apps/web"
+    }
   ]
 }

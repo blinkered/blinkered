@@ -131,7 +131,7 @@ Under the fibonacci economy a five-letter word exactly breaks even, so **a board
    - no duplicate of a rare letter (J K Q V W X Z in English). Only a few percent of draws carry one, and they are what produces a rich-looking board with no long words
    - no letter left without a companion it needs. A Q with no U in English can be revealed and never used: about 15% of twelve-tile draws hold a Q, and two thirds of those have no U, so roughly one board in ten was carrying a dead tile before this rule existed
 
-W itself is derived, not written down per level: `defaultWMin(n, minWordLength)` reads a measured median word count for the board size, scales it for the minimum length, and aims at 70% of it so acceptance costs a draw or two rather than hundreds. Those medians, and the draw weights themselves, come from `pnpm derive` reading the actual word list; regenerate them whenever the list changes, because they describe a dictionary rather than the rules.
+W itself is derived, not written down per level: `defaultWMin(n, minWordLength, language)` reads a measured median word count for the board size, scales it for the minimum length and for how rich that language's board is, and aims at 70% of it so acceptance costs a draw or two rather than hundreds. Those medians and the draw weights come from `pnpm dictionary weights` and `pnpm dictionary floor` reading the actual word lists; regenerate them whenever a list changes, because they describe a dictionary rather than the rules. The language term is not optional: at twelve tiles an Italian board admits 183 words and a Russian one 69, so a single floor would be unreachable in Russian and free in Italian.
 
 The draw weights are worth a note. They were originally Scrabble's, which are letter frequencies in _running text_. Derived from dictionary words instead, C is 5 rather than 2 and L and S are 6 rather than 4, because a board has to spell words rather than sentences. Boards got measurably richer as a result: the median twelve-tile board went from 248 words to 464.
 
@@ -453,23 +453,27 @@ Non-Latin scripts are a different project rather than another language. Arabic h
 
 ### 5.4 Where the word lists come from
 
-Fifteen alphabets exist; a language is only playable once a word list does. The sourcing
-design, the licence survey, and the measurements behind the sizing all live in
-[DICTIONARIES.md](DICTIONARIES.md). The short version: a frequency list selects candidates, a
-dictionary validates them, and we ship the intersection, which is smaller, better and a
-thinner derivative of either input than a copy of either would be.
+Sixteen playable languages, built and committed. The sourcing design, the licence audit and
+every measurement behind the sizing live in [DICTIONARIES.md](DICTIONARIES.md). The short
+version: a frequency list selects candidates, a dictionary validates them, and we ship the
+intersection, which is smaller, better and a thinner derivative of either input than a copy of
+either would be.
 
 ### 5.5 What a new language actually costs
 
-One command, once a word list exists:
+Three commands, in this order, once the sources are named in `tools/dictionary/src/manifest.ts`:
 
 ```
-pnpm derive --words=<list> --language=<tag>
+pnpm dictionary build --language=<tag>     # fetch, validate, cut, write
+pnpm dictionary weights --language=<tag>   # draw weights from its own vocabulary
+pnpm dictionary floor                      # the word floor, from the new weights
 ```
 
-`tools/derive` reads the list through the alphabet, derives the draw weights from the language's own vocabulary, suggests which letters are too rare to double, and prints the calibration table `defaultWMin` needs. The remaining work is a judgment pass on the suggestions and a note of which letters are dead alone.
+The order is load-bearing: board density depends on the draw weights, and the word floor is calibrated against board density, so deriving the weights after the floor calibrates against a guess. Skipping the floor step is worse than getting it wrong, because it fails silently — the floor sits above what any board can reach, every draw is rejected, and the generator plays the best of four hundred boards while reporting failure.
 
-So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a licence that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens.
+The remaining work is a judgment pass on the suggested rare letters, a note of which letters are dead alone, and a `Messages` set in `packages/i18n/src/locales/`.
+
+So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a licence that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens: of the sixteen, a third had no usable morphological dictionary at all.
 
 Because language is part of the recorded ruleset, ranked play groups by it, exactly as it does for board size.
 

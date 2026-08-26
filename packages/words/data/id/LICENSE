@@ -1,0 +1,19 @@
+Blinkered word list for Bahasa Indonesia (id)
+SPDX-License-Identifier: LGPL-3.0
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of id AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=id`.
+
+Distributed under LGPL-3.0, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS
+  MIT
+
+Validation
+  hunspell `id_ID` (LGPL-3.0) — Hunspell Indonesian, Kamus Besar Bahasa Indonesia contributors
+
+The full text of each licence is in ../licences/.

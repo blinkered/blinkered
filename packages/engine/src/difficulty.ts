@@ -35,22 +35,55 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
 /**
  * Median distinct words a board of n tiles admits at minimum length 3, indexed from n=4.
  *
- * Regenerate with `pnpm derive` whenever the word list changes; these numbers describe a
- * dictionary, not the rules. Currently measured against the phase-1 placeholder list.
+ * Measured on the shipped English common tier. Regenerate with `pnpm dictionary floor`
+ * whenever a word list changes: these numbers describe a dictionary, not the rules, and a
+ * stale curve is a silent fault rather than a loud one. The previous values were three times
+ * these, having been measured against a 78,000-word placeholder list, and left the floor so
+ * far above any real board that the generator rejected every draw it made.
  */
-const MEDIAN_WORDS = [6, 16, 30, 50, 103, 164, 247, 362, 464] as const
+const MEDIAN_WORDS = [2, 6, 12, 21, 35, 56, 79, 116, 152] as const
 const SMALLEST_MEASURED = 4
 const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 
-/** Share of those words that survive raising the minimum length. Also from `pnpm derive`. */
+/** Share of those words that survive raising the minimum length, measured at n=9. */
 const SHARE_BY_MINIMUM: Readonly<Record<number, number>> = {
-  2: 1.13,
+  2: 1,
   3: 1,
-  4: 0.67,
-  5: 0.28,
-  6: 0.08,
+  4: 0.59,
+  5: 0.18,
+  6: 0.04,
 }
-const SHARE_BEYOND_TABLE = 0.06
+const SHARE_BEYOND_TABLE = 0.03
+
+/**
+ * How rich each language's board is next to English, at the same size and the same cut.
+ *
+ * The curve above is one language's, and languages are not interchangeable here: a Russian
+ * board admits under half what an Italian one does, because a 32-letter alphabet combines
+ * differently from a 21-letter one. A single floor would be unreachable in Russian and free
+ * in Italian, so it is scaled. Regenerate with `pnpm dictionary floor`.
+ */
+const DENSITY_SCALE: Readonly<Record<string, number>> = {
+  en: 1,
+  fr: 0.99,
+  es: 0.77,
+  it: 1.18,
+  de: 0.9,
+  nl: 0.92,
+  pt: 0.9,
+  'pt-BR': 0.92,
+  hr: 0.64,
+  ms: 1.06,
+  id: 0.96,
+  ru: 0.45,
+  sv: 0.79,
+  no: 1.06,
+  fi: 0.88,
+  el: 0.63,
+}
+
+/** A language with no measurement yet is assumed to behave like the one that was measured. */
+const UNMEASURED_SCALE = 1
 
 /** Aim below the median so acceptance costs a draw or two rather than hundreds. */
 const TARGET_SHARE_OF_MEDIAN = 0.7
@@ -59,11 +92,16 @@ const TARGET_SHARE_OF_MEDIAN = 0.7
  * How many words a board must admit to be worth playing. Scales with the board, because a
  * count that filters hard at nine tiles is trivial at twelve and impossible at six.
  */
-export function defaultWMin(n: number, minWordLength: number): number {
+export function defaultWMin(
+  n: number,
+  minWordLength: number,
+  language: string = DEFAULT_LANGUAGE,
+): number {
   const size = Math.min(LARGEST_MEASURED, Math.max(SMALLEST_MEASURED, Math.round(n)))
   const median = at(MEDIAN_WORDS, size - SMALLEST_MEASURED)
   const share = SHARE_BY_MINIMUM[minWordLength] ?? SHARE_BEYOND_TABLE
-  return Math.max(1, Math.round(median * share * TARGET_SHARE_OF_MEDIAN))
+  const scale = DENSITY_SCALE[language] ?? UNMEASURED_SCALE
+  return Math.max(1, Math.round(median * share * scale * TARGET_SHARE_OF_MEDIAN))
 }
 
 /**
@@ -74,14 +112,17 @@ export function defaultWMin(n: number, minWordLength: number): number {
 export const PROFITABLE_LENGTH = 6
 
 /**
- * Resolves a difficulty and any explicit overrides into a complete ruleset. Board size and
- * minimum word length are read first, because the flip budget and the word floor are derived
- * from them; an explicit `initialFlips` or `wMin` still wins.
+ * Resolves a difficulty and any explicit overrides into a complete ruleset. Board size,
+ * minimum word length and language are read first, because the flip budget and the word floor
+ * are derived from them; an explicit `initialFlips` or `wMin` still wins.
  */
 export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig> = {}): GameConfig {
   const profile = DIFFICULTIES[difficulty]
   const n = overrides.n ?? DEFAULT_BOARD_SIZE
   const minWordLength = overrides.minWordLength ?? profile.minWordLength
+  // Read before the floor is derived, because how many words a board can admit is as much a
+  // fact about the language as about the board size.
+  const language = overrides.language ?? DEFAULT_LANGUAGE
 
   const resolved: GameConfig = {
     n,
@@ -89,12 +130,12 @@ export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig>
     holdTicks: profile.holdTicks,
     initialFlips: profile.initialRounds * n,
     minWordLength,
-    wMin: defaultWMin(n, minWordLength),
+    wMin: defaultWMin(n, minWordLength, language),
     ceilingMin: PROFITABLE_LENGTH,
     wordCompleteMode: 'spend',
     flipEconomy: 'fibonacci',
     chargeFullRound: false,
-    language: DEFAULT_LANGUAGE,
+    language,
     engineVersion: ENGINE_VERSION,
   }
   return { ...resolved, ...overrides }

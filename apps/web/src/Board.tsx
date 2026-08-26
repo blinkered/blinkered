@@ -1,5 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import type { GameState, Tile } from '@blinkered/engine'
+import { format } from '@blinkered/i18n'
+import type { Messages } from '@blinkered/i18n'
 
 /** Columns for a board of n tiles. Purely a view decision; the engine only knows order. */
 export function columnsFor(n: number, portrait: boolean): number {
@@ -19,6 +21,7 @@ interface BoardProps {
    */
   readonly concealed: boolean
   readonly onTapTile: (tileId: number) => void
+  readonly messages: Messages
 }
 
 /**
@@ -29,7 +32,13 @@ interface BoardProps {
  * travel from their old slot to their new one using FLIP (measure, invert, play) rather than
  * teleporting.
  */
-export function Board({ state, portrait, concealed, onTapTile }: BoardProps): React.JSX.Element {
+export function Board({
+  state,
+  portrait,
+  concealed,
+  onTapTile,
+  messages,
+}: BoardProps): React.JSX.Element {
   const columns = columnsFor(state.config.n, portrait)
   const nodes = useRef(new Map<number, HTMLButtonElement>())
   const boxes = useRef(new Map<number, DOMRect>())
@@ -75,13 +84,14 @@ export function Board({ state, portrait, concealed, onTapTile }: BoardProps): Re
     <div
       className="board"
       style={{ ['--cols' as string]: String(columns) }}
-      aria-label={`Board of ${String(state.config.n)} tiles`}
+      aria-label={format(messages.boardOfTiles, { n: state.config.n })}
     >
       {ordered.map((tile) => (
         <TileButton
           key={tile.id}
           tile={tile}
           concealed={concealed}
+          messages={messages}
           order={state.selection.indexOf(tile.id)}
           onTap={onTapTile}
           register={(node) => {
@@ -101,9 +111,17 @@ interface TileProps {
   readonly order: number
   readonly onTap: (tileId: number) => void
   readonly register: (node: HTMLButtonElement | null) => void
+  readonly messages: Messages
 }
 
-function TileButton({ tile, concealed, order, onTap, register }: TileProps): React.JSX.Element {
+function TileButton({
+  tile,
+  concealed,
+  order,
+  onTap,
+  register,
+  messages,
+}: TileProps): React.JSX.Element {
   const showing = tile.revealed && !concealed
   const selected = order >= 0
   const classes = ['tile']
@@ -112,12 +130,14 @@ function TileButton({ tile, concealed, order, onTap, register }: TileProps): Rea
   if (selected) classes.push('is-selected')
 
   const label = concealed
-    ? 'hidden while paused'
+    ? messages.hiddenWhilePaused
     : tile.spent
-      ? 'spent tile'
+      ? messages.spentTile
       : tile.revealed
-        ? `${tile.letter}${selected ? `, letter ${String(order + 1)} of the word` : ''}`
-        : 'face down'
+        ? selected
+          ? format(messages.letterInWord, { letter: tile.letter, position: order + 1 })
+          : tile.letter
+        : messages.faceDown
 
   return (
     <button

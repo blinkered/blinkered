@@ -8,5 +8,15 @@
     "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts", "vite.config.ts"],
-  "references": [{ "path": "../../packages/engine" }, { "path": "../../packages/words" }]
+  "references": [
+    {
+      "path": "../../packages/engine"
+    },
+    {
+      "path": "../../packages/words"
+    },
+    {
+      "path": "../../packages/i18n"
+    }
+  ]
 }

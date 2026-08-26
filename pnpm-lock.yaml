@@ -38,6 +38,9 @@ importers:
       '@blinkered/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@blinkered/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@blinkered/words':
         specifier: workspace:*
         version: link:../../packages/words
@@ -63,6 +66,12 @@ importers:
 
   packages/engine: {}
 
+  packages/i18n:
+    dependencies:
+      '@blinkered/engine':
+        specifier: workspace:*
+        version: link:../engine
+
   packages/words:
     dependencies:
       '@blinkered/engine':
@@ -70,6 +79,15 @@ importers:
         version: link:../engine
 
   tools/derive:
+    dependencies:
+      '@blinkered/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
+      '@blinkered/words':
+        specifier: workspace:*
+        version: link:../../packages/words
+
+  tools/dictionary:
     dependencies:
       '@blinkered/engine':
         specifier: workspace:*

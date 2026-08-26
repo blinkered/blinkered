@@ -1,28 +1,56 @@
 # Word list data
 
-Nothing here yet. Blinkered currently plays against `/usr/share/dict/words` as a
-placeholder, which is not shipped.
+One directory per language, each holding the list the game plays against and the terms it
+comes under. Everything here is generated: `pnpm dictionary build`. Do not edit `words.txt` by
+hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
-## Rules for adding a list
+The design, the measurements behind every number, and the licence reasoning are in
+[docs/DICTIONARIES.md](../../../docs/DICTIONARIES.md).
 
-Read these before committing any dictionary, because the licence on the data can
-determine the licence of the whole distributed app.
+## What is here
 
-1. **One directory per language**, named by its BCP 47 tag: `data/en`, `data/fr`.
-2. **Each directory carries a `LICENSE`** with the list's own terms, verbatim, and a
-   `PROVENANCE.md` naming the upstream project, the version or date obtained, the URL,
-   and the licence in one line.
-3. **Copyleft data is a distribution problem, not just an attribution problem.** A
-   GPL-licensed word list bundled into a mobile binary argues the binary is a GPL work,
-   and the FSF's position is that the GPL conflicts with the Apple App Store's terms.
-   Prefer permissive or weak-copyleft sources: OpenTaal (Dutch, BSD and CC BY),
-   Dicollecte/Grammalecte (French, MPL 2.0). Read tri-licensed hunspell dictionaries
-   carefully and record which branch of the licence we are relying on.
-4. **Hunspell dictionaries are not word lists.** They are stems plus affix rules and
-   need expanding first. Record the expansion command in `PROVENANCE.md` so the list
-   can be rebuilt.
-5. **Both tiers come from the same source where possible.** The full tier grants credit;
-   the common tier is what the board generator counts toward W.
-6. **Regenerate the derived numbers** after any change:
-   `pnpm derive --words=<list> --language=<tag>`, then update the draw weights in the
-   alphabet and `MEDIAN_WORDS` in `packages/engine/src/difficulty.ts`.
+```
+manifest.json          what the app reads to know which languages it can offer
+licences/              verbatim licence texts, referenced rather than copied per language
+<tag>/words.txt        both tiers in one file, common first, with the split in the header
+<tag>/LICENSE          the terms this list is distributed under, and what it was built from
+<tag>/PROVENANCE.md    every source, the licence branch relied on, and the measurements
+```
+
+## The file format
+
+```
+#blinkered/wordlist/1 language=en common=16115 full=33080
+<16115 common words, sorted>
+<16965 further words, sorted>
+```
+
+Two tiers, one file, one fetch. The **common** tier is what the board generator counts toward
+the word floor, so a board is guaranteed solvable from vocabulary people actually use. The
+**full** tier is what earns credit, so an unusual word still scores. The magic first line is
+load-bearing: a dev server answers a missing path with its index page, and a word list that
+silently parsed as one word would be worse than an error.
+
+## Rules for adding a language
+
+1. **Named by its BCP 47 tag**, and the engine must have an alphabet with the same id.
+2. **No GPL, anywhere.** A GPL-licensed word list bundled into a mobile binary argues the
+   binary is a GPL work, and the FSF's position is that the GPL conflicts with the App Store's
+   terms. Where an upstream dictionary is offered under several licences, record in
+   `manifest.ts` **which branch** is relied on, or a later reader will assume the worst one.
+3. **Validators are build-time filters and are never shipped.** What ships is a corpus
+   ordering intersected with a yes-or-no answer, which is a far thinner derivative of either
+   input than a copy of either would be.
+4. **The list is distributed under the most restrictive of its inputs.** Conservative on
+   purpose: a good argument says a filtered list inherits nothing, and making that argument is
+   not the same as being right about it.
+5. **Calibrate the cut by board density**, not by a round number: `pnpm dictionary calibrate`.
+6. **Regenerate the derived numbers afterwards**, in this order, because each depends on the
+   last:
+   - `pnpm dictionary weights` and paste into the alphabet in `packages/engine/src/languages.ts`
+   - `pnpm dictionary floor` and paste `MEDIAN_WORDS`, `SHARE_BY_MINIMUM` and `DENSITY_SCALE`
+     into `packages/engine/src/difficulty.ts`
+
+   Skipping the last step is a silent fault, not a loud one: the word floor sits above what
+   any board can reach, every draw is rejected, and the generator plays the best of four
+   hundred boards while reporting that it failed.

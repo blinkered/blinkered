@@ -91,6 +91,35 @@ h2 {
   font-size: 0.85rem;
 }
 
+/* The language control in the title bar. `margin-left: auto` rather than a third flex child
+   with space-between, so the nerd toggle stays pinned right whether or not this is shown. */
+.picker {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-left: auto;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+.picker-label {
+  white-space: nowrap;
+}
+.picker-select {
+  max-width: 12rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+/* The centred shell puts the loading picker under the title rather than beside it. */
+.centred .picker {
+  margin: 0.5rem auto 0;
+}
+
 /* ---------- hud ---------- */
 .hud {
   display: grid;

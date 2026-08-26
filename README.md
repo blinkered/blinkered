@@ -10,18 +10,18 @@ over. The full rules, and the decisions behind them, are in [docs/PLAN.md](docs/
 
 ```
 pnpm install
-pnpm wordlist     # packs a word list into apps/web/public (once)
 pnpm dev          # http://localhost:5173
 ```
 
 Type the word. Enter completes it, Escape clears the word, Backspace undoes the last letter,
-shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the toggle top right, shows every rule and the arithmetic behind
-it: how long the whole board stays up, what a round costs in flips, and what each word
-length pays against what its letters cost.
+shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the toggle top
+right, shows every rule and the arithmetic behind it: how long the whole board stays up, what
+a round costs in flips, and what each word length pays against what its letters cost.
 
-`pnpm wordlist` is a stopgap. It packs the system dictionary, which is Webster's 1934 and a
-list of base forms, so it knows HISS but not HISSES while cheerfully accepting OWSE. The
-real two-tier list replaces it behind the same interface.
+Sixteen languages, picked from the flag menu, which sets the interface language too. The word
+lists are committed, so there is no build step before playing; `pnpm dictionary build`
+regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
+from and why they are the size they are.
 
 ## Play it in a terminal
 
@@ -77,18 +77,24 @@ docs/PLAN.md        rules, architecture, phases, open questions
 
 ## Adding a language
 
-Everything language-specific lives in one `Alphabet`: draw weights, vowels, which letters are
-too rare to appear twice, which need a companion (English Q needs a U), how a typed key folds
-onto a tile, and how a word splits into tiles. Given a word list, the numbers come from the
-repo rather than from guesswork:
+Three pieces, and none of them is the engine. An `Alphabet` in
+`packages/engine/src/languages.ts` holds everything language-specific: draw weights, vowels,
+which letters are too rare to appear twice, which need a companion (English Q needs a U), how
+a typed key folds onto a tile, and how a word splits into tiles. A `Messages` set in
+`packages/i18n/src/locales/` holds every string. And a source entry in
+`tools/dictionary/src/manifest.ts` says where the words come from and under what licence.
+
+Then, in this order, because each step depends on the one before:
 
 ```
-pnpm derive --words=<list> --language=<tag>
+pnpm dictionary build --language=<tag>   # fetch, validate, write the list
+pnpm dictionary weights --language=<tag> # draw weights, from its own vocabulary
+pnpm dictionary floor                    # the word floor, from the new weights
 ```
 
-That derives the draw weights from the language's own vocabulary, suggests which letters are
-too rare to double, and prints the calibration table `defaultWMin` needs. See PLAN.md section
-5, which also covers why accents and diacritics are different problems.
+Getting the last two backwards calibrates the board against a guess, and getting them wrong
+is silent rather than loud. [docs/DICTIONARIES.md](docs/DICTIONARIES.md) has the details;
+PLAN.md section 5 covers why accents and diacritics are different problems.
 
 ## Checks
 

@@ -6,7 +6,12 @@ import type {
   KeyScheme,
   WordCompleteMode,
 } from '@blinkered/engine'
-import type { GeneratedBoard } from '@blinkered/words'
+import { format } from '@blinkered/i18n'
+import type { Messages } from '@blinkered/i18n'
+import type { GeneratedBoard, TieredIndex } from '@blinkered/words'
+import { withoutStealingFocus } from './focus.js'
+import { InterfacePicker } from './LanguagePicker.js'
+import { countOf } from './Hud.js'
 import {
   DIFFICULTY_NAMES,
   FLIP_ECONOMIES,
@@ -20,10 +25,15 @@ interface NerdPanelProps {
   readonly settings: Settings
   readonly config: GameConfig
   readonly board: GeneratedBoard
+  readonly dictionary: TieredIndex
   readonly dirty: boolean
+  readonly messages: Messages
   readonly onChange: (next: Settings) => void
   readonly onNewGame: () => void
 }
+
+/** The smallest word length the shipped lists hold; see docs/DICTIONARIES.md. */
+const SHORTEST_SHIPPED_WORD = 3
 
 /**
  * Every rule, and the arithmetic they produce. The derived numbers matter more than the raw
@@ -35,7 +45,9 @@ export function NerdPanel({
   settings,
   config,
   board,
+  dictionary,
   dirty,
+  messages,
   onChange,
   onNewGame,
 }: NerdPanelProps): React.JSX.Element {
@@ -44,14 +56,19 @@ export function NerdPanel({
   }
   const roundTicks = config.n + config.holdTicks
   const seconds = (ticks: number): string => `${(ticks * config.speedMultiplier).toFixed(1)}s`
+  const ticks = (count: number): string =>
+    format(messages.ticksAndSeconds, {
+      ticks: countOf(messages, 'ticks', count),
+      seconds: seconds(count),
+    })
   const rounds = config.initialFlips / config.n
 
   return (
     <aside className="nerd">
       <div className="nerd-head">
-        <h2>Rules</h2>
+        <h2>{messages.rules}</h2>
         <label className="nerd-row">
-          <span>difficulty</span>
+          <span>{messages.difficulty}</span>
           <select
             value={settings.difficulty}
             onChange={(e) => {
@@ -61,7 +78,7 @@ export function NerdPanel({
           >
             {DIFFICULTY_NAMES.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {messages.difficultyNames[name]}
               </option>
             ))}
           </select>
@@ -70,7 +87,7 @@ export function NerdPanel({
 
       <div className="nerd-grid">
         <Number
-          label="tiles (N)"
+          label={messages.tiles}
           value={config.n}
           min={2}
           max={16}
@@ -79,7 +96,7 @@ export function NerdPanel({
           }}
         />
         <Number
-          label="seconds / tick"
+          label={messages.secondsPerTick}
           value={config.speedMultiplier}
           min={0.2}
           max={4}
@@ -89,7 +106,7 @@ export function NerdPanel({
           }}
         />
         <Number
-          label="hold ticks"
+          label={messages.holdTicks}
           value={config.holdTicks}
           min={0}
           max={12}
@@ -97,17 +114,19 @@ export function NerdPanel({
             set({ holdTicks })
           }}
         />
+        {/* Floored at three because the shipped lists start there: a two-letter minimum would
+            offer a length with nothing in it to find. */}
         <Number
-          label="min word"
+          label={messages.minWord}
           value={config.minWordLength}
-          min={2}
+          min={SHORTEST_SHIPPED_WORD}
           max={8}
           onChange={(minWordLength) => {
             set({ minWordLength })
           }}
         />
         <Number
-          label="starting flips"
+          label={messages.startingFlips}
           value={config.initialFlips}
           min={1}
           max={999}
@@ -116,65 +135,86 @@ export function NerdPanel({
           }}
         />
         <Choice
-          label="word complete"
+          label={messages.wordCompleteMode}
           value={config.wordCompleteMode}
           options={WORD_COMPLETE_MODES}
+          name={(mode: WordCompleteMode) => messages.wordCompleteNames[mode]}
           onChange={(wordCompleteMode: WordCompleteMode) => {
             set({ wordCompleteMode })
           }}
         />
         <Choice
-          label="flip economy"
+          label={messages.flipEconomy}
           value={config.flipEconomy}
           options={FLIP_ECONOMIES}
+          name={(economy: FlipEconomy) => messages.flipEconomyNames[economy]}
           onChange={(flipEconomy: FlipEconomy) => {
             set({ flipEconomy })
           }}
         />
         <Choice
-          label="repeated letter key"
+          label={messages.repeatedLetterKey}
           value={settings.keyScheme}
           options={KEY_SCHEMES}
+          name={(scheme: KeyScheme) => messages.keySchemeNames[scheme]}
           onChange={(keyScheme: KeyScheme) => {
             onChange({ ...settings, keyScheme })
           }}
         />
+        <InterfacePicker
+          label={messages.interfaceLanguage}
+          value={settings.uiLanguage}
+          onChange={(uiLanguage) => {
+            onChange({ ...settings, uiLanguage })
+          }}
+        />
       </div>
 
-      <p className="nerd-note nerd-dim">
-        {settings.keyScheme === 'advance'
-          ? 'A takes the next unused A. Shift+A clears every A in the word.'
-          : 'A takes the next unused A, and once they are all in the word, clears them. Shift+A clears them too.'}
-      </p>
+      <p className="nerd-note nerd-dim">{messages.keySchemeHelp[settings.keyScheme]}</p>
 
-      <h2>What that means</h2>
+      <h2>{messages.whatThatMeans}</h2>
       <dl className="nerd-derived">
-        <Fact label="round" value={`${String(roundTicks)} ticks, ${seconds(roundTicks)}`} />
+        <Fact label={messages.factRound} value={ticks(roundTicks)} />
+        <Fact label={messages.factWholeBoardUp} value={ticks(config.holdTicks + 1)} />
+        <Fact label={messages.factRoundCosts} value={countOf(messages, 'flips', config.n)} />
         <Fact
-          label="whole board up for"
-          value={`${String(config.holdTicks + 1)} ticks, ${seconds(config.holdTicks + 1)}`}
-        />
-        <Fact label="a round costs" value={`${String(config.n)} flips`} />
-        <Fact label="starting flips buy" value={`${String(rounds)} scoreless rounds`} />
-        <Fact
-          label="this board"
-          value={`${String(board.wordCount)} words, longest ${String(board.longest)}`}
+          label={messages.factFlipsBuy}
+          value={format(messages.scorelessRounds, {
+            rounds: countOf(messages, 'rounds', rounds),
+          })}
         />
         <Fact
-          label="board had to admit"
-          value={`${String(config.wMin)} words incl. one of ${String(config.ceilingMin)}`}
+          label={messages.factThisBoard}
+          value={format(messages.wordsLongest, {
+            words: countOf(messages, 'words', board.wordCount),
+            longest: board.longest,
+          })}
+        />
+        <Fact
+          label={messages.factBoardHadToAdmit}
+          value={format(messages.wordsIncludingOneOf, {
+            words: countOf(messages, 'words', config.wMin),
+            ceiling: config.ceilingMin,
+          })}
+        />
+        <Fact
+          label={messages.gameLanguage}
+          value={format(messages.dictionarySize, {
+            common: dictionary.commonSize,
+            full: dictionary.size,
+          })}
         />
       </dl>
 
-      <h2>What a word pays</h2>
+      <h2>{messages.whatAWordPays}</h2>
       <table className="nerd-table">
         <thead>
           <tr>
-            <th>letters</th>
-            <th>cost</th>
-            <th>points</th>
-            <th>flips</th>
-            <th>net</th>
+            <th>{messages.columnLetters}</th>
+            <th>{messages.columnCost}</th>
+            <th>{messages.columnPoints}</th>
+            <th>{messages.columnFlips}</th>
+            <th>{messages.columnNet}</th>
           </tr>
         </thead>
         <tbody>
@@ -200,16 +240,25 @@ export function NerdPanel({
 
       <p className="nerd-note">
         {isCanonical(settings)
-          ? `Canonical ${settings.difficulty} rules.`
-          : 'Changed from the preset. Scores under custom rules will not be ranked.'}
+          ? format(messages.canonicalRules, {
+              difficulty: messages.difficultyNames[settings.difficulty],
+            })
+          : messages.customRules}
       </p>
-      <button type="button" className="btn btn-primary" onClick={onNewGame}>
-        {dirty ? 'Apply and start a new game' : 'New game'}
+      <button
+        type="button"
+        className="btn btn-primary"
+        onMouseDown={withoutStealingFocus}
+        onClick={onNewGame}
+      >
+        {dirty ? messages.applyAndStart : messages.newGame}
       </button>
-      {dirty ? <p className="nerd-note">Changes take effect on the next game.</p> : null}
+      {dirty ? <p className="nerd-note">{messages.changesNextGame}</p> : null}
       <p className="nerd-note nerd-dim">
-        Presets:{' '}
-        {DIFFICULTY_NAMES.map((d) => `${d} ${String(DIFFICULTIES[d].initialRounds)}r`).join('  ')}
+        {messages.presets}{' '}
+        {DIFFICULTY_NAMES.map(
+          (d) => `${messages.difficultyNames[d]} ${String(DIFFICULTIES[d].initialRounds)}r`,
+        ).join('  ')}
       </p>
     </aside>
   )
@@ -252,11 +301,13 @@ function Choice<T extends string>({
   label,
   value,
   options,
+  name,
   onChange,
 }: {
   label: string
   value: T
   options: readonly T[]
+  name: (option: T) => string
   onChange: (value: T) => void
 }): React.JSX.Element {
   return (
@@ -270,7 +321,7 @@ function Choice<T extends string>({
       >
         {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {name(option)}
           </option>
         ))}
       </select>

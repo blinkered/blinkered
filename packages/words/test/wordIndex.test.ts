@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ENGLISH } from '@blinkered/engine'
-import { MAX_SOLVABLE_TILES, anagramKey, buildIndex } from '../src/index.js'
+import { MAX_SOLVABLE_TILES, anagramKey, buildIndex, buildTieredIndex } from '../src/index.js'
 import { DIGRAPHS, WORDS } from './fixtures.js'
 
 const index = buildIndex(WORDS, ENGLISH)
@@ -62,5 +62,23 @@ describe('profile', () => {
   it('refuses a board too large to solve by enumeration', () => {
     const tooMany = Array.from({ length: MAX_SOLVABLE_TILES + 1 }, () => 'A')
     expect(() => index.profile(tooMany, 3)).toThrow(RangeError)
+  })
+})
+
+describe('buildTieredIndex', () => {
+  // ATONES is a word but not a common one, so it earns credit and does not help a board
+  // clear the word floor. That split is the whole reason a shipped list has two tiers.
+  const tiered = buildTieredIndex(WORDS, ['AT', 'ATE', 'EAT', 'TEA'], ENGLISH)
+
+  it('accepts the full list, so an unusual word still scores', () => {
+    expect(tiered.has('ATONES')).toBe(true)
+    expect(tiered.size).toBe(WORDS.length)
+  })
+
+  it('counts only the common tier, so a board is solvable from words people know', () => {
+    expect(tiered.commonSize).toBe(4)
+    // The letters admit ATE, EAT and TEA from the common tier, and SEAT and EAST besides.
+    expect(tiered.profile([...'SEAT'], 3)).toEqual({ count: 3, longest: 3 })
+    expect(buildIndex(WORDS, ENGLISH).profile([...'SEAT'], 3)).toEqual({ count: 5, longest: 4 })
   })
 })

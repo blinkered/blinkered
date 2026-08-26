@@ -1,0 +1,115 @@
+import type { Messages } from '../messages.js'
+
+/**
+ * Finnish. Counts take the partitive singular, which is why the plural forms read `2 sanaa`
+ * rather than `2 sanat`: `Intl.PluralRules` calls that `other` and it is not a plural at all.
+ */
+export const fi: Messages = {
+  tag: 'fi',
+
+  readingDictionary: 'Luetaan sanakirjaa…',
+  noWordList: 'Ei sanalistaa kielelle ”{language}”. Rakenna se:  pnpm dictionary build',
+  emptyWordList: 'Sanalista kielelle ”{language}” on tyhjä.',
+
+  flips: 'siirrot',
+  score: 'pisteet',
+  words: 'sanat',
+  round: 'kierros',
+  ticksLeftLabel: 'Kierroksella jäljellä oleva aika',
+  typeAWord: 'kirjoita sana',
+
+  boardOfTiles: 'Pelilauta, {n} laattaa',
+  faceDown: 'nurin',
+  spentTile: 'käytetty laatta',
+  hiddenWhilePaused: 'piilotettu tauon ajaksi',
+  letterInWord: '{letter}, sanan {position}. kirjain',
+
+  completeWord: 'Hyväksy sana',
+  reset: 'Tyhjennä',
+  pause: 'Tauko',
+  resume: 'Jatka',
+  newGame: 'Uusi peli',
+  paused: 'Tauolla',
+  outOfFlips: 'Siirrot loppuivat',
+  finalResult: '{score} pistettä, {words} {rounds}',
+  playAgain: 'Pelaa uudelleen',
+
+  lettersSelect: 'kirjaimet valitsevat',
+  clearsEvery: 'poistaa kaikki valitut {letter}-kirjaimet',
+  undoLastLetter: 'peruu viimeisen kirjaimen',
+  noWordsYet: 'Ei vielä sanoja.',
+
+  wordAccepted: '{word}  +{points} pistettä, +{flips} siirtoa',
+  wordRejected: '{word}  {reason}',
+  reasonDuplicate: 'jo löydetty',
+  reasonTooShort: 'liian lyhyt',
+  reasonNotAWord: 'ei ole sana',
+  noSuchLetterUp: 'ei {letter}-kirjainta näkyvissä',
+  nothingUp: 'ei mitään näkyvissä',
+  shuffled: 'sekoitettu',
+  shuffledAndBilled: 'sekoitettu, veloitettiin {flips} käyttämätöntä siirtoa',
+
+  gameLanguage: 'kieli',
+  interfaceLanguage: 'käyttöliittymä',
+  dictionarySize: '{common} yleistä / {full} sanaa',
+
+  nerdMode: 'asiantuntijatila',
+  rules: 'Säännöt',
+  difficulty: 'vaikeustaso',
+  difficultyNames: { easy: 'helppo', medium: 'normaali', hard: 'vaikea', insane: 'raaka' },
+  tiles: 'laatat (N)',
+  secondsPerTick: 'sekuntia / askel',
+  holdTicks: 'pitoaskeleet',
+  minWord: 'lyhin sana',
+  startingFlips: 'siirrot alussa',
+  wordCompleteMode: 'sana valmis',
+  wordCompleteNames: { shuffle: 'sekoita', spend: 'kuluta', keep: 'säilytä' },
+  flipEconomy: 'siirtotalous',
+  flipEconomyNames: {
+    none: 'ei mitään',
+    perLetter: 'kirjainta kohti',
+    fibonacci: 'fibonacci',
+    overMinimum: 'yli minimin',
+  },
+  repeatedLetterKey: 'toistuvan kirjaimen näppäin',
+  keySchemeNames: { cycle: 'kierrätä', advance: 'edistä' },
+  keySchemeHelp: {
+    cycle:
+      'A ottaa seuraavan vapaan A:n, ja kun kaikki ovat sanassa, se poistaa ne. ' +
+      'Vaihto+A poistaa ne myös.',
+    advance: 'A ottaa seuraavan vapaan A:n. Vaihto+A poistaa sanasta kaikki A:t.',
+  },
+
+  whatThatMeans: 'Mitä se tarkoittaa',
+  factRound: 'kierros',
+  factWholeBoardUp: 'koko lauta näkyvissä',
+  factRoundCosts: 'kierros kustantaa',
+  factFlipsBuy: 'aloitussiirrot riittävät',
+  factThisBoard: 'tämä lauta',
+  factBoardHadToAdmit: 'laudan oli sallittava',
+  ticksAndSeconds: '{ticks}, {seconds}',
+  wordsLongest: '{words}, pisin {longest}',
+  wordsIncludingOneOf: '{words}, joista yksi {ceiling} kirjaimen',
+  scorelessRounds: '{rounds} ilman pisteitä',
+
+  whatAWordPays: 'Mitä sana tuottaa',
+  columnLetters: 'kirjaimet',
+  columnCost: 'hinta',
+  columnPoints: 'pisteet',
+  columnFlips: 'siirrot',
+  columnNet: 'netto',
+
+  canonicalRules: 'Viralliset {difficulty}-säännöt.',
+  customRules: 'Muutettu esiasetuksesta. Omilla säännöillä saatuja tuloksia ei sijoiteta.',
+  applyAndStart: 'Ota käyttöön ja aloita uusi peli',
+  changesNextGame: 'Muutokset vaikuttavat seuraavaan peliin.',
+  presets: 'Esiasetukset:',
+
+  plurals: {
+    words: { one: '{n} sana', other: '{n} sanaa' },
+    rounds: { one: '{n} kierros', other: '{n} kierrosta' },
+    flips: { one: '{n} siirto', other: '{n} siirtoa' },
+    ticks: { one: '{n} askel', other: '{n} askelta' },
+    points: { one: '{n} piste', other: '{n} pistettä' },
+  },
+}

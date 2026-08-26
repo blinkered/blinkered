@@ -1,0 +1,112 @@
+import type { Messages } from '../messages.js'
+
+/** Swedish. `drag` for flips: a move you spend, and the same word in every Swedish board game. */
+export const sv: Messages = {
+  tag: 'sv',
+
+  readingDictionary: 'Läser ordlistan…',
+  noWordList: 'Ingen ordlista för ”{language}”. Bygg en:  pnpm dictionary build',
+  emptyWordList: 'Ordlistan för ”{language}” är tom.',
+
+  flips: 'drag',
+  score: 'poäng',
+  words: 'ord',
+  round: 'omgång',
+  ticksLeftLabel: 'Återstående tid i omgången',
+  typeAWord: 'skriv ett ord',
+
+  boardOfTiles: 'Bräde med {n} brickor',
+  faceDown: 'nedåtvänd',
+  spentTile: 'förbrukad bricka',
+  hiddenWhilePaused: 'dold under pausen',
+  letterInWord: '{letter}, bokstav {position} i ordet',
+
+  completeWord: 'Lämna in ordet',
+  reset: 'Rensa',
+  pause: 'Pausa',
+  resume: 'Fortsätt',
+  newGame: 'Nytt spel',
+  paused: 'Pausat',
+  outOfFlips: 'Inga drag kvar',
+  finalResult: '{score} poäng på {words} under {rounds}',
+  playAgain: 'Spela igen',
+
+  lettersSelect: 'bokstäver väljer',
+  clearsEvery: 'rensar alla valda {letter}',
+  undoLastLetter: 'ångrar sista bokstaven',
+  noWordsYet: 'Inga ord än.',
+
+  wordAccepted: '{word}  +{points} poäng, +{flips} drag',
+  wordRejected: '{word}  {reason}',
+  reasonDuplicate: 'redan hittat',
+  reasonTooShort: 'för kort',
+  reasonNotAWord: 'inget ord',
+  noSuchLetterUp: 'inget {letter} uppe',
+  nothingUp: 'inget uppe',
+  shuffled: 'blandat',
+  shuffledAndBilled: 'blandat, {flips} oanvända drag debiterade',
+
+  gameLanguage: 'språk',
+  interfaceLanguage: 'gränssnitt',
+  dictionarySize: '{common} vanliga av {full} ord',
+
+  nerdMode: 'expertläge',
+  rules: 'Regler',
+  difficulty: 'svårighet',
+  difficultyNames: { easy: 'lätt', medium: 'medel', hard: 'svårt', insane: 'brutalt' },
+  tiles: 'brickor (N)',
+  secondsPerTick: 'sekunder / takt',
+  holdTicks: 'hålltakter',
+  minWord: 'kortaste ord',
+  startingFlips: 'drag vid start',
+  wordCompleteMode: 'ordet klart',
+  wordCompleteNames: { shuffle: 'blanda', spend: 'förbruka', keep: 'behåll' },
+  flipEconomy: 'draghushållning',
+  flipEconomyNames: {
+    none: 'ingen',
+    perLetter: 'per bokstav',
+    fibonacci: 'fibonacci',
+    overMinimum: 'över minimum',
+  },
+  repeatedLetterKey: 'tangent för dubbel bokstav',
+  keySchemeNames: { cycle: 'växla', advance: 'gå vidare' },
+  keySchemeHelp: {
+    cycle:
+      'A tar nästa lediga A, och när alla är i ordet rensar det dem. ' +
+      'Skift+A rensar dem också.',
+    advance: 'A tar nästa lediga A. Skift+A rensar varje A ur ordet.',
+  },
+
+  whatThatMeans: 'Vad det betyder',
+  factRound: 'en omgång',
+  factWholeBoardUp: 'hela brädet uppe',
+  factRoundCosts: 'en omgång kostar',
+  factFlipsBuy: 'startdragen räcker till',
+  factThisBoard: 'detta bräde',
+  factBoardHadToAdmit: 'brädet måste tillåta',
+  ticksAndSeconds: '{ticks}, {seconds}',
+  wordsLongest: '{words}, längsta {longest}',
+  wordsIncludingOneOf: '{words} varav ett på {ceiling}',
+  scorelessRounds: '{rounds} utan poäng',
+
+  whatAWordPays: 'Vad ett ord ger',
+  columnLetters: 'bokstäver',
+  columnCost: 'kostnad',
+  columnPoints: 'poäng',
+  columnFlips: 'drag',
+  columnNet: 'netto',
+
+  canonicalRules: 'Officiella regler för {difficulty}.',
+  customRules: 'Ändrat från förvalet. Poäng med egna regler rankas inte.',
+  applyAndStart: 'Tillämpa och starta nytt spel',
+  changesNextGame: 'Ändringar gäller från nästa spel.',
+  presets: 'Förval:',
+
+  plurals: {
+    words: { one: '{n} ord', other: '{n} ord' },
+    rounds: { one: '{n} omgång', other: '{n} omgångar' },
+    flips: { one: '{n} drag', other: '{n} drag' },
+    ticks: { one: '{n} takt', other: '{n} takter' },
+    points: { one: '{n} poäng', other: '{n} poäng' },
+  },
+}

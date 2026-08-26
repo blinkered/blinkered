@@ -127,3 +127,20 @@ describe('defaultWMin', () => {
     expect(defaultWMin(4, 20)).toBe(1)
   })
 })
+
+describe('defaultWMin and the language', () => {
+  it('scales the floor by how rich the language is', () => {
+    // A Russian board admits under half what an Italian one does at the same size, so one
+    // floor for every language would be unreachable in Russian and free in Italian.
+    expect(defaultWMin(12, 3, 'it')).toBeGreaterThan(defaultWMin(12, 3, 'en'))
+    expect(defaultWMin(12, 3, 'ru')).toBeLessThan(defaultWMin(12, 3, 'en'))
+  })
+
+  it('treats an unmeasured language like the one the curve was measured on', () => {
+    expect(defaultWMin(12, 3, 'xx')).toBe(defaultWMin(12, 3, 'en'))
+  })
+
+  it('reaches the floor through configFor, so the game gets the scaled one', () => {
+    expect(configFor('medium', { language: 'ru' }).wMin).toBe(defaultWMin(12, 3, 'ru'))
+  })
+})
