@@ -1,4 +1,4 @@
-# Flippy
+# Blinkered
 
 A word game where the letters hide from you.
 
@@ -86,7 +86,7 @@ from a test without a timer or a browser.
 
 ## Licence
 
-Code is Apache-2.0; see [LICENSE](LICENSE). The **Flippy** name and any logo are
+Code is Apache-2.0; see [LICENSE](LICENSE). The **Blinkered** name and any logo are
 reserved and not covered by it: fork the game freely, but ship it under your own name.
 
 Word lists are third-party data with their own licences, kept out of the code licence

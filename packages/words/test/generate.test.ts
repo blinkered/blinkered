@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { ENGLISH, configFor, letterFaults } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
+import { ENGLISH, configFor, letterFaults } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
 import { buildIndex, generateBoard, readWordList } from '../src/index.js'
 
 /** The placeholder list, which is what the harness plays against today. */

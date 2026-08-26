@@ -1,6 +1,6 @@
 # Word list data
 
-Nothing here yet. Flippy currently plays against `/usr/share/dict/words` as a
+Nothing here yet. Blinkered currently plays against `/usr/share/dict/words` as a
 placeholder, which is not shipped.
 
 ## Rules for adding a list

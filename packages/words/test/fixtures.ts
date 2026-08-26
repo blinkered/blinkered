@@ -1,5 +1,5 @@
-import { ENGLISH } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
+import { ENGLISH } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
 
 /** A tiny alphabet with a digraph letter, to prove tiles are not characters. */
 export const DIGRAPHS: Alphabet = {

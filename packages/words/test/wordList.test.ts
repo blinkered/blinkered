@@ -2,8 +2,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
-import { ENGLISH, stripDiacritics, segmentBy } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
+import { ENGLISH, stripDiacritics, segmentBy } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
 import { normaliseWordList, readWordList } from '../src/index.js'
 
 describe('normaliseWordList', () => {
@@ -59,7 +59,7 @@ describe('normaliseWordList', () => {
 })
 
 describe('readWordList', () => {
-  const directory = mkdtempSync(join(tmpdir(), 'flippy-words-'))
+  const directory = mkdtempSync(join(tmpdir(), 'blinkered-words-'))
   afterAll(() => {
     rmSync(directory, { recursive: true, force: true })
   })

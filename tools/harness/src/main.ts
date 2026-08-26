@@ -1,4 +1,4 @@
-import { configFor, createGame, keyToEvent, reduce, tileAt } from '@flippy/engine'
+import { configFor, createGame, keyToEvent, reduce, tileAt } from '@blinkered/engine'
 import type {
   Difficulty,
   Effect,
@@ -9,9 +9,9 @@ import type {
   KeyPress,
   KeyScheme,
   WordCompleteMode,
-} from '@flippy/engine'
-import { alphabetFor } from '@flippy/engine'
-import { buildIndex, generateBoard, readWordList } from '@flippy/words'
+} from '@blinkered/engine'
+import { alphabetFor } from '@blinkered/engine'
+import { buildIndex, generateBoard, readWordList } from '@blinkered/words'
 import { CLEAR_SCREEN, render, summary } from './render.js'
 
 const DIFFICULTIES: readonly Difficulty[] = ['easy', 'medium', 'hard', 'insane']
@@ -20,7 +20,7 @@ const ECONOMIES: readonly FlipEconomy[] = ['none', 'perLetter', 'fibonacci', 'ov
 const SCHEMES: readonly KeyScheme[] = ['cycle', 'modifier']
 
 const USAGE = `
-Flippy, in a terminal. Phase 1 rules harness.
+Blinkered, in a terminal. Phase 1 rules harness.
 
   pnpm play [options]
 

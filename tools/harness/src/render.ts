@@ -1,5 +1,5 @@
-import { selectedLetters } from '@flippy/engine'
-import type { GameState, KeyScheme } from '@flippy/engine'
+import { selectedLetters } from '@blinkered/engine'
+import type { GameState, KeyScheme } from '@blinkered/engine'
 import { columnsFor } from './board.js'
 
 const ESC = '\u001b'
@@ -43,7 +43,7 @@ export function render(state: GameState, view: View): string {
   const word = selectedLetters(state)
 
   return [
-    `${BOLD}FLIPPY${RESET}  ${DIM}${rules}${RESET}`,
+    `${BOLD}BLINKERED${RESET}  ${DIM}${rules}${RESET}`,
     '',
     hud,
     timerBar(state),

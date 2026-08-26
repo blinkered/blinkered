@@ -1,4 +1,4 @@
-# Flippy: Build Plan
+# Blinkered: Build Plan
 
 A word game where the letters hide from you.
 
@@ -216,7 +216,7 @@ Settled so far: `spend` by playing it. Minimum 3 and `fibonacci` remain hypothes
 pnpm workspaces, TypeScript strict everywhere, one lint/format config at the root.
 
 ```
-flippy/
+blinkered/
   packages/
     engine/       pure TS state machine. Zero dependencies. No clock, no RNG calls, no DOM
     words/        word lists, anagram solver, board generator, weight derivation
@@ -336,7 +336,7 @@ Hono on Node, deployed to Fly or Railway, Postgres on Neon. Auth.js (`@auth/core
 Two session mechanisms, because web and native genuinely differ:
 
 - **Web**: standard Auth.js httpOnly, Secure, SameSite=Lax session cookie. The browser never holds a token in JavaScript
-- **Native**: `@capacitor/browser` opens the API's sign-in URL in `ASWebAuthenticationSession` (iOS) or a Custom Tab (Android). The callback redirects to a custom scheme, `flippy://auth/callback`, carrying a one-time code. The app exchanges it for a session token and stores that in Keychain/Keystore via a secure-storage plugin, never in WebView `localStorage`. API calls then use `Authorization: Bearer`
+- **Native**: `@capacitor/browser` opens the API's sign-in URL in `ASWebAuthenticationSession` (iOS) or a Custom Tab (Android). The callback redirects to a custom scheme, `blinkered://auth/callback`, carrying a one-time code. The app exchanges it for a session token and stores that in Keychain/Keystore via a secure-storage plugin, never in WebView `localStorage`. API calls then use `Authorization: Bearer`
 
 This dual path is the fiddliest work in the whole project and deserves its own spike.
 
@@ -349,7 +349,7 @@ GET  /v1/me/games?cursor= -> paginated history
 GET  /v1/leaderboards/:difficulty/:period                          (phase 6)
 ```
 
-Scores are never accepted from the client. `finish` imports `@flippy/engine`, replays the event log against the server-generated seed, and stores the result it computed itself. It also rejects implausible logs: taps on tiles that were not revealed yet, more events than the tick count allows, superhuman inter-tap intervals. Per-user rate limits and a hard cap on log length.
+Scores are never accepted from the client. `finish` imports `@blinkered/engine`, replays the event log against the server-generated seed, and stores the result it computed itself. It also rejects implausible logs: taps on tiles that were not revealed yet, more events than the tick count allows, superhuman inter-tap intervals. Per-user rate limits and a hard cap on log length.
 
 Offline play still works. The client generates its own seed when it cannot reach the API, and such games are stored flagged `unverified_seed`: they appear in personal history but are never leaderboard-eligible.
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ENGLISH } from '@flippy/engine'
+import { ENGLISH } from '@blinkered/engine'
 import { MAX_SOLVABLE_TILES, anagramKey, buildIndex } from '../src/index.js'
 import { DIGRAPHS, WORDS } from './fixtures.js'
 

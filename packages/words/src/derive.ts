@@ -1,5 +1,5 @@
-import { drawLetters, letterFaults, seedRng } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
+import { drawLetters, letterFaults, seedRng } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
 import type { WordIndex } from './wordIndex.js'
 
 export interface DeriveOptions {

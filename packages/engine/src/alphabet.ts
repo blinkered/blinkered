@@ -116,7 +116,7 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = { [ENGLISH.id]: ENGLISH }
 
 export const DEFAULT_LANGUAGE = ENGLISH.id
 
-/** Every language Flippy can currently deal a board in. */
+/** Every language Blinkered can currently deal a board in. */
 export const ALPHABET_IDS: readonly string[] = Object.keys(ALPHABETS)
 
 export function alphabetFor(id: string): Alphabet {

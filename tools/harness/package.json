@@ -1,10 +1,10 @@
 {
-  "name": "@flippy/harness",
+  "name": "@blinkered/harness",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@flippy/engine": "workspace:*",
-    "@flippy/words": "workspace:*"
+    "@blinkered/engine": "workspace:*",
+    "@blinkered/words": "workspace:*"
   }
 }

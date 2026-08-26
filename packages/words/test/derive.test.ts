@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { ENGLISH } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
+import { ENGLISH } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
 import { CALIBRATE_DEFAULTS, buildIndex, calibrate, deriveWeights } from '../src/index.js'
 import { WORDS } from './fixtures.js'
 

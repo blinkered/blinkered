@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import type { Alphabet } from '@flippy/engine'
+import type { Alphabet } from '@blinkered/engine'
 
 export interface WordListOptions {
   /** Shortest word worth keeping. Two-letter words are dictionary trivia; see PLAN 1.9. */

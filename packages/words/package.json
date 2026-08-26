@@ -1,5 +1,5 @@
 {
-  "name": "@flippy/words",
+  "name": "@blinkered/words",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,6 +12,6 @@
     }
   },
   "dependencies": {
-    "@flippy/engine": "workspace:*"
+    "@blinkered/engine": "workspace:*"
   }
 }

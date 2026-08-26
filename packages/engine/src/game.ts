@@ -5,7 +5,7 @@ import type { Dictionary, Effect, GameConfig, GameEvent, GameState, Tile } from 
 
 export interface NewGame {
   readonly config: GameConfig
-  /** Exactly config.n letters, supplied by @flippy/words so the board is known solvable. */
+  /** Exactly config.n letters, supplied by @blinkered/words so the board is known solvable. */
   readonly letters: readonly string[]
   readonly seed: number
 }

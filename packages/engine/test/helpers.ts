@@ -6,7 +6,7 @@ export function dictionaryOf(...words: readonly string[]): Dictionary {
   return { has: (word) => set.has(word) }
 }
 
-/** Enough of the language to exercise the rules without depending on @flippy/words. */
+/** Enough of the language to exercise the rules without depending on @blinkered/words. */
 export const WORDS = dictionaryOf(
   'AT',
   'AS',

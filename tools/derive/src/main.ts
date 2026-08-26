@@ -1,6 +1,6 @@
-import { ENGLISH, alphabetFor } from '@flippy/engine'
-import type { Alphabet } from '@flippy/engine'
-import { buildIndex, calibrate, deriveWeights, readWordList } from '@flippy/words'
+import { ENGLISH, alphabetFor } from '@blinkered/engine'
+import type { Alphabet } from '@blinkered/engine'
+import { buildIndex, calibrate, deriveWeights, readWordList } from '@blinkered/words'
 
 const USAGE = `
 Derives a language's draw weights and word-count calibration from its own word list, so the

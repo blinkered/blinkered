@@ -5,12 +5,12 @@ export interface GameConfig {
   /** Real seconds per tick. The visible timer counts ticks, not seconds. */
   readonly speedMultiplier: number
   readonly initialFlips: number
-  /** Minimum common-tier words a generated board must admit. Enforced by @flippy/words. */
+  /** Minimum common-tier words a generated board must admit. Enforced by @blinkered/words. */
   readonly wMin: number
   /**
    * Shortest acceptable ceiling: a generated board must admit at least one word this long.
    * Without it a board can hold plenty of words and still be unprofitable, since under the
-   * fibonacci economy a five-letter word only breaks even. Enforced by @flippy/words.
+   * fibonacci economy a five-letter word only breaks even. Enforced by @blinkered/words.
    */
   readonly ceilingMin: number
   readonly minWordLength: number

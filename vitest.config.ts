@@ -8,8 +8,8 @@ export default defineConfig({
   // instruments the code it exercises and no build is needed to run the suite.
   resolve: {
     alias: {
-      '@flippy/engine': source('./packages/engine/src/index.ts'),
-      '@flippy/words': source('./packages/words/src/index.ts'),
+      '@blinkered/engine': source('./packages/engine/src/index.ts'),
+      '@blinkered/words': source('./packages/words/src/index.ts'),
     },
   },
   test: {
