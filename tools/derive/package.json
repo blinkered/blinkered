@@ -1,0 +1,10 @@
+{
+  "name": "@flippy/derive",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@flippy/engine": "workspace:*",
+    "@flippy/words": "workspace:*"
+  }
+}
