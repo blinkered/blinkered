@@ -8,6 +8,10 @@ simple as a deployment gets.
 ## The short version
 
 ```
+# once: the registry credentials, in the namespace you are deploying to
+kubectl create secret docker-registry ghcr \
+  --docker-server=ghcr.io --docker-username=<user> --docker-password=<read:packages token>
+
 git push                          # CI builds and pushes ghcr.io/blinkered/blinkered
 kubectl apply -f deploy/k8s/      # once, or after editing a manifest
 kubectl set image deployment/blinkered web=ghcr.io/blinkered/blinkered:sha-<short>
@@ -38,13 +42,12 @@ weeks later comes up on different code than its neighbours.
 
 ## Letting the cluster pull it
 
-A GHCR package is **private** by default, even from a public repository. Two ways:
+The package is **private**, and stays private: the Tight Line org does not permit public
+packages. So the cluster needs credentials, which is one secret per namespace.
 
-**Make the package public** (simplest, and this is a game whose source is already public). On
-GitHub: the package page, Package settings, Change visibility, Public. Then nothing else is
-needed.
-
-**Or give the cluster a pull secret.** Use a personal access token with `read:packages`:
+Use a **classic** personal access token with `read:packages` and nothing else. It only ever
+pulls, so it needs no other scope, and giving it one would be handing the cluster more than the
+job requires.
 
 ```
 kubectl create secret docker-registry ghcr \
@@ -53,12 +56,32 @@ kubectl create secret docker-registry ghcr \
   --docker-password=<token-with-read:packages>
 ```
 
-and add it to `deploy/k8s/deployment.yaml`, under `spec.template.spec`:
+`deployment.yaml` already references it:
 
 ```yaml
 imagePullSecrets:
   - name: ghcr
 ```
+
+Two things that will bite otherwise:
+
+- **The secret must live in the same namespace as the deployment.** An `imagePullSecrets` entry
+  is a name, not a reference across namespaces, and a missing one shows up as
+  `ImagePullBackOff` with `401 Unauthorized` rather than as anything about secrets.
+- **A token with an expiry will stop pulls the day it lapses**, and running pods will keep
+  serving while new ones fail, so it looks like a scheduling problem rather than an auth one.
+  Either set no expiry or put the rotation in a calendar.
+
+To check the credentials without deploying anything:
+
+```
+echo <token> | docker login ghcr.io -u <github-user> --password-stdin
+docker pull ghcr.io/blinkered/blinkered:latest
+```
+
+**If the org policy is ever relaxed**, Organization Settings, Packages, Package creation, tick
+Public, then the package's own settings, Danger Zone, Change visibility. Anonymous pulls then
+work and the `imagePullSecrets` block can go.
 
 ## The manifests
 
