@@ -1,4 +1,4 @@
-import { alphabetFor } from './alphabet.js'
+import { alphabetFor } from './languages.js'
 import type { GameState, Tile } from './types.js'
 
 /** A tile can be selected only while face up and unspent. */

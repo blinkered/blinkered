@@ -1,4 +1,4 @@
-import { DEFAULT_LANGUAGE } from './alphabet.js'
+import { DEFAULT_LANGUAGE } from './languages.js'
 import { at } from './invariant.js'
 import type { Difficulty, GameConfig } from './types.js'
 

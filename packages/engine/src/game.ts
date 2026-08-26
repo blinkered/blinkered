@@ -1,4 +1,4 @@
-import { alphabetFor } from './alphabet.js'
+import { alphabetFor } from './languages.js'
 import { reduce, revealNext, settle, type Reduction } from './reducer.js'
 import { seedRng } from './rng.js'
 import type { Dictionary, Effect, GameConfig, GameEvent, GameState, Tile } from './types.js'

@@ -1,4 +1,5 @@
-import { ENGLISH, type Alphabet } from './alphabet.js'
+import type { Alphabet } from './alphabet.js'
+import { ENGLISH } from './languages.js'
 
 /**
  * Letter-shape rules a board must satisfy, independent of any dictionary. The word-count and

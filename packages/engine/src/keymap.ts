@@ -24,7 +24,16 @@ export interface KeyPress {
   readonly modified?: boolean
 }
 
-const LETTER = /^[a-z]$/i
+/**
+ * Any single-character key that is not punctuation or a control name.
+ *
+ * Deliberately not a Latin range: Cyrillic, Croatian and Swedish letters are all keys a
+ * player will press, and the keymap has no business deciding which characters count as
+ * letters in a language it knows nothing about. `letterAvailability` folds the key through
+ * the game's alphabet and reports no-such-letter if it is not on the board, which is the
+ * same answer an unknown character deserves.
+ */
+const LETTER = /^\p{L}$/u
 
 /**
  * Translates a keystroke into an intent, or null when the key means nothing here.

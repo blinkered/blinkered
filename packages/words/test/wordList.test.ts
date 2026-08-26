@@ -48,6 +48,7 @@ describe('normaliseWordList', () => {
     // The Polish case: the accented forms get their own tiles, so nothing is folded away.
     const polishish: Alphabet = {
       id: 'test-pl',
+      endonym: 'Polishish',
       weights: { L: 4, Ł: 2, A: 5, D: 3, N: 3, O: 4, Ń: 1 },
       vowels: ['A', 'O'],
       rareLetters: ['Ń'],

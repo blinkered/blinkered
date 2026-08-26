@@ -6,14 +6,32 @@ export { wordScore, flipReward } from './score.js'
 export { drawLetters } from './letters.js'
 export { letterFaults, type LetterFault } from './letterFaults.js'
 export {
-  ALPHABET_IDS,
-  DEFAULT_LANGUAGE,
-  ENGLISH,
-  alphabetFor,
+  byCodePoint,
+  folder,
   segmentBy,
   stripDiacritics,
   type Alphabet,
+  type FoldOptions,
 } from './alphabet.js'
+export {
+  ALPHABET_IDS,
+  CROATIAN,
+  DEFAULT_LANGUAGE,
+  DUTCH,
+  ENGLISH,
+  FINNISH,
+  FRENCH,
+  GERMAN,
+  INDONESIAN,
+  ITALIAN,
+  MALAY,
+  NORWEGIAN,
+  PORTUGUESE,
+  RUSSIAN,
+  SPANISH,
+  SWEDISH,
+  alphabetFor,
+} from './languages.js'
 export {
   DEFAULT_BOARD_SIZE,
   DIFFICULTIES,

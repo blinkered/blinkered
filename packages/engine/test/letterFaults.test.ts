@@ -47,6 +47,7 @@ describe('letterFaults', () => {
     // A made-up alphabet: no rare letters at all, and X is the letter that needs company.
     const invented: Alphabet = {
       id: 'test',
+      endonym: 'Test',
       weights: { A: 1, X: 1, Y: 1, Z: 1 },
       vowels: ['A'],
       rareLetters: [],

@@ -13,8 +13,22 @@ describe('keys that mean the same thing in every scheme', () => {
     })
 
     it(`ignores keys that are not letters under ${scheme}`, () => {
-      for (const key of [' ', '1', 'F1', 'Shift', 'ArrowLeft', 'Tab', '-', 'å']) {
+      for (const key of [' ', '1', 'F1', 'Shift', 'ArrowLeft', 'Tab', '-', '.']) {
         expect(keyToEvent({ key }, scheme)).toBeNull()
+      }
+    })
+
+    it(`accepts letters outside the Latin alphabet under ${scheme}`, () => {
+      // A Cyrillic, Croatian or Swedish keyboard produces keys a Latin-only test rejects.
+      // Whether the letter is on the board is the reducer's business, not the keymap's.
+      const cases: readonly [string, string][] = [
+        ['я', 'Я'],
+        ['č', 'Č'],
+        ['ö', 'Ö'],
+        ['ñ', 'Ñ'],
+      ]
+      for (const [key, letter] of cases) {
+        expect(keyToEvent({ key }, scheme)).toMatchObject({ letter })
       }
     })
 

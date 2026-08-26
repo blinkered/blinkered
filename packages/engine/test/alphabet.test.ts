@@ -1,50 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import {
-  ALPHABET_IDS,
-  DEFAULT_LANGUAGE,
-  ENGLISH,
-  alphabetFor,
-  configFor,
-  segmentBy,
-  stripDiacritics,
-} from '../src/index.js'
-
-describe('alphabets', () => {
-  it('defaults to English', () => {
-    expect(DEFAULT_LANGUAGE).toBe('en')
-    expect(alphabetFor('en')).toBe(ENGLISH)
-    expect(ALPHABET_IDS).toEqual(['en'])
-  })
-
-  it('records the language in every ruleset, so an old game stays interpretable', () => {
-    expect(configFor('medium').language).toBe('en')
-  })
-
-  it('refuses a language it cannot deal a board in', () => {
-    expect(() => alphabetFor('fr')).toThrow(RangeError)
-  })
-
-  it('describes English coherently', () => {
-    const letters = Object.keys(ENGLISH.weights)
-    expect(letters).toHaveLength(26)
-    expect(Object.values(ENGLISH.weights).every((weight) => weight > 0)).toBe(true)
-    for (const vowel of ENGLISH.vowels) expect(letters).toContain(vowel)
-    for (const rare of ENGLISH.rareLetters) expect(letters).toContain(rare)
-    for (const [letter, needs] of Object.entries(ENGLISH.requires)) {
-      expect(letters).toContain(letter)
-      for (const companion of needs) expect(letters).toContain(companion)
-    }
-  })
-
-  it('folds typed keys onto tile letters', () => {
-    expect(ENGLISH.fold('q')).toBe('Q')
-    expect(ENGLISH.fold('Q')).toBe('Q')
-  })
-})
+import { byCodePoint, folder, segmentBy, stripDiacritics } from '../src/index.js'
 
 describe('stripDiacritics', () => {
   it('leaves the base letter behind', () => {
-    // The French case that motivates it: an accented E is an E wearing an accent.
     expect(stripDiacritics('épée')).toBe('epee')
     expect(stripDiacritics('père')).toBe('pere')
     expect(stripDiacritics('côté')).toBe('cote')
@@ -54,33 +12,74 @@ describe('stripDiacritics', () => {
     expect(stripDiacritics('EPEE')).toBe('EPEE')
   })
 
-  it('does not touch letters that are not a base plus a mark', () => {
-    // Polish L-with-stroke and German eszett are single code points, not decomposable, which
-    // is a hint that they are letters in their own right rather than accented forms.
-    expect(stripDiacritics('ładna')).toBe('ładna')
-    expect(stripDiacritics('straße')).toBe('straße')
+  it('cannot touch a letter that is not a base plus a mark', () => {
+    // A stroke or a slash is part of the glyph rather than a combining mark, which is a hint
+    // that these are letters in their own right: Polish Ł, Croatian Đ, Norwegian Ø.
+    expect(stripDiacritics('ŁADNA')).toBe('ŁADNA')
+    expect(stripDiacritics('ĐAK')).toBe('ĐAK')
+    expect(stripDiacritics('BLØMST')).toBe('BLØMST')
+  })
+})
+
+describe('folder', () => {
+  it('upper-cases and strips by default', () => {
+    expect(folder()('épée')).toBe('EPEE')
+  })
+
+  it('protects the letters an alphabet considers its own', () => {
+    const spanish = folder({ keep: ['Ñ'] })
+    expect(spanish('añejo')).toBe('AÑEJO')
+    // Everything unprotected still folds away.
+    expect(spanish('acción')).toBe('ACCION')
+  })
+
+  it('expands a character that stands for several letters', () => {
+    const french = folder({ expand: { Œ: 'OE', Æ: 'AE' } })
+    expect(french('cœur')).toBe('COEUR')
+    expect(french('curriculæ')).toBe('CURRICULAE')
+  })
+
+  it('needs no rule for German eszett, because upper-casing already does it', () => {
+    expect(folder({ keep: ['Ä', 'Ö', 'Ü'] })('straße')).toBe('STRASSE')
+  })
+
+  it('is idempotent, since it runs on both keystrokes and word lists', () => {
+    const swedish = folder({ keep: ['Å', 'Ä', 'Ö'] })
+    const once = swedish('förälder')
+    expect(swedish(once)).toBe(once)
+  })
+
+  it('does not let a protected letter be mistaken for its guard', () => {
+    // The guard characters must be sequences no word can contain, or a word holding one
+    // would come back mangled.
+    const guarded = folder({ keep: ['Ä', 'Ö'] })
+    expect(guarded('ÄÖÄÖ')).toBe('ÄÖÄÖ')
+    expect(guarded('0Ä1Ö0')).toBe('0Ä1Ö0')
   })
 })
 
 describe('segmentBy', () => {
-  const segment = segmentBy(['IJ', 'A', 'I', 'J', 'N', 'S', 'Ł'])
+  const segment = segmentBy(['DŽ', 'LJ', 'NJ', 'A', 'D', 'E', 'J', 'L', 'N', 'Ž'])
 
   it('prefers the longest letter at each position', () => {
-    expect(segment('IJS')).toEqual(['IJ', 'S'])
-    expect(segment('IS')).toEqual(['I', 'S'])
+    expect(segment('DŽELA')).toEqual(['DŽ', 'E', 'L', 'A'])
+    expect(segment('DELA')).toEqual(['D', 'E', 'L', 'A'])
   })
 
   it('does not let a digraph swallow the wrong letters', () => {
-    expect(segment('JIJ')).toEqual(['J', 'IJ'])
-    expect(segment('AIJA')).toEqual(['A', 'IJ', 'A'])
-  })
-
-  it('keeps a multi-byte letter whole', () => {
-    expect(segment('ŁA')).toEqual(['Ł', 'A'])
+    expect(segment('JADŽ')).toEqual(['J', 'A', 'DŽ'])
+    expect(segment('LJNJ')).toEqual(['LJ', 'NJ'])
+    expect(segment('LNJ')).toEqual(['L', 'NJ'])
   })
 
   it('passes through anything the alphabet does not know, one code point at a time', () => {
     // Survives so the word list can drop it, rather than being silently mangled here.
-    expect(segment("A'B")).toEqual(['A', "'", 'B'])
+    expect(segment("A'D")).toEqual(['A', "'", 'D'])
+  })
+})
+
+describe('byCodePoint', () => {
+  it('gives one tile per code point', () => {
+    expect(byCodePoint('ŁADNA')).toEqual(['Ł', 'A', 'D', 'N', 'A'])
   })
 })

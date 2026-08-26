@@ -4,11 +4,13 @@
  * board acceptance and keyboard folding do.
  *
  * A tile holds a `string`, not a character, and word length is counted in tiles, so an
- * alphabet whose letters are digraphs (Dutch IJ, Hungarian SZ) needs no engine changes.
+ * alphabet whose letters are digraphs (Croatian LJ, NJ, DŽ) needs no engine change.
  */
 export interface Alphabet {
   /** BCP 47 language tag. Stored with every game, so an old result stays interpretable. */
   readonly id: string
+  /** The language's own name for itself, for a menu that a speaker can read. */
+  readonly endonym: string
   /** Draw weight per letter. Relative, so any scale works. */
   readonly weights: Readonly<Record<string, number>>
   /** Which of those letters count as vowels, for the vowel floor in a draw. */
@@ -21,25 +23,64 @@ export interface Alphabet {
    */
   readonly requires: Readonly<Record<string, readonly string[]>>
   /**
-   * Folds a typed key onto a tile letter. English upper-cases. A language with accents
-   * decides here whether typing `e` should reach an `É` tile.
+   * Folds a typed key onto a tile letter, and a dictionary entry onto tiles.
    *
-   * Deliberately not `toLocaleUpperCase`: Turkish maps `i` to `İ`, so a Turkish alphabet
-   * needs its own fold rather than a locale argument bolted onto this one.
+   * This is where a language's diacritic policy lives. French E-acute is an E wearing an
+   * accent, so it folds away and EPEE and PERE both play on plain E tiles. Croatian Č and
+   * Swedish Ö are letters in their own right, so they survive folding and get their own
+   * tiles. The difference is a fact about the alphabet, not about Unicode.
    */
   fold(key: string): string
   /**
    * Splits a word into tiles. One code point per tile for most alphabets; an alphabet with
-   * digraph letters needs greedy longest-match, which `segmentBy` builds. This is what makes
-   * word length a tile count rather than a character count all the way down to the word list.
+   * digraph letters needs greedy longest-match, which `segmentBy` builds.
    */
   segment(word: string): string[]
 }
 
 /**
+ * Drops diacritics, leaving the base letter. The whole transform for a language whose
+ * accented forms are not separate letters of its alphabet.
+ */
+export function stripDiacritics(text: string): string {
+  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '')
+}
+
+export interface FoldOptions {
+  /** Letters whose mark is part of the letter and must survive: Spanish Ñ, Swedish Ö. */
+  readonly keep?: readonly string[]
+  /** Characters standing in for several letters: French Œ becomes OE. */
+  readonly expand?: Readonly<Record<string, string>>
+}
+
+/**
+ * Builds a fold: upper-case, expand any stand-in characters, then drop the diacritics that
+ * are decoration while protecting the ones that are letters.
+ *
+ * Upper-casing does some of this already, and correctly: German eszett upper-cases to SS on
+ * its own, which is exactly how German word games spell it.
+ */
+export function folder(options: FoldOptions = {}): (key: string) => string {
+  const kept = options.keep ?? []
+  const expand = Object.entries(options.expand ?? {})
+  // Guard the protected letters behind characters no alphabet contains, strip, put them back.
+  const guards = kept.map((letter, index) => [letter, `\u0001${String(index)}\u0001`] as const)
+
+  return (key) => {
+    let text = key.toUpperCase()
+    for (const [from, to] of expand) text = text.split(from).join(to)
+    if (guards.length === 0) return stripDiacritics(text)
+    for (const [letter, guard] of guards) text = text.split(letter).join(guard)
+    text = stripDiacritics(text)
+    for (const [letter, guard] of guards) text = text.split(guard).join(letter)
+    return text
+  }
+}
+
+/**
  * Builds a greedy longest-match segmenter for an alphabet with multi-character letters, so
- * an IJ tile wins over an I tile at the same position. Anything the alphabet does not know
- * survives as a single code point, to be dropped later when the word list is filtered.
+ * a Croatian LJ tile wins over an L tile at the same position. Anything the alphabet does
+ * not know survives as a single code point, to be dropped when the word list is filtered.
  */
 export function segmentBy(letters: readonly string[]): (word: string) => string[] {
   const ordered = [...letters].sort((a, b) => b.length - a.length)
@@ -61,66 +102,5 @@ export function segmentBy(letters: readonly string[]): (word: string) => string[
   }
 }
 
-/**
- * Drops diacritics, leaving the base letter. This is the transform for a language whose
- * accented forms are not separate letters of its alphabet: in French an e-acute is an E
- * wearing an accent, so epee and pere both live on plain E tiles. Not for Polish or Turkish,
- * where the accented forms are letters in their own right and deserve their own tiles.
- */
-export function stripDiacritics(text: string): string {
-  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '')
-}
-
-export const ENGLISH: Alphabet = {
-  id: 'en',
-  // Derived from the word list by tools/derive, not copied from Scrabble. Scrabble's tile
-  // distribution follows letter frequency in running text; a board has to spell dictionary
-  // words, where C, L, S and P are far commoner and D, W and F rather less so.
-  weights: {
-    A: 9,
-    B: 2,
-    C: 5,
-    D: 3,
-    E: 10,
-    F: 1,
-    G: 2,
-    H: 3,
-    I: 9,
-    J: 1,
-    K: 1,
-    L: 6,
-    M: 3,
-    N: 7,
-    O: 8,
-    P: 3,
-    Q: 1,
-    R: 7,
-    S: 6,
-    T: 7,
-    U: 4,
-    V: 1,
-    W: 1,
-    X: 1,
-    Y: 2,
-    Z: 1,
-  },
-  vowels: ['A', 'E', 'I', 'O', 'U'],
-  rareLetters: ['J', 'K', 'Q', 'V', 'W', 'X', 'Z'],
-  requires: { Q: ['U'] },
-  fold: (key) => key.toUpperCase(),
-  // Every English letter is one code point, so the simple split is also the correct one.
-  segment: (word) => [...word],
-}
-
-const ALPHABETS: Readonly<Record<string, Alphabet>> = { [ENGLISH.id]: ENGLISH }
-
-export const DEFAULT_LANGUAGE = ENGLISH.id
-
-/** Every language Blinkered can currently deal a board in. */
-export const ALPHABET_IDS: readonly string[] = Object.keys(ALPHABETS)
-
-export function alphabetFor(id: string): Alphabet {
-  const alphabet = ALPHABETS[id]
-  if (!alphabet) throw new RangeError(`no alphabet for language ${id}`)
-  return alphabet
-}
+/** One code point per tile: correct for every alphabet without digraph letters. */
+export const byCodePoint = (word: string): string[] => [...word]

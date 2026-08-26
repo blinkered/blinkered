@@ -1,4 +1,5 @@
-import { ENGLISH, type Alphabet } from './alphabet.js'
+import type { Alphabet } from './alphabet.js'
+import { ENGLISH } from './languages.js'
 import { at } from './invariant.js'
 import { nextInt, shuffle } from './rng.js'
 import type { RngState } from './types.js'
