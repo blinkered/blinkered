@@ -96,6 +96,18 @@ Getting the last two backwards calibrates the board against a guess, and getting
 is silent rather than loud. [docs/DICTIONARIES.md](docs/DICTIONARIES.md) has the details;
 PLAN.md section 5 covers why accents and diacritics are different problems.
 
+## Deploying it
+
+```
+git push                          # CI builds and pushes the image to GHCR
+kubectl apply -f deploy/k8s/
+```
+
+The container is nginx serving the built files, which is all Blinkered needs until accounts
+arrive. [docs/DEPLOY.md](docs/DEPLOY.md) covers the rest: why the image is built in CI rather
+than on a laptop (an Apple Silicon build is arm64 and will not start on an amd64 node), how to
+let the cluster pull from GHCR, and why the word lists are pre-compressed at build time.
+
 ## Checks
 
 ```

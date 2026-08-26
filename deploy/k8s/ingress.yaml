@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blinkered
+  labels:
+    app.kubernetes.io/name: blinkered
+  annotations:
+    # cert-manager issues the certificate. Drop this line and the `tls` block if TLS is
+    # terminated somewhere ahead of the cluster.
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # The Russian word list is 8.3MB before compression, 1.2MB after. The default proxy
+    # buffers are smaller than that, and a truncated word list is a broken game.
+    nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    nginx.ingress.kubernetes.io/proxy-buffering: 'off'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - playblinkered.com
+      secretName: blinkered-tls
+  rules:
+    - host: playblinkered.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blinkered
+                port:
+                  name: http

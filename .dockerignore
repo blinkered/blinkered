@@ -1,0 +1,15 @@
+# Everything the build makes for itself, and everything it must not carry into the image.
+node_modules
+**/node_modules
+dist
+**/dist
+dist-tsc
+**/dist-tsc
+coverage
+.cache
+.git
+.github
+.omc
+*.tsbuildinfo
+**/*.tsbuildinfo
+.DS_Store

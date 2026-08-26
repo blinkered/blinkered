@@ -19,6 +19,8 @@ next.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
+- **Deployment** — one container, nginx serving the built files, manifests in `deploy/k8s`,
+  built and pushed by CI. See [DEPLOY.md](DEPLOY.md).
 - **`apps/web`** — playable React front end. Keyboard and pointer, sixteen languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.
@@ -36,35 +38,34 @@ next.
    serialisable and the reducer is pure.
 3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are
    still guesses — the only numbers in the repo that are. Everything else is now measured.
-4. Then accounts, verified score submission, and history: PLAN.md phase 4 onward.
-
-## Open questions that need Nick
-
-- **Who owns this**: NOTICE currently says `Copyright 2026 Tight Line LLC`, which was a
-  default rather than a decision. Tight Line has a co-owner, so putting it there gives away
-  a share; a separate LLC ring-fences it. Also decides the Apple Developer account type,
-  which is hard to undo because an individual account shows a personal name as the seller
-  forever.
-- **Five languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
-  them: Italian, German, Norwegian, Finnish, Malay. Fine for the web build. Needs a decision
-  before a store build wraps DRM around a share-alike data file. Options and the order I would
-  try them are at the end of DICTIONARIES.md. Nothing is GPL.
-- **Frequency source provenance**: FrequencyWords is MIT but derives from OpenSubtitles.
-  Evaluating `wordfreq` would also help with the point above.
-- **Claim the names**: `blinkered.game` and `playblinkered.com` are free, as are the
-  `blinkered` npm name and, at the time of checking, the GitHub org (now taken by us).
-  `blinkered.com` and `.app` are parked. And someone should eyeball `r/blinkered` by hand,
-  since Reddit blocks automated checks.
-- **Malay is the weak one.** 15% validation yield, and no cut fixes it: the Wiktionary
-  validator is exhausted by rank 100,000. A Malay player will be refused real words. Either
-  find a better source or consider not offering it at launch.
+4. Then accounts, verified score submission, and history: PLAN.md phase 4 onward. That is when
+   the deployment stops being a static site and grows a backend and a Postgres.
 
 ## Settled
 
+- **Tight Line LLC owns this.** NOTICE was already written that way; it is now a decision
+  rather than a default. It also settles the Apple Developer account type, which is the part
+  that is hard to undo: an organisation account, not an individual one.
+- **`playblinkered.com` is registered.** `blinkered.game` is not: $300 a year against $10.
 - **Download size over vocabulary.** The credit tier is bounded by a lexicon rather than by
   corpus frequency, which makes the inflected languages large: 1.2MB gzipped for Russian and
   Swedish, 459KB for English, 25KB for Malay. Accepted knowingly, because a game that refuses a
   word you know is broken in a way a large download is not.
+
+## Known and accepted
+
+- **Five languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
+  them: Italian, German, Norwegian, Finnish, Malay. No effect on the web build, where
+  attribution is the whole obligation and we do it. Before a store build wraps DRM around a
+  share-alike data file, someone should read the end of DICTIONARIES.md and probably a lawyer.
+  Nothing anywhere is GPL.
+- **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
+  validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
+  enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns
+  up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
+- **The frequency source is OpenSubtitles via hermitdave**, which is MIT but derives from
+  user-uploaded subtitles. `wordfreq` remains the cleaner alternative if the provenance ever
+  matters more than it does now.
 
 ## Rules still unsettled, deliberately
 
