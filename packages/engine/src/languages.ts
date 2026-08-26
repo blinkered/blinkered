@@ -600,6 +600,44 @@ export const FINNISH: Alphabet = {
   segment: byCodePoint,
 }
 
+export const GREEK: Alphabet = {
+  id: 'el',
+  endonym: 'Ελληνικά',
+  // Twenty-four letters. The tonos is decoration and folds away, exactly as Greek word
+  // games treat it, and final sigma upper-cases onto Σ without needing a rule.
+  weights: {
+    Α: 12,
+    Β: 1,
+    Γ: 2,
+    Δ: 3,
+    Ε: 9,
+    Ζ: 1,
+    Η: 6,
+    Θ: 2,
+    Ι: 9,
+    Κ: 5,
+    Λ: 4,
+    Μ: 4,
+    Ν: 7,
+    Ξ: 1,
+    Ο: 9,
+    Π: 4,
+    Ρ: 6,
+    Σ: 8,
+    Τ: 8,
+    Υ: 4,
+    Φ: 2,
+    Χ: 2,
+    Ψ: 1,
+    Ω: 3,
+  },
+  vowels: ['Α', 'Ε', 'Η', 'Ι', 'Ο', 'Υ', 'Ω'],
+  rareLetters: ['Β', 'Ζ', 'Ξ', 'Ψ'],
+  requires: {},
+  fold: folder(),
+  segment: byCodePoint,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -616,6 +654,7 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     SWEDISH,
     NORWEGIAN,
     FINNISH,
+    GREEK,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 

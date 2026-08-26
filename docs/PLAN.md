@@ -451,7 +451,15 @@ Latin-alphabet languages needing **no extra tiles at all**, only folding: Englis
 
 Non-Latin scripts are a different project rather than another language. Arabic has contextual letter forms and no case; a CJK tile is not the same game.
 
-### 5.4 What a new language actually costs
+### 5.4 Where the word lists come from
+
+Fifteen alphabets exist; a language is only playable once a word list does. The sourcing
+design, the licence survey, and the measurements behind the sizing all live in
+[DICTIONARIES.md](DICTIONARIES.md). The short version: a frequency list selects candidates, a
+dictionary validates them, and we ship the intersection, which is smaller, better and a
+thinner derivative of either input than a copy of either would be.
+
+### 5.5 What a new language actually costs
 
 One command, once a word list exists:
 

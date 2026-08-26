@@ -17,12 +17,14 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   sv: ['förälder', 'FÖRÄLDER', 8],
   no: ['blåbær', 'BLÅBÆR', 6],
   fi: ['hyvää', 'HYVÄÄ', 5],
+  el: ['καλημέρα', 'ΚΑΛΗΜΕΡΑ', 8],
 }
 
 describe('the language registry', () => {
   it('covers every language asked for', () => {
     expect([...ALPHABET_IDS].sort()).toEqual([
       'de',
+      'el',
       'en',
       'es',
       'fi',
