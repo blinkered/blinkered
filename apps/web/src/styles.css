@@ -41,9 +41,17 @@ body {
 .shell.has-nerd {
   max-width: 78rem;
 }
-@media (min-width: 62rem) {
+/*
+ * The nerd panel wants to be a sidebar at an ordinary window size, not only at a very wide one.
+ *
+ * `minmax(0, 1fr)` rather than `1fr` is the load-bearing part: a bare `1fr` track cannot shrink
+ * below its content's min-content width, so the title bar alone was holding the play column at
+ * around 38rem and pushing the two-column total past what most windows are. With the floor at
+ * zero the column shrinks, the title bar wraps if it must, and the breakpoint can come down.
+ */
+@media (min-width: 52rem) {
   .shell.has-nerd {
-    grid-template-columns: 1fr 20rem;
+    grid-template-columns: minmax(0, 1fr) 18rem;
     align-items: start;
   }
 }
@@ -57,11 +65,19 @@ body {
   display: grid;
   gap: 1rem;
 }
+/*
+ * All three controls in one group at the left: wordmark, language, nerd mode.
+ *
+ * Pinning the toggle right with an `auto` margin looked tidy and was not: at 1280px it left
+ * 324px of nothing between the language picker and the toggle, and put the toggle 24px from the
+ * sidebar, where it read as part of the sidebar's chrome rather than as the control that opens
+ * it. A control nobody can find is not visible, whatever the layout inspector says.
+ */
 .titlebar {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
 }
 h1 {
   margin: 0;
@@ -91,13 +107,11 @@ h2 {
   font-size: 0.85rem;
 }
 
-/* The language control in the title bar. `margin-left: auto` rather than a third flex child
-   with space-between, so the nerd toggle stays pinned right whether or not this is shown. */
+/* The language control. Sits next to whatever it belongs to rather than drifting right. */
 .picker {
   display: inline-flex;
   gap: 0.45rem;
   align-items: center;
-  margin-left: auto;
   color: var(--dim);
   font-size: 0.85rem;
 }
@@ -677,6 +691,29 @@ kbd {
 .rules-head .rules-lead {
   margin: 0.35rem 0 0;
 }
-.rules-head .picker {
-  margin-left: 0;
+
+/*
+ * The keyboard bindings the buttons cannot advertise, and the way out to the rules.
+ *
+ * Flex with a gap rather than inline text. JSX drops the whitespace between elements written on
+ * separate lines, so these ran together as one word; the class had never been styled at all and
+ * only looked spaced because each item happened to start with a `kbd`.
+ */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+/* No keyboard, so no keyboard bindings. The rules still apply, so the link stays. */
+@media (hover: none) and (pointer: coarse) {
+  .legend-key {
+    display: none;
+  }
 }

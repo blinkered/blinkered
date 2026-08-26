@@ -455,25 +455,31 @@ function Playing({
         </button>
       </div>
 
-      {/* Only the bindings the buttons cannot advertise. Enter and Escape are already
-          written on Complete word and Reset, so repeating them here is noise. Hidden on
-          touch devices, where none of it applies. */}
-      <p className="legend">
-        <span>{messages.lettersSelect}</span>
-        <span>
+      {/* Only the bindings the buttons cannot advertise. Enter and Escape are already written
+          on Complete word and Reset, so repeating them here is noise. The keyboard items are
+          hidden where there is no keyboard; the link to the rules is not.
+
+          A list rather than a paragraph of spans, because the items are only separated by a
+          flex gap: visually that reads fine, but as one run of text it does not, and a screen
+          reader gets the text. */}
+      <ul className="legend">
+        <li className="legend-key">{messages.lettersSelect}</li>
+        <li className="legend-key">
           <kbd>shift-X</kbd> {format(messages.clearsEvery, { letter: 'X' })}
-        </span>
-        <span>
+        </li>
+        <li className="legend-key">
           <kbd>&#x232b;</kbd> {messages.undoLastLetter}
-        </span>
-        <HowToPlayLink
-          language={language}
-          messages={messages}
-          onOpen={() => {
-            game.setPaused(true)
-          }}
-        />
-      </p>
+        </li>
+        <li>
+          <HowToPlayLink
+            language={language}
+            messages={messages}
+            onOpen={() => {
+              game.setPaused(true)
+            }}
+          />
+        </li>
+      </ul>
 
       <FoundWords words={game.state.wordsFound} messages={messages} />
     </>
