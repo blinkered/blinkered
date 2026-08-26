@@ -57,13 +57,16 @@ Yield is the share of considered candidates a validator accepted, at each of the
 collapses in the right-hand column wherever the credit tier is uncapped, because the denominator
 becomes the whole corpus tail and most of a corpus tail is typos, names and foreign words.
 
-**The download is the open cost.** Russian and Swedish are 1.2MB gzipped, against 25KB for
-Malay, because Russian inflection and Swedish compounding are productive and the corpus attests
-an enormous number of real forms. Parsing is not the problem — 4.2M characters of Russian parse
-in 51ms, since the expensive anagram index covers only the 18,094-word common tier — so this is
-purely bytes over the wire, once per language per session. Whether that is acceptable, or whether
-the no-lexicon languages should take a size-motivated cut, is a judgment call that has not been
-made yet.
+**The download is the cost, and it was accepted deliberately.** Russian and Swedish are 1.2MB
+gzipped, against 25KB for Malay, because Russian inflection and Swedish compounding are
+productive and the corpus attests an enormous number of real forms. Parsing is not the problem:
+4.2M characters of Russian parse in 51ms, since the expensive anagram index covers only the
+18,094-word common tier. So it is purely bytes over the wire, once per language per session.
+
+Nick's call, and the right one: a game that refuses a word you know is broken in a way a large
+download is not. If mobile makes this hurt later, the lever is a size-motivated cut on the
+languages with no lexicon, and it should be labelled as exactly that rather than dressed up as a
+quality decision.
 
 Spot checks the English list passes: SWALE, SWALES, WEAL, WEALS, HISSES, GRUNTS, ZYZZYVA, QUINE
 and SUSURRUS all present; COLOUR **and** COLOR both present; JAMES, MRS, MMM, LONDON, MONDAY and

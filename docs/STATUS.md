@@ -59,6 +59,13 @@ next.
   validator is exhausted by rank 100,000. A Malay player will be refused real words. Either
   find a better source or consider not offering it at launch.
 
+## Settled
+
+- **Download size over vocabulary.** The credit tier is bounded by a lexicon rather than by
+  corpus frequency, which makes the inflected languages large: 1.2MB gzipped for Russian and
+  Swedish, 459KB for English, 25KB for Malay. Accepted knowingly, because a game that refuses a
+  word you know is broken in a way a large download is not.
+
 ## Rules still unsettled, deliberately
 
 Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
