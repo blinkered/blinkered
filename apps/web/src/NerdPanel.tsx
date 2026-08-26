@@ -4,6 +4,7 @@ import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
 import { countOf } from './Hud.js'
+import { useFocusRelease } from './focus.js'
 import { InterfacePicker } from './LanguagePicker.js'
 import { FLIP_ECONOMIES, KEY_SCHEMES, WORD_COMPLETE_MODES, isCanonical } from './settings.js'
 import type { Settings } from './settings.js'
@@ -278,13 +279,16 @@ function Choice<T extends string>({
   disabled?: boolean
   onChange: (value: T) => void
 }): React.JSX.Element {
+  const focus = useFocusRelease()
   return (
     <label className="nerd-row">
       <span>{label}</span>
       <select
         value={value}
         disabled={disabled ?? false}
+        {...focus.handlers}
         onChange={(e) => {
+          focus.release(e.currentTarget)
           onChange(e.target.value as T)
         }}
       >

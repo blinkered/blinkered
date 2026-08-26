@@ -15,7 +15,7 @@ import { NerdPanel } from './NerdPanel.js'
 import { Title } from './Title.js'
 import { loadCatalogue, loadDictionary } from './dictionary.js'
 import type { CatalogueEntry } from './dictionary.js'
-import { withoutStealingFocus } from './focus.js'
+import { useFocusRelease, withoutStealingFocus } from './focus.js'
 import { recordScore, standingOf } from './scores.js'
 import type { Standing } from './scores.js'
 import {
@@ -155,6 +155,7 @@ function Session({
 
   const config = useMemo(() => configOf(settings), [settings])
   const playing = phase === 'playing'
+  const nerdFocus = useFocusRelease()
 
   const begin = useCallback((): void => {
     setFinished(null)
@@ -245,7 +246,10 @@ function Session({
           <input
             type="checkbox"
             checked={settings.nerdMode}
+            {...nerdFocus.handlers}
             onChange={(e) => {
+              // Give the keyboard back, or the board stops hearing anything typed at it.
+              nerdFocus.release(e.currentTarget)
               onChange({ ...settings, nerdMode: e.target.checked })
             }}
           />

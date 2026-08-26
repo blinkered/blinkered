@@ -1,4 +1,5 @@
 import { LOCALES, localeFor } from '@blinkered/i18n'
+import { useFocusRelease } from './focus.js'
 import type { CatalogueEntry } from './dictionary.js'
 
 /**
@@ -56,6 +57,7 @@ export function LanguagePicker({
   disabled = false,
   onChange,
 }: LanguagePickerProps): React.JSX.Element {
+  const focus = useFocusRelease()
   const ordered = [...catalogue].sort((left, right) =>
     BY_NAME.compare(endonymOf(left.tag, left.endonym), endonymOf(right.tag, right.endonym)),
   )
@@ -70,10 +72,11 @@ export function LanguagePicker({
         className="picker-select"
         value={value}
         disabled={disabled}
+        {...focus.handlers}
         onChange={(e) => {
           // Hand the keyboard back to the game: a focused select swallows every letter,
           // because typing one jumps to the matching option instead.
-          e.currentTarget.blur()
+          focus.release(e.currentTarget)
           onChange(e.target.value)
         }}
       >
@@ -108,6 +111,7 @@ export function InterfacePicker({
   layout = 'row',
   onChange,
 }: InterfacePickerProps): React.JSX.Element {
+  const focus = useFocusRelease()
   const inline = layout === 'inline'
   const ordered = [...LOCALES].sort((left, right) => BY_NAME.compare(left.endonym, right.endonym))
 
@@ -125,7 +129,9 @@ export function InterfacePicker({
       <select
         className={inline ? 'picker-select' : undefined}
         value={value}
+        {...focus.handlers}
         onChange={(e) => {
+          focus.release(e.currentTarget)
           onChange(e.target.value)
         }}
       >
