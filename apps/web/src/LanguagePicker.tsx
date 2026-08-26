@@ -1,22 +1,11 @@
 import { LOCALES, localeFor } from '@blinkered/i18n'
-import { useFocusRelease } from './focus.js'
+import { Dropdown } from './Dropdown.js'
+import type { Choice } from './Dropdown.js'
 import type { CatalogueEntry } from './dictionary.js'
 
-/**
- * Flags belong beside the control, not inside its options.
- *
- * A native `select` renders its popup as an operating-system menu, and an emoji in an option
- * drags in a colour emoji font at a size the menu then sizes itself to: sixteen options became
- * an enormous list that on macOS spilled clear out of the browser window. The options are plain
- * text now, and the flag sits next to the closed control where it still does its job of making
- * the picker recognisable before you can read the label.
- *
- * The native control stays, rather than being replaced by a custom listbox. It brings keyboard
- * behaviour, type-ahead and the platform's own picker on a phone, none of which is worth
- * reimplementing for a cosmetic gain.
- */
-function flagOf(tag: string): string {
-  return localeFor(tag)?.flag ?? ''
+/** The flag rides along as a badge, which the dropdown draws itself rather than as menu text. */
+function flagOf(tag: string): string | undefined {
+  return localeFor(tag)?.flag
 }
 
 /** The name a speaker of the language would look for, which is the one to sort by. */
@@ -57,44 +46,30 @@ export function LanguagePicker({
   disabled = false,
   onChange,
 }: LanguagePickerProps): React.JSX.Element {
-  const focus = useFocusRelease()
-  const ordered = [...catalogue].sort((left, right) =>
-    BY_NAME.compare(endonymOf(left.tag, left.endonym), endonymOf(right.tag, right.endonym)),
-  )
+  const options: Choice[] = catalogue
+    .map((entry) => {
+      const badge = flagOf(entry.tag)
+      const label = endonymOf(entry.tag, entry.endonym)
+      // Spread rather than an always-present `badge: undefined`, which
+      // exactOptionalPropertyTypes rightly refuses.
+      return badge === undefined ? { value: entry.tag, label } : { value: entry.tag, label, badge }
+    })
+    .sort((left, right) => BY_NAME.compare(left.label, right.label))
 
   return (
-    <label className="picker">
-      <span className="picker-label">{label}</span>
-      <span className="picker-flag" aria-hidden="true">
-        {flagOf(value)}
-      </span>
-      <select
-        className="picker-select"
-        value={value}
-        disabled={disabled}
-        {...focus.handlers}
-        onChange={(e) => {
-          // Hand the keyboard back to the game: a focused select swallows every letter,
-          // because typing one jumps to the matching option instead.
-          focus.release(e.currentTarget)
-          onChange(e.target.value)
-        }}
-      >
-        {ordered.map((entry) => (
-          <option key={entry.tag} value={entry.tag}>
-            {endonymOf(entry.tag, entry.endonym)}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Dropdown
+      options={options}
+      value={value}
+      label={label}
+      disabled={disabled}
+      onChange={onChange}
+    />
   )
 }
 
 interface InterfacePickerProps {
   readonly value: string
   readonly label: string
-  /** `row` sits in the nerd panel's two-column grid; `inline` stands on its own. */
-  readonly layout?: 'row' | 'inline'
   readonly onChange: (language: string) => void
 }
 
@@ -108,39 +83,13 @@ interface InterfacePickerProps {
 export function InterfacePicker({
   value,
   label,
-  layout = 'row',
   onChange,
 }: InterfacePickerProps): React.JSX.Element {
-  const focus = useFocusRelease()
-  const inline = layout === 'inline'
-  const ordered = [...LOCALES].sort((left, right) => BY_NAME.compare(left.endonym, right.endonym))
+  const options: Choice[] = LOCALES.map((locale) => ({
+    value: locale.tag,
+    label: locale.endonym,
+    badge: locale.flag,
+  })).sort((left, right) => BY_NAME.compare(left.label, right.label))
 
-  return (
-    <label className={inline ? 'picker' : 'nerd-row'}>
-      <span className={inline ? 'picker-label' : undefined}>{label}</span>
-      {/* Only in the inline layout. A nerd-panel row is a two-column flex with the label at one
-          end and the control at the other, so a third child would be spread into the middle
-          with a gulf on both sides, which is exactly the bug the title bar just had. */}
-      {inline ? (
-        <span className="picker-flag" aria-hidden="true">
-          {flagOf(value)}
-        </span>
-      ) : null}
-      <select
-        className={inline ? 'picker-select' : undefined}
-        value={value}
-        {...focus.handlers}
-        onChange={(e) => {
-          focus.release(e.currentTarget)
-          onChange(e.target.value)
-        }}
-      >
-        {ordered.map((locale) => (
-          <option key={locale.tag} value={locale.tag}>
-            {locale.endonym}
-          </option>
-        ))}
-      </select>
-    </label>
-  )
+  return <Dropdown options={options} value={value} label={label} onChange={onChange} />
 }

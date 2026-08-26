@@ -51,6 +51,9 @@ export interface Game extends Session {
 function playable(press: KeyboardEvent): boolean {
   const target = press.target
   if (!(target instanceof HTMLElement)) return true
+  // An open listbox owns every key, including the letters: arrow keys move through it and a
+  // letter jumps to an option. It says so by role rather than by reaching in here.
+  if (target.closest('[role="listbox"]') !== null) return false
   switch (target.tagName) {
     case 'INPUT':
     case 'TEXTAREA':

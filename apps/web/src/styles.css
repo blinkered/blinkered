@@ -731,3 +731,87 @@ kbd {
     display: none;
   }
 }
+
+/*
+ * The language menu, drawn by the page.
+ *
+ * Chrome on macOS renders a native `select` popup as an operating-system menu: system font size
+ * regardless of the CSS, sized to the longest option, in a window that is not clipped to the
+ * browser. Sixteen languages came out as an enormous list hanging off the side of the window.
+ * Nothing in a stylesheet can reach that, so the menu is ours now.
+ */
+.drop {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+.drop-anchor {
+  position: relative;
+}
+.drop-trigger {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 9rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.drop-trigger:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.drop-caret {
+  margin-left: auto;
+  color: var(--dim);
+}
+.drop-badge {
+  font-size: 1rem;
+  line-height: 1;
+}
+.drop-value {
+  white-space: nowrap;
+}
+
+.drop-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  /* Tall enough for sixteen, short enough to stay on the page, and it scrolls if neither. */
+  max-height: min(60vh, 22rem);
+  min-width: 100%;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 45%);
+}
+.drop-list:focus {
+  outline: none;
+}
+.drop-option {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.35rem 0.5rem;
+  border-radius: 5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drop-option.is-chosen {
+  color: var(--up);
+}
+.drop-option.is-active {
+  background: var(--sel);
+  color: #fff;
+}

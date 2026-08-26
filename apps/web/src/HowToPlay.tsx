@@ -38,12 +38,7 @@ export function HowToPlay({
         </div>
         {/* Every locale, whether or not a word list exists for it: reading the rules needs no
             dictionary. Opens on whatever the game was being read in. */}
-        <InterfacePicker
-          value={language}
-          label={messages.gameLanguage}
-          layout="inline"
-          onChange={onLanguage}
-        />
+        <InterfacePicker value={language} label={messages.gameLanguage} onChange={onLanguage} />
       </div>
 
       {sections.map((section) => (
