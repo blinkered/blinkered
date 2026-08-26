@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import type { Alphabet } from '@blinkered/engine'
 
 export interface WordListOptions {
@@ -38,13 +37,4 @@ export function normaliseWordList(
     kept.add(word)
   }
   return [...kept].sort()
-}
-
-/** Reads a newline-delimited word list from disk and normalises it. */
-export function readWordList(
-  path: string,
-  alphabet: Alphabet,
-  options: WordListOptions = {},
-): string[] {
-  return normaliseWordList(readFileSync(path, 'utf8').split('\n'), alphabet, options)
 }

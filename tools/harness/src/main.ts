@@ -11,7 +11,8 @@ import type {
   WordCompleteMode,
 } from '@blinkered/engine'
 import { alphabetFor } from '@blinkered/engine'
-import { buildIndex, generateBoard, readWordList } from '@blinkered/words'
+import { buildIndex, generateBoard } from '@blinkered/words'
+import { readWordList } from '@blinkered/words/node'
 import { CLEAR_SCREEN, render, summary } from './render.js'
 
 const DIFFICULTIES: readonly Difficulty[] = ['easy', 'medium', 'hard', 'insane']

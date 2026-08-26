@@ -1,6 +1,7 @@
 import { ENGLISH, alphabetFor } from '@blinkered/engine'
 import type { Alphabet } from '@blinkered/engine'
-import { buildIndex, calibrate, deriveWeights, readWordList } from '@blinkered/words'
+import { buildIndex, calibrate, deriveWeights } from '@blinkered/words'
+import { readWordList } from '@blinkered/words/node'
 
 const USAGE = `
 Derives a language's draw weights and word-count calibration from its own word list, so the

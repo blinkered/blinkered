@@ -4,7 +4,8 @@ import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
 import { ENGLISH, stripDiacritics, segmentBy } from '@blinkered/engine'
 import type { Alphabet } from '@blinkered/engine'
-import { normaliseWordList, readWordList } from '../src/index.js'
+import { normaliseWordList } from '../src/index.js'
+import { readWordList } from '../src/node.js'
 
 describe('normaliseWordList', () => {
   it('folds words onto tiles and sorts them', () => {

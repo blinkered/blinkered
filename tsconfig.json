@@ -4,6 +4,8 @@
     { "path": "./packages/engine" },
     { "path": "./packages/words" },
     { "path": "./tools/harness" },
-    { "path": "./tools/derive" }
+    { "path": "./tools/derive" },
+    { "path": "./tools/wordlist" },
+    { "path": "./apps/web" }
   ]
 }

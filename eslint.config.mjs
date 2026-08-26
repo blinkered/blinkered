@@ -1,7 +1,7 @@
 import tseslint from 'typescript-eslint'
 
 export default [
-  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**'] },
+  { ignores: ['**/dist/**', '**/dist-tsc/**', '**/coverage/**', '**/node_modules/**'] },
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {

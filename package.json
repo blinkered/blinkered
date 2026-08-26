@@ -15,7 +15,10 @@
     "format:check": "prettier --check .",
     "play": "tsc --build && node tools/harness/dist/main.js",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm coverage",
-    "derive": "tsc --build && node tools/derive/dist/main.js"
+    "derive": "tsc --build && node tools/derive/dist/main.js",
+    "wordlist": "tsc --build && node tools/wordlist/dist/main.js",
+    "dev": "pnpm --filter @blinkered/web dev",
+    "build": "tsc --build && pnpm --filter @blinkered/web build"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
