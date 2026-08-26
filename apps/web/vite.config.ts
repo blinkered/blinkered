@@ -88,5 +88,17 @@ export default defineConfig({
     },
   },
   server: { port: 5173 },
-  build: { target: 'es2022', sourcemap: true },
+  build: {
+    target: 'es2022',
+    sourcemap: true,
+    // Two pages, because the rules open in their own tab. Sharing the build means they share
+    // the message catalogue, so the rules are translated by the same sixteen locales the game
+    // is rather than by a second copy of them that drifts.
+    rollupOptions: {
+      input: {
+        main: source('./index.html'),
+        howToPlay: source('./how-to-play.html'),
+      },
+    },
+  },
 })

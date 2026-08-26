@@ -102,6 +102,38 @@ export const es: Messages = {
   changesNextGame: 'Los cambios se aplican en la próxima partida.',
   presets: 'Preajustes:',
 
+  start: 'Empezar',
+  restart: 'Reiniciar',
+  quit: 'Salir',
+  quitTitle: '¿Salir de esta partida?',
+  quitConfirm: 'Salir',
+  keepPlaying: 'Seguir jugando',
+  personalBest: 'Tus mejores partidas',
+  noScoresYet: 'Aún no hay partidas terminadas. Esta será la primera.',
+  thisGame: 'esta partida',
+  newPersonalBest: 'Nuevo récord personal.',
+  columnRank: '#',
+  notRanked: 'Reglas propias: esta partida no se clasifica.',
+  rankOfTotal: '{rank} de {total}',
+
+  howToPlay: 'Cómo jugar',
+  htBoardTitle: 'El tablero',
+  htBoardBody:
+    'Las fichas se descubren una a una, en orden de lectura. No se ve una letra hasta que gira su ficha.',
+  htWordsTitle: 'Las palabras',
+  htWordsBody:
+    'Forma una palabra con las fichas descubiertas. Escríbela, o púlsalas. Cada ficha sirve una vez, y solo después de girar.',
+  htFlipsTitle: 'Los giros',
+  htFlipsBody:
+    'Cada ficha que gira cuesta un giro. Una palabra devuelve giros, y las palabras largas devuelven más. Cuando se acaban los giros, la partida termina.',
+  htRoundTitle: 'La ronda',
+  htRoundBody:
+    'Cuando gira la última ficha de una ronda, el tablero está entero a la vista. Se queda así un momento. Después se mezcla y se reparte de nuevo.',
+  htLanguagesTitle: 'Los idiomas',
+  htLanguagesBody:
+    'Dieciséis. Cada tablero se puede resolver con palabras de uso real. Una palabra poco común también puntúa, si el diccionario la conoce.',
+  htKeysTitle: 'El teclado',
+
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },
     rounds: { one: '{n} ronda', other: '{n} rondas' },

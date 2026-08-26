@@ -102,6 +102,38 @@ export const ms: Messages = {
   changesNextGame: 'Perubahan berkuat kuasa pada permainan berikutnya.',
   presets: 'Praset:',
 
+  start: 'Mula',
+  restart: 'Mula semula',
+  quit: 'Keluar',
+  quitTitle: 'Keluar dari permainan ini?',
+  quitConfirm: 'Keluar',
+  keepPlaying: 'Terus bermain',
+  personalBest: 'Permainan terbaik anda',
+  noScoresYet: 'Belum ada permainan yang tamat. Ini yang pertama.',
+  thisGame: 'permainan ini',
+  newPersonalBest: 'Rekod peribadi baharu.',
+  columnRank: '#',
+  notRanked: 'Peraturan sendiri, jadi permainan ini tidak diberi kedudukan.',
+  rankOfTotal: '{rank} daripada {total}',
+
+  howToPlay: 'Cara bermain',
+  htBoardTitle: 'Papan',
+  htBoardBody:
+    'Jubin dibuka satu demi satu, mengikut arah bacaan. Huruf tidak kelihatan sehingga jubinnya terbalik.',
+  htWordsTitle: 'Perkataan',
+  htWordsBody:
+    'Bina perkataan daripada jubin yang terbuka. Taipkan perkataan itu, atau klik padanya. Setiap jubin digunakan sekali, dan hanya selepas ia terbalik.',
+  htFlipsTitle: 'Balikan',
+  htFlipsBody:
+    'Setiap jubin yang terbalik memakan satu balikan. Satu perkataan memulangkannya, dan perkataan panjang memulangkan lebih. Apabila balikan habis, permainan tamat.',
+  htRoundTitle: 'Pusingan',
+  htRoundBody:
+    'Apabila jubin terakhir sesuatu pusingan terbalik, seluruh papan terbuka. Ia kekal begitu seketika. Kemudian papan dikocak dan dibahagikan semula.',
+  htLanguagesTitle: 'Bahasa',
+  htLanguagesBody:
+    'Enam belas. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
+  htKeysTitle: 'Papan kekunci',
+
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} pusingan' },

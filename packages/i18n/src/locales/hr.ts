@@ -105,6 +105,38 @@ export const hr: Messages = {
   changesNextGame: 'Promjene vrijede od sljedeće igre.',
   presets: 'Postavke:',
 
+  start: 'Počni',
+  restart: 'Ponovi',
+  quit: 'Izađi',
+  quitTitle: 'Izaći iz ove igre?',
+  quitConfirm: 'Izađi',
+  keepPlaying: 'Nastavi igrati',
+  personalBest: 'Tvoje najbolje igre',
+  noScoresYet: 'Još nema završenih igara. Ova će biti prva.',
+  thisGame: 'ova igra',
+  newPersonalBest: 'Novi osobni rekord.',
+  columnRank: '#',
+  notRanked: 'Vlastita pravila, pa se ova igra ne rangira.',
+  rankOfTotal: '{rank} od {total}',
+
+  howToPlay: 'Kako se igra',
+  htBoardTitle: 'Ploča',
+  htBoardBody:
+    'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Slovo se ne vidi dok se njegova pločica ne okrene.',
+  htWordsTitle: 'Riječi',
+  htWordsBody:
+    'Sastavi riječ od otkrivenih pločica. Upiši je, ili klikni po njima. Svaka pločica vrijedi jednom, i to samo nakon što se okrenula.',
+  htFlipsTitle: 'Okreti',
+  htFlipsBody:
+    'Svaka pločica koja se okrene troši jedan okret. Riječ ih vraća, a duge riječi vraćaju više. Kad okreti nestanu, igra je gotova.',
+  htRoundTitle: 'Runda',
+  htRoundBody:
+    'Kad se okrene zadnja pločica runde, cijela je ploča otkrivena. Tako ostaje na trenutak. Zatim se promiješa i podijeli iznova.',
+  htLanguagesTitle: 'Jezici',
+  htLanguagesBody:
+    'Šesnaest. Svaka se ploča može riješiti riječima koje se stvarno koriste. Neobična riječ ipak vrijedi, ako je rječnik zna.',
+  htKeysTitle: 'Tipkovnica',
+
   plurals: {
     words: { one: '{n} riječ', few: '{n} riječi', other: '{n} riječi' },
     rounds: { one: '{n} runda', few: '{n} runde', other: '{n} rundi' },

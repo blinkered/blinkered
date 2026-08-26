@@ -105,6 +105,38 @@ export const fi: Messages = {
   changesNextGame: 'Muutokset vaikuttavat seuraavaan peliin.',
   presets: 'Esiasetukset:',
 
+  start: 'Aloita',
+  restart: 'Aloita uudelleen',
+  quit: 'Lopeta',
+  quitTitle: 'Lopetetaanko tämä peli?',
+  quitConfirm: 'Lopeta',
+  keepPlaying: 'Jatka pelaamista',
+  personalBest: 'Parhaat pelisi',
+  noScoresYet: 'Ei vielä päättyneitä pelejä. Tästä tulee ensimmäinen.',
+  thisGame: 'tämä peli',
+  newPersonalBest: 'Uusi henkilökohtainen ennätys.',
+  columnRank: '#',
+  notRanked: 'Omat säännöt, joten tätä peliä ei sijoiteta.',
+  rankOfTotal: '{rank} / {total}',
+
+  howToPlay: 'Näin pelataan',
+  htBoardTitle: 'Pelilauta',
+  htBoardBody:
+    'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Kirjainta ei näe ennen kuin sen laatta kääntyy.',
+  htWordsTitle: 'Sanat',
+  htWordsBody:
+    'Muodosta sana näkyvistä laatoista. Kirjoita se, tai napsauta niitä. Jokainen laatta kelpaa kertaalleen, ja vasta kun se on kääntynyt.',
+  htFlipsTitle: 'Siirrot',
+  htFlipsBody:
+    'Jokainen kääntyvä laatta kuluttaa yhden siirron. Sana palauttaa siirtoja, ja pitkät sanat palauttavat enemmän. Kun siirrot loppuvat, peli päättyy.',
+  htRoundTitle: 'Kierros',
+  htRoundBody:
+    'Kun kierroksen viimeinen laatta kääntyy, koko lauta on näkyvissä. Se pysyy niin hetken. Sitten se sekoitetaan ja jaetaan uudelleen.',
+  htLanguagesTitle: 'Kielet',
+  htLanguagesBody:
+    'Kuusitoista. Jokainen lauta ratkeaa arkisilla sanoilla. Harvinainen sana kelpaa silti, jos sanakirja tuntee sen.',
+  htKeysTitle: 'Näppäimistö',
+
   plurals: {
     words: { one: '{n} sana', other: '{n} sanaa' },
     rounds: { one: '{n} kierros', other: '{n} kierrosta' },

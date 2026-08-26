@@ -1,35 +1,29 @@
-import { DIFFICULTIES, flipReward, wordScore } from '@blinkered/engine'
-import type {
-  Difficulty,
-  FlipEconomy,
-  GameConfig,
-  KeyScheme,
-  WordCompleteMode,
-} from '@blinkered/engine'
+import { flipReward, wordScore } from '@blinkered/engine'
+import type { FlipEconomy, GameConfig, KeyScheme, WordCompleteMode } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
-import type { GeneratedBoard, TieredIndex } from '@blinkered/words'
-import { withoutStealingFocus } from './focus.js'
-import { InterfacePicker } from './LanguagePicker.js'
+import type { TieredIndex } from '@blinkered/words'
 import { countOf } from './Hud.js'
-import {
-  DIFFICULTY_NAMES,
-  FLIP_ECONOMIES,
-  KEY_SCHEMES,
-  WORD_COMPLETE_MODES,
-  isCanonical,
-} from './settings.js'
+import { InterfacePicker } from './LanguagePicker.js'
+import { FLIP_ECONOMIES, KEY_SCHEMES, WORD_COMPLETE_MODES, isCanonical } from './settings.js'
 import type { Settings } from './settings.js'
 
 interface NerdPanelProps {
   readonly settings: Settings
   readonly config: GameConfig
-  readonly board: GeneratedBoard
-  readonly dictionary: TieredIndex
-  readonly dirty: boolean
+  /** Null until a language's word list has loaded. */
+  readonly dictionary: TieredIndex | null
+  /**
+   * True while a game is running, when nothing that changes the rules may be touched.
+   *
+   * A game whose rules moved underneath it cannot be ranked against anything, and offering
+   * controls that quietly apply "next time" invites a player to think they did something.
+   */
+  readonly locked: boolean
   readonly messages: Messages
   readonly onChange: (next: Settings) => void
-  readonly onNewGame: () => void
+  /** Editing any rule forks to the custom ruleset; that is what makes it custom. */
+  readonly onOverride: (overrides: Partial<GameConfig>) => void
 }
 
 /** The smallest word length the shipped lists hold; see docs/DICTIONARIES.md. */
@@ -40,22 +34,21 @@ const SHORTEST_SHIPPED_WORD = 3
  * settings: "hold 2" means nothing until you see that it buys 3.6 seconds with the whole
  * board showing, and the flip economy means nothing until you see what a word pays against
  * what its letters cost.
+ *
+ * Difficulty is not here. It is a game-time choice like language, so it lives in the setup
+ * panel where it can be seen without opening this.
  */
 export function NerdPanel({
   settings,
   config,
-  board,
   dictionary,
-  dirty,
+  locked,
   messages,
   onChange,
-  onNewGame,
+  onOverride,
 }: NerdPanelProps): React.JSX.Element {
-  const set = (overrides: Partial<GameConfig>): void => {
-    onChange({ ...settings, overrides: { ...settings.overrides, ...overrides } })
-  }
   const roundTicks = config.n + config.holdTicks
-  const seconds = (ticks: number): string => `${(ticks * config.speedMultiplier).toFixed(1)}s`
+  const seconds = (count: number): string => `${(count * config.speedMultiplier).toFixed(1)}s`
   const ticks = (count: number): string =>
     format(messages.ticksAndSeconds, {
       ticks: countOf(messages, 'ticks', count),
@@ -65,25 +58,7 @@ export function NerdPanel({
 
   return (
     <aside className="nerd">
-      <div className="nerd-head">
-        <h2>{messages.rules}</h2>
-        <label className="nerd-row">
-          <span>{messages.difficulty}</span>
-          <select
-            value={settings.difficulty}
-            onChange={(e) => {
-              // A preset change discards overrides, otherwise "medium" would silently lie.
-              onChange({ ...settings, difficulty: e.target.value as Difficulty, overrides: {} })
-            }}
-          >
-            {DIFFICULTY_NAMES.map((name) => (
-              <option key={name} value={name}>
-                {messages.difficultyNames[name]}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <h2>{messages.rules}</h2>
 
       <div className="nerd-grid">
         <Number
@@ -91,8 +66,9 @@ export function NerdPanel({
           value={config.n}
           min={2}
           max={16}
+          disabled={locked}
           onChange={(n) => {
-            set({ n })
+            onOverride({ n })
           }}
         />
         <Number
@@ -101,8 +77,9 @@ export function NerdPanel({
           min={0.2}
           max={4}
           step={0.1}
+          disabled={locked}
           onChange={(speedMultiplier) => {
-            set({ speedMultiplier })
+            onOverride({ speedMultiplier })
           }}
         />
         <Number
@@ -110,8 +87,9 @@ export function NerdPanel({
           value={config.holdTicks}
           min={0}
           max={12}
+          disabled={locked}
           onChange={(holdTicks) => {
-            set({ holdTicks })
+            onOverride({ holdTicks })
           }}
         />
         {/* Floored at three because the shipped lists start there: a two-letter minimum would
@@ -121,8 +99,9 @@ export function NerdPanel({
           value={config.minWordLength}
           min={SHORTEST_SHIPPED_WORD}
           max={8}
+          disabled={locked}
           onChange={(minWordLength) => {
-            set({ minWordLength })
+            onOverride({ minWordLength })
           }}
         />
         <Number
@@ -130,28 +109,33 @@ export function NerdPanel({
           value={config.initialFlips}
           min={1}
           max={999}
+          disabled={locked}
           onChange={(initialFlips) => {
-            set({ initialFlips })
+            onOverride({ initialFlips })
           }}
         />
         <Choice
           label={messages.wordCompleteMode}
           value={config.wordCompleteMode}
           options={WORD_COMPLETE_MODES}
+          disabled={locked}
           name={(mode: WordCompleteMode) => messages.wordCompleteNames[mode]}
           onChange={(wordCompleteMode: WordCompleteMode) => {
-            set({ wordCompleteMode })
+            onOverride({ wordCompleteMode })
           }}
         />
         <Choice
           label={messages.flipEconomy}
           value={config.flipEconomy}
           options={FLIP_ECONOMIES}
+          disabled={locked}
           name={(economy: FlipEconomy) => messages.flipEconomyNames[economy]}
           onChange={(flipEconomy: FlipEconomy) => {
-            set({ flipEconomy })
+            onOverride({ flipEconomy })
           }}
         />
+        {/* The last two change nothing about the game, only about reading and typing it, so
+            they stay live while a game runs. */}
         <Choice
           label={messages.repeatedLetterKey}
           value={settings.keyScheme}
@@ -171,6 +155,13 @@ export function NerdPanel({
       </div>
 
       <p className="nerd-note nerd-dim">{messages.keySchemeHelp[settings.keyScheme]}</p>
+      <p className="nerd-note">
+        {isCanonical(settings)
+          ? format(messages.canonicalRules, {
+              difficulty: messages.difficultyNames[settings.difficulty],
+            })
+          : messages.customRules}
+      </p>
 
       <h2>{messages.whatThatMeans}</h2>
       <dl className="nerd-derived">
@@ -184,26 +175,21 @@ export function NerdPanel({
           })}
         />
         <Fact
-          label={messages.factThisBoard}
-          value={format(messages.wordsLongest, {
-            words: countOf(messages, 'words', board.wordCount),
-            longest: board.longest,
-          })}
-        />
-        <Fact
           label={messages.factBoardHadToAdmit}
           value={format(messages.wordsIncludingOneOf, {
             words: countOf(messages, 'words', config.wMin),
             ceiling: config.ceilingMin,
           })}
         />
-        <Fact
-          label={messages.gameLanguage}
-          value={format(messages.dictionarySize, {
-            common: dictionary.commonSize,
-            full: dictionary.size,
-          })}
-        />
+        {dictionary === null ? null : (
+          <Fact
+            label={messages.gameLanguage}
+            value={format(messages.dictionarySize, {
+              common: dictionary.commonSize,
+              full: dictionary.size,
+            })}
+          />
+        )}
       </dl>
 
       <h2>{messages.whatAWordPays}</h2>
@@ -237,29 +223,6 @@ export function NerdPanel({
             })}
         </tbody>
       </table>
-
-      <p className="nerd-note">
-        {isCanonical(settings)
-          ? format(messages.canonicalRules, {
-              difficulty: messages.difficultyNames[settings.difficulty],
-            })
-          : messages.customRules}
-      </p>
-      <button
-        type="button"
-        className="btn btn-primary"
-        onMouseDown={withoutStealingFocus}
-        onClick={onNewGame}
-      >
-        {dirty ? messages.applyAndStart : messages.newGame}
-      </button>
-      {dirty ? <p className="nerd-note">{messages.changesNextGame}</p> : null}
-      <p className="nerd-note nerd-dim">
-        {messages.presets}{' '}
-        {DIFFICULTY_NAMES.map(
-          (d) => `${messages.difficultyNames[d]} ${String(DIFFICULTIES[d].initialRounds)}r`,
-        ).join('  ')}
-      </p>
     </aside>
   )
 }
@@ -270,6 +233,7 @@ function Number({
   min,
   max,
   step,
+  disabled,
   onChange,
 }: {
   label: string
@@ -277,6 +241,7 @@ function Number({
   min: number
   max: number
   step?: number
+  disabled?: boolean
   onChange: (value: number) => void
 }): React.JSX.Element {
   return (
@@ -288,6 +253,7 @@ function Number({
         min={min}
         max={max}
         step={step ?? 1}
+        disabled={disabled ?? false}
         onChange={(e) => {
           const parsed = globalThis.Number(e.target.value)
           if (globalThis.Number.isFinite(parsed) && parsed >= min && parsed <= max) onChange(parsed)
@@ -302,12 +268,14 @@ function Choice<T extends string>({
   value,
   options,
   name,
+  disabled,
   onChange,
 }: {
   label: string
   value: T
   options: readonly T[]
   name: (option: T) => string
+  disabled?: boolean
   onChange: (value: T) => void
 }): React.JSX.Element {
   return (
@@ -315,6 +283,7 @@ function Choice<T extends string>({
       <span>{label}</span>
       <select
         value={value}
+        disabled={disabled ?? false}
         onChange={(e) => {
           onChange(e.target.value as T)
         }}

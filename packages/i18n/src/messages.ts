@@ -52,6 +52,38 @@ export interface Messages {
   /** `{letter}` `{position}` */
   readonly letterInWord: string
 
+  // The rules, on their own page, in whatever language the interface is in.
+  readonly howToPlay: string
+  readonly htBoardTitle: string
+  readonly htBoardBody: string
+  readonly htWordsTitle: string
+  readonly htWordsBody: string
+  readonly htFlipsTitle: string
+  readonly htFlipsBody: string
+  readonly htRoundTitle: string
+  readonly htRoundBody: string
+  readonly htLanguagesTitle: string
+  readonly htLanguagesBody: string
+  readonly htKeysTitle: string
+
+  // Setting a game up, and stopping one.
+  readonly start: string
+  readonly restart: string
+  readonly quit: string
+  readonly quitTitle: string
+  readonly quitConfirm: string
+  readonly keepPlaying: string
+
+  // The personal leaderboard, shown when a game finishes.
+  readonly personalBest: string
+  readonly noScoresYet: string
+  readonly thisGame: string
+  readonly newPersonalBest: string
+  readonly columnRank: string
+  readonly notRanked: string
+  /** `{rank}` `{total}` */
+  readonly rankOfTotal: string
+
   // The buttons.
   readonly completeWord: string
   readonly reset: string

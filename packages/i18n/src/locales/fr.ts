@@ -105,6 +105,38 @@ export const fr: Messages = {
   changesNextGame: 'Les changements prennent effet à la prochaine partie.',
   presets: 'Préréglages :',
 
+  start: 'Commencer',
+  restart: 'Recommencer',
+  quit: 'Quitter',
+  quitTitle: 'Quitter cette partie ?',
+  quitConfirm: 'Quitter',
+  keepPlaying: 'Continuer',
+  personalBest: 'Vos meilleures parties',
+  noScoresYet: 'Aucune partie terminée. Celle-ci sera la première.',
+  thisGame: 'cette partie',
+  newPersonalBest: 'Nouveau record personnel.',
+  columnRank: '#',
+  notRanked: 'Règles personnalisées : cette partie n’est pas classée.',
+  rankOfTotal: '{rank} sur {total}',
+
+  howToPlay: 'Comment jouer',
+  htBoardTitle: 'Le plateau',
+  htBoardBody:
+    'Les tuiles se retournent une à une, dans le sens de la lecture. Une lettre reste invisible jusqu’à ce que sa tuile se retourne.',
+  htWordsTitle: 'Les mots',
+  htWordsBody:
+    'Composez un mot avec les tuiles visibles. Tapez-le, ou cliquez dessus. Chaque tuile ne sert qu’une fois, et seulement après s’être retournée.',
+  htFlipsTitle: 'Les coups',
+  htFlipsBody:
+    'Chaque tuile retournée coûte un coup. Un mot en rend, et les mots longs rendent davantage. Quand les coups sont épuisés, la partie est terminée.',
+  htRoundTitle: 'La manche',
+  htRoundBody:
+    'Quand la dernière tuile d’une manche se retourne, tout le plateau est visible. Il le reste un instant. Puis il est mélangé et redistribué.',
+  htLanguagesTitle: 'Les langues',
+  htLanguagesBody:
+    'Seize langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
+  htKeysTitle: 'Le clavier',
+
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} manche', other: '{n} manches' },

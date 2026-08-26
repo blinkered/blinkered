@@ -106,6 +106,38 @@ export const ptBR: Messages = {
   changesNextGame: 'As alterações valem a partir do próximo jogo.',
   presets: 'Padrões:',
 
+  start: 'Começar',
+  restart: 'Reiniciar',
+  quit: 'Sair',
+  quitTitle: 'Sair deste jogo?',
+  quitConfirm: 'Sair',
+  keepPlaying: 'Continuar jogando',
+  personalBest: 'Seus melhores jogos',
+  noScoresYet: 'Ainda não há jogos terminados. Este será o primeiro.',
+  thisGame: 'este jogo',
+  newPersonalBest: 'Novo recorde pessoal.',
+  columnRank: '#',
+  notRanked: 'Regras próprias: este jogo não é classificado.',
+  rankOfTotal: '{rank} de {total}',
+
+  howToPlay: 'Como jogar',
+  htBoardTitle: 'O tabuleiro',
+  htBoardBody:
+    'As peças viram uma a uma, na ordem de leitura. Você não vê uma letra até a peça dela virar.',
+  htWordsTitle: 'As palavras',
+  htWordsBody:
+    'Monte uma palavra com as peças à vista. Digite-a, ou clique nelas. Cada peça serve uma vez, e só depois de virar.',
+  htFlipsTitle: 'As viradas',
+  htFlipsBody:
+    'Cada peça que vira custa uma virada. Uma palavra devolve viradas, e palavras longas devolvem mais. Quando as viradas acabam, o jogo termina.',
+  htRoundTitle: 'A rodada',
+  htRoundBody:
+    'Quando vira a última peça de uma rodada, o tabuleiro fica todo à vista. Ele fica assim por um instante. Depois é embaralhado e distribuído de novo.',
+  htLanguagesTitle: 'Os idiomas',
+  htLanguagesBody:
+    'Dezesseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra incomum também pontua, se o dicionário a conhecer.',
+  htKeysTitle: 'O teclado',
+
   plurals: {
     words: { one: '{n} palavra', other: '{n} palavras' },
     rounds: { one: '{n} rodada', other: '{n} rodadas' },

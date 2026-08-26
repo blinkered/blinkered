@@ -102,6 +102,38 @@ export const pt: Messages = {
   changesNextGame: 'As alterações aplicam-se no próximo jogo.',
   presets: 'Predefinições:',
 
+  start: 'Começar',
+  restart: 'Reiniciar',
+  quit: 'Sair',
+  quitTitle: 'Sair deste jogo?',
+  quitConfirm: 'Sair',
+  keepPlaying: 'Continuar a jogar',
+  personalBest: 'Os seus melhores jogos',
+  noScoresYet: 'Ainda não há jogos terminados. Este será o primeiro.',
+  thisGame: 'este jogo',
+  newPersonalBest: 'Novo recorde pessoal.',
+  columnRank: '#',
+  notRanked: 'Regras próprias: este jogo não é classificado.',
+  rankOfTotal: '{rank} de {total}',
+
+  howToPlay: 'Como jogar',
+  htBoardTitle: 'O tabuleiro',
+  htBoardBody:
+    'As peças viram-se uma a uma, na ordem de leitura. Não se vê uma letra até a sua peça virar.',
+  htWordsTitle: 'As palavras',
+  htWordsBody:
+    'Forme uma palavra com as peças à vista. Escreva-a, ou clique nelas. Cada peça serve uma vez, e só depois de virar.',
+  htFlipsTitle: 'As viradas',
+  htFlipsBody:
+    'Cada peça que vira custa uma virada. Uma palavra devolve viradas, e as palavras longas devolvem mais. Quando as viradas acabam, o jogo termina.',
+  htRoundTitle: 'A ronda',
+  htRoundBody:
+    'Quando vira a última peça de uma ronda, o tabuleiro está todo à vista. Fica assim por um momento. Depois é baralhado e distribuído de novo.',
+  htLanguagesTitle: 'Os idiomas',
+  htLanguagesBody:
+    'Dezasseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra invulgar também pontua, se o dicionário a conhecer.',
+  htKeysTitle: 'O teclado',
+
   plurals: {
     words: { one: '{n} palavra', other: '{n} palavras' },
     rounds: { one: '{n} ronda', other: '{n} rondas' },

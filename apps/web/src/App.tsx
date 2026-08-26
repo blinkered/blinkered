@@ -1,20 +1,50 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { Effect, GameEvent } from '@blinkered/engine'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ENGINE_VERSION } from '@blinkered/engine'
+import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
 import { Board } from './Board.js'
+import { GameSetup } from './GameSetup.js'
+import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
 import type { Feedback } from './Hud.js'
 import { LanguagePicker } from './LanguagePicker.js'
+import { Leaderboard } from './Leaderboard.js'
 import { NerdPanel } from './NerdPanel.js'
+import { Title } from './Title.js'
 import { loadCatalogue, loadDictionary } from './dictionary.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
-import { configOf, loadSettings, saveSettings } from './settings.js'
-import type { Settings } from './settings.js'
+import { recordScore, standingOf } from './scores.js'
+import type { Standing } from './scores.js'
+import {
+  configOf,
+  isCanonical,
+  loadSettings,
+  saveSettings,
+  withOverride,
+  withRuleset,
+} from './settings.js'
+import type { Ruleset, Settings } from './settings.js'
 import { useGame } from './useGame.js'
 import type { GameSpec } from './useGame.js'
+
+/**
+ * A game is set up, played, and then over. Nothing starts on its own.
+ *
+ * `setup` is where the game-time choices are made and where the rules can be edited; `playing`
+ * locks all of them, because a game whose rules changed underneath it cannot honestly be ranked
+ * against anything; `over` shows where the game came and offers the same choices again.
+ */
+type Phase = 'setup' | 'playing' | 'over'
+
+/** What a finished game leaves behind, once the board itself is gone. */
+interface Finished {
+  readonly result: GameResult
+  readonly standing: Standing
+  readonly words: readonly { word: string; points: number }[]
+}
 
 export function App(): React.JSX.Element {
   const [settings, setSettings] = useState<Settings>(loadSettings)
@@ -46,49 +76,34 @@ export function App(): React.JSX.Element {
     }
   }, [])
 
-  if (error !== null) return <Shell>{<p className="error">{error}</p>}</Shell>
+  if (error !== null) {
+    return (
+      <main className="shell centred">
+        <h1>Blinkered</h1>
+        <p className="error">{error}</p>
+      </main>
+    )
+  }
   if (catalogue === null) {
-    return <Shell>{<p className="dim">{messages.readingDictionary}</p>}</Shell>
+    return (
+      <main className="shell centred">
+        <h1>Blinkered</h1>
+        <p className="dim">{messages.readingDictionary}</p>
+      </main>
+    )
   }
   return (
-    <Loading catalogue={catalogue} settings={settings} messages={messages} onChange={setSettings} />
+    <Session catalogue={catalogue} settings={settings} messages={messages} onChange={setSettings} />
   )
 }
 
-function Shell({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <main className="shell centred">
-      <h1>Blinkered</h1>
-      {children}
-    </main>
-  )
-}
-
-/**
- * Holds the dictionary for the chosen language, and reloads it when that changes.
- *
- * Separate from `App` so switching language remounts the game rather than trying to keep a
- * board built from one language's letters alive against another language's dictionary.
- */
-function Loading({
-  catalogue,
-  settings,
-  messages,
-  onChange,
-}: {
-  catalogue: readonly CatalogueEntry[]
-  settings: Settings
-  messages: Messages
-  onChange: (next: Settings) => void
-}): React.JSX.Element {
+/** Loads the dictionary for a language, and reports honestly while it is doing so. */
+function useDictionary(
+  language: string,
+  messages: Messages,
+): { dictionary: TieredIndex | null; error: string | null } {
   const [dictionary, setDictionary] = useState<TieredIndex | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  // A stored game language whose list this deployment does not have falls back to the first
-  // one it does, rather than to a loading screen that never finishes.
-  const language = catalogue.some((entry) => entry.tag === settings.gameLanguage)
-    ? settings.gameLanguage
-    : (catalogue[0]?.tag ?? settings.gameLanguage)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -103,85 +118,129 @@ function Loading({
     return () => {
       controller.abort()
     }
-    // Keyed on the language alone. `messages` is read here only to word a failure, and
-    // re-fetching a dictionary because somebody changed interface language would be silly.
-  }, [language, messages])
+    // `messages` only supplies the wording of a failure. Re-fetching a dictionary because
+    // somebody changed interface language would be silly.
+  }, [language])
 
-  const pick = (tag: string): void => {
-    // One control, both languages. Anyone who wants them to differ can say so in nerd mode.
-    onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
-  }
-
-  if (error !== null) return <Shell>{<p className="error">{error}</p>}</Shell>
-  if (dictionary === null) {
-    return (
-      <Shell>
-        <p className="dim">{messages.readingDictionary}</p>
-        <LanguagePicker
-          catalogue={catalogue}
-          value={language}
-          label={messages.gameLanguage}
-          onChange={pick}
-        />
-      </Shell>
-    )
-  }
-  return (
-    <Playing
-      // Remounts on a language change, which throws away a board of the wrong letters.
-      key={language}
-      dictionary={dictionary}
-      catalogue={catalogue}
-      settings={settings}
-      messages={messages}
-      language={language}
-      onChange={onChange}
-      onPickLanguage={pick}
-    />
-  )
+  return { dictionary, error }
 }
 
-function Playing({
-  dictionary,
+function Session({
   catalogue,
   settings,
   messages,
-  language,
   onChange,
-  onPickLanguage,
 }: {
-  dictionary: TieredIndex
   catalogue: readonly CatalogueEntry[]
   settings: Settings
   messages: Messages
-  language: string
   onChange: (next: Settings) => void
-  onPickLanguage: (tag: string) => void
 }): React.JSX.Element {
+  // A stored game language this deployment has no list for falls back to one it does have,
+  // rather than to a loading state that never finishes.
+  const language = catalogue.some((entry) => entry.tag === settings.gameLanguage)
+    ? settings.gameLanguage
+    : (catalogue[0]?.tag ?? settings.gameLanguage)
+
+  const { dictionary, error } = useDictionary(language, messages)
+  const [phase, setPhase] = useState<Phase>('setup')
+  const [spec, setSpec] = useState<GameSpec | null>(null)
+  const [finished, setFinished] = useState<Finished | null>(null)
+
+  // The wordmark deals itself as a hand of Blinkered on arrival. Pressing Start during it hurries
+  // it along rather than cutting it off, so the game begins on a title that reads BLINKERED.
+  const [titleDone, setTitleDone] = useState(false)
+  const [hurried, setHurried] = useState(false)
+  const [waitingToStart, setWaitingToStart] = useState(false)
+
   const config = useMemo(() => configOf(settings), [settings])
-  const [spec, setSpec] = useState<GameSpec>(() => ({ config, seed: freshSeed() }))
-  const portrait = usePortrait()
+  const playing = phase === 'playing'
 
-  const game = useGame(dictionary, spec, settings.keyScheme)
-  const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
-  const dirty = JSON.stringify(config) !== JSON.stringify(spec.config)
-
-  const newGame = (): void => {
+  const begin = useCallback((): void => {
+    setFinished(null)
     setSpec({ config, seed: freshSeed() })
+    setPhase('playing')
+  }, [config])
+
+  const start = (): void => {
+    if (titleDone) {
+      begin()
+      return
+    }
+    setHurried(true)
+    setWaitingToStart(true)
   }
 
-  const over = game.state.status === 'over'
+  useEffect(() => {
+    if (!waitingToStart || !titleDone) return
+    setWaitingToStart(false)
+    begin()
+  }, [waitingToStart, titleDone, begin])
+
+  const quit = (): void => {
+    // A quit is not a result. A game abandoned at a good score is not a good game.
+    setSpec(null)
+    setPhase('setup')
+  }
+
+  const onFinish = useCallback(
+    (state: GameState, seed: number): void => {
+      const result: GameResult = {
+        score: state.score,
+        words: state.wordsFound.length,
+        rounds: state.roundIndex + 1,
+        language,
+        difficulty: settings.difficulty,
+        canonical: isCanonical(settings),
+        at: Date.now(),
+        seed,
+        engineVersion: ENGINE_VERSION,
+      }
+      const stored = recordScore(result)
+      setFinished({
+        result,
+        standing: standingOf(stored, result, { language, difficulty: settings.difficulty }),
+        words: state.wordsFound,
+      })
+      setPhase('over')
+    },
+    [language, settings],
+  )
+
+  const setup = (startLabel: string): React.JSX.Element => (
+    <GameSetup
+      settings={settings}
+      language={language}
+      messages={messages}
+      ready={dictionary !== null && !waitingToStart}
+      startLabel={startLabel}
+      onRuleset={(ruleset: Ruleset) => {
+        onChange(withRuleset(settings, ruleset))
+      }}
+      onStart={start}
+    />
+  )
 
   return (
     <main className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}>
       <div className="play">
         <div className="titlebar">
-          <h1>Blinkered</h1>
+          <Title
+            skip={hurried}
+            onDone={() => {
+              setTitleDone(true)
+            }}
+          />
+          {/* Always here, and live except while a game is running. Somebody arriving at a page
+              in a language they cannot read has to be able to fix that before anything else. */}
           <LanguagePicker
             catalogue={catalogue}
             value={language}
             label={messages.gameLanguage}
-            onChange={onPickLanguage}
+            disabled={playing}
+            onChange={(tag) => {
+              onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
+            }}
           />
           <label className="toggle">
             <input
@@ -195,144 +254,245 @@ function Playing({
           </label>
         </div>
 
-        <Hud state={game.state} feedback={feedback} messages={messages} />
+        {error !== null ? <p className="error">{error}</p> : null}
 
-        <div className="board-wrap">
-          <Board
-            state={game.state}
-            portrait={portrait}
-            concealed={game.paused && !over}
+        {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
+
+        {phase === 'over' && finished !== null ? (
+          <div className="panel">
+            <p className="veil-title">{messages.outOfFlips}</p>
+            <p className="result-line">
+              {formatFinalResult(messages, {
+                score: finished.result.score,
+                words: finished.result.words,
+                rounds: finished.result.rounds,
+              })}
+            </p>
+            <Leaderboard
+              standing={finished.standing}
+              current={finished.result}
+              messages={messages}
+            />
+            <FoundWords words={finished.words} messages={messages} />
+            {setup(messages.newGame)}
+          </div>
+        ) : null}
+
+        {playing && spec !== null && dictionary !== null ? (
+          <Playing
+            key={spec.seed}
+            dictionary={dictionary}
+            spec={spec}
+            settings={settings}
+            language={language}
             messages={messages}
-            onTapTile={(tileId) => {
-              game.dispatch({ type: 'TAP_TILE', tileId })
-            }}
+            onRestart={start}
+            onQuit={quit}
+            onFinish={onFinish}
           />
-          {game.paused && !over ? (
-            <div className="veil">
-              <p>{messages.paused}</p>
-              <button
-                type="button"
-                onMouseDown={withoutStealingFocus}
-                className="btn"
-                onClick={() => {
-                  game.setPaused(false)
-                }}
-              >
-                {messages.resume}
-              </button>
-            </div>
-          ) : null}
-          {over ? (
-            <div className="veil">
-              <p className="veil-title">{messages.outOfFlips}</p>
-              <p>
-                {formatFinalResult(messages, {
-                  score: game.state.score,
-                  words: game.state.wordsFound.length,
-                  rounds: game.state.roundIndex + 1,
-                })}
-              </p>
-              <button
-                type="button"
-                onMouseDown={withoutStealingFocus}
-                className="btn btn-primary"
-                onClick={newGame}
-              >
-                {messages.playAgain}
-              </button>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="controls">
-          <button
-            type="button"
-            onMouseDown={withoutStealingFocus}
-            className="btn btn-primary"
-            disabled={over || game.paused}
-            onClick={() => {
-              game.dispatch({ type: 'SUBMIT_WORD' })
-            }}
-          >
-            {messages.completeWord} <kbd>enter</kbd>
-          </button>
-          <button
-            type="button"
-            onMouseDown={withoutStealingFocus}
-            className="btn"
-            disabled={over || game.paused}
-            onClick={() => {
-              game.dispatch({ type: 'RESET_WORD' })
-            }}
-          >
-            {messages.reset} <kbd>esc</kbd>
-          </button>
-          <button
-            type="button"
-            onMouseDown={withoutStealingFocus}
-            className="btn"
-            disabled={over}
-            onClick={() => {
-              game.setPaused(!game.paused)
-            }}
-          >
-            {game.paused ? messages.resume : messages.pause}
-          </button>
-          <button
-            type="button"
-            onMouseDown={withoutStealingFocus}
-            className="btn"
-            onClick={newGame}
-          >
-            {messages.newGame}
-          </button>
-        </div>
-
-        {/* Only the bindings the buttons cannot advertise. Enter and Escape are already
-            written on Complete word and Reset, so repeating them here is noise. Hidden on
-            touch devices, where none of it applies. */}
-        <p className="legend">
-          <span>{messages.lettersSelect}</span>
-          <span>
-            <kbd>shift-X</kbd> {format(messages.clearsEvery, { letter: 'X' })}
-          </span>
-          <span>
-            <kbd>&#x232b;</kbd> {messages.undoLastLetter}
-          </span>
-        </p>
-
-        <FoundWords state={game.state} messages={messages} />
+        ) : null}
       </div>
 
       {settings.nerdMode ? (
         <NerdPanel
           settings={settings}
           config={config}
-          board={game.board}
           dictionary={dictionary}
-          dirty={dirty}
+          locked={playing}
           messages={messages}
           onChange={onChange}
-          onNewGame={newGame}
+          onOverride={(overrides) => {
+            onChange(withOverride(settings, overrides))
+          }}
         />
       ) : null}
     </main>
   )
 }
 
+function Playing({
+  dictionary,
+  spec,
+  settings,
+  language,
+  messages,
+  onRestart,
+  onQuit,
+  onFinish,
+}: {
+  dictionary: TieredIndex
+  spec: GameSpec
+  settings: Settings
+  language: string
+  messages: Messages
+  onRestart: () => void
+  onQuit: () => void
+  onFinish: (state: GameState, seed: number) => void
+}): React.JSX.Element {
+  const portrait = usePortrait()
+  const [confirmingQuit, setConfirmingQuit] = useState(false)
+  const game = useGame(dictionary, spec, settings.keyScheme)
+  const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
+
+  const over = game.state.status === 'over'
+  // Reported once the reducer says so; the parent then takes over and unmounts this.
+  const finalState = game.state
+  const { seed } = spec
+  useEffect(() => {
+    if (over) onFinish(finalState, seed)
+  }, [over, finalState, seed, onFinish])
+
+  return (
+    <>
+      <Hud state={game.state} feedback={feedback} messages={messages} />
+
+      <div className="board-wrap">
+        <Board
+          state={game.state}
+          portrait={portrait}
+          concealed={game.paused}
+          messages={messages}
+          onTapTile={(tileId) => {
+            game.dispatch({ type: 'TAP_TILE', tileId })
+          }}
+        />
+        {confirmingQuit ? (
+          <div className="veil">
+            <p className="veil-title">{messages.quitTitle}</p>
+            <div className="controls">
+              <button
+                type="button"
+                className="btn"
+                onMouseDown={withoutStealingFocus}
+                onClick={onQuit}
+              >
+                {messages.quitConfirm}
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onMouseDown={withoutStealingFocus}
+                onClick={() => {
+                  setConfirmingQuit(false)
+                  game.setPaused(false)
+                }}
+              >
+                {messages.keepPlaying}
+              </button>
+            </div>
+          </div>
+        ) : game.paused ? (
+          <div className="veil">
+            <p>{messages.paused}</p>
+            <button
+              type="button"
+              className="btn"
+              onMouseDown={withoutStealingFocus}
+              onClick={() => {
+                game.setPaused(false)
+              }}
+            >
+              {messages.resume}
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="controls">
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={game.paused}
+          onMouseDown={withoutStealingFocus}
+          onClick={() => {
+            game.dispatch({ type: 'SUBMIT_WORD' })
+          }}
+        >
+          {messages.completeWord} <kbd>enter</kbd>
+        </button>
+        <button
+          type="button"
+          className="btn"
+          disabled={game.paused}
+          onMouseDown={withoutStealingFocus}
+          onClick={() => {
+            game.dispatch({ type: 'RESET_WORD' })
+          }}
+        >
+          {messages.reset} <kbd>esc</kbd>
+        </button>
+        <button
+          type="button"
+          className="btn"
+          disabled={confirmingQuit}
+          onMouseDown={withoutStealingFocus}
+          onClick={() => {
+            game.setPaused(!game.paused)
+          }}
+        >
+          {game.paused ? messages.resume : messages.pause}
+        </button>
+        <button
+          type="button"
+          className="btn"
+          onMouseDown={withoutStealingFocus}
+          onClick={onRestart}
+        >
+          {messages.restart}
+        </button>
+        <button
+          type="button"
+          className="btn"
+          onMouseDown={withoutStealingFocus}
+          onClick={() => {
+            // Confirmed, and the clock stops while it is: a mis-click must not throw away a
+            // game in progress, and the offer to keep playing must not cost flips.
+            setConfirmingQuit(true)
+            game.setPaused(true)
+          }}
+        >
+          {messages.quit}
+        </button>
+      </div>
+
+      {/* Only the bindings the buttons cannot advertise. Enter and Escape are already
+          written on Complete word and Reset, so repeating them here is noise. Hidden on
+          touch devices, where none of it applies. */}
+      <p className="legend">
+        <span>{messages.lettersSelect}</span>
+        <span>
+          <kbd>shift-X</kbd> {format(messages.clearsEvery, { letter: 'X' })}
+        </span>
+        <span>
+          <kbd>&#x232b;</kbd> {messages.undoLastLetter}
+        </span>
+        <HowToPlayLink
+          language={language}
+          messages={messages}
+          onOpen={() => {
+            game.setPaused(true)
+          }}
+        />
+      </p>
+
+      <FoundWords words={game.state.wordsFound} messages={messages} />
+    </>
+  )
+}
+
 function FoundWords({
-  state,
+  words,
   messages,
 }: {
-  state: { wordsFound: readonly { word: string; points: number }[] }
+  words: readonly { word: string; points: number }[]
   messages: Messages
 }): React.JSX.Element {
-  if (state.wordsFound.length === 0) {
+  if (words.length === 0) {
     return <p className="found dim">{messages.noWordsYet}</p>
   }
   return (
     <ul className="found">
-      {[...state.wordsFound].reverse().map((found) => (
+      {[...words].reverse().map((found) => (
         <li key={found.word}>
           {found.word}
           <span className="found-points">{found.points}</span>

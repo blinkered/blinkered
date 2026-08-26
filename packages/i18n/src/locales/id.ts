@@ -106,6 +106,38 @@ export const id: Messages = {
   changesNextGame: 'Perubahan berlaku pada permainan berikutnya.',
   presets: 'Praatur:',
 
+  start: 'Mulai',
+  restart: 'Mulai ulang',
+  quit: 'Keluar',
+  quitTitle: 'Keluar dari permainan ini?',
+  quitConfirm: 'Keluar',
+  keepPlaying: 'Lanjut bermain',
+  personalBest: 'Permainan terbaik Anda',
+  noScoresYet: 'Belum ada permainan yang selesai. Ini yang pertama.',
+  thisGame: 'permainan ini',
+  newPersonalBest: 'Rekor pribadi baru.',
+  columnRank: '#',
+  notRanked: 'Aturan sendiri, jadi permainan ini tidak diperingkat.',
+  rankOfTotal: '{rank} dari {total}',
+
+  howToPlay: 'Cara bermain',
+  htBoardTitle: 'Papan',
+  htBoardBody:
+    'Kartu dibuka satu per satu, mengikuti arah baca. Huruf tidak terlihat sampai kartunya berbalik.',
+  htWordsTitle: 'Kata',
+  htWordsBody:
+    'Susun kata dari kartu yang terbuka. Ketik kata itu, atau klik kartunya. Setiap kartu dipakai sekali, dan hanya setelah berbalik.',
+  htFlipsTitle: 'Balikan',
+  htFlipsBody:
+    'Setiap kartu yang berbalik memakan satu balikan. Sebuah kata mengembalikannya, dan kata panjang mengembalikan lebih banyak. Ketika balikan habis, permainan berakhir.',
+  htRoundTitle: 'Putaran',
+  htRoundBody:
+    'Ketika kartu terakhir suatu putaran berbalik, seluruh papan terbuka. Papan bertahan begitu sesaat. Lalu diacak dan dibagikan lagi.',
+  htLanguagesTitle: 'Bahasa',
+  htLanguagesBody:
+    'Enam belas. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
+  htKeysTitle: 'Papan tik',
+
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} putaran' },

@@ -102,6 +102,38 @@ export const no: Messages = {
   changesNextGame: 'Endringer gjelder fra neste spill.',
   presets: 'Forvalg:',
 
+  start: 'Start',
+  restart: 'Start på nytt',
+  quit: 'Avslutt',
+  quitTitle: 'Avslutte dette spillet?',
+  quitConfirm: 'Avslutt',
+  keepPlaying: 'Fortsett å spille',
+  personalBest: 'Dine beste spill',
+  noScoresYet: 'Ingen fullførte spill ennå. Dette blir det første.',
+  thisGame: 'dette spillet',
+  newPersonalBest: 'Ny personlig rekord.',
+  columnRank: '#',
+  notRanked: 'Egne regler, så dette spillet rangeres ikke.',
+  rankOfTotal: '{rank} av {total}',
+
+  howToPlay: 'Slik spiller du',
+  htBoardTitle: 'Brettet',
+  htBoardBody:
+    'Brikkene snus opp én om gangen, i leseretningen. En bokstav er ikke synlig før brikken snus.',
+  htWordsTitle: 'Ordene',
+  htWordsBody:
+    'Lag et ord av brikkene som ligger åpne. Skriv det, eller klikk på dem. Hver brikke gjelder én gang, og først etter at den er snudd.',
+  htFlipsTitle: 'Trekkene',
+  htFlipsBody:
+    'Hver brikke som snus koster ett trekk. Et ord gir trekk tilbake, og lange ord gir mer. Når trekkene er brukt opp, er spillet over.',
+  htRoundTitle: 'Runden',
+  htRoundBody:
+    'Når rundens siste brikke snus, ligger hele brettet åpent. Det ligger slik et øyeblikk. Så stokkes det og deles ut på nytt.',
+  htLanguagesTitle: 'Språkene',
+  htLanguagesBody:
+    'Seksten. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
+  htKeysTitle: 'Tastaturet',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },

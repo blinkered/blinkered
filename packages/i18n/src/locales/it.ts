@@ -103,6 +103,38 @@ export const it: Messages = {
   changesNextGame: 'Le modifiche valgono dalla prossima partita.',
   presets: 'Preset:',
 
+  start: 'Inizia',
+  restart: 'Ricomincia',
+  quit: 'Esci',
+  quitTitle: 'Uscire da questa partita?',
+  quitConfirm: 'Esci',
+  keepPlaying: 'Continua',
+  personalBest: 'Le tue migliori partite',
+  noScoresYet: 'Nessuna partita conclusa. Questa sarà la prima.',
+  thisGame: 'questa partita',
+  newPersonalBest: 'Nuovo record personale.',
+  columnRank: '#',
+  notRanked: 'Regole personalizzate: questa partita non entra in classifica.',
+  rankOfTotal: '{rank} di {total}',
+
+  howToPlay: 'Come si gioca',
+  htBoardTitle: 'Il tabellone',
+  htBoardBody:
+    'Le tessere si girano una alla volta, in ordine di lettura. Una lettera non si vede finché la sua tessera non si gira.',
+  htWordsTitle: 'Le parole',
+  htWordsBody:
+    'Componi una parola con le tessere scoperte. Scrivila, oppure cliccale. Ogni tessera si usa una volta sola, e solo dopo essersi girata.',
+  htFlipsTitle: 'I giri',
+  htFlipsBody:
+    'Ogni tessera che si gira costa un giro. Una parola ne restituisce, e le parole lunghe rendono di più. Quando i giri finiscono, la partita è chiusa.',
+  htRoundTitle: 'Il turno',
+  htRoundBody:
+    'Quando si gira l’ultima tessera del turno, il tabellone è tutto scoperto. Resta così per un momento. Poi viene mescolato e distribuito di nuovo.',
+  htLanguagesTitle: 'Le lingue',
+  htLanguagesBody:
+    'Sedici. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
+  htKeysTitle: 'La tastiera',
+
   plurals: {
     words: { one: '{n} parola', other: '{n} parole' },
     rounds: { one: '{n} turno', other: '{n} turni' },

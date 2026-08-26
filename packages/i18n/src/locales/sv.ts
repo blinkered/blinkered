@@ -102,6 +102,38 @@ export const sv: Messages = {
   changesNextGame: 'Ändringar gäller från nästa spel.',
   presets: 'Förval:',
 
+  start: 'Starta',
+  restart: 'Börja om',
+  quit: 'Avsluta',
+  quitTitle: 'Avsluta det här spelet?',
+  quitConfirm: 'Avsluta',
+  keepPlaying: 'Fortsätt spela',
+  personalBest: 'Dina bästa spel',
+  noScoresYet: 'Inga avslutade spel än. Det här blir det första.',
+  thisGame: 'det här spelet',
+  newPersonalBest: 'Nytt personbästa.',
+  columnRank: '#',
+  notRanked: 'Egna regler, så det här spelet rankas inte.',
+  rankOfTotal: '{rank} av {total}',
+
+  howToPlay: 'Så spelar du',
+  htBoardTitle: 'Brädet',
+  htBoardBody:
+    'Brickorna vänds upp en i taget, i läsordning. En bokstav syns inte förrän dess bricka vänds.',
+  htWordsTitle: 'Orden',
+  htWordsBody:
+    'Bilda ett ord av de uppvända brickorna. Skriv det, eller klicka på dem. Varje bricka räcker en gång, och först efter att den vänts.',
+  htFlipsTitle: 'Dragen',
+  htFlipsBody:
+    'Varje bricka som vänds kostar ett drag. Ett ord ger drag tillbaka, och långa ord ger mer. När dragen tar slut är spelet över.',
+  htRoundTitle: 'Omgången',
+  htRoundBody:
+    'När omgångens sista bricka vänds ligger hela brädet uppe. Det ligger så ett ögonblick. Sedan blandas det och delas ut igen.',
+  htLanguagesTitle: 'Språken',
+  htLanguagesBody:
+    'Sexton. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
+  htKeysTitle: 'Tangentbordet',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} omgång', other: '{n} omgångar' },

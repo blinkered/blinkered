@@ -6,6 +6,8 @@ interface LanguagePickerProps {
   readonly catalogue: readonly CatalogueEntry[]
   readonly value: string
   readonly label: string
+  /** True while a game is running: the language it was dealt in cannot change under it. */
+  readonly disabled?: boolean
   readonly onChange: (language: string) => void
 }
 
@@ -21,6 +23,7 @@ export function LanguagePicker({
   catalogue,
   value,
   label,
+  disabled = false,
   onChange,
 }: LanguagePickerProps): React.JSX.Element {
   return (
@@ -29,6 +32,7 @@ export function LanguagePicker({
       <select
         className="picker-select"
         value={value}
+        disabled={disabled}
         onChange={(e) => {
           // Hand the keyboard back to the game: a focused select swallows every letter,
           // because typing one jumps to the matching option instead.
@@ -52,6 +56,8 @@ export function LanguagePicker({
 interface InterfacePickerProps {
   readonly value: string
   readonly label: string
+  /** `row` sits in the nerd panel's two-column grid; `inline` stands on its own. */
+  readonly layout?: 'row' | 'inline'
   readonly onChange: (language: string) => void
 }
 
@@ -65,12 +71,15 @@ interface InterfacePickerProps {
 export function InterfacePicker({
   value,
   label,
+  layout = 'row',
   onChange,
 }: InterfacePickerProps): React.JSX.Element {
+  const inline = layout === 'inline'
   return (
-    <label className="nerd-row">
-      <span>{label}</span>
+    <label className={inline ? 'picker' : 'nerd-row'}>
+      <span className={inline ? 'picker-label' : undefined}>{label}</span>
       <select
+        className={inline ? 'picker-select' : undefined}
         value={value}
         onChange={(e) => {
           onChange(e.target.value)

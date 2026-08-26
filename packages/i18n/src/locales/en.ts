@@ -109,6 +109,38 @@ export const en: Messages = {
   changesNextGame: 'Changes take effect on the next game.',
   presets: 'Presets:',
 
+  start: 'Start',
+  restart: 'Restart',
+  quit: 'Quit',
+  quitTitle: 'Quit this game?',
+  quitConfirm: 'Quit',
+  keepPlaying: 'Keep playing',
+  personalBest: 'Your best games',
+  noScoresYet: 'No finished games yet. This will be the first.',
+  thisGame: 'this game',
+  newPersonalBest: 'A new personal best.',
+  columnRank: '#',
+  notRanked: 'Custom rules, so this game is not ranked.',
+  rankOfTotal: '{rank} of {total}',
+
+  howToPlay: 'How to play',
+  htBoardTitle: 'The board',
+  htBoardBody:
+    'Tiles turn face up one at a time, in reading order. You cannot see a letter until its tile turns.',
+  htWordsTitle: 'The words',
+  htWordsBody:
+    'Spell a word from the tiles that are showing. Type it, or click them. Each tile can be used once, and only after it has turned.',
+  htFlipsTitle: 'The flips',
+  htFlipsBody:
+    'Every tile that turns costs a flip. A word pays flips back, and longer words pay more. When the flips run out, the game is over.',
+  htRoundTitle: 'The round',
+  htRoundBody:
+    'When the last tile of a round turns, the whole board is showing. It holds there for a moment. Then it shuffles and deals again.',
+  htLanguagesTitle: 'The languages',
+  htLanguagesBody:
+    'Sixteen of them. Every board can be solved from words people actually use. An unusual word still scores, if the dictionary knows it.',
+  htKeysTitle: 'The keyboard',
+
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },

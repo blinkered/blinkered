@@ -105,6 +105,38 @@ export const de: Messages = {
   changesNextGame: 'Änderungen gelten ab dem nächsten Spiel.',
   presets: 'Vorgaben:',
 
+  start: 'Starten',
+  restart: 'Neu starten',
+  quit: 'Beenden',
+  quitTitle: 'Dieses Spiel beenden?',
+  quitConfirm: 'Beenden',
+  keepPlaying: 'Weiterspielen',
+  personalBest: 'Deine besten Spiele',
+  noScoresYet: 'Noch keine beendeten Spiele. Dies wird das erste.',
+  thisGame: 'dieses Spiel',
+  newPersonalBest: 'Neue persönliche Bestleistung.',
+  columnRank: '#',
+  notRanked: 'Eigene Regeln, daher wird dieses Spiel nicht gewertet.',
+  rankOfTotal: '{rank} von {total}',
+
+  howToPlay: 'Spielanleitung',
+  htBoardTitle: 'Das Feld',
+  htBoardBody:
+    'Die Steine werden einzeln umgedreht, in Leserichtung. Einen Buchstaben sieht man erst, wenn sein Stein sich dreht.',
+  htWordsTitle: 'Die Wörter',
+  htWordsBody:
+    'Bilde ein Wort aus den offenen Steinen. Tippe es, oder klicke sie an. Jeder Stein zählt einmal, und erst nachdem er sich gedreht hat.',
+  htFlipsTitle: 'Die Züge',
+  htFlipsBody:
+    'Jeder Stein, der sich dreht, kostet einen Zug. Ein Wort gibt Züge zurück, und lange Wörter geben mehr. Sind die Züge aufgebraucht, ist das Spiel vorbei.',
+  htRoundTitle: 'Die Runde',
+  htRoundBody:
+    'Dreht sich der letzte Stein einer Runde, liegt das ganze Feld offen. Es bleibt einen Moment so. Dann wird gemischt und neu ausgelegt.',
+  htLanguagesTitle: 'Die Sprachen',
+  htLanguagesBody:
+    'Sechzehn. Jedes Feld lässt sich mit gebräuchlichen Wörtern lösen. Ein seltenes Wort zählt trotzdem, wenn das Wörterbuch es kennt.',
+  htKeysTitle: 'Die Tastatur',
+
   plurals: {
     words: { one: '{n} Wort', other: '{n} Wörter' },
     rounds: { one: '{n} Runde', other: '{n} Runden' },

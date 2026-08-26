@@ -102,6 +102,38 @@ export const nl: Messages = {
   changesNextGame: 'Wijzigingen gelden vanaf het volgende spel.',
   presets: 'Voorinstellingen:',
 
+  start: 'Starten',
+  restart: 'Opnieuw',
+  quit: 'Stoppen',
+  quitTitle: 'Dit spel stoppen?',
+  quitConfirm: 'Stoppen',
+  keepPlaying: 'Doorspelen',
+  personalBest: 'Je beste spellen',
+  noScoresYet: 'Nog geen voltooide spellen. Dit wordt het eerste.',
+  thisGame: 'dit spel',
+  newPersonalBest: 'Nieuw persoonlijk record.',
+  columnRank: '#',
+  notRanked: 'Eigen regels, dus dit spel telt niet mee.',
+  rankOfTotal: '{rank} van {total}',
+
+  howToPlay: 'Hoe je speelt',
+  htBoardTitle: 'Het bord',
+  htBoardBody:
+    'De stenen draaien één voor één om, in leesrichting. Een letter is niet te zien tot zijn steen draait.',
+  htWordsTitle: 'De woorden',
+  htWordsBody:
+    'Vorm een woord uit de open stenen. Typ het, of klik erop. Elke steen gaat één keer mee, en pas nadat hij is gedraaid.',
+  htFlipsTitle: 'De zetten',
+  htFlipsBody:
+    'Elke steen die draait kost een zet. Een woord geeft zetten terug, en lange woorden geven meer. Zijn de zetten op, dan is het spel voorbij.',
+  htRoundTitle: 'De ronde',
+  htRoundBody:
+    'Draait de laatste steen van een ronde, dan ligt het hele bord open. Zo blijft het even. Daarna wordt het geschud en opnieuw gelegd.',
+  htLanguagesTitle: 'De talen',
+  htLanguagesBody:
+    'Zestien. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
+  htKeysTitle: 'Het toetsenbord',
+
   plurals: {
     words: { one: '{n} woord', other: '{n} woorden' },
     rounds: { one: '{n} ronde', other: '{n} rondes' },

@@ -51,4 +51,11 @@ export {
   tileById,
   type LetterAvailability,
 } from './selection.js'
+export {
+  compareResults,
+  rankOf,
+  rankedResults,
+  type GameResult,
+  type ResultGroup,
+} from './results.js'
 export { seedRng, nextFloat, nextInt, nextUint32, shuffle } from './rng.js'
