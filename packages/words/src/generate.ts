@@ -7,6 +7,7 @@ export interface GeneratedBoard {
   readonly rng: RngState
   readonly wordCount: number
   readonly longest: number
+  /** Draws made, whether or not they were faulty. */
   readonly attempts: number
   /** False when no draw cleared every bar and the best one found is being played anyway. */
   readonly accepted: boolean
@@ -28,33 +29,39 @@ export function generateBoard(
   maxAttempts = DEFAULT_MAX_ATTEMPTS,
 ): GeneratedBoard {
   let rng = seedRng(seed)
-  let best: GeneratedBoard | null = null
+  let best: Candidate | null = null
+  let attempt = 0
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  while (attempt < maxAttempts) {
+    attempt += 1
     const [letters, next] = drawLetters(rng, config.n, alphabet)
     rng = next
     if (letterFaults(letters, alphabet).length > 0) continue
 
     const { count, longest } = index.profile(letters, config.minWordLength)
-    const candidate: GeneratedBoard = {
-      letters,
-      rng: next,
-      wordCount: count,
-      longest,
-      attempts: attempt,
-      accepted: count >= config.wMin && longest >= config.ceilingMin,
+    const candidate: Candidate = { letters, rng: next, wordCount: count, longest }
+    if (count >= config.wMin && longest >= config.ceilingMin) {
+      return { ...candidate, attempts: attempt, accepted: true }
     }
-    if (candidate.accepted) return candidate
     if (best === null || rank(candidate) > rank(best)) best = candidate
   }
-  return best ?? emptyResult(rng, maxAttempts)
+
+  // Nothing cleared every bar, so play the best board seen and report that it fell short.
+  if (best === null) {
+    return { letters: [], rng, wordCount: 0, longest: 0, attempts: attempt, accepted: false }
+  }
+  return { ...best, attempts: attempt, accepted: false }
+}
+
+/** A candidate board before it is known whether it was accepted. */
+interface Candidate {
+  readonly letters: readonly string[]
+  readonly rng: RngState
+  readonly wordCount: number
+  readonly longest: number
 }
 
 /** A board that can pay beats a board that merely holds plenty of words. */
-function rank(board: GeneratedBoard): number {
+function rank(board: Candidate): number {
   return board.longest * 10_000 + board.wordCount
-}
-
-function emptyResult(rng: RngState, attempts: number): GeneratedBoard {
-  return { letters: [], rng, wordCount: 0, longest: 0, attempts, accepted: false }
 }

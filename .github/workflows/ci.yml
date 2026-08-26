@@ -7,7 +7,14 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Two operating systems on purpose: the first CI run failed because a test read
+    # /usr/share/dict/words, which exists on macOS and not on a Linux runner. Tests are
+    # hermetic now, and this matrix is what keeps them that way.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
