@@ -6,15 +6,30 @@ Tiles flip face up one per tick, in reading order. You spell words from what is 
 Every reveal costs a flip; every word pays some back. When the flips run out, the game is
 over. The full rules, and the decisions behind them, are in [docs/PLAN.md](docs/PLAN.md).
 
-## Play it right now
+## Play it in a browser
 
 ```
 pnpm install
+pnpm wordlist     # packs a word list into apps/web/public (once)
+pnpm dev          # http://localhost:5173
+```
+
+Type the word. Enter submits, Escape clears, Backspace undoes a letter, and clicking tiles
+works too. **Nerd mode**, the toggle top right, shows every rule and the arithmetic behind
+it: how long the whole board stays up, what a round costs in flips, and what each word
+length pays against what its letters cost.
+
+`pnpm wordlist` is a stopgap. It packs the system dictionary, which is Webster's 1934 and a
+list of base forms, so it knows HISS but not HISSES while cheerfully accepting OWSE. The
+real two-tier list replaces it behind the same interface.
+
+## Play it in a terminal
+
+```
 pnpm play
 ```
 
-That is the terminal harness. It runs the real engine, so it is the fastest way to argue
-with the rules before there is any UI.
+The harness runs the same engine, and is still the fastest way to argue with the rules.
 
 ```
 pnpm play --difficulty=hard

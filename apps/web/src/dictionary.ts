@@ -13,11 +13,14 @@ import type { WordIndex } from '@blinkered/words'
  */
 export async function loadDictionary(language: string, signal: AbortSignal): Promise<WordIndex> {
   const alphabet = alphabetFor(language)
+  const missing = `No word list for "${language}". Generate one with:  pnpm wordlist`
   const response = await fetch(`${import.meta.env.BASE_URL}words-${language}.txt`, { signal })
-  if (!response.ok) {
-    throw new Error(`No word list for "${language}". Generate one with: pnpm wordlist`)
-  }
+  if (!response.ok) throw new Error(missing)
+
   const text = await response.text()
+  // A dev server answers an unmatched path with index.html rather than a 404, so `ok` alone
+  // would let the app try to parse a web page as a dictionary.
+  if (text.startsWith('<')) throw new Error(missing)
   // Already folded and length-filtered by tools/wordlist, so this only drops the trailing line.
   const words = text.split('\n').filter((word) => word.length > 0)
   if (words.length === 0) throw new Error(`The word list for "${language}" is empty.`)
