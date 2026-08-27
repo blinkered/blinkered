@@ -105,15 +105,38 @@ The icon is a selected tile, in the blue the board paints a taken letter. The sp
 own background with the same tile on it, so the handover from splash to first paint has nothing
 to see.
 
-## If `pod` explodes on this machine
+## If `pod` dies looking for a gem
 
-Homebrew's CocoaPods runs on Homebrew's Ruby, and RVM exports a `GEM_PATH` pointing at a
-different one, so `pod` dies looking for `mutex_m` among the wrong gems. Run it with the
-environment cleared:
+Not a project problem, and not the Ruby version manager's fault either. Homebrew's wrapper is one
+line:
+
+```sh
+GEM_HOME=".../cocoapods/1.17.0/libexec" exec ".../libexec/bin/pod" "$@"
+```
+
+It overrides `GEM_HOME` and **not `GEM_PATH`**. Any Ruby version manager exports both, so the
+interpreter is Homebrew's Ruby while `GEM_PATH` still points at the managed Ruby's gem tree. An
+explicitly set `GEM_PATH` also replaces the interpreter's own default-gem specification path, so
+`pod` fails to activate a gem its own Ruby ships. The error names the gem, which makes it look
+like a Capacitor or CocoaPods problem, and it is neither.
+
+The fix belongs on the machine rather than here, because it affects every brew-installed Ruby
+command line tool and Xcode invokes `pod` too. A shim earlier on `PATH` than
+`/opt/homebrew/bin`, which survives `brew upgrade` in a way that editing the formula does not:
+
+```sh
+#!/bin/sh
+# Homebrew's cocoapods wrapper sets GEM_HOME but not GEM_PATH, so a Ruby version manager's
+# exported GEM_PATH sends rubygems to the wrong Ruby's gems.
+exec env -u GEM_HOME -u GEM_PATH -u RUBYOPT -u BUNDLE_GEMFILE /opt/homebrew/bin/pod "$@"
+```
+
+Installing CocoaPods as an ordinary gem instead would also work and is worse for iOS work: a gem
+in a version-managed Ruby disappears the moment you switch rubies for another project, which is
+the reason to want the self-contained Homebrew install in the first place.
+
+Failing all that, one command works without changing anything:
 
 ```
 env -u GEM_HOME -u GEM_PATH -u RUBYOPT -u BUNDLE_GEMFILE npx cap sync ios
 ```
-
-Nothing about the project causes this and nothing about the project can fix it; it is worth
-knowing because the error names a missing gem and looks like a Capacitor problem.
