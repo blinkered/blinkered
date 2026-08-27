@@ -17,7 +17,7 @@ export const fi: Messages = {
   round: 'kierros',
   ticksLeftLabel: 'Kierroksella jäljellä oleva aika',
   typeAWord: 'kirjoita sana',
-  tapAWord: 'kosketa kirjaimia',
+  tapPrompt: 'kosketa ottaaksesi tai palauttaaksesi, sitten {action}',
 
   boardOfTiles: 'Pelilauta, {n} laattaa',
   faceDown: 'nurin',
@@ -26,6 +26,7 @@ export const fi: Messages = {
   letterInWord: '{letter}, sanan {position}. kirjain',
 
   completeWord: 'Hyväksy sana',
+  completeShort: 'Hyväksy',
   reset: 'Tyhjennä',
   pause: 'Tauko',
   resume: 'Jatka',
@@ -38,7 +39,6 @@ export const fi: Messages = {
   lettersSelect: 'kirjaimet valitsevat',
   clearsEvery: 'poistaa kaikki valitut {letter}-kirjaimet',
   undoLastLetter: 'peruu viimeisen kirjaimen',
-  tapToSelect: 'kosketa kirjainta ottaaksesi sen, ja viimeistä uudelleen palauttaaksesi sen',
   noWordsYet: 'Ei vielä sanoja.',
 
   wordAccepted: '{word}  +{points} pistettä, +{flips} siirtoa',
@@ -141,7 +141,7 @@ export const fi: Messages = {
   htKeysTitle: 'Näppäimistö',
   htTouchTitle: 'Kosketusnäyttö',
   htTouchBody:
-    'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa viimeistä kirjainta uudelleen palauttaaksesi sen. Hyväksy sana ja Tyhjennä ovat laudan alla.',
+    'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa mitä tahansa ottamaasi kirjainta palauttaaksesi sen. Hyväksy ja Tyhjennä ovat laudan alla.',
 
   plurals: {
     words: { one: '{n} sana', other: '{n} sanaa' },

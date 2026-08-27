@@ -14,7 +14,7 @@ export const it: Messages = {
   round: 'turno',
   ticksLeftLabel: 'Tempo restante nel turno',
   typeAWord: 'scrivi una parola',
-  tapAWord: 'tocca le lettere',
+  tapPrompt: 'tocca per prendere o restituire, poi {action}',
 
   boardOfTiles: 'Tabellone di {n} tessere',
   faceDown: 'coperta',
@@ -23,6 +23,8 @@ export const it: Messages = {
   letterInWord: '{letter}, lettera {position} della parola',
 
   completeWord: 'Completa parola',
+
+  completeShort: 'Completa',
   reset: 'Cancella',
   pause: 'Pausa',
   resume: 'Riprendi',
@@ -35,7 +37,6 @@ export const it: Messages = {
   lettersSelect: 'le lettere selezionano',
   clearsEvery: 'togle tutte le {letter} selezionate',
   undoLastLetter: 'annulla ultima lettera',
-  tapToSelect: 'tocca una lettera per prenderla, e l’ultima di nuovo per restituirla',
   noWordsYet: 'Nessuna parola per ora.',
 
   wordAccepted: '{word}  +{points} punti, +{flips} giri',
@@ -139,7 +140,7 @@ export const it: Messages = {
   htKeysTitle: 'La tastiera',
   htTouchTitle: 'Lo schermo a sfioramento',
   htTouchBody:
-    'Tocca una tessera scoperta per prendere la sua lettera. Tocca di nuovo l’ultima lettera per restituirla. Completa parola e Cancella stanno sotto il tavoliere.',
+    'Tocca una tessera scoperta per prendere la sua lettera. Tocca una lettera già presa per restituirla. Completa e Cancella stanno sotto il tavoliere.',
 
   plurals: {
     words: { one: '{n} parola', other: '{n} parole' },

@@ -21,7 +21,7 @@ export const en: Messages = {
   round: 'round',
   ticksLeftLabel: 'Ticks left in this round',
   typeAWord: 'type a word',
-  tapAWord: 'tap the letters',
+  tapPrompt: 'tap letters to select/unselect, then {action}',
 
   boardOfTiles: 'Board of {n} tiles',
   faceDown: 'face down',
@@ -30,6 +30,8 @@ export const en: Messages = {
   letterInWord: '{letter}, letter {position} of the word',
 
   completeWord: 'Complete word',
+
+  completeShort: 'Complete',
   reset: 'Reset',
   pause: 'Pause',
   resume: 'Resume',
@@ -42,7 +44,6 @@ export const en: Messages = {
   lettersSelect: 'letters select',
   clearsEvery: 'clears all selected {letter}s',
   undoLastLetter: 'undo last letter',
-  tapToSelect: 'tap a letter to take it, and the last one again to take it back',
   noWordsYet: 'No words yet.',
 
   wordAccepted: '{word}  +{points} points, +{flips} flips',
@@ -145,7 +146,7 @@ export const en: Messages = {
   htKeysTitle: 'The keyboard',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
-    'Tap a tile that is showing to take its letter. Tap the last letter again to take it back. Complete word and Reset sit under the board.',
+    'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',
 
   plurals: {
     words: { one: '{n} word', other: '{n} words' },

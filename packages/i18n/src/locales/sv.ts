@@ -14,7 +14,7 @@ export const sv: Messages = {
   round: 'omgång',
   ticksLeftLabel: 'Återstående tid i omgången',
   typeAWord: 'skriv ett ord',
-  tapAWord: 'tryck på bokstäverna',
+  tapPrompt: 'tryck för att ta eller lämna tillbaka, sedan {action}',
 
   boardOfTiles: 'Bräde med {n} brickor',
   faceDown: 'nedåtvänd',
@@ -23,6 +23,7 @@ export const sv: Messages = {
   letterInWord: '{letter}, bokstav {position} i ordet',
 
   completeWord: 'Lämna in ordet',
+  completeShort: 'Lämna in',
   reset: 'Rensa',
   pause: 'Pausa',
   resume: 'Fortsätt',
@@ -35,8 +36,6 @@ export const sv: Messages = {
   lettersSelect: 'bokstäver väljer',
   clearsEvery: 'rensar alla valda {letter}',
   undoLastLetter: 'ångrar sista bokstaven',
-  tapToSelect:
-    'tryck på en bokstav för att ta den, och på den sista igen för att lämna tillbaka den',
   noWordsYet: 'Inga ord än.',
 
   wordAccepted: '{word}  +{points} poäng, +{flips} drag',
@@ -139,7 +138,7 @@ export const sv: Messages = {
   htKeysTitle: 'Tangentbordet',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
-    'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på den sista bokstaven igen för att lämna tillbaka den. Lämna in ordet och Rensa ligger under brädet.',
+    'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',
 
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },

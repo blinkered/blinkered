@@ -124,16 +124,25 @@ function endRound(state: GameState): Reduction {
   return [opened, [{ type: 'ROUND_ENDED', layout, flipsCharged }, ...effects]]
 }
 
+/**
+ * A tap takes a letter, and a tap on a letter already taken gives it back.
+ *
+ * Any of them, not only the most recent. Deselecting only the last tile is what a keyboard's
+ * Backspace does, and it made sense while the keyboard was the primary interface; under a thumb
+ * it is wrong. A player looking at the letters they have taken sees the one they do not want and
+ * taps it, and being silently refused because two other letters came after it is the interface
+ * arguing with them. The survivors keep their order, so giving back the middle of A-L-I leaves
+ * A-I rather than reshuffling anything.
+ */
 function tapTile(state: GameState, tileId: number): Reduction {
   const tile = state.tiles.find((candidate) => candidate.id === tileId)
   if (!tile || !isEligible(tile)) return ignored(state, 'not-tappable')
-  if (state.selection.at(-1) === tileId) {
+  if (state.selection.includes(tileId)) {
     return [
-      { ...state, selection: state.selection.slice(0, -1) },
+      { ...state, selection: state.selection.filter((id) => id !== tileId) },
       [{ type: 'DESELECTED', tileIds: [tileId] }],
     ]
   }
-  if (state.selection.includes(tileId)) return ignored(state, 'already-selected')
   return [{ ...state, selection: [...state.selection, tileId] }, [{ type: 'SELECTED', tileId }]]
 }
 

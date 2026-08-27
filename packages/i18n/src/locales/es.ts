@@ -14,7 +14,7 @@ export const es: Messages = {
   round: 'ronda',
   ticksLeftLabel: 'Tiempo restante en la ronda',
   typeAWord: 'escribe una palabra',
-  tapAWord: 'toca las letras',
+  tapPrompt: 'toca para elegir o soltar, luego {action}',
 
   boardOfTiles: 'Tablero de {n} fichas',
   faceDown: 'boca abajo',
@@ -23,6 +23,8 @@ export const es: Messages = {
   letterInWord: '{letter}, letra {position} de la palabra',
 
   completeWord: 'Completar palabra',
+
+  completeShort: 'Completar',
   reset: 'Borrar',
   pause: 'Pausa',
   resume: 'Continuar',
@@ -35,7 +37,6 @@ export const es: Messages = {
   lettersSelect: 'las letras seleccionan',
   clearsEvery: 'quita todas las {letter} seleccionadas',
   undoLastLetter: 'deshace la última letra',
-  tapToSelect: 'toca una letra para tomarla, y la última otra vez para devolverla',
   noWordsYet: 'Todavía ninguna palabra.',
 
   wordAccepted: '{word}  +{points} puntos, +{flips} giros',
@@ -138,7 +139,7 @@ export const es: Messages = {
   htKeysTitle: 'El teclado',
   htTouchTitle: 'La pantalla táctil',
   htTouchBody:
-    'Toca una ficha destapada para tomar su letra. Toca la última letra otra vez para devolverla. Completar palabra y Borrar están debajo del tablero.',
+    'Toca una ficha destapada para tomar su letra. Toca cualquier letra ya tomada para soltarla. Completar y Borrar están debajo del tablero.',
 
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },

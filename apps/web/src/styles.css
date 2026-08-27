@@ -417,10 +417,55 @@ h2 {
 }
 
 /* ---------- controls ---------- */
+/*
+ * One row, and no wrapping. This used to be `flex-wrap: wrap`, and on a 320px screen five
+ * word-labelled buttons wrapped onto a second line: a whole row of chrome under the board, which
+ * on a phone is a row the board could have had.
+ *
+ * Four of the five are drawings now, and they hold their width while the primary takes the slack.
+ */
 .controls {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: stretch;
   gap: 0.5rem;
+}
+.btn-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.6rem;
+  min-width: 2.75rem;
+}
+.icon {
+  display: block;
+  flex: none;
+}
+/*
+ * The secondary controls' words. Hidden by default and drawn on a wide screen, because the
+ * drawings exist to fit a phone and there is no reason to make a desktop guess at a pictogram.
+ */
+.btn-text {
+  display: none;
+}
+@media (min-width: 50rem) {
+  .btn-text {
+    display: inline;
+  }
+  .btn-icon {
+    padding-inline: 0.75rem;
+  }
+}
+/* The primary gives up its width first, since a truncated word still reads and a truncated
+   drawing does not. */
+.controls .btn-primary {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .btn {
   padding: 0.6rem 0.9rem;
@@ -1023,7 +1068,68 @@ kbd {
  * problem: everything above the board pushes the controls under it off the bottom. Only
  * vertical rhythm and type size change; nothing moves or disappears.
  */
+/*
+ * ---------- a narrow screen: the words you have found go beside the board ----------
+ *
+ * They matter during play, because the game rejects a word you already had, and they were at the
+ * very bottom of a column that already did not fit: by the time there were four of them the most
+ * recent was off the screen. A rail down the left costs the board nothing in the common case,
+ * because the board is limited by height rather than width on a phone: at 390px the tiles are 72px
+ * either way, and only a four-column board gives up anything.
+ *
+ * Newest first, because the reason to look is "did I already play this".
+ */
 @media (max-width: 30rem) {
+  .play {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    grid-template-areas:
+      'hud    hud'
+      'found  board'
+      'ctrl   ctrl'
+      'legend legend';
+  }
+  .hud {
+    grid-area: hud;
+  }
+  .board-wrap {
+    grid-area: board;
+  }
+  .controls {
+    grid-area: ctrl;
+  }
+  .legend {
+    grid-area: legend;
+  }
+  .found {
+    grid-area: found;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .found li {
+    gap: 0.1rem;
+    justify-content: space-between;
+    padding: 0.15rem 0.3rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    overflow-wrap: anywhere;
+  }
+  .found-points {
+    font-size: 0.65rem;
+  }
+  /* An empty rail says "no words yet" by being empty. The sentence wrapped over three lines. */
+  .found.dim {
+    display: none;
+  }
+  /* Setup and the leaderboard have no board to sit beside. */
+  .panel {
+    grid-area: hud;
+    grid-column: 1 / -1;
+  }
+
   .shell {
     gap: 1rem;
   }
@@ -1079,6 +1185,21 @@ kbd {
   }
   .panel {
     padding: 1.25rem 1rem;
+  }
+  /*
+   * 320px, five controls, sixteen languages. Four drawings hold 44pt each, which is the floor a
+   * finger needs, so everything else gives: the gaps and the primary's padding. Measured against
+   * the longest label of the sixteen, which is Spanish "Completar" and was being ellipsised to
+   * "Complet…" before this.
+   */
+  .controls {
+    gap: 0.25rem;
+  }
+  .controls .btn-primary {
+    padding-inline: 0.35rem;
+  }
+  .btn-icon {
+    padding-inline: 0.35rem;
   }
   .rules {
     padding: 1.5rem 1.1rem 3rem;

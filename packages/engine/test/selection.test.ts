@@ -23,10 +23,12 @@ describe('tapping tiles', () => {
     expect(effects.at(-1)).toEqual({ type: 'DESELECTED', tileIds: [2] })
   })
 
-  it('refuses to disturb a tile from the middle of the word', () => {
+  it('takes a tile back from the middle of the word, closing the gap', () => {
+    // This used to be refused, on the grounds that Backspace only reaches the last letter. A
+    // finger reaches any of them, so the rule was the keyboard's habit rather than the game's.
     const { state, effects } = play(banana(), [tap(1), tap(2), tap(3), tap(2)])
-    expect(state.selection).toEqual([1, 2, 3])
-    expect(effects.at(-1)).toEqual({ type: 'INPUT_IGNORED', reason: 'already-selected' })
+    expect(state.selection).toEqual([1, 3])
+    expect(effects.at(-1)).toEqual({ type: 'DESELECTED', tileIds: [2] })
   })
 
   it('ignores a face-down tile', () => {
@@ -208,5 +210,51 @@ describe('cycling a letter', () => {
   it('reports a letter that is not up at all', () => {
     const { effects } = play(banana(), [{ type: 'CYCLE_LETTER', letter: 'Z' }])
     expect(effects).toEqual([{ type: 'INPUT_IGNORED', reason: 'no-such-letter' }])
+  })
+})
+
+describe('tapping a tile that is already in the word', () => {
+  // Backspace takes back the last letter, because the last letter is the only one a keyboard can
+  // point at. A finger can point at any of them, and being refused because two other letters came
+  // after the one you tapped is the interface arguing with the player.
+  const threeUp = (): { board: GameState; ids: [number, number, number] } => {
+    const board = play(
+      open('ALISX').state,
+      Array.from({ length: 4 }, () => tick),
+    ).state
+    const ids = board.tiles.filter((t) => t.revealed).map((t) => t.id)
+    return { board, ids: [ids[0] as number, ids[1] as number, ids[2] as number] }
+  }
+
+  it('gives back the last letter', () => {
+    const { board, ids } = threeUp()
+    const three = play(board, [tap(ids[0]), tap(ids[1]), tap(ids[2])]).state
+    expect(selectedLetters(three)).toBe('ALI')
+    const back = play(three, [tap(ids[2])])
+    expect(selectedLetters(back.state)).toBe('AL')
+    expect(back.effects.at(-1)).toEqual({ type: 'DESELECTED', tileIds: [ids[2]] })
+  })
+
+  it('gives back a letter from the middle, leaving the rest in order', () => {
+    const { board, ids } = threeUp()
+    const three = play(board, [tap(ids[0]), tap(ids[1]), tap(ids[2])]).state
+    const back = play(three, [tap(ids[1])])
+    expect(selectedLetters(back.state)).toBe('AI')
+    expect(back.effects.at(-1)).toEqual({ type: 'DESELECTED', tileIds: [ids[1]] })
+  })
+
+  it('gives back the first letter, and the word closes up behind it', () => {
+    const { board, ids } = threeUp()
+    const three = play(board, [tap(ids[0]), tap(ids[1]), tap(ids[2])]).state
+    expect(selectedLetters(play(three, [tap(ids[0])]).state)).toBe('LI')
+  })
+
+  it('can be taken again after being given back, at the end of the word', () => {
+    const { board, ids } = threeUp()
+    const two = play(board, [tap(ids[0]), tap(ids[1])]).state
+    const off = play(two, [tap(ids[0])]).state
+    expect(selectedLetters(off)).toBe('L')
+    // At the end rather than back where it was: the second tap is a fresh choice.
+    expect(selectedLetters(play(off, [tap(ids[0])]).state)).toBe('LA')
   })
 })

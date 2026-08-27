@@ -17,7 +17,7 @@ export const fr: Messages = {
   round: 'manche',
   ticksLeftLabel: 'Temps restant dans la manche',
   typeAWord: 'tapez un mot',
-  tapAWord: 'touchez les lettres',
+  tapPrompt: 'touchez pour prendre ou rendre, puis {action}',
 
   boardOfTiles: 'Plateau de {n} tuiles',
   faceDown: 'face cachée',
@@ -26,6 +26,8 @@ export const fr: Messages = {
   letterInWord: '{letter}, lettre {position} du mot',
 
   completeWord: 'Valider le mot',
+
+  completeShort: 'Valider',
   reset: 'Effacer',
   pause: 'Pause',
   resume: 'Reprendre',
@@ -38,7 +40,6 @@ export const fr: Messages = {
   lettersSelect: 'les lettres sélectionnent',
   clearsEvery: 'retire tous les {letter} sélectionnés',
   undoLastLetter: 'annule la dernière lettre',
-  tapToSelect: 'touchez une lettre pour la prendre, et la dernière encore pour la rendre',
   noWordsYet: 'Aucun mot pour le moment.',
 
   wordAccepted: '{word}  +{points} points, +{flips} coups',
@@ -141,7 +142,7 @@ export const fr: Messages = {
   htKeysTitle: 'Le clavier',
   htTouchTitle: 'L’écran tactile',
   htTouchBody:
-    'Touchez une tuile retournée pour prendre sa lettre. Touchez la dernière lettre encore une fois pour la rendre. Valider le mot et Effacer sont sous le plateau.',
+    'Touchez une tuile retournée pour prendre sa lettre. Touchez une lettre déjà prise pour la rendre. Valider et Effacer sont sous le plateau.',
 
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },

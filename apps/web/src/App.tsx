@@ -9,6 +9,7 @@ import { GameSetup } from './GameSetup.js'
 import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
+import { Icon } from './Icon.js'
 import type { Feedback } from './Hud.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { Leaderboard } from './Leaderboard.js'
@@ -443,6 +444,14 @@ function Playing({
         ) : null}
       </div>
 
+      {/*
+       * One row, on every screen and in every language. Five word-labelled buttons cannot do
+       * that: at 320px they wrapped onto a second line, which cost a row of the board.
+       *
+       * So the primary keeps words, because "press Complete" is what the instruction above the
+       * board tells you to do, and it uses `completeShort` so the two always agree. The other
+       * four are drawings with their full localised name on `aria-label` and `title`.
+       */}
       <div className="controls">
         <button
           type="button"
@@ -453,58 +462,42 @@ function Playing({
             game.dispatch({ type: 'SUBMIT_WORD' })
           }}
         >
-          {messages.completeWord} <kbd>enter</kbd>
+          {messages.completeShort} <kbd>enter</kbd>
         </button>
-        <button
-          type="button"
-          className="btn"
+        <IconButton
+          label={messages.reset}
+          icon="reset"
+          hint="esc"
           disabled={game.paused}
-          onMouseDown={withoutStealingFocus}
           onClick={() => {
             game.dispatch({ type: 'RESET_WORD' })
           }}
-        >
-          {messages.reset} <kbd>esc</kbd>
-        </button>
-        <button
-          type="button"
-          className="btn"
+        />
+        <IconButton
+          label={game.paused ? messages.resume : messages.pause}
+          icon={game.paused ? 'resume' : 'pause'}
           disabled={confirmingQuit}
-          onMouseDown={withoutStealingFocus}
           onClick={() => {
             game.setPaused(!game.paused)
           }}
-        >
-          {game.paused ? messages.resume : messages.pause}
-        </button>
-        <button
-          type="button"
-          className="btn"
-          onMouseDown={withoutStealingFocus}
-          onClick={onRestart}
-        >
-          {messages.restart}
-        </button>
-        <button
-          type="button"
-          className="btn"
-          onMouseDown={withoutStealingFocus}
+        />
+        <IconButton label={messages.restart} icon="restart" onClick={onRestart} />
+        <IconButton
+          label={messages.quit}
+          icon="quit"
           onClick={() => {
             // Confirmed, and the clock stops while it is: a mis-click must not throw away a
             // game in progress, and the offer to keep playing must not cost flips.
             setConfirmingQuit(true)
             game.setPaused(true)
           }}
-        >
-          {messages.quit}
-        </button>
+        />
       </div>
 
       {/* Only the bindings the buttons cannot advertise. Enter and Escape are already written
-          on Complete word and Reset, so repeating them here is noise. The keyboard items are
-          hidden where there is no keyboard, and swapped for the one thing a thumb needs to be
-          told: tapping a letter again takes it back, which is Backspace by another route. The
-          link to the rules applies to both and stays.
+          on the two buttons that own them, so repeating them here is noise, and the keyboard
+          items are hidden where there is no keyboard.
+
 
           A list rather than a paragraph of spans, because the items are only separated by a
           flex gap: visually that reads fine, but as one run of text it does not, and a screen
@@ -517,7 +510,6 @@ function Playing({
         <li className="keys-only">
           <kbd>&#x232b;</kbd> {messages.undoLastLetter}
         </li>
-        <li className="touch-only">{messages.tapToSelect}</li>
         <li>
           <HowToPlayLink
             language={language}
@@ -532,6 +524,44 @@ function Playing({
 
       <FoundWords words={game.state.wordsFound} messages={messages} />
     </>
+  )
+}
+
+/**
+ * A secondary control: a drawing, and its name everywhere a drawing cannot be read.
+ *
+ * `aria-label` for a screen reader, `title` for a pointer that hovers, and the `hint` is the
+ * keyboard binding, which the stylesheet already hides where there is no keyboard.
+ */
+function IconButton({
+  label,
+  icon,
+  hint,
+  disabled = false,
+  onClick,
+}: {
+  label: string
+  icon: 'reset' | 'pause' | 'resume' | 'restart' | 'quit'
+  hint?: string
+  disabled?: boolean
+  onClick: () => void
+}): React.JSX.Element {
+  return (
+    <button
+      type="button"
+      className="btn btn-icon"
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      onMouseDown={withoutStealingFocus}
+      onClick={onClick}
+    >
+      <Icon name={icon} />
+      {/* Drawn only where there is room, which is a desktop. The drawing is what makes five
+          controls fit a phone; the word is what makes them obvious anywhere else. */}
+      <span className="btn-text">{label}</span>
+      {hint === undefined ? null : <kbd>{hint}</kbd>}
+    </button>
   )
 }
 

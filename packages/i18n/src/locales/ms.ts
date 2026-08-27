@@ -14,7 +14,7 @@ export const ms: Messages = {
   round: 'pusingan',
   ticksLeftLabel: 'Masa berbaki dalam pusingan ini',
   typeAWord: 'taip satu kata',
-  tapAWord: 'sentuh huruf',
+  tapPrompt: 'sentuh untuk ambil atau pulangkan, lalu {action}',
 
   boardOfTiles: 'Papan {n} jubin',
   faceDown: 'tertutup',
@@ -23,6 +23,7 @@ export const ms: Messages = {
   letterInWord: '{letter}, huruf ke-{position} dalam kata',
 
   completeWord: 'Hantar kata',
+  completeShort: 'Hantar',
   reset: 'Kosongkan',
   pause: 'Henti',
   resume: 'Sambung',
@@ -35,8 +36,6 @@ export const ms: Messages = {
   lettersSelect: 'huruf memilih',
   clearsEvery: 'membuang semua {letter} yang dipilih',
   undoLastLetter: 'membatalkan huruf terakhir',
-  tapToSelect:
-    'sentuh satu huruf untuk mengambilnya, dan yang terakhir sekali lagi untuk memulangkannya',
   noWordsYet: 'Belum ada kata.',
 
   wordAccepted: '{word}  +{points} mata, +{flips} balikan',
@@ -139,7 +138,7 @@ export const ms: Messages = {
   htKeysTitle: 'Papan kekunci',
   htTouchTitle: 'Skrin sentuh',
   htTouchBody:
-    'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh huruf terakhir sekali lagi untuk memulangkannya. Hantar kata dan Kosongkan ada di bawah papan.',
+    'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh mana-mana huruf yang diambil untuk memulangkannya. Hantar dan Kosongkan ada di bawah papan.',
 
   plurals: {
     words: { other: '{n} kata' },

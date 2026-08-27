@@ -17,7 +17,7 @@ export const hr: Messages = {
   round: 'runda',
   ticksLeftLabel: 'Preostalo vrijeme u rundi',
   typeAWord: 'upiši riječ',
-  tapAWord: 'dotaknite slova',
+  tapPrompt: 'dotaknite da uzmete ili vratite, zatim {action}',
 
   boardOfTiles: 'Ploča od {n} pločica',
   faceDown: 'okrenuta',
@@ -26,6 +26,7 @@ export const hr: Messages = {
   letterInWord: '{letter}, {position}. slovo riječi',
 
   completeWord: 'Potvrdi riječ',
+  completeShort: 'Potvrdi',
   reset: 'Očisti',
   pause: 'Pauza',
   resume: 'Nastavi',
@@ -38,7 +39,6 @@ export const hr: Messages = {
   lettersSelect: 'slova označavaju',
   clearsEvery: 'briše sva označena {letter}',
   undoLastLetter: 'briše zadnje slovo',
-  tapToSelect: 'dotaknite slovo da ga uzmete, a posljednje ponovno da ga vratite',
   noWordsYet: 'Još nema riječi.',
 
   wordAccepted: '{word}  +{points} bodova, +{flips} okreta',
@@ -141,7 +141,7 @@ export const hr: Messages = {
   htKeysTitle: 'Tipkovnica',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
-    'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite posljednje slovo ponovno da ga vratite. Potvrdi riječ i Očisti su ispod ploče.',
+    'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',
 
   plurals: {
     words: { one: '{n} riječ', few: '{n} riječi', other: '{n} riječi' },

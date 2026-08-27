@@ -19,7 +19,7 @@ export const ru: Messages = {
   round: 'раунд',
   ticksLeftLabel: 'Оставшееся время в раунде',
   typeAWord: 'наберите слово',
-  tapAWord: 'коснитесь букв',
+  tapPrompt: 'касание: взять или вернуть, затем {action}',
 
   boardOfTiles: 'Поле из {n} плиток',
   faceDown: 'закрыта',
@@ -28,6 +28,7 @@ export const ru: Messages = {
   letterInWord: '{letter}, буква {position} в слове',
 
   completeWord: 'Принять слово',
+  completeShort: 'Принять',
   reset: 'Сбросить',
   pause: 'Пауза',
   resume: 'Продолжить',
@@ -40,7 +41,6 @@ export const ru: Messages = {
   lettersSelect: 'буквы выбирают',
   clearsEvery: 'снимает все выбранные {letter}',
   undoLastLetter: 'отменяет последнюю букву',
-  tapToSelect: 'коснитесь буквы, чтобы взять её, и последней ещё раз, чтобы вернуть',
   noWordsYet: 'Слов пока нет.',
 
   wordAccepted: '{word}  +{points} очков, +{flips} ходов',
@@ -143,7 +143,7 @@ export const ru: Messages = {
   htKeysTitle: 'Клавиатура',
   htTouchTitle: 'Сенсорный экран',
   htTouchBody:
-    'Коснитесь открытой плитки, чтобы взять её букву. Коснитесь последней буквы ещё раз, чтобы вернуть её. Принять слово и Сбросить находятся под доской.',
+    'Коснитесь открытой плитки, чтобы взять её букву. Коснитесь любой взятой буквы, чтобы вернуть её. Принять и Сбросить находятся под доской.',
 
   plurals: {
     words: { one: '{n} слово', few: '{n} слова', many: '{n} слов', other: '{n} слова' },

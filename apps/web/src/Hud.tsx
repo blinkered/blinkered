@@ -51,10 +51,14 @@ export function Hud({ state, feedback, messages }: HudProps): React.JSX.Element 
         <output className="word" aria-live="polite">
           {word === '' ? (
             /* Both are rendered and one is drawn, per device. "Type a word" on a phone is an
-             instruction to use a thing the phone does not have. */
+             instruction to use a thing the phone does not have, and the touch version is now
+             the only place the tap rules are stated: they used to also sit under the board,
+             which spent a row saying something already on screen. */
             <>
               <span className="word-empty keys-only">{messages.typeAWord}</span>
-              <span className="word-empty touch-only">{messages.tapAWord}</span>
+              <span className="word-empty touch-only">
+                {format(messages.tapPrompt, { action: messages.completeShort })}
+              </span>
             </>
           ) : (
             word

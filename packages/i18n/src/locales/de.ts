@@ -17,7 +17,7 @@ export const de: Messages = {
   round: 'Runde',
   ticksLeftLabel: 'Restzeit in dieser Runde',
   typeAWord: 'Wort eingeben',
-  tapAWord: 'Buchstaben antippen',
+  tapPrompt: 'antippen: nehmen oder zurückgeben, dann {action}',
 
   boardOfTiles: 'Feld mit {n} Steinen',
   faceDown: 'verdeckt',
@@ -26,6 +26,7 @@ export const de: Messages = {
   letterInWord: '{letter}, Buchstabe {position} des Wortes',
 
   completeWord: 'Wort abgeben',
+  completeShort: 'Abgeben',
   reset: 'Löschen',
   pause: 'Pause',
   resume: 'Weiter',
@@ -38,8 +39,6 @@ export const de: Messages = {
   lettersSelect: 'Buchstaben wählen',
   clearsEvery: 'entfernt alle gewählten {letter}',
   undoLastLetter: 'letzten Buchstaben zurück',
-  tapToSelect:
-    'ein Buchstabe wird durch Antippen genommen, der letzte durch nochmaliges Antippen zurückgegeben',
   noWordsYet: 'Noch keine Wörter.',
 
   wordAccepted: '{word}  +{points} Punkte, +{flips} Züge',
@@ -142,7 +141,7 @@ export const de: Messages = {
   htKeysTitle: 'Die Tastatur',
   htTouchTitle: 'Der Berührungsbildschirm',
   htTouchBody:
-    'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe den letzten Buchstaben noch einmal an, um ihn zurückzugeben. Wort abgeben und Löschen liegen unter dem Brett.',
+    'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe einen genommenen Buchstaben an, um ihn zurückzugeben. Abgeben und Löschen liegen unter dem Brett.',
 
   plurals: {
     words: { one: '{n} Wort', other: '{n} Wörter' },

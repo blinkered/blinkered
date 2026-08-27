@@ -42,8 +42,13 @@ export interface Messages {
   readonly round: string
   readonly ticksLeftLabel: string
   readonly typeAWord: string
-  /** The same prompt where there is no keyboard to type on. */
-  readonly tapAWord: string
+  /**
+   * The whole of the touch instructions, and the only place they appear.
+   *
+   * `{action}` is `completeShort`, so the words name the button that is actually on screen
+   * rather than a label somebody has to go and match up themselves.
+   */
+  readonly tapPrompt: string
 
   // The board, mostly for a screen reader.
   /** `{n}` */
@@ -91,6 +96,11 @@ export interface Messages {
 
   // The buttons.
   readonly completeWord: string
+  /**
+   * The button. Short enough that five controls fit one row on a 320px screen, in every
+   * language; `completeWord` stays the full name, for prose and for the accessible label.
+   */
+  readonly completeShort: string
   readonly reset: string
   readonly pause: string
   readonly resume: string
@@ -106,8 +116,6 @@ export interface Messages {
   /** `{letter}`, shown as the literal X of "shift-X clears all selected Xs". */
   readonly clearsEvery: string
   readonly undoLastLetter: string
-  /** The legend, where there is no keyboard to advertise. */
-  readonly tapToSelect: string
   readonly noWordsYet: string
 
   // What the game says back.
