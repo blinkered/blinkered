@@ -12,30 +12,29 @@ metadata:
     # buffers are smaller than that, and a truncated word list is a broken game.
     nginx.ingress.kubernetes.io/proxy-body-size: '0'
     nginx.ingress.kubernetes.io/proxy-buffering: 'off'
+    # www.playblinkered.com redirects to the apex, so there is one canonical origin. Not
+    # cosmetic: guest scores live in localStorage, which is scoped per origin, so serving both
+    # directly means a player who arrives on www one day and the apex the next finds an empty
+    # leaderboard. This stops mattering once scores live server-side, and until then it is the
+    # difference between keeping and losing them.
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
 spec:
   ingressClassName: nginx
   tls:
+    # Both hostnames, even though only one is served. The redirect happens *after* the TLS
+    # handshake: a browser asked for https://www.playblinkered.com connects first and would
+    # show a certificate error before it ever saw the 308. cert-manager reads this list, so
+    # www needs to be in it.
     - hosts:
         - playblinkered.com
         - www.playblinkered.com
       secretName: blinkered-tls
+  # Only the apex has a rule. The annotation above generates the www server block that does the
+  # redirecting, so adding a rule for www here would give the controller two server blocks for
+  # the same hostname, one redirecting and one serving. If www ever needs to serve the app
+  # directly, remove the annotation rather than adding a rule alongside it.
   rules:
     - host: playblinkered.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: blinkered
-                port:
-                  name: http
-    # Both hostnames serve the game. Worth knowing: a guest's scores live in localStorage,
-    # which is per origin, so somebody who arrives on www one day and on the apex the next
-    # sees an empty leaderboard. Adding
-    #   nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    # to the annotations above sends www to the apex instead and keeps one set of scores.
-    - host: www.playblinkered.com
       http:
         paths:
           - path: /

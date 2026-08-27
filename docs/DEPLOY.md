@@ -97,6 +97,29 @@ work and the `imagePullSecrets` block can go.
   for TLS. **Edit the host**, and drop the `tls` block and the annotation if TLS is terminated
   ahead of the cluster.
 
+### One canonical hostname
+
+`www.playblinkered.com` redirects to the apex, via
+`nginx.ingress.kubernetes.io/from-to-www-redirect`. That is not about tidiness or SEO: a guest's
+scores live in `localStorage`, which is scoped per origin, so serving the game on both
+hostnames means somebody who arrives on `www` one day and the apex the next finds an empty
+leaderboard. Their scores are not lost, they are on the other origin, which is worse than lost
+because it looks like a bug.
+
+Two things about that configuration are easy to undo by accident:
+
+- **www is in `tls` but has no `rule`.** The annotation generates the `www` server block itself,
+  so adding a rule for it as well gives the controller two server blocks for one hostname, one
+  redirecting and one serving. To serve `www` directly, remove the annotation rather than adding
+  a rule next to it.
+- **www must stay in the `tls` hosts.** The redirect happens after the TLS handshake, so a
+  browser asked for `https://www.playblinkered.com` connects first; without the certificate
+  covering it, the visitor gets a certificate warning and never sees the 308. cert-manager reads
+  that list, which is the only reason `www` appears in it.
+
+This stops mattering when accounts arrive and scores live server-side. Until then it is the
+difference between keeping a player's leaderboard and losing it.
+
 The container listens on **8080**, not 80, because it runs unprivileged and cannot bind a
 privileged port.
 
