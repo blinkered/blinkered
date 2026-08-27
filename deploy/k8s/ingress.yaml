@@ -17,9 +17,25 @@ spec:
   tls:
     - hosts:
         - playblinkered.com
+        - www.playblinkered.com
       secretName: blinkered-tls
   rules:
     - host: playblinkered.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blinkered
+                port:
+                  name: http
+    # Both hostnames serve the game. Worth knowing: a guest's scores live in localStorage,
+    # which is per origin, so somebody who arrives on www one day and on the apex the next
+    # sees an empty leaderboard. Adding
+    #   nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # to the annotations above sends www to the apex instead and keeps one set of scores.
+    - host: www.playblinkered.com
       http:
         paths:
           - path: /

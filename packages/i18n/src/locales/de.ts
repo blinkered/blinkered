@@ -112,7 +112,6 @@ export const de: Messages = {
   quitConfirm: 'Beenden',
   keepPlaying: 'Weiterspielen',
   personalBest: 'Deine besten Spiele',
-  noScoresYet: 'Noch keine beendeten Spiele. Dies wird das erste.',
   thisGame: 'dieses Spiel',
   newPersonalBest: 'Neue persönliche Bestleistung.',
   columnRank: '#',

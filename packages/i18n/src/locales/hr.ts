@@ -112,7 +112,6 @@ export const hr: Messages = {
   quitConfirm: 'Izađi',
   keepPlaying: 'Nastavi igrati',
   personalBest: 'Tvoje najbolje igre',
-  noScoresYet: 'Još nema završenih igara. Ova će biti prva.',
   thisGame: 'ova igra',
   newPersonalBest: 'Novi osobni rekord.',
   columnRank: '#',

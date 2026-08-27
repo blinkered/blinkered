@@ -112,7 +112,6 @@ export const fi: Messages = {
   quitConfirm: 'Lopeta',
   keepPlaying: 'Jatka pelaamista',
   personalBest: 'Parhaat pelisi',
-  noScoresYet: 'Ei vielä päättyneitä pelejä. Tästä tulee ensimmäinen.',
   thisGame: 'tämä peli',
   newPersonalBest: 'Uusi henkilökohtainen ennätys.',
   columnRank: '#',

@@ -109,7 +109,6 @@ export const el: Messages = {
   quitConfirm: 'Έξοδος',
   keepPlaying: 'Συνέχεια',
   personalBest: 'Τα καλύτερά σας παιχνίδια',
-  noScoresYet: 'Δεν υπάρχουν ολοκληρωμένα παιχνίδια ακόμη. Αυτό θα είναι το πρώτο.',
   thisGame: 'αυτό το παιχνίδι',
   newPersonalBest: 'Νέο προσωπικό ρεκόρ.',
   columnRank: '#',

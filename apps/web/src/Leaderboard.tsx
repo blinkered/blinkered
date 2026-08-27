@@ -26,10 +26,6 @@ export function Leaderboard({ standing, current, messages }: LeaderboardProps): 
     // Custom rules. The game happened and is stored; it simply has nothing to be ranked against.
     return <p className="board-note">{messages.notRanked}</p>
   }
-  if (ranked.length === 1) {
-    return <p className="board-note">{messages.noScoresYet}</p>
-  }
-
   // Always show the top, and always show the current game even when it is far below it.
   const top = ranked.slice(0, SHOWN)
   const rows = top.includes(current) ? top : [...top, current]
@@ -40,7 +36,12 @@ export function Leaderboard({ standing, current, messages }: LeaderboardProps): 
         <h2>{messages.personalBest}</h2>
         <span className="dim">{format(messages.rankOfTotal, { rank, total: ranked.length })}</span>
       </div>
-      {rank === 1 ? <p className="leaderboard-crown">{messages.newPersonalBest}</p> : null}
+      {/* Only when there was something to beat. Calling a first game a new personal best is
+          the same species of nonsense as telling somebody who just finished one that no
+          finished games exist yet. */}
+      {rank === 1 && ranked.length > 1 ? (
+        <p className="leaderboard-crown">{messages.newPersonalBest}</p>
+      ) : null}
       <table className="nerd-table">
         <thead>
           <tr>

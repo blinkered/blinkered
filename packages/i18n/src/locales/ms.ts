@@ -109,7 +109,6 @@ export const ms: Messages = {
   quitConfirm: 'Keluar',
   keepPlaying: 'Terus bermain',
   personalBest: 'Permainan terbaik anda',
-  noScoresYet: 'Belum ada permainan yang tamat. Ini yang pertama.',
   thisGame: 'permainan ini',
   newPersonalBest: 'Rekod peribadi baharu.',
   columnRank: '#',

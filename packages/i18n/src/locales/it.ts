@@ -110,7 +110,6 @@ export const it: Messages = {
   quitConfirm: 'Esci',
   keepPlaying: 'Continua',
   personalBest: 'Le tue migliori partite',
-  noScoresYet: 'Nessuna partita conclusa. Questa sarà la prima.',
   thisGame: 'questa partita',
   newPersonalBest: 'Nuovo record personale.',
   columnRank: '#',

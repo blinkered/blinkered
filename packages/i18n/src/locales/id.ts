@@ -113,7 +113,6 @@ export const id: Messages = {
   quitConfirm: 'Keluar',
   keepPlaying: 'Lanjut bermain',
   personalBest: 'Permainan terbaik Anda',
-  noScoresYet: 'Belum ada permainan yang selesai. Ini yang pertama.',
   thisGame: 'permainan ini',
   newPersonalBest: 'Rekor pribadi baru.',
   columnRank: '#',

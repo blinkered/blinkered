@@ -114,7 +114,6 @@ export const ru: Messages = {
   quitConfirm: 'Выйти',
   keepPlaying: 'Продолжить',
   personalBest: 'Ваши лучшие игры',
-  noScoresYet: 'Завершённых игр пока нет. Эта будет первой.',
   thisGame: 'эта игра',
   newPersonalBest: 'Новый личный рекорд.',
   columnRank: '№',

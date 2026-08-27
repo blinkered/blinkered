@@ -109,7 +109,6 @@ export const nl: Messages = {
   quitConfirm: 'Stoppen',
   keepPlaying: 'Doorspelen',
   personalBest: 'Je beste spellen',
-  noScoresYet: 'Nog geen voltooide spellen. Dit wordt het eerste.',
   thisGame: 'dit spel',
   newPersonalBest: 'Nieuw persoonlijk record.',
   columnRank: '#',

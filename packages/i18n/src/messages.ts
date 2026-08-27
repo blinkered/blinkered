@@ -76,7 +76,6 @@ export interface Messages {
 
   // The personal leaderboard, shown when a game finishes.
   readonly personalBest: string
-  readonly noScoresYet: string
   readonly thisGame: string
   readonly newPersonalBest: string
   readonly columnRank: string

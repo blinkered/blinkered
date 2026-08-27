@@ -113,7 +113,6 @@ export const ptBR: Messages = {
   quitConfirm: 'Sair',
   keepPlaying: 'Continuar jogando',
   personalBest: 'Seus melhores jogos',
-  noScoresYet: 'Ainda não há jogos terminados. Este será o primeiro.',
   thisGame: 'este jogo',
   newPersonalBest: 'Novo recorde pessoal.',
   columnRank: '#',

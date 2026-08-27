@@ -109,7 +109,6 @@ export const sv: Messages = {
   quitConfirm: 'Avsluta',
   keepPlaying: 'Fortsätt spela',
   personalBest: 'Dina bästa spel',
-  noScoresYet: 'Inga avslutade spel än. Det här blir det första.',
   thisGame: 'det här spelet',
   newPersonalBest: 'Nytt personbästa.',
   columnRank: '#',

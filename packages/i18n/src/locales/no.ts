@@ -109,7 +109,6 @@ export const no: Messages = {
   quitConfirm: 'Avslutt',
   keepPlaying: 'Fortsett å spille',
   personalBest: 'Dine beste spill',
-  noScoresYet: 'Ingen fullførte spill ennå. Dette blir det første.',
   thisGame: 'dette spillet',
   newPersonalBest: 'Ny personlig rekord.',
   columnRank: '#',

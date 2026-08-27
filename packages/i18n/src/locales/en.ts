@@ -116,7 +116,6 @@ export const en: Messages = {
   quitConfirm: 'Quit',
   keepPlaying: 'Keep playing',
   personalBest: 'Your best games',
-  noScoresYet: 'No finished games yet. This will be the first.',
   thisGame: 'this game',
   newPersonalBest: 'A new personal best.',
   columnRank: '#',
