@@ -16,10 +16,13 @@ export function HowToPlay({
   messages,
   language,
   onLanguage,
+  onBack,
 }: {
   messages: Messages
   language: string
   onLanguage: (language: string) => void
+  /** Shown only where the page cannot be closed by closing a tab: the native shell. */
+  onBack?: () => void
 }): React.JSX.Element {
   const sections = [
     { title: messages.htBoardTitle, body: messages.htBoardBody },
@@ -40,6 +43,12 @@ export function HowToPlay({
             dictionary. Opens on whatever the game was being read in. */}
         <InterfacePicker value={language} label={messages.gameLanguage} onChange={onLanguage} />
       </div>
+
+      {onBack === undefined ? null : (
+        <button type="button" className="btn rules-back" onClick={onBack}>
+          {messages.backToGame}
+        </button>
+      )}
 
       {sections.map((section) => (
         <section key={section.title}>

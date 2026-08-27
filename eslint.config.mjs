@@ -1,7 +1,20 @@
 import tseslint from 'typescript-eslint'
 
 export default [
-  { ignores: ['**/dist/**', '**/dist-tsc/**', '**/coverage/**', '**/node_modules/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/dist-tsc/**',
+      '**/coverage/**',
+      '**/node_modules/**',
+      // The native shell's Xcode project. `App/public` is a copy of apps/web's build made by
+      // `cap sync`, and Pods is vendored Objective-C. Neither is source.
+      'apps/mobile/ios/**',
+      // Draws the app icon, and imports Playwright, which is deliberately not a dependency of
+      // this repo: it runs from a throwaway install. Type-aware linting cannot resolve that.
+      'apps/mobile/tools/make-icons.mjs',
+    ],
+  },
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {

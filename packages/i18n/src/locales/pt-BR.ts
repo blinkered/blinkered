@@ -122,6 +122,8 @@ export const ptBR: Messages = {
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Como jogar',
+
+  backToGame: 'Voltar ao jogo',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
     'As peças viram uma a uma, na ordem de leitura. Você não vê uma letra até a peça dela virar.',

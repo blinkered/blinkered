@@ -121,6 +121,8 @@ export const fr: Messages = {
   rankOfTotal: '{rank} sur {total}',
 
   howToPlay: 'Comment jouer',
+
+  backToGame: 'Retour au jeu',
   htBoardTitle: 'Le plateau',
   htBoardBody:
     'Les tuiles se retournent une à une, dans le sens de la lecture. Une lettre reste invisible jusqu’à ce que sa tuile se retourne.',

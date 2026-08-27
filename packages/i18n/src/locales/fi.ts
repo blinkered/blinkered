@@ -121,6 +121,8 @@ export const fi: Messages = {
   rankOfTotal: '{rank} / {total}',
 
   howToPlay: 'Näin pelataan',
+
+  backToGame: 'Takaisin peliin',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
     'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Kirjainta ei näe ennen kuin sen laatta kääntyy.',

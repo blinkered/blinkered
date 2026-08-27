@@ -118,6 +118,8 @@ export const no: Messages = {
   rankOfTotal: '{rank} av {total}',
 
   howToPlay: 'Slik spiller du',
+
+  backToGame: 'Tilbake til spillet',
   htBoardTitle: 'Brettet',
   htBoardBody:
     'Brikkene snus opp én om gangen, i leseretningen. En bokstav er ikke synlig før brikken snus.',

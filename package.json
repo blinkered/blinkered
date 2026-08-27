@@ -19,7 +19,9 @@
     "dev": "pnpm --filter @blinkered/web dev",
     "build": "tsc --build && pnpm --filter @blinkered/web build",
     "lint:sources": "sh tools/lint-sources.sh",
-    "dictionary": "tsc --build && node tools/dictionary/dist/main.js"
+    "dictionary": "tsc --build && node tools/dictionary/dist/main.js",
+    "mobile": "pnpm build && pnpm --filter @blinkered/mobile sync",
+    "mobile:open": "pnpm --filter @blinkered/mobile open"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

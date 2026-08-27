@@ -118,6 +118,8 @@ export const pt: Messages = {
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Como jogar',
+
+  backToGame: 'Voltar ao jogo',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
     'As peças viram-se uma a uma, na ordem de leitura. Não se vê uma letra até a sua peça virar.',

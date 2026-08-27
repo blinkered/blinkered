@@ -118,6 +118,8 @@ export const nl: Messages = {
   rankOfTotal: '{rank} van {total}',
 
   howToPlay: 'Hoe je speelt',
+
+  backToGame: 'Terug naar het spel',
   htBoardTitle: 'Het bord',
   htBoardBody:
     'De stenen draaien één voor één om, in leesrichting. Een letter is niet te zien tot zijn steen draait.',

@@ -118,6 +118,8 @@ export const el: Messages = {
   rankOfTotal: '{rank} από {total}',
 
   howToPlay: 'Πώς παίζεται',
+
+  backToGame: 'Επιστροφή στο παιχνίδι',
   htBoardTitle: 'Το ταμπλό',
   htBoardBody:
     'Τα πλακίδια γυρίζουν ένα κάθε φορά, με τη σειρά ανάγνωσης. Ένα γράμμα δεν φαίνεται ώσπου να γυρίσει το πλακίδιό του.',

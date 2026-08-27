@@ -123,6 +123,8 @@ export const ru: Messages = {
   rankOfTotal: '{rank} из {total}',
 
   howToPlay: 'Как играть',
+
+  backToGame: 'Вернуться к игре',
   htBoardTitle: 'Поле',
   htBoardBody:
     'Плитки открываются по одной, в порядке чтения. Букву не видно, пока её плитка не перевернётся.',

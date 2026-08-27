@@ -118,6 +118,8 @@ export const es: Messages = {
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Cómo jugar',
+
+  backToGame: 'Volver al juego',
   htBoardTitle: 'El tablero',
   htBoardBody:
     'Las fichas se descubren una a una, en orden de lectura. No se ve una letra hasta que gira su ficha.',

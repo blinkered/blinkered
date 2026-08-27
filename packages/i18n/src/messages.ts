@@ -56,6 +56,8 @@ export interface Messages {
 
   // The rules, on their own page, in whatever language the interface is in.
   readonly howToPlay: string
+  /** Leaves the in-app rules in the native shell, which has no tab to close. */
+  readonly backToGame: string
   readonly htBoardTitle: string
   readonly htBoardBody: string
   readonly htWordsTitle: string

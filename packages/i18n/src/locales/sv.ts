@@ -119,6 +119,8 @@ export const sv: Messages = {
   rankOfTotal: '{rank} av {total}',
 
   howToPlay: 'Så spelar du',
+
+  backToGame: 'Tillbaka till spelet',
   htBoardTitle: 'Brädet',
   htBoardBody:
     'Brickorna vänds upp en i taget, i läsordning. En bokstav syns inte förrän dess bricka vänds.',

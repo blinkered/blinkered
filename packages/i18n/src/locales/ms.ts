@@ -119,6 +119,8 @@ export const ms: Messages = {
   rankOfTotal: '{rank} daripada {total}',
 
   howToPlay: 'Cara bermain',
+
+  backToGame: 'Kembali ke permainan',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Jubin dibuka satu demi satu, mengikut arah bacaan. Huruf tidak kelihatan sehingga jubinnya terbalik.',

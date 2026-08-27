@@ -6,6 +6,7 @@ import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
 import { Board } from './Board.js'
 import { GameSetup } from './GameSetup.js'
+import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
 import type { Feedback } from './Hud.js'
@@ -152,6 +153,9 @@ function Session({
   const [titleDone, setTitleDone] = useState(false)
   const [hurried, setHurried] = useState(false)
   const [waitingToStart, setWaitingToStart] = useState(false)
+  // Only ever true in the native shell, which has no second tab to put the rules in. On the web
+  // the link is a link and this stays false forever.
+  const [readingRules, setReadingRules] = useState(false)
 
   const config = useMemo(() => configOf(settings), [settings])
   const playing = phase === 'playing'
@@ -215,6 +219,9 @@ function Session({
       messages={messages}
       ready={dictionary !== null && !waitingToStart}
       startLabel={startLabel}
+      onShowRules={() => {
+        setReadingRules(true)
+      }}
       onRuleset={(ruleset: Ruleset) => {
         onChange(withRuleset(settings, ruleset))
       }}
@@ -223,96 +230,125 @@ function Session({
   )
 
   return (
-    <main className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}>
-      <div className="titlebar">
-        <Title
-          skip={hurried}
-          onDone={() => {
-            setTitleDone(true)
-          }}
-        />
-        {/* Always here, and live except while a game is running. Somebody arriving at a page
-            in a language they cannot read has to be able to fix that before anything else. */}
-        <LanguagePicker
-          catalogue={catalogue}
-          value={language}
-          label={messages.gameLanguage}
-          disabled={playing}
-          onChange={(tag) => {
-            onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
-          }}
-        />
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={settings.nerdMode}
-            {...nerdFocus.handlers}
-            onChange={(e) => {
-              // Give the keyboard back, or the board stops hearing anything typed at it.
-              nerdFocus.release(e.currentTarget)
-              onChange({ ...settings, nerdMode: e.target.checked })
+    <>
+      {/*
+       * The rules in the native shell, drawn over the top rather than in place of the game.
+       *
+       * Returning them instead of the shell was the first attempt and it was wrong: React
+       * unmounts what it replaces, so `Playing` went with it, and coming back mounted a fresh
+       * game on the same seed. The player lost the word they were holding and the board started
+       * over, which is worse than the dropped link this exists to fix. Rendering both keeps the
+       * game mounted, so it is still there, still paused, still holding its selection.
+       */}
+      {readingRules ? (
+        <div className="rules-overlay">
+          <HowToPlay
+            messages={messages}
+            language={settings.uiLanguage}
+            onLanguage={(tag) => {
+              onChange({ ...settings, uiLanguage: tag })
+            }}
+            onBack={() => {
+              setReadingRules(false)
             }}
           />
-          <span>{messages.nerdMode}</span>
-        </label>
-      </div>
+        </div>
+      ) : null}
 
-      <div className={`body${settings.nerdMode ? ' has-nerd' : ''}`}>
-        <div className="play">
-          {error !== null ? <p className="error">{error}</p> : null}
+      <main className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}>
+        <div className="titlebar">
+          <Title
+            skip={hurried}
+            onDone={() => {
+              setTitleDone(true)
+            }}
+          />
+          {/* Always here, and live except while a game is running. Somebody arriving at a page
+            in a language they cannot read has to be able to fix that before anything else. */}
+          <LanguagePicker
+            catalogue={catalogue}
+            value={language}
+            label={messages.gameLanguage}
+            disabled={playing}
+            onChange={(tag) => {
+              onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
+            }}
+          />
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={settings.nerdMode}
+              {...nerdFocus.handlers}
+              onChange={(e) => {
+                // Give the keyboard back, or the board stops hearing anything typed at it.
+                nerdFocus.release(e.currentTarget)
+                onChange({ ...settings, nerdMode: e.target.checked })
+              }}
+            />
+            <span>{messages.nerdMode}</span>
+          </label>
+        </div>
 
-          {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
+        <div className={`body${settings.nerdMode ? ' has-nerd' : ''}`}>
+          <div className="play">
+            {error !== null ? <p className="error">{error}</p> : null}
 
-          {phase === 'over' && finished !== null ? (
-            <div className="panel">
-              <p className="veil-title">{messages.outOfFlips}</p>
-              <p className="result-line">
-                {formatFinalResult(messages, {
-                  score: finished.result.score,
-                  words: finished.result.words,
-                  rounds: finished.result.rounds,
-                })}
-              </p>
-              <Leaderboard
-                standing={finished.standing}
-                current={finished.result}
+            {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
+
+            {phase === 'over' && finished !== null ? (
+              <div className="panel">
+                <p className="veil-title">{messages.outOfFlips}</p>
+                <p className="result-line">
+                  {formatFinalResult(messages, {
+                    score: finished.result.score,
+                    words: finished.result.words,
+                    rounds: finished.result.rounds,
+                  })}
+                </p>
+                <Leaderboard
+                  standing={finished.standing}
+                  current={finished.result}
+                  messages={messages}
+                />
+                <FoundWords words={finished.words} messages={messages} />
+                {setup(messages.newGame)}
+              </div>
+            ) : null}
+
+            {playing && spec !== null && dictionary !== null ? (
+              <Playing
+                key={spec.seed}
+                dictionary={dictionary}
+                spec={spec}
+                settings={settings}
+                language={language}
                 messages={messages}
+                onRestart={start}
+                onQuit={quit}
+                onFinish={onFinish}
+                onShowRules={() => {
+                  setReadingRules(true)
+                }}
               />
-              <FoundWords words={finished.words} messages={messages} />
-              {setup(messages.newGame)}
-            </div>
-          ) : null}
+            ) : null}
+          </div>
 
-          {playing && spec !== null && dictionary !== null ? (
-            <Playing
-              key={spec.seed}
-              dictionary={dictionary}
-              spec={spec}
+          {settings.nerdMode ? (
+            <NerdPanel
               settings={settings}
-              language={language}
+              config={config}
+              dictionary={dictionary}
+              locked={playing}
               messages={messages}
-              onRestart={start}
-              onQuit={quit}
-              onFinish={onFinish}
+              onChange={onChange}
+              onOverride={(overrides) => {
+                onChange(withOverride(settings, overrides))
+              }}
             />
           ) : null}
         </div>
-
-        {settings.nerdMode ? (
-          <NerdPanel
-            settings={settings}
-            config={config}
-            dictionary={dictionary}
-            locked={playing}
-            messages={messages}
-            onChange={onChange}
-            onOverride={(overrides) => {
-              onChange(withOverride(settings, overrides))
-            }}
-          />
-        ) : null}
-      </div>
-    </main>
+      </main>
+    </>
   )
 }
 
@@ -325,6 +361,7 @@ function Playing({
   onRestart,
   onQuit,
   onFinish,
+  onShowRules,
 }: {
   dictionary: TieredIndex
   spec: GameSpec
@@ -334,6 +371,8 @@ function Playing({
   onRestart: () => void
   onQuit: () => void
   onFinish: (state: GameState, seed: number) => void
+  /** Native only: shows the rules in-app, since there is no tab to open them in. */
+  onShowRules: () => void
 }): React.JSX.Element {
   const portrait = usePortrait()
   const [confirmingQuit, setConfirmingQuit] = useState(false)
@@ -486,6 +525,7 @@ function Playing({
             onOpen={() => {
               game.setPaused(true)
             }}
+            onShowInApp={onShowRules}
           />
         </li>
       </ul>

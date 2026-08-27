@@ -1150,3 +1150,49 @@ kbd {
     --board-height: 42svh;
   }
 }
+
+/*
+ * ---------- the native shell ----------
+ *
+ * The rules as a button rather than a link, which is what the native shell needs: a WebView has
+ * no second tab, drops `target="_blank"` on a local URL without a word, and would lose a running
+ * game if the rules were navigated to in place. Same words, same colour, so it reads as the link
+ * it is everywhere else.
+ */
+.how-to-play-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--sel);
+  text-decoration: underline;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+@media (hover: none) and (pointer: coarse) {
+  .how-to-play-button {
+    padding: 0.75rem 0.25rem;
+  }
+}
+.rules-back {
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * The rules over the top of the game, which is how the native shell shows them.
+ *
+ * Over rather than instead of: the game stays mounted underneath so it keeps its board, its
+ * selection and its pause. Opaque and scrollable, because it is a page of prose standing in for
+ * a browser tab, and fixed so the game's own scroll position is not disturbed.
+ */
+.rules-overlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  padding: max(0.5rem, env(safe-area-inset-top)) max(0rem, env(safe-area-inset-right))
+    max(0.5rem, env(safe-area-inset-bottom)) max(0rem, env(safe-area-inset-left));
+  -webkit-overflow-scrolling: touch;
+}

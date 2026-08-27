@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist-tsc",
+    "noEmit": false
+  },
+  "include": ["capacitor.config.ts"]
+}

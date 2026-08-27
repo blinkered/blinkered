@@ -30,8 +30,14 @@ next.
   home screen: the board sizes itself from the room available instead of from `vmin`, every
   touch target clears Apple's 44pt floor, the four touch defaults that fight a tapping game are
   turned off, landscape gets its own layout, and there is a manifest and an icon set.
-  [IOS.md](IOS.md) has the measurements. This finishes the PWA half of PLAN.md phase 3; the
-  Capacitor half of phase 5 is untouched and needs an Apple account and the CC BY-SA call.
+  [IOS.md](IOS.md) has the measurements.
+- **`apps/mobile`** — the Capacitor iOS shell, which runs `apps/web`'s build in a WebView and
+  owns no game code. All sixteen word lists are inside the app, so it plays with the phone in
+  aeroplane mode. The one thing the shell had to change is the rules, which cannot be a second
+  tab where there are no tabs. Installing it needs an Apple ID typed into Xcode and Xcode's iOS
+  platform download, neither of which can be scripted; steps are in
+  [../apps/mobile/README.md](../apps/mobile/README.md). This is PLAN.md phase 3 finished and
+  phase 5 started. A **store** build still waits on the CC BY-SA call.
 - 325 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
   ubuntu and macos.
 

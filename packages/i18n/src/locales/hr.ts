@@ -121,6 +121,8 @@ export const hr: Messages = {
   rankOfTotal: '{rank} od {total}',
 
   howToPlay: 'Kako se igra',
+
+  backToGame: 'Natrag na igru',
   htBoardTitle: 'Ploča',
   htBoardBody:
     'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Slovo se ne vidi dok se njegova pločica ne okrene.',

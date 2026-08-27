@@ -1,8 +1,12 @@
 # iOS
 
 Blinkered on an iPhone is the same build as Blinkered in a desktop browser. There is no second
-codebase and no native shell yet; what there is, is a set of places where the same stylesheet
-and the same React tree had to be told that the machine is different.
+codebase: the native app in `apps/mobile` runs this bundle in a WebView, and what follows is the
+set of places where the same stylesheet and the same React tree had to be told that the machine is
+different.
+
+This is the browser half. The native shell, how to get it onto a phone, and the two things it had
+to change about the game are in [../apps/mobile/README.md](../apps/mobile/README.md).
 
 This is a record of which places those were, and how each one was measured. Almost none of it
 was obvious by reading, and one of the defects only exists in WebKit.
@@ -219,21 +223,27 @@ week's bundle to somebody who has cleared everything else.
 Add it when offline play is a feature somebody asked for, and cache the app shell plus the one
 language in play.
 
-## What a native build would still need
+## What the native app still needs
 
-This is the phase 3 half of PLAN.md's mobile story. The phase 5 half is untouched and cannot be
-started from here:
+The Capacitor shell exists and consumes this build unchanged, which was the point of doing the
+browser work first: the touch targets, the self-sizing board and the safe-area padding are the
+same code inside a WebView. What is left is not code.
 
-- **An Apple Developer Program membership**, an organisation account rather than an individual
-  one, since Tight Line owns this.
-- **The CC BY-SA decision.** Five languages ship under it — Italian, German, Norwegian, Finnish,
-  Malay — and a store build wraps DRM around a share-alike data file. Attribution is the whole
-  obligation on the web and we meet it; a binary is a different question. See the end of
+- **A signing identity**, which cannot be scripted, because it is an Apple ID typed into Xcode.
+  A free one installs to your own phone and expires after seven days; the paid Developer Program
+  signs for a year and unlocks TestFlight. See apps/mobile/README.md.
+- **Xcode's iOS platform support**, a multi-gigabyte download separate from Xcode itself. Its
+  absence presents as `iOS 26.5 is not installed` and no build destination, which reads like a
+  broken project.
+- **The CC BY-SA decision**, and this is the one that actually blocks a store. Five languages
+  ship under it: Italian, German, Norwegian, Finnish, Malay. The app bundles all sixteen word
+  lists, so a store build wraps DRM around a share-alike data file. On the web attribution is the
+  whole obligation and we meet it; a binary is a different question. See the end of
   DICTIONARIES.md.
 - **Sign in with Apple**, which App Store guideline 4.8 makes non-optional once any other
-  third-party SSO exists.
-- **Capacitor**, whose iOS shell consumes `apps/web`'s build output unchanged. Everything above
-  applies inside a WebView too, so none of it is wasted.
+  third-party SSO exists. Not yet relevant: there are no accounts until PLAN.md phase 4.
+- **A decision about the 42MB of word lists** in the bundle. Fine for a development install, and
+  worth revisiting before distribution against downloading them on demand.
 
 ## How this was checked, and what that cannot tell us
 

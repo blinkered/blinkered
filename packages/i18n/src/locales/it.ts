@@ -119,6 +119,8 @@ export const it: Messages = {
   rankOfTotal: '{rank} di {total}',
 
   howToPlay: 'Come si gioca',
+
+  backToGame: 'Torna al gioco',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
     'Le tessere si girano una alla volta, in ordine di lettura. Una lettera non si vede finché la sua tessera non si gira.',

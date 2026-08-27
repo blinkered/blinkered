@@ -123,6 +123,8 @@ export const id: Messages = {
   rankOfTotal: '{rank} dari {total}',
 
   howToPlay: 'Cara bermain',
+
+  backToGame: 'Kembali ke permainan',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Kartu dibuka satu per satu, mengikuti arah baca. Huruf tidak terlihat sampai kartunya berbalik.',

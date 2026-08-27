@@ -122,6 +122,8 @@ export const de: Messages = {
   rankOfTotal: '{rank} von {total}',
 
   howToPlay: 'Spielanleitung',
+
+  backToGame: 'Zurück zum Spiel',
   htBoardTitle: 'Das Feld',
   htBoardBody:
     'Die Steine werden einzeln umgedreht, in Leserichtung. Einen Buchstaben sieht man erst, wenn sein Stein sich dreht.',

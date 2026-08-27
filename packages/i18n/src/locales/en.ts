@@ -125,6 +125,8 @@ export const en: Messages = {
   rankOfTotal: '{rank} of {total}',
 
   howToPlay: 'How to play',
+
+  backToGame: 'Back to the game',
   htBoardTitle: 'The board',
   htBoardBody:
     'Tiles turn face up one at a time, in reading order. You cannot see a letter until its tile turns.',
