@@ -48,6 +48,14 @@ export function HowToPlay({
         </section>
       ))}
 
+      {/* Both, always, in this order. The page opens in its own tab and is shareable, so it
+          cannot assume the device reading it is the device playing on it: somebody reads the
+          rules on a phone and plays on a laptop, and the reverse. */}
+      <section>
+        <h2>{messages.htTouchTitle}</h2>
+        <p>{messages.htTouchBody}</p>
+      </section>
+
       <section>
         <h2>{messages.htKeysTitle}</h2>
         <dl className="rules-keys">

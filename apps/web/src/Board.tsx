@@ -11,6 +11,17 @@ export function columnsFor(n: number, portrait: boolean): number {
   return portrait ? 4 : 5
 }
 
+/**
+ * Rows the grid will actually use, which the stylesheet cannot work out for itself.
+ *
+ * A tile is sized from the room available, and on a phone the scarce dimension is height, so
+ * the height has to be divided by something. CSS knows the column count because it is told,
+ * but `repeat()` derives the rows from the item count and never exposes the answer.
+ */
+export function rowsFor(n: number, columns: number): number {
+  return Math.ceil(n / columns)
+}
+
 interface BoardProps {
   readonly state: GameState
   readonly portrait: boolean
@@ -83,7 +94,10 @@ export function Board({
   return (
     <div
       className="board"
-      style={{ ['--cols' as string]: String(columns) }}
+      style={{
+        ['--cols' as string]: String(columns),
+        ['--rows' as string]: String(rowsFor(state.config.n, columns)),
+      }}
       aria-label={format(messages.boardOfTiles, { n: state.config.n })}
     >
       {ordered.map((tile) => (

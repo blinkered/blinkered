@@ -463,19 +463,22 @@ function Playing({
 
       {/* Only the bindings the buttons cannot advertise. Enter and Escape are already written
           on Complete word and Reset, so repeating them here is noise. The keyboard items are
-          hidden where there is no keyboard; the link to the rules is not.
+          hidden where there is no keyboard, and swapped for the one thing a thumb needs to be
+          told: tapping a letter again takes it back, which is Backspace by another route. The
+          link to the rules applies to both and stays.
 
           A list rather than a paragraph of spans, because the items are only separated by a
           flex gap: visually that reads fine, but as one run of text it does not, and a screen
           reader gets the text. */}
       <ul className="legend">
-        <li className="legend-key">{messages.lettersSelect}</li>
-        <li className="legend-key">
+        <li className="keys-only">{messages.lettersSelect}</li>
+        <li className="keys-only">
           <kbd>shift-X</kbd> {format(messages.clearsEvery, { letter: 'X' })}
         </li>
-        <li className="legend-key">
+        <li className="keys-only">
           <kbd>&#x232b;</kbd> {messages.undoLastLetter}
         </li>
+        <li className="touch-only">{messages.tapToSelect}</li>
         <li>
           <HowToPlayLink
             language={language}

@@ -14,6 +14,7 @@ export const sv: Messages = {
   round: 'omgång',
   ticksLeftLabel: 'Återstående tid i omgången',
   typeAWord: 'skriv ett ord',
+  tapAWord: 'tryck på bokstäverna',
 
   boardOfTiles: 'Bräde med {n} brickor',
   faceDown: 'nedåtvänd',
@@ -34,6 +35,8 @@ export const sv: Messages = {
   lettersSelect: 'bokstäver väljer',
   clearsEvery: 'rensar alla valda {letter}',
   undoLastLetter: 'ångrar sista bokstaven',
+  tapToSelect:
+    'tryck på en bokstav för att ta den, och på den sista igen för att lämna tillbaka den',
   noWordsYet: 'Inga ord än.',
 
   wordAccepted: '{word}  +{points} poäng, +{flips} drag',
@@ -132,6 +135,9 @@ export const sv: Messages = {
   htLanguagesBody:
     'Sexton. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
   htKeysTitle: 'Tangentbordet',
+  htTouchTitle: 'Pekskärmen',
+  htTouchBody:
+    'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på den sista bokstaven igen för att lämna tillbaka den. Lämna in ordet och Rensa ligger under brädet.',
 
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },

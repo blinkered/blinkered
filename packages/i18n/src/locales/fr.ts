@@ -17,6 +17,7 @@ export const fr: Messages = {
   round: 'manche',
   ticksLeftLabel: 'Temps restant dans la manche',
   typeAWord: 'tapez un mot',
+  tapAWord: 'touchez les lettres',
 
   boardOfTiles: 'Plateau de {n} tuiles',
   faceDown: 'face cachée',
@@ -37,6 +38,7 @@ export const fr: Messages = {
   lettersSelect: 'les lettres sélectionnent',
   clearsEvery: 'retire tous les {letter} sélectionnés',
   undoLastLetter: 'annule la dernière lettre',
+  tapToSelect: 'touchez une lettre pour la prendre, et la dernière encore pour la rendre',
   noWordsYet: 'Aucun mot pour le moment.',
 
   wordAccepted: '{word}  +{points} points, +{flips} coups',
@@ -135,6 +137,9 @@ export const fr: Messages = {
   htLanguagesBody:
     'Seize langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
   htKeysTitle: 'Le clavier',
+  htTouchTitle: 'L’écran tactile',
+  htTouchBody:
+    'Touchez une tuile retournée pour prendre sa lettre. Touchez la dernière lettre encore une fois pour la rendre. Valider le mot et Effacer sont sous le plateau.',
 
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },

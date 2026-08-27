@@ -65,7 +65,8 @@ arrives in phase 2.
 
 Start with [docs/STATUS.md](docs/STATUS.md) for the state of play, then
 [docs/PLAN.md](docs/PLAN.md) for the design and [docs/DICTIONARIES.md](docs/DICTIONARIES.md)
-for how word lists are built.
+for how word lists are built. [docs/IOS.md](docs/IOS.md) covers the phone, which is the same
+build and not the same machine.
 
 ```
 packages/engine     the whole game as one pure reducer. No clock, no I/O, no DOM
@@ -73,6 +74,7 @@ packages/words      word lists, the anagram solver, board generation, weight der
 tools/harness       terminal front end for the engine
 tools/derive        derives draw weights and calibration from a word list
 docs/PLAN.md        rules, architecture, phases, open questions
+docs/IOS.md         what had to change for a phone, and how each bit was measured
 ```
 
 ## Adding a language

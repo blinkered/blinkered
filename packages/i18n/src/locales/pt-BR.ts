@@ -18,6 +18,7 @@ export const ptBR: Messages = {
   round: 'rodada',
   ticksLeftLabel: 'Tempo restante nesta rodada',
   typeAWord: 'digite uma palavra',
+  tapAWord: 'toque nas letras',
 
   boardOfTiles: 'Tabuleiro de {n} peças',
   faceDown: 'virada para baixo',
@@ -38,6 +39,7 @@ export const ptBR: Messages = {
   lettersSelect: 'as letras selecionam',
   clearsEvery: 'remove todos os {letter} selecionados',
   undoLastLetter: 'desfaz a última letra',
+  tapToSelect: 'toque numa letra para pegá-la, e na última de novo para devolvê-la',
   noWordsYet: 'Nenhuma palavra ainda.',
 
   wordAccepted: '{word}  +{points} pontos, +{flips} viradas',
@@ -136,6 +138,9 @@ export const ptBR: Messages = {
   htLanguagesBody:
     'Dezesseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra incomum também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
+  htTouchTitle: 'A tela sensível ao toque',
+  htTouchBody:
+    'Toque numa peça virada para pegar a letra dela. Toque de novo na última letra para devolvê-la. Completar palavra e Limpar ficam abaixo do tabuleiro.',
 
   plurals: {
     words: { one: '{n} palavra', other: '{n} palavras' },

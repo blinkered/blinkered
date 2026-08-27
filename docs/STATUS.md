@@ -26,7 +26,13 @@ next.
 - **`apps/web`** — playable React front end. Keyboard and pointer, sixteen languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.
-- 314 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
+- **iOS**, meaning the same build made genuinely playable on a phone and installable to the
+  home screen: the board sizes itself from the room available instead of from `vmin`, every
+  touch target clears Apple's 44pt floor, the four touch defaults that fight a tapping game are
+  turned off, landscape gets its own layout, and there is a manifest and an icon set.
+  [IOS.md](IOS.md) has the measurements. This finishes the PWA half of PLAN.md phase 3; the
+  Capacitor half of phase 5 is untouched and needs an Apple account and the CC BY-SA call.
+- 325 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
   ubuntu and macos.
 
 ## Next, in order
@@ -35,7 +41,9 @@ next.
    the whole reason the engine has no clock. The manual checks in
    [DICTIONARIES.md](DICTIONARIES.md) and the ones below are what this should automate: a word
    accepted end to end, a language switch keeping the keyboard alive, no letter in the DOM for
-   a face-down tile.
+   a face-down tile. The WebKit device checks written for [IOS.md](IOS.md) belong here too —
+   board geometry per viewport, a 44pt audit of every target, and a game played by touch alone.
+   They exist and were run; they live in a scratchpad rather than the repo, which is the gap.
 2. **In-progress game surviving reload**, via localStorage. Nearly free: state is
    serialisable and the reducer is pure.
 3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are
@@ -65,6 +73,15 @@ next.
   validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns
   up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
+- **No service worker**, so no offline play. Offline is not something the game does on the web
+  either, so it would be new behaviour rather than parity, and the payload is sixteen word lists
+  of which Russian alone is 8.3MB. A stale service worker is also the classic way to serve last
+  week's bundle. Worth adding when somebody asks for offline; cache the shell and the one
+  language in play.
+- **Four iOS facts are reasoned rather than measured.** WebKit under Playwright gives real touch
+  events and real `pointer: coarse`, but no safe-area insets, no URL-bar resize, no focus-zoom,
+  and no home-screen install. The landscape notch padding in particular follows the spec rather
+  than a measurement. Five minutes on a real iPhone closes it.
 - **The frequency source is OpenSubtitles via hermitdave**, which is MIT but derives from
   user-uploaded subtitles. `wordfreq` remains the cleaner alternative if the provenance ever
   matters more than it does now.
@@ -116,6 +133,16 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   a `0x01` in `alphabet.ts`. Both worked, and both made `file` report the source as binary so
   grep skipped it and a repo-wide rename silently missed the file. `pnpm lint:sources`
   refuses them now.
+- **A viewport unit can be right on one device and inverted on another.** Tile size was
+  `clamp(2.5rem, 10vmin, 4.25rem)`, which is correct on a desktop, where width is plentiful and
+  height is the constraint. On a phone in portrait `vmin` _is_ the width: 10vmin came out at
+  39px, the floor won, and the board was 132×179 on a 390px screen with every target under
+  Apple's 44pt minimum. The game was fully functional and unplayable at the same time, which is
+  the hard kind to notice. Size from the room actually available, per axis.
+- **WebKit ignores author heights on a native `select`.** `min-height: 2.75rem` computed to
+  18px, and the three nerd-panel selects stayed 23px tall however the CSS was written. Only
+  `appearance: none` gets sizing back. Found by auditing every interactive box against 44pt, not
+  by looking at the page, and it would not reproduce in Chrome or Firefox at all.
 - **`unmunch` fails silently** in two ways; a 1.0x expansion ratio is the tell. The pipeline
   no longer expands anything — it asks `hunspell -l` instead. See DICTIONARIES.md.
 - **Verify by running the thing.** The DOM leak, the pause cheat, the focus bug, `pnpm dev`

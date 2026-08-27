@@ -22,7 +22,7 @@ RUN pnpm build
 RUN set -eu; \
     cd apps/web/dist; \
     find . -type f \( -name '*.txt' -o -name '*.js' -o -name '*.css' -o -name '*.html' \
-      -o -name '*.json' -o -name '*.map' \) -print0 \
+      -o -name '*.json' -o -name '*.map' -o -name '*.webmanifest' -o -name '*.svg' \) -print0 \
     | while IFS= read -r -d '' file; do gzip -9 -c "$file" > "$file.gz"; done
 
 # Unprivileged: it listens on 8080 as uid 101, so the pod needs no root and no capabilities.

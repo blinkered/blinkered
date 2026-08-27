@@ -14,6 +14,7 @@ export const it: Messages = {
   round: 'turno',
   ticksLeftLabel: 'Tempo restante nel turno',
   typeAWord: 'scrivi una parola',
+  tapAWord: 'tocca le lettere',
 
   boardOfTiles: 'Tabellone di {n} tessere',
   faceDown: 'coperta',
@@ -34,6 +35,7 @@ export const it: Messages = {
   lettersSelect: 'le lettere selezionano',
   clearsEvery: 'togle tutte le {letter} selezionate',
   undoLastLetter: 'annulla ultima lettera',
+  tapToSelect: 'tocca una lettera per prenderla, e l’ultima di nuovo per restituirla',
   noWordsYet: 'Nessuna parola per ora.',
 
   wordAccepted: '{word}  +{points} punti, +{flips} giri',
@@ -133,6 +135,9 @@ export const it: Messages = {
   htLanguagesBody:
     'Sedici. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
   htKeysTitle: 'La tastiera',
+  htTouchTitle: 'Lo schermo a sfioramento',
+  htTouchBody:
+    'Tocca una tessera scoperta per prendere la sua lettera. Tocca di nuovo l’ultima lettera per restituirla. Completa parola e Cancella stanno sotto il tavoliere.',
 
   plurals: {
     words: { one: '{n} parola', other: '{n} parole' },

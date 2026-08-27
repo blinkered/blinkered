@@ -4,6 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0e1116" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!--
+      Home screen on iOS. Safari reads the manifest from 16.4 onwards but still takes the icon
+      from `apple-touch-icon`, and the title from `apple-mobile-web-app-title` rather than from
+      `short_name`, so both spellings of the same facts have to be here.
+
+      `black-translucent` lets the game draw under the status bar, which is only safe because
+      the shell pads itself with `env(safe-area-inset-*)` and the viewport is `viewport-fit=cover`
+      above. Those three go together; remove one and the board slides under the clock.
+    -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Blinkered" />
     <title>How to play — Blinkered</title>
   </head>
   <body>

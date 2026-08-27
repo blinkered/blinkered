@@ -49,7 +49,16 @@ export function Hud({ state, feedback, messages }: HudProps): React.JSX.Element 
 
       <div className="word-line">
         <output className="word" aria-live="polite">
-          {word === '' ? <span className="word-empty">{messages.typeAWord}</span> : word}
+          {word === '' ? (
+            /* Both are rendered and one is drawn, per device. "Type a word" on a phone is an
+             instruction to use a thing the phone does not have. */
+            <>
+              <span className="word-empty keys-only">{messages.typeAWord}</span>
+              <span className="word-empty touch-only">{messages.tapAWord}</span>
+            </>
+          ) : (
+            word
+          )}
         </output>
         {feedback === null ? null : (
           <span key={feedback.epoch} className={`feedback is-${feedback.kind}`} role="status">

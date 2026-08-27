@@ -18,6 +18,7 @@ export const id: Messages = {
   round: 'putaran',
   ticksLeftLabel: 'Waktu tersisa di putaran ini',
   typeAWord: 'ketik sebuah kata',
+  tapAWord: 'sentuh huruf',
 
   boardOfTiles: 'Papan {n} kartu',
   faceDown: 'tertutup',
@@ -38,6 +39,8 @@ export const id: Messages = {
   lettersSelect: 'huruf memilih',
   clearsEvery: 'menghapus semua {letter} terpilih',
   undoLastLetter: 'membatalkan huruf terakhir',
+  tapToSelect:
+    'sentuh satu huruf untuk mengambilnya, dan yang terakhir sekali lagi untuk mengembalikannya',
   noWordsYet: 'Belum ada kata.',
 
   wordAccepted: '{word}  +{points} poin, +{flips} balikan',
@@ -136,6 +139,9 @@ export const id: Messages = {
   htLanguagesBody:
     'Enam belas. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
   htKeysTitle: 'Papan tik',
+  htTouchTitle: 'Layar sentuh',
+  htTouchBody:
+    'Sentuh kartu yang terbuka untuk mengambil hurufnya. Sentuh huruf terakhir sekali lagi untuk mengembalikannya. Kirim kata dan Hapus ada di bawah papan.',
 
   plurals: {
     words: { other: '{n} kata' },

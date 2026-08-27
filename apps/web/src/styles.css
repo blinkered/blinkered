@@ -10,7 +10,10 @@
   --bad: #f85149;
   --warn: #d29922;
   --radius: 10px;
-  --tile: clamp(2.5rem, 10vmin, 4.25rem);
+  /* How big a tile may get, and how much height the board may claim. Both are retuned in the
+     touch block near the bottom of this file; the board computes its tile size from them. */
+  --tile-max: 4.25rem;
+  --board-height: 100rem;
   color-scheme: dark;
 }
 
@@ -29,6 +32,12 @@ body {
     'Segoe UI',
     sans-serif;
   -webkit-text-size-adjust: 100%;
+  /* A page that does not scroll should not bounce. Without this, tapping tiles quickly on a
+     phone drags the whole game up and down under your thumb. */
+  overscroll-behavior: none;
+  /* Inherited by everything. WebKit otherwise paints a grey box over each tile as it is
+     tapped, which on a dark board reads as the tile breaking rather than as a tap landing. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .shell {
@@ -36,7 +45,12 @@ body {
   gap: 1.5rem;
   max-width: 60rem;
   margin: 0 auto;
-  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  /* All four insets, not just the vertical pair. A notched iPhone held in landscape puts the
+     notch and the home indicator on the left and right edges, and the board was drawn under
+     them. `viewport-fit=cover` in the HTML is what makes these non-zero, so the two belong
+     together. */
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 .shell.has-nerd {
   max-width: 48rem;
@@ -65,7 +79,7 @@ body {
   }
 }
 .shell.centred {
-  min-height: 60vh;
+  min-height: 60dvh;
   place-content: center;
   text-align: center;
 }
@@ -114,6 +128,22 @@ h2 {
   align-items: center;
   color: var(--dim);
   font-size: 0.85rem;
+}
+
+/*
+ * Read but not drawn. Not `display: none`, which some combinations of screen reader and
+ * browser decline to follow through an `aria-labelledby`, and not `visibility: hidden` either.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* The language control. Sits next to whatever it belongs to rather than drifting right. */
@@ -240,11 +270,33 @@ h2 {
   position: relative;
   display: grid;
   place-items: center;
+  /* The board measures itself against this element rather than against the viewport, so the
+     narrower play column that nerd mode creates shrinks the tiles instead of overflowing
+     them. */
+  container-type: inline-size;
 }
+/*
+ * How big a tile is, decided in one place from the room actually available.
+ *
+ * It was `clamp(2.5rem, 10vmin, 4.25rem)`, and `vmin` on a portrait phone is the width: 10vmin
+ * came out at 39px, so the floor won and every tile was 40px. A nine-tile board occupied 132px
+ * of a 390px screen, the game's central object taking a third of the width with targets under
+ * Apple's 44pt minimum, while two thirds of the screen held nothing.
+ *
+ * A tile is therefore the smallest of three things: the width divided by the columns, the
+ * height allowed divided by the rows, and a hard cap so a wide desktop does not deal dinner
+ * plates. The row and column counts come from the view that already decides them.
+ */
 .board {
+  --cols: 4;
+  --rows: 4;
+  --gap: clamp(0.35rem, 1.6vmin, 0.7rem);
+  --fit-width: calc((min(100cqw, 30rem) - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  --fit-height: calc((var(--board-height) - (var(--rows) - 1) * var(--gap)) / var(--rows));
+  --tile: clamp(2.75rem, min(var(--fit-width), var(--fit-height)), var(--tile-max));
   display: grid;
   grid-template-columns: repeat(var(--cols), var(--tile));
-  gap: clamp(0.35rem, 1.6vmin, 0.7rem);
+  gap: var(--gap);
   perspective: 900px;
 }
 
@@ -255,6 +307,15 @@ h2 {
   border: 0;
   background: none;
   cursor: pointer;
+  /* Tapping tiles fast is the game, so none of the browser's tap ceremony is welcome:
+     `manipulation` drops double-tap zoom and with it the 300ms wait to find out whether a tap
+     was the first half of one. */
+  touch-action: manipulation;
+  /* A long press on a letter would otherwise raise the iOS selection callout, offering to
+     copy or look up a tile in the middle of a round. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .tile:disabled {
@@ -301,8 +362,12 @@ h2 {
   opacity: 0.35;
   border-style: dashed;
 }
-.tile:not(:disabled):hover .tile-front {
-  border-color: var(--sel);
+/* Only where a pointer can actually hover. A touch leaves `:hover` stuck on whatever was last
+   tapped, so on a phone this marked a random tile as though it were special. */
+@media (hover: hover) {
+  .tile:not(:disabled):hover .tile-front {
+    border-color: var(--sel);
+  }
 }
 .tile:focus-visible {
   outline: 2px solid var(--sel);
@@ -354,9 +419,12 @@ h2 {
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
+  touch-action: manipulation;
 }
-.btn:hover:not(:disabled) {
-  border-color: var(--sel);
+@media (hover: hover) {
+  .btn:hover:not(:disabled) {
+    border-color: var(--sel);
+  }
 }
 .btn:disabled {
   opacity: 0.45;
@@ -595,6 +663,7 @@ kbd {
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .chip:disabled {
   cursor: default;
@@ -688,8 +757,10 @@ kbd {
   color: var(--sel);
   font-size: 0.85rem;
 }
-.how-to-play:hover {
-  color: var(--up);
+@media (hover: hover) {
+  .how-to-play:hover {
+    color: var(--up);
+  }
 }
 
 .rules-head {
@@ -725,10 +796,26 @@ kbd {
   font-size: 0.85rem;
 }
 
-/* No keyboard, so no keyboard bindings. The rules still apply, so the link stays. */
+/*
+ * Two utilities, because more than one thing in the interface names a key.
+ *
+ * The legend's bindings go where there is no keyboard, and so does the word line's prompt, which
+ * told a phone to type. What replaces them is the same instruction for a thumb: tapping the last
+ * letter again takes it back, which is Backspace by another route. The link to the rules applies
+ * either way and stays.
+ *
+ * `display: revert` rather than a value, so one rule serves a list item and a span alike: it
+ * rolls back to whatever the element was going to be.
+ */
+.touch-only {
+  display: none;
+}
 @media (hover: none) and (pointer: coarse) {
-  .legend-key {
+  .keys-only {
     display: none;
+  }
+  .touch-only {
+    display: revert;
   }
 }
 
@@ -762,6 +849,7 @@ kbd {
   color: var(--ink);
   font: inherit;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .drop-trigger:disabled {
   cursor: default;
@@ -785,7 +873,7 @@ kbd {
   top: calc(100% + 0.25rem);
   left: 0;
   /* Tall enough for sixteen, short enough to stay on the page, and it scrolls if neither. */
-  max-height: min(60vh, 22rem);
+  max-height: min(60dvh, 22rem);
   min-width: 100%;
   overflow-y: auto;
   margin: 0;
@@ -807,6 +895,9 @@ kbd {
   border-radius: 5px;
   color: var(--ink);
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .drop-option.is-chosen {
   color: var(--up);
@@ -814,4 +905,233 @@ kbd {
 .drop-option.is-active {
   background: var(--sel);
   color: #fff;
+}
+
+/*
+ * ---------- touch ----------
+ *
+ * The same stylesheet on a different machine. Three things change on a phone, and all three
+ * were measured on WebKit at an iPhone 14 viewport rather than reasoned about.
+ *
+ * 1. Targets grow. Apple's floor for anything you hit with a finger is 44pt, and the language
+ *    trigger was 30px tall, the tiles 40px.
+ * 2. The board claims the screen. It is the game; on a phone it was a third of the width.
+ * 3. Anything that only exists to name a key stops being drawn, because there is no key to
+ *    name. That is not only tidier, it is what makes the buttons narrow enough to sit in one
+ *    row within reach of a thumb.
+ */
+@media (hover: none) and (pointer: coarse) {
+  :root {
+    --tile-max: 5.25rem;
+    /*
+     * The board's share of the screen, and the one number here worth arguing about.
+     *
+     * The HUD above it and the controls below it are both load-bearing: the flip count is the
+     * clock, and Complete word is how a word is submitted. If the board takes the whole screen
+     * then one of those is off it, so the board is allowed a little under half the height and
+     * the tiles size themselves down to fit whatever the row count turns out to be.
+     *
+     * `svh` rather than `dvh` deliberately. The dynamic unit tracks Safari's URL bar as it
+     * collapses, so the board would grow and shrink while the page scrolled and every tile
+     * would drift under the thumb following it. The small unit is the URL-bar-expanded height
+     * and never changes, which costs a few pixels and buys a board that holds still. In a
+     * home-screen app there is no URL bar and the two are the same number anyway.
+     */
+    --board-height: 46svh;
+  }
+
+  .btn,
+  .chip,
+  .drop-trigger {
+    min-height: 2.75rem;
+  }
+  .drop-option {
+    padding: 0.6rem 0.5rem;
+  }
+  /* The whole label toggles it, so the label is the target that has to clear 44pt; the box
+     itself only has to be big enough to read. */
+  .toggle {
+    min-height: 2.75rem;
+  }
+  .toggle input[type='checkbox'] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /*
+   * iOS zooms the page in when a field takes focus whose text is under 16px, and it does not
+   * zoom back out afterwards: you are left in a magnified game with the board off the edge.
+   * The nerd panel's number fields were 13.6px, so every one of them was a trapdoor.
+   */
+  .nerd-row input,
+  .nerd-row select {
+    font-size: 1rem;
+    min-height: 2.75rem;
+  }
+  /*
+   * WebKit will not accept an author height on a native menulist. `min-height: 2.75rem` above
+   * computed to 18px and the row stayed 23px tall, so the three nerd-panel selects were the
+   * only targets on the page a finger could not reliably hit. Dropping the native appearance
+   * hands sizing back, at the cost of having to draw the caret here.
+   *
+   * The picker itself is still the system one, and on iOS that is what you want: it opens as a
+   * wheel at the bottom of the screen under your thumb. This is the opposite of the Chrome on
+   * macOS problem that `Dropdown.tsx` exists to solve, which is why these three stay native.
+   */
+  .nerd-row select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 1.6rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238b949e' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.55rem center;
+    background-size: 0.6rem;
+  }
+
+  /* The keys the buttons advertise, which do not exist here. */
+  .btn kbd {
+    display: none;
+  }
+
+  /* The only route to the rules, and 20px tall as a bare line of text. Padding rather than a
+     larger font, so it stays a quiet link and becomes a reachable one. */
+  .how-to-play {
+    display: inline-block;
+    padding: 0.75rem 0.25rem;
+  }
+}
+
+/*
+ * ---------- a narrow screen ----------
+ *
+ * Width is the trigger rather than touch, because a narrow window on a desktop has the same
+ * problem: everything above the board pushes the controls under it off the bottom. Only
+ * vertical rhythm and type size change; nothing moves or disappears.
+ */
+@media (max-width: 30rem) {
+  .shell {
+    gap: 1rem;
+  }
+  .body {
+    gap: 1rem;
+  }
+  .play {
+    gap: 0.75rem;
+  }
+  .hud {
+    gap: 0.5rem;
+  }
+  .hud-stats {
+    gap: 1rem;
+    justify-content: space-between;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+  }
+  .word {
+    font-size: 1.25rem;
+    letter-spacing: 0.16em;
+  }
+  .word-line {
+    min-height: 1.6rem;
+    gap: 0.5rem;
+  }
+  .title-tile {
+    --title-tile: 1.3rem;
+  }
+  /*
+   * The title bar, which was the most expensive thing on a small screen: at 320px the wordmark,
+   * the language picker and the nerd toggle wrapped onto three rows and took 108px of a 568px
+   * screen, which is what pushed Complete word off the bottom. Two rows instead. The picker's
+   * own label goes: the trigger shows a flag and the language's name for itself, which says
+   * "language" better than the word does, and the label stays in the accessibility tree.
+   */
+  .picker-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .drop-trigger {
+    min-width: 7.5rem;
+  }
+  .titlebar {
+    gap: 0.5rem 0.75rem;
+  }
+  .panel {
+    padding: 1.25rem 1rem;
+  }
+  .rules {
+    padding: 1.5rem 1.1rem 3rem;
+  }
+}
+
+/*
+ * ---------- a phone on its side ----------
+ *
+ * 340px of height, and the stack needs about 500. So it stops being a stack: the board takes a
+ * column of its own and everything else goes beside it. This is the one place the layout really
+ * changes shape rather than just tightening, and it is worth it because a phone in landscape is
+ * how a lot of people hold a game.
+ *
+ * The board's column is a percentage rather than `auto` on purpose. `.board-wrap` is an
+ * inline-size container, which means its width may not depend on its contents; in an `auto`
+ * track it would depend on exactly that, and the column collapses to nothing.
+ */
+@media (orientation: landscape) and (max-height: 30rem) {
+  :root {
+    --board-height: 82svh;
+  }
+  .shell {
+    gap: 0.75rem;
+  }
+  .play {
+    grid-template-columns: minmax(0, 1fr) 46%;
+    align-items: start;
+    gap: 0.75rem 1rem;
+  }
+  .hud {
+    grid-area: 1 / 1;
+  }
+  .controls {
+    grid-area: 2 / 1;
+  }
+  .legend {
+    grid-area: 3 / 1;
+  }
+  .found {
+    grid-area: 4 / 1;
+  }
+  .board-wrap {
+    grid-area: 1 / 2 / 5 / 3;
+  }
+  /* Setup, and the leaderboard after a game: one card across both columns, no board yet. */
+  .panel {
+    grid-area: 1 / 1 / 2 / 3;
+  }
+  /* The wordmark is nine tiles wide and buys nothing here. */
+  .titlebar {
+    gap: 0.4rem 0.75rem;
+  }
+  .hud {
+    gap: 0.4rem;
+  }
+}
+
+/*
+ * ---------- a short screen ----------
+ *
+ * An iPhone SE is 568px tall, and 46% of that left Complete word six pixels below the fold.
+ * Six pixels is still off the screen. The board gives them up rather than the button, because
+ * a button you cannot reach is a game you cannot finish, and 42% of an SE is still a 55px tile
+ * against the 40px this all started from.
+ */
+@media (hover: none) and (pointer: coarse) and (max-height: 36rem) and (orientation: portrait) {
+  :root {
+    --board-height: 42svh;
+  }
 }

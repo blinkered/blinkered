@@ -14,6 +14,7 @@ export const nl: Messages = {
   round: 'ronde',
   ticksLeftLabel: 'Resterende tijd in deze ronde',
   typeAWord: 'typ een woord',
+  tapAWord: 'tik op de letters',
 
   boardOfTiles: 'Bord van {n} stenen',
   faceDown: 'omgedraaid',
@@ -34,6 +35,7 @@ export const nl: Messages = {
   lettersSelect: 'letters selecteren',
   clearsEvery: 'wist alle geselecteerde {letter}',
   undoLastLetter: 'laatste letter terug',
+  tapToSelect: 'tik op een letter om hem te nemen, en nog eens op de laatste om hem terug te geven',
   noWordsYet: 'Nog geen woorden.',
 
   wordAccepted: '{word}  +{points} punten, +{flips} zetten',
@@ -132,6 +134,9 @@ export const nl: Messages = {
   htLanguagesBody:
     'Zestien. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
   htKeysTitle: 'Het toetsenbord',
+  htTouchTitle: 'Het aanraakscherm',
+  htTouchBody:
+    'Tik op een omgedraaide steen om zijn letter te nemen. Tik nog eens op de laatste letter om hem terug te geven. Woord inleveren en Wissen staan onder het bord.',
 
   plurals: {
     words: { one: '{n} woord', other: '{n} woorden' },

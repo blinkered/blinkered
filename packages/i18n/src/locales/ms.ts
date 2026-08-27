@@ -14,6 +14,7 @@ export const ms: Messages = {
   round: 'pusingan',
   ticksLeftLabel: 'Masa berbaki dalam pusingan ini',
   typeAWord: 'taip satu kata',
+  tapAWord: 'sentuh huruf',
 
   boardOfTiles: 'Papan {n} jubin',
   faceDown: 'tertutup',
@@ -34,6 +35,8 @@ export const ms: Messages = {
   lettersSelect: 'huruf memilih',
   clearsEvery: 'membuang semua {letter} yang dipilih',
   undoLastLetter: 'membatalkan huruf terakhir',
+  tapToSelect:
+    'sentuh satu huruf untuk mengambilnya, dan yang terakhir sekali lagi untuk memulangkannya',
   noWordsYet: 'Belum ada kata.',
 
   wordAccepted: '{word}  +{points} mata, +{flips} balikan',
@@ -132,6 +135,9 @@ export const ms: Messages = {
   htLanguagesBody:
     'Enam belas. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
   htKeysTitle: 'Papan kekunci',
+  htTouchTitle: 'Skrin sentuh',
+  htTouchBody:
+    'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh huruf terakhir sekali lagi untuk memulangkannya. Hantar kata dan Kosongkan ada di bawah papan.',
 
   plurals: {
     words: { other: '{n} kata' },

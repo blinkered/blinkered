@@ -42,6 +42,8 @@ export interface Messages {
   readonly round: string
   readonly ticksLeftLabel: string
   readonly typeAWord: string
+  /** The same prompt where there is no keyboard to type on. */
+  readonly tapAWord: string
 
   // The board, mostly for a screen reader.
   /** `{n}` */
@@ -65,6 +67,8 @@ export interface Messages {
   readonly htLanguagesTitle: string
   readonly htLanguagesBody: string
   readonly htKeysTitle: string
+  readonly htTouchTitle: string
+  readonly htTouchBody: string
 
   // Setting a game up, and stopping one.
   readonly start: string
@@ -100,6 +104,8 @@ export interface Messages {
   /** `{letter}`, shown as the literal X of "shift-X clears all selected Xs". */
   readonly clearsEvery: string
   readonly undoLastLetter: string
+  /** The legend, where there is no keyboard to advertise. */
+  readonly tapToSelect: string
   readonly noWordsYet: string
 
   // What the game says back.

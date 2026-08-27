@@ -14,6 +14,7 @@ export const no: Messages = {
   round: 'runde',
   ticksLeftLabel: 'Gjenstående tid i runden',
   typeAWord: 'skriv et ord',
+  tapAWord: 'trykk på bokstavene',
 
   boardOfTiles: 'Brett med {n} brikker',
   faceDown: 'med baksiden opp',
@@ -34,6 +35,7 @@ export const no: Messages = {
   lettersSelect: 'bokstaver velger',
   clearsEvery: 'fjerner alle valgte {letter}',
   undoLastLetter: 'angrer siste bokstav',
+  tapToSelect: 'trykk på en bokstav for å ta den, og på den siste igjen for å gi den tilbake',
   noWordsYet: 'Ingen ord ennå.',
 
   wordAccepted: '{word}  +{points} poeng, +{flips} trekk',
@@ -132,6 +134,9 @@ export const no: Messages = {
   htLanguagesBody:
     'Seksten. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
   htKeysTitle: 'Tastaturet',
+  htTouchTitle: 'Berøringsskjermen',
+  htTouchBody:
+    'Trykk på en brikke som ligger med forsiden opp for å ta bokstaven. Trykk på den siste bokstaven igjen for å gi den tilbake. Lever ordet og Tøm ligger under brettet.',
 
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
