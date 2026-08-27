@@ -14,14 +14,15 @@ Reset have always been real controls, because the plan called for touch to be a 
 path rather than an afterthought. So the first thing worth checking was whether any of it
 actually functioned, and it did:
 
-| checked in WebKit at an iPhone viewport     | result                               |
-| ------------------------------------------- | ------------------------------------ |
-| Start button responds to a tap              | yes                                  |
-| tapping a face-up tile takes its letter     | yes                                  |
-| a word submitted by tapping is accepted     | yes, `HAIR +3 points, +3 flips`      |
-| tapping the last letter again takes it back | yes                                  |
-| pause, resume, reset, quit by tap           | yes                                  |
-| a whole game, no keyboard at all            | 20 points from 9 words over 3 rounds |
+| checked in WebKit at an iPhone viewport     | result                                                  |
+| ------------------------------------------- | ------------------------------------------------------- |
+| Start button responds to a tap              | yes                                                     |
+| tapping a face-up tile takes its letter     | yes                                                     |
+| a word submitted by tapping is accepted     | yes, `HAIR +3 points, +3 flips`                         |
+| tapping the last letter again takes it back | yes                                                     |
+| pause, resume, reset, quit by tap           | yes                                                     |
+| a whole game, no keyboard at all            | 20 points from 9 words over 3 rounds                    |
+| the leaderboard, with four rows on it       | ranks, current row marked, table 324px in a 358px panel |
 
 That mattered because the buttons all call `preventDefault` on `mousedown`
 (`withoutStealingFocus`, which exists so a click cannot cost a desktop player their keyboard),
@@ -243,6 +244,13 @@ machine, so this is as close as it gets here.
 
 What it genuinely verifies: geometry, tap targets, computed styles, whether a tap reaches a
 control, and a whole game played by touch.
+
+One note on playing a game out, because the first attempt at the leaderboard check failed in an
+instructive way. It submitted a word every time it could find one, and every accepted word pays
+flips back, so a bot that never misses never runs out: 315 words in and the game was still
+going. Draining the flip budget means submitting **nothing** and letting the reveals spend it,
+which ends a default game in about twelve rounds. A test of the end of a game has to be bad at
+the game.
 
 What it cannot: **actual safe-area inset values** (the emulated viewport has none, so the
 landscape notch padding is reasoned from the spec rather than measured), **the URL bar
