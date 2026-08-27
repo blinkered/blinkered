@@ -19,8 +19,10 @@ next.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
-- **Deployment** — one container, nginx serving the built files, manifests in `deploy/k8s`,
-  built and pushed by CI. See [DEPLOY.md](DEPLOY.md).
+- **Deployed and live** at https://playblinkered.com, two replicas in `blinkered-prod` on
+  `tl-prod`. One container, nginx serving the built files, built and pushed by CI, fronted by
+  Traefik with the www redirect and response compression as middlewares. See
+  [DEPLOY.md](DEPLOY.md).
 - **`apps/web`** — playable React front end. Keyboard and pointer, sixteen languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.

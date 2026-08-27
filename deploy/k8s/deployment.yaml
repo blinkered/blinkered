@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blinkered
+  namespace: blinkered-prod
   labels:
     app.kubernetes.io/name: blinkered
 spec:
@@ -14,11 +15,6 @@ spec:
       labels:
         app.kubernetes.io/name: blinkered
     spec:
-      # The GHCR package is private, because the org does not permit public packages. Create
-      # the secret once per namespace; see docs/DEPLOY.md. Delete these two lines if the
-      # package is ever made public, and anonymous pulls will just work.
-      imagePullSecrets:
-        - name: ghcr
       securityContext:
         runAsNonRoot: true
         runAsUser: 101

@@ -2,39 +2,44 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: blinkered
+  namespace: blinkered-prod
   labels:
     app.kubernetes.io/name: blinkered
   annotations:
-    # cert-manager issues the certificate. Drop this line and the `tls` block if TLS is
-    # terminated somewhere ahead of the cluster.
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    # The Russian word list is 8.3MB before compression, 1.2MB after. The default proxy
-    # buffers are smaller than that, and a truncated word list is a broken game.
-    nginx.ingress.kubernetes.io/proxy-body-size: '0'
-    nginx.ingress.kubernetes.io/proxy-buffering: 'off'
-    # www.playblinkered.com redirects to the apex, so there is one canonical origin. Not
-    # cosmetic: guest scores live in localStorage, which is scoped per origin, so serving both
-    # directly means a player who arrives on www one day and the apex the next finds an empty
-    # leaderboard. This stops mattering once scores live server-side, and until then it is the
-    # difference between keeping and losing them.
-    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    # Attaches both middlewares, in order. The reference is `<namespace>-<name>@kubernetescrd`,
+    # and the list applies to every router this Ingress creates, which is safe because the
+    # redirect's regex only matches www. Redirect first, so a redirect is not compressed.
+    # One line, no space after the comma: Traefik happens to trim it, and depending on that is
+    # a poor trade when a middleware reference it cannot resolve takes the whole router out of
+    # service rather than failing quietly.
+    traefik.ingress.kubernetes.io/router.middlewares: 'blinkered-prod-www-to-apex@kubernetescrd,blinkered-prod-compress@kubernetescrd'
 spec:
-  ingressClassName: nginx
+  # `public` and `private` are this cluster's two classes, both traefik.io/ingress-controller.
+  # There is no class called `nginx` and no nginx controller, so nginx annotations do nothing.
+  ingressClassName: public
   tls:
-    # Both hostnames, even though only one is served. The redirect happens *after* the TLS
-    # handshake: a browser asked for https://www.playblinkered.com connects first and would
-    # show a certificate error before it ever saw the 308. cert-manager reads this list, so
-    # www needs to be in it.
+    # The certificate comes from Traefik's ACME resolver, keyed on the Host rules below, not
+    # from cert-manager, which is not installed here. `secretName` is therefore vestigial; it is
+    # kept because the live ingress has it and TLS works, and changing it buys nothing.
     - hosts:
         - playblinkered.com
         - www.playblinkered.com
       secretName: blinkered-tls
-  # Only the apex has a rule. The annotation above generates the www server block that does the
-  # redirecting, so adding a rule for www here would give the controller two server blocks for
-  # the same hostname, one redirecting and one serving. If www ever needs to serve the app
-  # directly, remove the annotation rather than adding a rule alongside it.
+  # Both hostnames need a rule. This is the opposite of the nginx controller, where the www rule
+  # must be left out because the annotation generates that server block itself: Traefik only
+  # routes hosts it has a rule for, so without one, www never reaches the middleware and 404s.
   rules:
     - host: playblinkered.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blinkered
+                port:
+                  name: http
+    - host: www.playblinkered.com
       http:
         paths:
           - path: /

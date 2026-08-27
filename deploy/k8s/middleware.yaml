@@ -1,0 +1,43 @@
+# www.playblinkered.com redirects to the apex, so there is one canonical origin.
+#
+# Not cosmetic: a guest's scores live in localStorage, which is scoped per origin, so serving
+# the game on both hostnames means somebody who arrives on www one day and the apex the next
+# finds an empty leaderboard. Their scores are not lost, they are on the other origin, which is
+# worse than lost because it looks like a bug.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: www-to-apex
+  namespace: blinkered-prod
+  labels:
+    app.kubernetes.io/name: blinkered
+spec:
+  redirectRegex:
+    # Traefik matches this against the whole URL, so the scheme is part of the pattern. Only www
+    # matches, which is what lets the middleware be attached to every router on the Ingress
+    # without touching apex traffic.
+    regex: '^https?://www\.playblinkered\.com/(.*)'
+    replacement: 'https://playblinkered.com/${1}'
+    # Traefik's `permanent` is a 301. The nginx controller's equivalent uses a 308; the
+    # difference does not matter for a GET-only site.
+    permanent: true
+---
+# Traefik does not forward the client's `Accept-Encoding` to the backend, so nginx never sees a
+# gzip request and serves the plain file: measured at the edge, `en.txt` arrived as 1,736,592
+# bytes with the uncompressed file's ETag, while the same request straight to the pod returns
+# 470,459 bytes and `Content-Encoding: gzip`. On Russian that is 8.5MB instead of 1.2MB.
+#
+# So compression has to happen here. The build-time `.gz` files are not wasted: they are what
+# serves when there is no Traefik in front, which is the case locally and would be the case
+# behind a proxy that does forward the header.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: compress
+  namespace: blinkered-prod
+  labels:
+    app.kubernetes.io/name: blinkered
+spec:
+  compress:
+    # Below this it costs more than it saves. The word lists are four orders of magnitude above.
+    minResponseBodyBytes: 1024

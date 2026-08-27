@@ -8,14 +8,14 @@ simple as a deployment gets.
 ## The short version
 
 ```
-# once: the registry credentials, in the namespace you are deploying to
-kubectl create secret docker-registry ghcr \
-  --docker-server=ghcr.io --docker-username=<user> --docker-password=<read:packages token>
-
-git push                          # CI builds and pushes ghcr.io/blinkered/blinkered
-kubectl apply -f deploy/k8s/      # once, or after editing a manifest
-kubectl set image deployment/blinkered web=ghcr.io/blinkered/blinkered:sha-<short>
+git push                                   # CI builds and pushes ghcr.io/blinkered/blinkered
+kubectl -n blinkered-prod set image deployment/blinkered \
+  web=ghcr.io/blinkered/blinkered:sha-<short>
 ```
+
+A routine deploy is that second command alone. **`kubectl apply -f deploy/k8s/` resets the image
+to `:latest`**, because that is what the manifest says, so use it only when a manifest actually
+changed, and follow it with `set image` to get back to a pinned digest.
 
 ## Where the image comes from
 
@@ -42,103 +42,98 @@ weeks later comes up on different code than its neighbours.
 
 ## Letting the cluster pull it
 
-The package is **private**, and stays private: the Tight Line org does not permit public
-packages. So the cluster needs credentials, which is one secret per namespace.
+Nothing to do: the GHCR package is public, so the nodes pull anonymously and there is no pull
+secret. Verified by fetching the manifest with an anonymous token, which returns 200.
 
-Use a **classic** personal access token with `read:packages` and nothing else. It only ever
-pulls, so it needs no other scope, and giving it one would be handing the cluster more than the
-job requires.
+If it is ever made private again, add a secret and reference it:
 
 ```
-kubectl create secret docker-registry ghcr \
-  --docker-server=ghcr.io \
-  --docker-username=<github-user> \
-  --docker-password=<token-with-read:packages>
+kubectl create secret docker-registry ghcr -n blinkered-prod \
+  --docker-server=ghcr.io --docker-username=<user> --docker-password=<read:packages token>
 ```
-
-`deployment.yaml` already references it:
 
 ```yaml
 imagePullSecrets:
   - name: ghcr
 ```
 
-Two things that will bite otherwise:
-
-- **The secret must live in the same namespace as the deployment.** An `imagePullSecrets` entry
-  is a name, not a reference across namespaces, and a missing one shows up as
-  `ImagePullBackOff` with `401 Unauthorized` rather than as anything about secrets.
-- **A token with an expiry will stop pulls the day it lapses**, and running pods will keep
-  serving while new ones fail, so it looks like a scheduling problem rather than an auth one.
-  Either set no expiry or put the rotation in a calendar.
-
-To check the credentials without deploying anything:
-
-```
-echo <token> | docker login ghcr.io -u <github-user> --password-stdin
-docker pull ghcr.io/blinkered/blinkered:latest
-```
-
-**If the org policy is ever relaxed**, Organization Settings, Packages, Package creation, tick
-Public, then the package's own settings, Danger Zone, Change visibility. Anonymous pulls then
-work and the `imagePullSecrets` block can go.
+The secret has to live in the same namespace as the deployment, and a token with an expiry stops
+_new_ pulls the day it lapses while running pods keep serving, so it presents as a scheduling
+problem rather than an auth one.
 
 ## The manifests
 
-`deploy/k8s/` holds three files, plain YAML, no Helm. Rancher will take them as they are, from
-`kubectl apply` or pasted into the Import YAML box.
+`deploy/k8s/` holds four files, plain YAML, no Helm. Everything is namespaced `blinkered-prod`
+explicitly, so an apply cannot land somewhere else by inheriting a context's default namespace.
 
-- **deployment.yaml** — two replicas, tiny requests (10m CPU, 32Mi), `/healthz` for both
-  probes. Runs as uid 101 with a read-only root filesystem, no capabilities and no privilege
-  escalation, which is why there are `emptyDir` mounts at `/var/cache/nginx` and `/tmp`: nginx
-  needs somewhere to write and is not allowed to write anywhere else.
+- **deployment.yaml** — two replicas, tiny requests (10m CPU, 32Mi), `/healthz` for both probes.
+  Runs as uid 101 with a read-only root filesystem, no capabilities and no privilege escalation,
+  which is why there are `emptyDir` mounts at `/var/cache/nginx` and `/tmp`: nginx needs
+  somewhere to write and is not allowed to write anywhere else.
 - **service.yaml** — ClusterIP, port 80 to the container's 8080.
-- **ingress.yaml** — `playblinkered.com`, `ingressClassName: nginx`, cert-manager annotation
-  for TLS. **Edit the host**, and drop the `tls` block and the annotation if TLS is terminated
-  ahead of the cluster.
-
-### One canonical hostname
-
-`www.playblinkered.com` redirects to the apex, via
-`nginx.ingress.kubernetes.io/from-to-www-redirect`. That is not about tidiness or SEO: a guest's
-scores live in `localStorage`, which is scoped per origin, so serving the game on both
-hostnames means somebody who arrives on `www` one day and the apex the next finds an empty
-leaderboard. Their scores are not lost, they are on the other origin, which is worse than lost
-because it looks like a bug.
-
-Two things about that configuration are easy to undo by accident:
-
-- **www is in `tls` but has no `rule`.** The annotation generates the `www` server block itself,
-  so adding a rule for it as well gives the controller two server blocks for one hostname, one
-  redirecting and one serving. To serve `www` directly, remove the annotation rather than adding
-  a rule next to it.
-- **www must stay in the `tls` hosts.** The redirect happens after the TLS handshake, so a
-  browser asked for `https://www.playblinkered.com` connects first; without the certificate
-  covering it, the visitor gets a certificate warning and never sees the 308. cert-manager reads
-  that list, which is the only reason `www` appears in it.
-
-This stops mattering when accounts arrive and scores live server-side. Until then it is the
-difference between keeping a player's leaderboard and losing it.
+- **middleware.yaml** — two Traefik middlewares: the www redirect and response compression.
+- **ingress.yaml** — both hostnames, class `public`, with both middlewares attached.
 
 The container listens on **8080**, not 80, because it runs unprivileged and cannot bind a
 privileged port.
 
-## Two things about the word lists
+### This cluster runs Traefik, not nginx
 
-They are the payload: 35MB of text across sixteen languages, and Russian alone is 8.3MB.
+Worth stating plainly because the first version of these manifests assumed otherwise and every
+annotation in them did nothing. `tl-prod` has two ingress classes, `private` (the default) and
+`public`, both `traefik.io/ingress-controller`. Use **`public`** for anything meant to be
+reachable from outside.
 
-**They are pre-compressed at build time**, not at request time. The build writes a `.gz` beside
-every text file and nginx serves it with `gzip_static`. Russian goes out as 1.2MB instead of
-8.3MB, and no CPU is spent compressing the same 8MB over and over. Verified: the same URL
-returns 8,471,431 bytes without `Accept-Encoding: gzip` and 1,262,232 with it.
+There is also **no cert-manager**. Certificates come from Traefik's own ACME resolver, keyed on
+the Host rules in the ingress, which is why adding `www` to the rules was enough to get it a
+certificate without anyone asking for one. The `cert-manager.io/cluster-issuer` annotation was
+inert, and `spec.tls[].secretName` is vestigial — no such secret exists and TLS works anyway.
 
-**Only one language is fetched per session**, when it is chosen, so nobody downloads 35MB. The
+### One canonical hostname
+
+`www.playblinkered.com` 301s to the apex, via the `www-to-apex` middleware.
+
+Not tidiness: a guest's scores live in `localStorage`, which is scoped per origin, so serving
+the game on both hostnames means somebody who arrives on `www` one day and the apex the next
+finds an empty leaderboard. Their scores are not lost, they are on the other origin, which is
+worse than lost because it looks like a bug.
+
+**Both hostnames need a rule.** This is the opposite of the nginx controller, where the `www`
+rule must be left out because the annotation generates that server block itself. Traefik only
+routes hosts it has a rule for, so without one, `www` never reaches the middleware and 404s —
+which is exactly what it did before this was fixed.
+
+**Middleware references are `<namespace>-<name>@kubernetescrd`**, comma-separated with no
+spaces. Traefik happens to trim a space, but a reference it cannot resolve takes the whole
+router out of service rather than failing quietly, so it is not a thing to be relaxed about.
+
+## The word lists, and who compresses them
+
+They are the payload: 35MB of text across sixteen languages, and Russian alone is 8.3MB. Only
+the chosen language is ever fetched, when it is chosen, so nobody downloads all of it. The
 manifest at `/words/manifest.json` is 3KB and is all the app needs to know what exists.
 
-If an ingress sits in front of this, check its buffer limits. The two annotations in
-`ingress.yaml` turn off body-size limits and response buffering for the nginx ingress
-controller, because a truncated word list is a broken game rather than a slow one. A different
-controller will want its own equivalent.
+**Traefik compresses them, not nginx**, and finding that out was worth the trouble. The build
+writes a `.gz` beside every text file and nginx serves it with `gzip_static`, which works
+perfectly when you talk to the pod directly. Through the ingress it did nothing: Traefik does not
+forward the client's `Accept-Encoding`, so nginx saw no gzip request and served the plain file.
+
+The evidence, because this is invisible unless measured: at the edge, `en.txt` arrived as
+1,736,592 bytes carrying the _uncompressed_ file's ETag, byte-identical to what the pod returns
+when asked for `identity`. Straight to the pod with `Accept-Encoding: gzip` it is 470,459 bytes
+with `Content-Encoding: gzip`.
+
+So the `compress` middleware does it at the ingress instead. Measured at the edge afterwards:
+
+|     | plain  | gzip   |      |
+| --- | ------ | ------ | ---- |
+| en  | 1.66MB | 0.48MB | 3.5x |
+| ru  | 8.08MB | 1.35MB | 6.0x |
+| sv  | 4.37MB | 1.26MB | 3.5x |
+
+The build-time `.gz` files are not wasted. They are what serves when there is no Traefik in
+front, which is the case locally and would be the case behind any proxy that does forward the
+header. Belt and braces, and the belt costs nothing.
 
 ## Caching
 

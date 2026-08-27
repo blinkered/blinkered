@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: blinkered
+  namespace: blinkered-prod
   labels:
     app.kubernetes.io/name: blinkered
 spec:
