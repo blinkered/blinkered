@@ -291,13 +291,25 @@ h2 {
   --cols: 4;
   --rows: 4;
   --gap: clamp(0.35rem, 1.6vmin, 0.7rem);
-  --fit-width: calc((min(100cqw, 30rem) - (var(--cols) - 1) * var(--gap)) / var(--cols));
-  --fit-height: calc((var(--board-height) - (var(--rows) - 1) * var(--gap)) / var(--rows));
-  --tile: clamp(2.75rem, min(var(--fit-width), var(--fit-height)), var(--tile-max));
+  /*
+   * The fallback, and it is not decoration. Container query units want Safari 16 and the
+   * small-viewport unit wants 15.4; on anything older those tokens are unknown, the calc below
+   * is invalid, and an invalid custom property is invalid *at computed-value time*, so
+   * `width: var(--tile)` resolves to nothing and the board collapses rather than degrading.
+   * An older iPhone therefore gets the plain viewport clamp: worse, and a game.
+   */
+  --tile: clamp(2.75rem, 20vmin, var(--tile-max));
   display: grid;
   grid-template-columns: repeat(var(--cols), var(--tile));
   gap: var(--gap);
   perspective: 900px;
+}
+@supports (width: 100cqw) and (height: 100svh) {
+  .board {
+    --fit-width: calc((min(100cqw, 30rem) - (var(--cols) - 1) * var(--gap)) / var(--cols));
+    --fit-height: calc((var(--board-height) - (var(--rows) - 1) * var(--gap)) / var(--rows));
+    --tile: clamp(2.75rem, min(var(--fit-width), var(--fit-height)), var(--tile-max));
+  }
 }
 
 .tile {
@@ -804,8 +816,8 @@ kbd {
  * letter again takes it back, which is Backspace by another route. The link to the rules applies
  * either way and stays.
  *
- * `display: revert` rather than a value, so one rule serves a list item and a span alike: it
- * rolls back to whatever the element was going to be.
+ * Spelled out per element rather than with `display: revert`, which is elegant, is Safari 15.4,
+ * and fails by leaving the touch copy hidden with nothing in its place.
  */
 .touch-only {
   display: none;
@@ -814,8 +826,11 @@ kbd {
   .keys-only {
     display: none;
   }
-  .touch-only {
-    display: revert;
+  li.touch-only {
+    display: list-item;
+  }
+  span.touch-only {
+    display: inline;
   }
 }
 
