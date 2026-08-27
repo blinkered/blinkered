@@ -62,6 +62,16 @@ next.
 - **Tight Line LLC owns this.** NOTICE was already written that way; it is now a decision
   rather than a default. It also settles the Apple Developer account type, which is the part
   that is hard to undo: an organisation account, not an individual one.
+- **The Apple Developer Program is not Apple Business Manager**, and Tight Line's existing ABM
+  account (used for MDM) does not provide TestFlight. They are separate enrolments: ABM is free
+  and deploys apps and devices to people, the Developer Program is $99/yr and is what lets you
+  build, beta-test and publish one. The two compose later, in that the Developer Program can
+  push a private Custom App to your own organisation _through_ ABM, which is the modern
+  replacement for the $299 Enterprise Program and the wrong shape for a public game.
+  The useful consequence: ABM enrolment already required a verified D-U-N-S number, so the part
+  of organisation enrolment with a multi-day wait in it is already done. The rest of what Apple
+  asks for is also in place: a legal entity, a work email on the organisation's own domain, and
+  a functional website at that domain.
 - **`playblinkered.com` is registered.** `blinkered.game` is not: $300 a year against $10.
 - **Download size over vocabulary.** The credit tier is bounded by a lexicon rather than by
   corpus frequency, which makes the inflected languages large: 1.2MB gzipped for Russian and
