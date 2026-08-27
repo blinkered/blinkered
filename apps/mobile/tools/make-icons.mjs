@@ -5,13 +5,15 @@
  * too: no image toolchain to install, and the source of every asset is the few lines below rather
  * than a binary whose origin has been lost.
  *
- * Needs Playwright, which the repo does not depend on. Run it with a temporary copy:
+ * Needs Playwright, which the repo does not depend on, and ImageMagick for the alpha strip
+ * (`brew install imagemagick`). Run it with a temporary copy of Playwright:
  *
  *   cd $(mktemp -d) && npm i playwright@1 --silent \
  *     && node <repo>/apps/mobile/tools/make-icons.mjs <repo>/apps/mobile/ios/App/App/Assets.xcassets
  *
  * The output is committed, so this only needs running when the mark changes.
  */
+import { execFileSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import { webkit } from 'playwright'
 
@@ -52,13 +54,55 @@ const splash = (size) => `
 </style></head><body><div class="tile">B</div></body></html>`
 
 const JOBS = [
-  { path: `${ASSETS}/AppIcon.appiconset/AppIcon-512@2x.png`, size: 1024, html: icon },
+  {
+    path: `${ASSETS}/AppIcon.appiconset/AppIcon-512@2x.png`,
+    size: 1024,
+    html: icon,
+    background: BLUE,
+  },
   // Three names, one image. Capacitor's template lists a light, a dark and a default; the game
   // is dark either way, so they are the same picture rather than three near-identical ones.
-  { path: `${ASSETS}/Splash.imageset/splash-2732x2732.png`, size: 2732, html: splash },
-  { path: `${ASSETS}/Splash.imageset/splash-2732x2732-1.png`, size: 2732, html: splash },
-  { path: `${ASSETS}/Splash.imageset/splash-2732x2732-2.png`, size: 2732, html: splash },
+  {
+    path: `${ASSETS}/Splash.imageset/splash-2732x2732.png`,
+    size: 2732,
+    html: splash,
+    background: DARK,
+  },
+  {
+    path: `${ASSETS}/Splash.imageset/splash-2732x2732-1.png`,
+    size: 2732,
+    html: splash,
+    background: DARK,
+  },
+  {
+    path: `${ASSETS}/Splash.imageset/splash-2732x2732-2.png`,
+    size: 2732,
+    html: splash,
+    background: DARK,
+  },
 ]
+
+/**
+ * Screenshots always carry an alpha channel, even when every pixel is opaque, and App Store
+ * Connect rejects an app icon that has one: "the large app icon can't be transparent nor contain
+ * an alpha channel". It is not caught by anything local, so it fails on the first upload, after
+ * the archive, which is the worst place to find out.
+ *
+ * `-alpha remove` composites onto the background and `-alpha off` drops the channel. Since the
+ * rendered pixels are already fully opaque this is exact rather than approximate.
+ */
+const stripAlpha = (path, background) => {
+  execFileSync('magick', [
+    path,
+    '-background',
+    background,
+    '-alpha',
+    'remove',
+    '-alpha',
+    'off',
+    path,
+  ])
+}
 
 const browser = await webkit.launch()
 for (const job of JOBS) {
@@ -69,7 +113,8 @@ for (const job of JOBS) {
   await page.setContent(job.html(job.size))
   const png = await page.screenshot({ omitBackground: false })
   writeFileSync(job.path, png)
-  console.log(`${job.path}  ${job.size}x${job.size}  ${png.length} bytes`)
+  stripAlpha(job.path, job.background)
+  console.log(`${job.path}  ${job.size}x${job.size}  alpha stripped`)
   await page.close()
 }
 await browser.close()
