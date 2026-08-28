@@ -108,26 +108,28 @@ worth wanting on purpose.
   same rate is worth less on a harder setting because there is less time to use it: the mechanic
   self-balances without a second number to guess. Making it level-dependent later is one field in
   `DIFFICULTIES`, so nothing is lost by waiting for play to say it is needed.
-- **Per tile, drawn once with the board and fixed for the game.** A wild is a face like any other
-  face: it moves position on every shuffle and it is still there next round, and the board is the
-  same twelve faces from first deal to last.
+- **Per tile, per deal, and it masks rather than replaces.** The board keeps its twelve letters
+  from first deal to last. Each shuffle, a tile may be dealt showing a wild instead of its letter;
+  the letter underneath is untouched and is back next round.
 
-  This was briefly decided the other way, per deal, and that was wrong for a reason worth keeping.
-  Re-rolling wild-ness each shuffle changes the face set between rounds -- `ABCDEFGHIJKL`, then
-  `A*CDEFGHIJKL`, then `ABCDEF*HIJKL` -- which is letter replacement, proposal 3, arriving early
-  and in disguise. It would also have spoiled the experiment: if wild cards already churn the board
-  between rounds, nothing measured afterwards can say what replacement adds.
+  This went round twice and the distinction is the whole point. _Replacing_ a letter with another
+  letter changes what the board is made of, which is proposal 3, and doing it here early would have
+  meant nothing measured later could say what proposal 3 adds. _Masking_ changes nothing: the
+  twelve letters are constant, one of them is promoted for a round, and a player who has
+  transcribed the board still has a correct list. The two features stay orthogonal, and a wild is
+  strictly better than the letter it hides, since it can always become that letter.
 
-- **What 0.02 then means.** 21.5% of _games_ have a wild and 2.2% have two, and a game that has one
-  has it in every round. That is a strong board rather than an occasional treat, and it is the
-  number to watch in play. Two things soften it: a wild is only worth a word when the other letters
-  are up and willing, and words already found are excluded, so a wild decays as the game fills up
-  the list of what it can no longer make.
+- **What 0.02 means.** 21.5% of rounds carry a wild, 2.2% carry two, and a game sees 2.4 to 3.4 of
+  them depending on the setting. Spread across the game rather than concentrated into one game in
+  five, which is the other thing the per-deal reading buys.
 
-- **The wrinkle to watch is ranked fairness.** One game in five being materially easier is variance
-  the leaderboard cannot see, since a wild board and a plain board are both canonical. If play says
-  that matters, the answers are a lower frequency, or a wild that can be spent only once in a game
-  rather than once in a round.
+- **The per-game figure is what to judge**, not the 0.02. Three wilds against a fourteen-word game
+  is a fifth of the words, and a wild can be a whole word by fishing. Knowingly generous for a
+  first pass, because a treat nobody sees teaches nothing about whether it is fun.
+
+- **When proposal 3 arrives, the two must not look alike.** A masked letter and a replaced letter
+  are different events and the animation for each has to say which happened, or the board becomes
+  untrustworthy in a way no amount of correctness fixes.
 
 ### Still open
 
