@@ -20,13 +20,14 @@ describe('accepting a word', () => {
     expect(state.flipsRemaining).toBe(before.flipsRemaining + 2)
     expect(state.selection).toEqual([])
     expect(state.wordsFound).toEqual([
-      { word: 'ATE', length: 3, points: 2, flips: 2, roundIndex: 0, tick: 5 },
+      { word: 'ATE', wilds: [], length: 3, points: 2, flips: 2, roundIndex: 0, tick: 5 },
     ])
     expect(effects.at(-1)).toEqual({
       type: 'WORD_ACCEPTED',
       word: 'ATE',
       points: 2,
       flips: 2,
+      wilds: [],
     })
   })
 

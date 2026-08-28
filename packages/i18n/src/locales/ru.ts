@@ -23,6 +23,8 @@ export const ru: Messages = {
 
   boardOfTiles: 'Поле из {n} плиток',
   faceDown: 'закрыта',
+  wildCard: 'джокер',
+  wildKey: 'любая буква',
   spentTile: 'использованная плитка',
   hiddenWhilePaused: 'скрыта на паузе',
   letterInWord: '{letter}, буква {position} в слове',
@@ -50,6 +52,7 @@ export const ru: Messages = {
   reasonDuplicate: 'уже найдено',
   reasonTooShort: 'слишком короткое',
   reasonNotAWord: 'не слово',
+  reasonAllFound: 'они у вас уже все есть',
   noSuchLetterUp: 'нет открытой {letter}',
   nothingUp: 'ничего не открыто',
   shuffled: 'перемешано',
@@ -68,6 +71,7 @@ export const ru: Messages = {
   holdTicks: 'такты удержания',
   minWord: 'мин. слово',
   startingFlips: 'ходов на старте',
+  wildChance: 'вероятность джокера',
   wordCompleteMode: 'слово готово',
   wordCompleteNames: { shuffle: 'перемешать', spend: 'потратить', keep: 'оставить' },
   flipEconomy: 'экономика ходов',
@@ -145,6 +149,9 @@ export const ru: Messages = {
   htLanguagesBody:
     'Шестнадцать. Любое поле решается обиходными словами. Редкое слово тоже считается, если словарь его знает.',
   htKeysTitle: 'Клавиатура',
+  htWildTitle: 'Джокеры',
+  htWildBody:
+    'Некоторые плитки открываются джокером, а не буквой. Джокер считается той буквой, которая складывает слово, выбранной из подходящих, и какой именно — видно, когда слово появляется в вашем списке. Уже найденное слово не считается.',
   htTouchTitle: 'Сенсорный экран',
   htTouchBody:
     'Коснитесь открытой плитки, чтобы взять её букву. Коснитесь любой взятой буквы, чтобы вернуть её. Принять и Сбросить находятся под доской.',

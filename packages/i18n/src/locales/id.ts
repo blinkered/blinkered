@@ -22,6 +22,8 @@ export const id: Messages = {
 
   boardOfTiles: 'Papan {n} kartu',
   faceDown: 'tertutup',
+  wildCard: 'kartu liar',
+  wildKey: 'huruf apa saja',
   spentTile: 'kartu terpakai',
   hiddenWhilePaused: 'disembunyikan saat jeda',
   letterInWord: '{letter}, huruf ke-{position} dari kata',
@@ -49,6 +51,7 @@ export const id: Messages = {
   reasonDuplicate: 'sudah ditemukan',
   reasonTooShort: 'terlalu pendek',
   reasonNotAWord: 'bukan kata',
+  reasonAllFound: 'kamu sudah punya semua',
   noSuchLetterUp: 'tidak ada {letter} terbuka',
   nothingUp: 'tidak ada yang terbuka',
   shuffled: 'diacak',
@@ -67,6 +70,7 @@ export const id: Messages = {
   holdTicks: 'ketukan tahan',
   minWord: 'kata terpendek',
   startingFlips: 'balikan awal',
+  wildChance: 'peluang kartu liar',
   wordCompleteMode: 'kata selesai',
   wordCompleteNames: { shuffle: 'acak', spend: 'pakai', keep: 'simpan' },
   flipEconomy: 'ekonomi balikan',
@@ -144,6 +148,9 @@ export const id: Messages = {
   htLanguagesBody:
     'Enam belas. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
   htKeysTitle: 'Papan tik',
+  htWildTitle: 'Kartu liar',
+  htWildBody:
+    'Beberapa kartu terbuka sebagai kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf yang membentuk kata, dipilih dari yang cocok, dan kamu tahu yang mana saat kata itu muncul di daftarmu. Kata yang sudah ada tidak dihitung.',
   htTouchTitle: 'Layar sentuh',
   htTouchBody:
     'Sentuh kartu yang terbuka untuk mengambil hurufnya. Sentuh huruf mana pun yang sudah diambil untuk mengembalikannya. Kirim dan Hapus ada di bawah papan.',

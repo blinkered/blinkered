@@ -12,6 +12,8 @@ const CONFIRM_MS = 2500
 
 interface ShareProps {
   readonly result: GameResult
+  /** The board's letters, so the message says what there was to work with. */
+  readonly letters: readonly string[]
   /** Whether the leaderboard called this a personal best, so the two cannot disagree. */
   readonly personalBest: boolean
   readonly messages: Messages
@@ -32,9 +34,9 @@ interface ShareProps {
  *
  * A cancelled share sheet is not an error and says nothing. The player closed it on purpose.
  */
-export function Share({ result, personalBest, messages }: ShareProps): React.JSX.Element {
+export function Share({ result, letters, personalBest, messages }: ShareProps): React.JSX.Element {
   const [state, setState] = useState<'idle' | 'copied' | 'manual'>('idle')
-  const text = shareText(messages, result, { personalBest, url: HOME })
+  const text = shareText(messages, result, { personalBest, url: HOME, letters })
 
   // The confirmation clears itself. Held in a ref so a second tap restarts the clock rather than
   // inheriting the first tap's remaining time.

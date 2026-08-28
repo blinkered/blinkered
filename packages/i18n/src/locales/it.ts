@@ -18,6 +18,8 @@ export const it: Messages = {
 
   boardOfTiles: 'Tabellone di {n} tessere',
   faceDown: 'coperta',
+  wildCard: 'jolly',
+  wildKey: 'una lettera qualsiasi',
   spentTile: 'tessera usata',
   hiddenWhilePaused: 'nascosta in pausa',
   letterInWord: '{letter}, lettera {position} della parola',
@@ -46,6 +48,7 @@ export const it: Messages = {
   reasonDuplicate: 'già trovata',
   reasonTooShort: 'troppo corta',
   reasonNotAWord: 'non è una parola',
+  reasonAllFound: 'li hai già tutti',
   noSuchLetterUp: 'nessuna {letter} scoperta',
   nothingUp: 'niente scoperto',
   shuffled: 'mescolato',
@@ -64,6 +67,7 @@ export const it: Messages = {
   holdTicks: 'tempi di attesa',
   minWord: 'parola minima',
   startingFlips: 'giri iniziali',
+  wildChance: 'probabilità di jolly',
   wordCompleteMode: 'parola completata',
   wordCompleteNames: { shuffle: 'mescola', spend: 'consuma', keep: 'mantieni' },
   flipEconomy: 'economia dei giri',
@@ -142,6 +146,9 @@ export const it: Messages = {
   htLanguagesBody:
     'Sedici. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
   htKeysTitle: 'La tastiera',
+  htWildTitle: 'I jolly',
+  htWildBody:
+    'Alcune tessere si scoprono come jolly invece che come lettera. Un jolly vale la lettera che forma una parola, scelta fra quelle possibili, e scopri quale quando la parola compare nella tua lista. Una parola già trovata non conta.',
   htTouchTitle: 'Lo schermo a sfioramento',
   htTouchBody:
     'Tocca una tessera scoperta per prendere la sua lettera. Tocca una lettera già presa per restituirla. Completa e Cancella stanno sotto il tavoliere.',

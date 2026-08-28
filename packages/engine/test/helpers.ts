@@ -83,7 +83,19 @@ export interface Harness {
 
 /** Opens a game on an exact board. Letters are given, never drawn, so tests are legible. */
 export function open(letters: string, overrides: Partial<GameConfig> = {}, seed = 1): Harness {
-  const config = configFor('easy', { n: letters.length, holdTicks: 0, ...overrides })
+  /*
+   * Wild cards off unless a test asks for them.
+   *
+   * `wildChance` defaults to 0.02 in real play, which is correct there and wrong here: every
+   * board in the suite would roll for wilds, a handful would get one, and tests written about
+   * letters would start failing about something else. A test that wants a wild says so.
+   */
+  const config = configFor('easy', {
+    n: letters.length,
+    holdTicks: 0,
+    wildChance: 0,
+    ...overrides,
+  })
   const [state, effects] = createGame({ config, letters: [...letters], seed })
   return { state, effects }
 }

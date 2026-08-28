@@ -1,4 +1,5 @@
 import { alphabetFor } from './languages.js'
+import { WILD_GLYPH } from './wild.js'
 import type { GameState, Tile } from './types.js'
 
 /** A tile can be selected only while face up and unspent. */
@@ -20,9 +21,21 @@ export function tileById(state: GameState, id: number): Tile {
   return tile
 }
 
-/** The word currently under construction, in tap order. */
+/**
+ * The word currently under construction, in tap order.
+ *
+ * A wild shows its glyph, not the letter it is masking. That is not presentation, it is the
+ * mechanic: the player is not supposed to know which letter is under there, and rendering
+ * `tile.letter` here told them. It also made the word line disagree with the board, which showed
+ * a card in the same position.
+ */
 export function selectedLetters(state: GameState): string {
-  return state.selection.map((id) => tileById(state, id).letter).join('')
+  return state.selection
+    .map((id) => {
+      const tile = tileById(state, id)
+      return tile.wild ? WILD_GLYPH : tile.letter
+    })
+    .join('')
 }
 
 export interface LetterAvailability {

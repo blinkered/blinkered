@@ -187,17 +187,18 @@ describe('shareText', () => {
   } as const
 
   const url = 'https://playblinkered.com'
+  const letters = [...'ABUOQPRNIDER']
 
   it('is three lines when there is nothing to boast about', () => {
-    expect(shareText(en, result, { personalBest: false, url })).toBe(
-      ['Blinkered, medium', '96 points from 14 words over 12 rounds', url].join('\n'),
+    expect(shareText(en, result, { personalBest: false, url, letters })).toBe(
+      ['Blinkered, medium, ABUOQPRNIDER', '96 points from 14 words over 12 rounds', url].join('\n'),
     )
   })
 
   it('adds the boast when there is one, and no more than one line of it', () => {
-    const text = shareText(en, result, { personalBest: true, url })
+    const text = shareText(en, result, { personalBest: true, url, letters })
     expect(text.split('\n')).toEqual([
-      'Blinkered, medium',
+      'Blinkered, medium, ABUOQPRNIDER',
       '96 points from 14 words over 12 rounds',
       'A new personal best.',
       url,
@@ -206,9 +207,13 @@ describe('shareText', () => {
 
   it('names custom rules rather than a difficulty that did not apply', () => {
     // A game played on edited rules has a `difficulty` field, and repeating it would be a lie.
-    const text = shareText(en, { ...result, canonical: false }, { personalBest: false, url })
+    const text = shareText(
+      en,
+      { ...result, canonical: false },
+      { personalBest: false, url, letters },
+    )
     // The same words the setup screen's chip uses for an edited ruleset.
-    expect(text.startsWith(`Blinkered, ${en.nerdMode}`)).toBe(true)
+    expect(text.startsWith(`Blinkered, ${en.nerdMode}, ABUOQPRNIDER`)).toBe(true)
     expect(text).not.toContain('medium')
   })
 
@@ -216,15 +221,12 @@ describe('shareText', () => {
     const one = shareText(
       messagesFor('ru'),
       { ...result, words: 1, rounds: 1 },
-      {
-        personalBest: false,
-        url,
-      },
+      { personalBest: false, url, letters },
     )
     // Russian picks a different form for 1 than for 14, which is the whole reason this goes
     // through Intl.PluralRules rather than through string concatenation.
     expect(one).toContain('1 слово')
-    const many = shareText(messagesFor('ru'), result, { personalBest: false, url })
+    const many = shareText(messagesFor('ru'), result, { personalBest: false, url, letters })
     expect(many).toContain('14 слов')
   })
 
@@ -234,7 +236,7 @@ describe('shareText', () => {
         const text = shareText(
           messagesFor('el'),
           { ...result, canonical },
-          { personalBest: best, url },
+          { personalBest: best, url, letters },
         )
         expect(text.endsWith(url)).toBe(true)
       }
@@ -244,7 +246,7 @@ describe('shareText', () => {
   it('carries no dash as a separator, in any of the sixteen', () => {
     // House style, and it survives a paste into anything.
     for (const locale of LOCALES) {
-      const text = shareText(locale.messages, result, { personalBest: true, url })
+      const text = shareText(locale.messages, result, { personalBest: true, url, letters })
       expect(text, locale.tag).not.toMatch(/[—–]/)
     }
   })

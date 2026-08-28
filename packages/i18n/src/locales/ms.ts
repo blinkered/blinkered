@@ -18,6 +18,8 @@ export const ms: Messages = {
 
   boardOfTiles: 'Papan {n} jubin',
   faceDown: 'tertutup',
+  wildCard: 'kad liar',
+  wildKey: 'mana-mana huruf',
   spentTile: 'jubin terpakai',
   hiddenWhilePaused: 'disembunyikan semasa henti',
   letterInWord: '{letter}, huruf ke-{position} dalam kata',
@@ -45,6 +47,7 @@ export const ms: Messages = {
   reasonDuplicate: 'sudah dijumpai',
   reasonTooShort: 'terlalu pendek',
   reasonNotAWord: 'bukan kata',
+  reasonAllFound: 'anda sudah ada semua',
   noSuchLetterUp: 'tiada {letter} terbuka',
   nothingUp: 'tiada yang terbuka',
   shuffled: 'dikocak',
@@ -63,6 +66,7 @@ export const ms: Messages = {
   holdTicks: 'denyut tahan',
   minWord: 'kata terpendek',
   startingFlips: 'balikan permulaan',
+  wildChance: 'peluang kad liar',
   wordCompleteMode: 'kata selesai',
   wordCompleteNames: { shuffle: 'kocak', spend: 'guna', keep: 'simpan' },
   flipEconomy: 'ekonomi balikan',
@@ -140,6 +144,9 @@ export const ms: Messages = {
   htLanguagesBody:
     'Enam belas. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
   htKeysTitle: 'Papan kekunci',
+  htWildTitle: 'Kad liar',
+  htWildBody:
+    'Sesetengah jubin terbuka sebagai kad dan bukan huruf. Kad itu berfungsi sebagai huruf yang membentuk kata, dipilih daripada yang sesuai, dan anda tahu yang mana apabila kata itu muncul dalam senarai anda. Kata yang sudah ada tidak dikira.',
   htTouchTitle: 'Skrin sentuh',
   htTouchBody:
     'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh mana-mana huruf yang diambil untuk memulangkannya. Hantar dan Kosongkan ada di bawah papan.',

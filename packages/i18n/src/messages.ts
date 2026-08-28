@@ -54,6 +54,10 @@ export interface Messages {
   /** `{n}` */
   readonly boardOfTiles: string
   readonly faceDown: string
+  /** What a wild tile is called, for a screen reader and for the key under the board. */
+  readonly wildCard: string
+  /** The key: what the symbol on the board means. Kept to a few words; it shares a tight row. */
+  readonly wildKey: string
   readonly spentTile: string
   readonly hiddenWhilePaused: string
   /** `{letter}` `{position}` */
@@ -74,6 +78,8 @@ export interface Messages {
   readonly htLanguagesTitle: string
   readonly htLanguagesBody: string
   readonly htKeysTitle: string
+  readonly htWildTitle: string
+  readonly htWildBody: string
   readonly htTouchTitle: string
   readonly htTouchBody: string
 
@@ -132,6 +138,8 @@ export interface Messages {
   readonly reasonDuplicate: string
   readonly reasonTooShort: string
   readonly reasonNotAWord: string
+  /** Every letter the wild could have been makes a word already found. */
+  readonly reasonAllFound: string
   /** `{letter}` */
   readonly noSuchLetterUp: string
   readonly nothingUp: string
@@ -155,6 +163,7 @@ export interface Messages {
   readonly holdTicks: string
   readonly minWord: string
   readonly startingFlips: string
+  readonly wildChance: string
   readonly wordCompleteMode: string
   readonly wordCompleteNames: Readonly<Record<WordCompleteMode, string>>
   readonly flipEconomy: string

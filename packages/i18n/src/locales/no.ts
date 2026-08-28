@@ -18,6 +18,8 @@ export const no: Messages = {
 
   boardOfTiles: 'Brett med {n} brikker',
   faceDown: 'med baksiden opp',
+  wildCard: 'joker',
+  wildKey: 'hvilken som helst bokstav',
   spentTile: 'brukt brikke',
   hiddenWhilePaused: 'skjult under pause',
   letterInWord: '{letter}, bokstav {position} i ordet',
@@ -45,6 +47,7 @@ export const no: Messages = {
   reasonDuplicate: 'allerede funnet',
   reasonTooShort: 'for kort',
   reasonNotAWord: 'ikke et ord',
+  reasonAllFound: 'du har alle allerede',
   noSuchLetterUp: 'ingen {letter} oppe',
   nothingUp: 'ingenting oppe',
   shuffled: 'stokket',
@@ -63,6 +66,7 @@ export const no: Messages = {
   holdTicks: 'holdetakter',
   minWord: 'korteste ord',
   startingFlips: 'trekk ved start',
+  wildChance: 'jokersjanse',
   wordCompleteMode: 'ordet ferdig',
   wordCompleteNames: { shuffle: 'stokk', spend: 'bruk opp', keep: 'behold' },
   flipEconomy: 'trekkøkonomi',
@@ -140,6 +144,9 @@ export const no: Messages = {
   htLanguagesBody:
     'Seksten. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
   htKeysTitle: 'Tastaturet',
+  htWildTitle: 'Jokere',
+  htWildBody:
+    'Noen brikker snus som en joker i stedet for en bokstav. En joker teller som bokstaven som lager et ord, valgt blant dem som passer, og hvilken det ble ser du når ordet dukker opp i lista di. Et ord du allerede har funnet teller ikke.',
   htTouchTitle: 'Berøringsskjermen',
   htTouchBody:
     'Trykk på en brikke som ligger med forsiden opp for å ta bokstaven. Trykk på en bokstav du har tatt for å gi den tilbake. Lever og Tøm ligger under brettet.',

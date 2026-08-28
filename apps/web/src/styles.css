@@ -1644,3 +1644,32 @@ kbd {
   line-height: 1.4;
   resize: none;
 }
+
+/*
+ * A wild card, and the one line that says what it is.
+ *
+ * The tile is a card rather than a blank, because a blank is indistinguishable from a tile that
+ * has not turned yet. Colour alone would not do it either: the border and the glyph both change,
+ * so the difference survives a colour-blind reader and a black-and-white screenshot.
+ */
+.tile.is-wild .tile-front {
+  border-color: var(--warn);
+  border-style: dashed;
+  color: var(--warn);
+}
+.tile.is-wild.is-selected .tile-front {
+  border-style: solid;
+  border-color: var(--sel);
+  color: #fff;
+}
+/* The key. Shown only while a wild is actually on the board, and sized to be read once. */
+.wild-key {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+/* A letter the board gave rather than one the player chose. */
+.from-wild {
+  color: var(--warn);
+  font-weight: 700;
+}

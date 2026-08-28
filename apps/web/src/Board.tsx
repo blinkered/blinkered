@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
+import { WILD_GLYPH } from '@blinkered/engine'
 import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -140,6 +141,8 @@ function TileButton({
   const selected = order >= 0
   const classes = ['tile']
   if (showing) classes.push('is-up')
+  // Only while face up. A wild that announced itself face down would leak which tile it was.
+  if (showing && tile.wild) classes.push('is-wild')
   if (tile.spent) classes.push('is-spent')
   if (selected) classes.push('is-selected')
 
@@ -148,9 +151,13 @@ function TileButton({
     : tile.spent
       ? messages.spentTile
       : tile.revealed
-        ? selected
-          ? format(messages.letterInWord, { letter: tile.letter, position: order + 1 })
-          : tile.letter
+        ? tile.wild
+          ? selected
+            ? format(messages.letterInWord, { letter: messages.wildCard, position: order + 1 })
+            : messages.wildCard
+          : selected
+            ? format(messages.letterInWord, { letter: tile.letter, position: order + 1 })
+            : tile.letter
         : messages.faceDown
 
   return (
@@ -170,7 +177,11 @@ function TileButton({
           {/* The letter is rendered only while the tile is face up. Hiding it with a 3D
               transform would still leave it in the DOM, where devtools or a screen reader
               would happily read out the whole concealed board. */}
-          {showing ? tile.letter : ''}
+          {/* A card, not the letter underneath, and not a blank: a blank is indistinguishable
+              from a tile that has not turned yet, which is the one thing the board must never be
+              ambiguous about. The letter it is masking stays out of the DOM for the same reason
+              the face-down letters do. */}
+          {showing ? (tile.wild ? WILD_GLYPH : tile.letter) : ''}
           {selected ? <span className="tile-order">{order + 1}</span> : null}
         </span>
       </span>

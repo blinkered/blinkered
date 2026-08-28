@@ -1,6 +1,8 @@
 import { shuffle } from './rng.js'
+import { WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
+import { alphabetFor } from './languages.js'
 import { flipReward, wordScore } from './score.js'
-import { isEligible, letterAvailability, selectedLetters, tileAt } from './selection.js'
+import { isEligible, letterAvailability, tileAt, tileById } from './selection.js'
 import type {
   Dictionary,
   Effect,
@@ -105,16 +107,19 @@ function endRound(state: GameState): Reduction {
     state.rng,
     state.tiles.map((tile) => tile.id),
   )
-  const tiles = state.tiles.map((tile) => ({
+  const reset = state.tiles.map((tile) => ({
     ...tile,
     position: layout.indexOf(tile.id),
     revealed: false,
     spent: false,
   }))
+  // Re-rolled on every deal, so a wild is a bonus that moves rather than a fixture of the board.
+  // The letters underneath never change, which is what keeps this apart from letter replacement.
+  const [tiles, dealtRng] = dealWilds(rng, reset, state.config.wildChance)
   const [opened, effects] = revealNext({
     ...state,
     tiles,
-    rng,
+    rng: dealtRng,
     flipsRemaining,
     roundIndex: state.roundIndex + 1,
     ticksRemaining: config.n + config.holdTicks,
@@ -186,7 +191,16 @@ function resetWord(state: GameState): Reduction {
 }
 
 function submitWord(state: GameState, dictionary: Dictionary): Reduction {
-  const word = selectedLetters(state)
+  // `tileById` states the invariant rather than defending against it. The first version of this
+  // used `find` with `??` fallbacks, which added two branches that cannot be reached and so
+  // cannot be tested: `selection` only ever holds ids of tiles that exist.
+  const faces = state.selection.map((id) => {
+    const tile = tileById(state, id)
+    return { letter: tile.letter, wild: tile.wild }
+  })
+  // What the player sees they submitted. A wild contributes nothing to it, so a rejection names
+  // the selection honestly rather than naming one letter the engine happened to try.
+  const word = faces.map((face) => (face.wild ? WILD_GLYPH : face.letter)).join('')
   // Length is measured in tiles, never in characters. They agree in English; they will not
   // agree in a language whose alphabet has digraphs or combining accents.
   const length = state.selection.length
@@ -197,19 +211,44 @@ function submitWord(state: GameState, dictionary: Dictionary): Reduction {
   ]
 
   if (length < state.config.minWordLength) return reject('too-short')
-  if (state.wordsFound.some((found) => found.word === word)) return reject('duplicate')
-  if (!dictionary.has(word)) return reject('unknown')
+
+  const anyWild = faces.some((face) => face.wild)
+  let made = word
+  let wilds: readonly number[] = []
+  let rng = state.rng
+
+  if (anyWild) {
+    const found = new Set(state.wordsFound.map((entry) => entry.word))
+    const outcome = resolveWilds(faces, alphabetFor(state.config.language), dictionary, found, rng)
+    switch (outcome.kind) {
+      case 'too-many-wilds':
+      case 'unknown':
+        return reject('unknown')
+      case 'all-found':
+        return reject('all-found')
+      case 'resolved':
+        made = outcome.resolution.word
+        wilds = outcome.resolution.wilds
+        rng = outcome.rng
+        break
+    }
+  } else {
+    if (state.wordsFound.some((found) => found.word === word)) return reject('duplicate')
+    if (!dictionary.has(word)) return reject('unknown')
+  }
 
   const points = wordScore(length)
   const flips = flipReward(length, state.config)
   const accepted: GameState = {
     ...cleared,
+    rng,
     score: state.score + points,
     flipsRemaining: state.flipsRemaining + flips,
     wordsFound: [
       ...state.wordsFound,
       {
-        word,
+        word: made,
+        wilds,
         length,
         points,
         flips,
@@ -218,7 +257,7 @@ function submitWord(state: GameState, dictionary: Dictionary): Reduction {
       },
     ],
   }
-  const announced: Effect = { type: 'WORD_ACCEPTED', word, points, flips }
+  const announced: Effect = { type: 'WORD_ACCEPTED', word: made, points, flips, wilds }
 
   switch (state.config.wordCompleteMode) {
     case 'shuffle': {

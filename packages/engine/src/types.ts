@@ -2,6 +2,14 @@
 export interface GameConfig {
   /** Number of tiles on the board. */
   readonly n: number
+  /**
+   * Chance, per tile per deal, that a tile is dealt showing a wild instead of its letter.
+   *
+   * One number rather than a column in the difficulty table. `n` is the same on every setting and
+   * only the clock and the minimum word length change, so the same rate is worth less where there
+   * is less time to use it: the mechanic self-balances. Zero turns wild cards off entirely.
+   */
+  readonly wildChance: number
   /** Real seconds per tick. The visible timer counts ticks, not seconds. */
   readonly speedMultiplier: number
   readonly initialFlips: number
@@ -52,10 +60,25 @@ export interface Tile {
   readonly revealed: boolean
   /** Consumed by an accepted word, under the `spend` mode. */
   readonly spent: boolean
+  /**
+   * Showing as a wild this round, standing for whatever letter completes a word.
+   *
+   * A mask, not a substitution: `letter` is untouched underneath and is showing again next round.
+   * The board is the same letters from first deal to last, which is what keeps this mechanic
+   * separate from letter replacement rather than an early draft of it.
+   */
+  readonly wild: boolean
 }
 
 export interface FoundWord {
   readonly word: string
+  /**
+   * Which of its letters came from a wild, by index. Empty for an ordinary word.
+   *
+   * Recorded rather than only announced, because the list of found words outlives the effect
+   * that announced it: the rail keeps marking what was given for the rest of the game.
+   */
+  readonly wilds: readonly number[]
   readonly length: number
   readonly points: number
   readonly flips: number
@@ -107,7 +130,17 @@ export type GameEvent =
   /** Enter. */
   | { readonly type: 'SUBMIT_WORD' }
 
-export type RejectReason = 'unknown' | 'duplicate' | 'too-short'
+export type RejectReason =
+  | 'unknown'
+  | 'duplicate'
+  | 'too-short'
+  /**
+   * Every letter the wild could have been makes a word already found.
+   *
+   * Its own reason because the player cannot see what it would have picked, so "not a word" would
+   * be a lie about a selection that was several words at once.
+   */
+  | 'all-found'
 
 export type IgnoredReason =
   'game-over' | 'no-such-letter' | 'not-tappable' | 'already-selected' | 'nothing-selected'
@@ -123,6 +156,12 @@ export type Effect =
       readonly word: string
       readonly points: number
       readonly flips: number
+      /**
+       * Which letters of the word came from a wild, by index into the tile sequence. Empty for an
+       * ordinary word. The view marks these so the player can see what they were given rather
+       * than what they chose.
+       */
+      readonly wilds: readonly number[]
     }
   | { readonly type: 'WORD_REJECTED'; readonly word: string; readonly reason: RejectReason }
   | {

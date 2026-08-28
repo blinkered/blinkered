@@ -25,6 +25,8 @@ export const en: Messages = {
 
   boardOfTiles: 'Board of {n} tiles',
   faceDown: 'face down',
+  wildCard: 'wild card',
+  wildKey: 'any letter',
   spentTile: 'spent tile',
   hiddenWhilePaused: 'hidden while paused',
   letterInWord: '{letter}, letter {position} of the word',
@@ -53,6 +55,7 @@ export const en: Messages = {
   reasonDuplicate: 'already found',
   reasonTooShort: 'too short',
   reasonNotAWord: 'not a word',
+  reasonAllFound: 'you already have them all',
   noSuchLetterUp: 'no {letter} up',
   nothingUp: 'not up',
   shuffled: 'shuffled',
@@ -71,6 +74,7 @@ export const en: Messages = {
   holdTicks: 'hold ticks',
   minWord: 'min word',
   startingFlips: 'starting flips',
+  wildChance: 'wild card chance',
   wordCompleteMode: 'word complete',
   wordCompleteNames: { shuffle: 'shuffle', spend: 'spend', keep: 'keep' },
   flipEconomy: 'flip economy',
@@ -148,6 +152,9 @@ export const en: Messages = {
   htLanguagesBody:
     'Sixteen of them. Every board can be solved from words people actually use. An unusual word still scores, if the dictionary knows it.',
   htKeysTitle: 'The keyboard',
+  htWildTitle: 'Wild cards',
+  htWildBody:
+    'Some tiles turn over as a card instead of a letter. A card counts as whatever letter makes a word, chosen from the ones that work, and you find out which when the word appears in your list. A word you have already found does not count.',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
     'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',

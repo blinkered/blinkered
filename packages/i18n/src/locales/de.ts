@@ -21,6 +21,8 @@ export const de: Messages = {
 
   boardOfTiles: 'Feld mit {n} Steinen',
   faceDown: 'verdeckt',
+  wildCard: 'Joker',
+  wildKey: 'ein beliebiger Buchstabe',
   spentTile: 'verbrauchter Stein',
   hiddenWhilePaused: 'in der Pause verdeckt',
   letterInWord: '{letter}, Buchstabe {position} des Wortes',
@@ -48,6 +50,7 @@ export const de: Messages = {
   reasonDuplicate: 'schon gefunden',
   reasonTooShort: 'zu kurz',
   reasonNotAWord: 'kein Wort',
+  reasonAllFound: 'die hast du alle schon',
   noSuchLetterUp: 'kein {letter} offen',
   nothingUp: 'nichts offen',
   shuffled: 'gemischt',
@@ -66,6 +69,7 @@ export const de: Messages = {
   holdTicks: 'Haltetakte',
   minWord: 'Mindestwort',
   startingFlips: 'Züge am Start',
+  wildChance: 'Joker-Wahrscheinlichkeit',
   wordCompleteMode: 'Wort fertig',
   wordCompleteNames: { shuffle: 'mischen', spend: 'verbrauchen', keep: 'behalten' },
   flipEconomy: 'Zugwirtschaft',
@@ -143,6 +147,9 @@ export const de: Messages = {
   htLanguagesBody:
     'Sechzehn. Jedes Feld lässt sich mit gebräuchlichen Wörtern lösen. Ein seltenes Wort zählt trotzdem, wenn das Wörterbuch es kennt.',
   htKeysTitle: 'Die Tastatur',
+  htWildTitle: 'Joker',
+  htWildBody:
+    'Manche Plättchen zeigen beim Umdrehen einen Joker statt eines Buchstabens. Ein Joker gilt als der Buchstabe, der ein Wort ergibt, ausgewählt aus denen, die passen, und welcher es war siehst du, wenn das Wort in deiner Liste erscheint. Ein bereits gefundenes Wort zählt nicht.',
   htTouchTitle: 'Der Berührungsbildschirm',
   htTouchBody:
     'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe einen genommenen Buchstaben an, um ihn zurückzugeben. Abgeben und Löschen liegen unter dem Brett.',

@@ -21,6 +21,8 @@ export const fr: Messages = {
 
   boardOfTiles: 'Plateau de {n} tuiles',
   faceDown: 'face cachée',
+  wildCard: 'joker',
+  wildKey: 'une lettre au choix',
   spentTile: 'tuile utilisée',
   hiddenWhilePaused: 'masquée pendant la pause',
   letterInWord: '{letter}, lettre {position} du mot',
@@ -49,6 +51,7 @@ export const fr: Messages = {
   reasonDuplicate: 'déjà trouvé',
   reasonTooShort: 'trop court',
   reasonNotAWord: "n'est pas un mot",
+  reasonAllFound: 'vous les avez déjà tous',
   noSuchLetterUp: 'aucun {letter} retourné',
   nothingUp: 'rien de retourné',
   shuffled: 'mélangé',
@@ -67,6 +70,7 @@ export const fr: Messages = {
   holdTicks: 'temps de maintien',
   minWord: 'mot minimum',
   startingFlips: 'coups au départ',
+  wildChance: 'probabilité de joker',
   wordCompleteMode: 'mot validé',
   wordCompleteNames: { shuffle: 'mélanger', spend: 'consommer', keep: 'conserver' },
   flipEconomy: 'économie des coups',
@@ -144,6 +148,9 @@ export const fr: Messages = {
   htLanguagesBody:
     'Seize langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
   htKeysTitle: 'Le clavier',
+  htWildTitle: 'Les jokers',
+  htWildBody:
+    'Certaines tuiles se retournent sur un joker au lieu d’une lettre. Un joker vaut la lettre qui forme un mot, choisie parmi celles qui conviennent, et vous découvrez laquelle quand le mot apparaît dans votre liste. Un mot déjà trouvé ne compte pas.',
   htTouchTitle: 'L’écran tactile',
   htTouchBody:
     'Touchez une tuile retournée pour prendre sa lettre. Touchez une lettre déjà prise pour la rendre. Valider et Effacer sont sous le plateau.',

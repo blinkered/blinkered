@@ -18,6 +18,8 @@ export const sv: Messages = {
 
   boardOfTiles: 'Bräde med {n} brickor',
   faceDown: 'nedåtvänd',
+  wildCard: 'joker',
+  wildKey: 'vilken bokstav som helst',
   spentTile: 'förbrukad bricka',
   hiddenWhilePaused: 'dold under pausen',
   letterInWord: '{letter}, bokstav {position} i ordet',
@@ -45,6 +47,7 @@ export const sv: Messages = {
   reasonDuplicate: 'redan hittat',
   reasonTooShort: 'för kort',
   reasonNotAWord: 'inget ord',
+  reasonAllFound: 'du har redan alla',
   noSuchLetterUp: 'inget {letter} uppe',
   nothingUp: 'inget uppe',
   shuffled: 'blandat',
@@ -63,6 +66,7 @@ export const sv: Messages = {
   holdTicks: 'hålltakter',
   minWord: 'kortaste ord',
   startingFlips: 'drag vid start',
+  wildChance: 'jokerchans',
   wordCompleteMode: 'ordet klart',
   wordCompleteNames: { shuffle: 'blanda', spend: 'förbruka', keep: 'behåll' },
   flipEconomy: 'draghushållning',
@@ -140,6 +144,9 @@ export const sv: Messages = {
   htLanguagesBody:
     'Sexton. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
   htKeysTitle: 'Tangentbordet',
+  htWildTitle: 'Jokrar',
+  htWildBody:
+    'Vissa brickor vänds upp som en joker i stället för en bokstav. En joker gäller som den bokstav som bildar ett ord, vald bland dem som fungerar, och vilken det blev ser du när ordet dyker upp i din lista. Ett ord du redan hittat räknas inte.',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
     'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',

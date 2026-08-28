@@ -22,6 +22,8 @@ export const ptBR: Messages = {
 
   boardOfTiles: 'Tabuleiro de {n} peças',
   faceDown: 'virada para baixo',
+  wildCard: 'curinga',
+  wildKey: 'qualquer letra',
   spentTile: 'peça gasta',
   hiddenWhilePaused: 'oculta na pausa',
   letterInWord: '{letter}, letra {position} da palavra',
@@ -49,6 +51,7 @@ export const ptBR: Messages = {
   reasonDuplicate: 'já encontrada',
   reasonTooShort: 'muito curta',
   reasonNotAWord: 'não é uma palavra',
+  reasonAllFound: 'você já tem todos',
   noSuchLetterUp: 'nenhum {letter} à vista',
   nothingUp: 'nada à vista',
   shuffled: 'embaralhado',
@@ -67,6 +70,7 @@ export const ptBR: Messages = {
   holdTicks: 'tempos de espera',
   minWord: 'palavra mínima',
   startingFlips: 'viradas iniciais',
+  wildChance: 'chance de curinga',
   wordCompleteMode: 'palavra completa',
   wordCompleteNames: { shuffle: 'embaralhar', spend: 'gastar', keep: 'manter' },
   flipEconomy: 'economia de viradas',
@@ -144,6 +148,9 @@ export const ptBR: Messages = {
   htLanguagesBody:
     'Dezesseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra incomum também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
+  htWildTitle: 'Os curingas',
+  htWildBody:
+    'Algumas peças viram como curinga em vez de letra. Um curinga vale a letra que forma uma palavra, escolhida entre as que servem, e você descobre qual quando a palavra aparece na sua lista. Uma palavra que você já tem não conta.',
   htTouchTitle: 'A tela sensível ao toque',
   htTouchBody:
     'Toque numa peça virada para pegar a letra dela. Toque numa letra já pega para devolvê-la. Completar e Limpar ficam abaixo do tabuleiro.',

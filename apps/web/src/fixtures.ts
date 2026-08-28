@@ -34,7 +34,11 @@ export interface Fixture {
   readonly result: GameResult
   readonly standing: Standing
   readonly words: readonly { word: string; points: number }[]
+  readonly letters: readonly string[]
 }
+
+/** A board the canned words could plausibly have come from. */
+const LETTERS = [...'STRAIGHENMVY']
 
 /** Long enough to exercise the rail's shrinking, short enough to be plausible. */
 const WORDS: readonly { word: string; points: number }[] = [
@@ -107,5 +111,6 @@ export function overFixture(search: string): Fixture | null {
     result,
     standing: standingOf([...history, result], result, { language, difficulty }),
     words: WORDS.slice(0, Math.max(0, Math.min(WORDS.length, result.words))),
+    letters: LETTERS,
   }
 }

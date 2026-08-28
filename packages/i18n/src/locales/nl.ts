@@ -18,6 +18,8 @@ export const nl: Messages = {
 
   boardOfTiles: 'Bord van {n} stenen',
   faceDown: 'omgedraaid',
+  wildCard: 'joker',
+  wildKey: 'een willekeurige letter',
   spentTile: 'gebruikte steen',
   hiddenWhilePaused: 'verborgen tijdens pauze',
   letterInWord: '{letter}, letter {position} van het woord',
@@ -45,6 +47,7 @@ export const nl: Messages = {
   reasonDuplicate: 'al gevonden',
   reasonTooShort: 'te kort',
   reasonNotAWord: 'geen woord',
+  reasonAllFound: 'die heb je allemaal al',
   noSuchLetterUp: 'geen {letter} open',
   nothingUp: 'niets open',
   shuffled: 'geschud',
@@ -63,6 +66,7 @@ export const nl: Messages = {
   holdTicks: 'wachttikken',
   minWord: 'kortste woord',
   startingFlips: 'zetten bij start',
+  wildChance: 'jokerkans',
   wordCompleteMode: 'woord af',
   wordCompleteNames: { shuffle: 'schudden', spend: 'opgebruiken', keep: 'houden' },
   flipEconomy: 'zettenhuishouding',
@@ -140,6 +144,9 @@ export const nl: Messages = {
   htLanguagesBody:
     'Zestien. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
   htKeysTitle: 'Het toetsenbord',
+  htWildTitle: 'Jokers',
+  htWildBody:
+    'Sommige stenen komen als joker boven in plaats van als letter. Een joker geldt als de letter die een woord maakt, gekozen uit de letters die passen, en je ziet welke wanneer het woord in je lijst verschijnt. Een woord dat je al hebt telt niet.',
   htTouchTitle: 'Het aanraakscherm',
   htTouchBody:
     'Tik op een omgedraaide steen om zijn letter te nemen. Tik op een genomen letter om hem terug te geven. Inleveren en Wissen staan onder het bord.',

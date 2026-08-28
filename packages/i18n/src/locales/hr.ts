@@ -21,6 +21,8 @@ export const hr: Messages = {
 
   boardOfTiles: 'Ploča od {n} pločica',
   faceDown: 'okrenuta',
+  wildCard: 'džoker',
+  wildKey: 'bilo koje slovo',
   spentTile: 'potrošena pločica',
   hiddenWhilePaused: 'skrivena tijekom pauze',
   letterInWord: '{letter}, {position}. slovo riječi',
@@ -48,6 +50,7 @@ export const hr: Messages = {
   reasonDuplicate: 'već nađena',
   reasonTooShort: 'previše kratka',
   reasonNotAWord: 'nije riječ',
+  reasonAllFound: 'sve ih već imate',
   noSuchLetterUp: 'nema otkrivenog {letter}',
   nothingUp: 'ništa otkriveno',
   shuffled: 'promiješano',
@@ -66,6 +69,7 @@ export const hr: Messages = {
   holdTicks: 'taktovi držanja',
   minWord: 'najkraća riječ',
   startingFlips: 'početni okreti',
+  wildChance: 'vjerojatnost džokera',
   wordCompleteMode: 'riječ dovršena',
   wordCompleteNames: { shuffle: 'promiješaj', spend: 'potroši', keep: 'zadrži' },
   flipEconomy: 'ekonomija okreta',
@@ -143,6 +147,9 @@ export const hr: Messages = {
   htLanguagesBody:
     'Šesnaest. Svaka se ploča može riješiti riječima koje se stvarno koriste. Neobična riječ ipak vrijedi, ako je rječnik zna.',
   htKeysTitle: 'Tipkovnica',
+  htWildTitle: 'Džokeri',
+  htWildBody:
+    'Neke se pločice okrenu kao džoker umjesto kao slovo. Džoker vrijedi kao slovo koje tvori riječ, izabrano između onih koja odgovaraju, a koje je bilo vidite kad se riječ pojavi na vašem popisu. Riječ koju već imate ne vrijedi.',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
     'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',

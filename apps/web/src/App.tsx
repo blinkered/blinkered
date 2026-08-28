@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ENGINE_VERSION } from '@blinkered/engine'
+import { ENGINE_VERSION, WILD_GLYPH } from '@blinkered/engine'
 import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -48,6 +48,14 @@ interface Finished {
   readonly result: GameResult
   readonly standing: Standing
   readonly words: readonly { word: string; points: number }[]
+  /**
+   * The board's letters, in deal order, for the shared synopsis.
+   *
+   * Kept here rather than on `GameResult` on purpose: `GameResult` is what goes into localStorage
+   * and one day to a server, and widening it would strand every score already stored under the
+   * current shape. This only has to survive until the panel closes.
+   */
+  readonly letters: readonly string[]
 }
 
 export function App(): React.JSX.Element {
@@ -219,6 +227,8 @@ function Session({
         result,
         standing: standingOf(stored, result, { language, difficulty: settings.difficulty }),
         words: state.wordsFound,
+        // Deal order, which is tile id order and is stable for the life of the game.
+        letters: [...state.tiles].sort((a, b) => a.id - b.id).map((tile) => tile.letter),
       })
       setPhase('over')
     },
@@ -341,6 +351,7 @@ function Session({
                 <FoundWords words={finished.words} messages={messages} />
                 <Share
                   result={finished.result}
+                  letters={finished.letters}
                   personalBest={isPersonalBest(finished.standing)}
                   messages={messages}
                 />
@@ -429,6 +440,17 @@ function Playing({
   return (
     <>
       <Hud state={game.state} feedback={feedback} gain={gain} messages={messages} />
+
+      {/*
+       * What the symbol means, and only while one is on the board. A key for a thing that is not
+       * there is a row of chrome spent on nothing, which on a phone is a row the board could have
+       * had. It sits with the word line rather than under the board for the same reason.
+       */}
+      {game.state.tiles.some((tile) => tile.wild && tile.revealed && !tile.spent) ? (
+        <p className="wild-key">
+          <span aria-hidden="true">{WILD_GLYPH}</span> {messages.wildKey}
+        </p>
+      ) : null}
 
       <div className="board-wrap">
         <Board
@@ -630,7 +652,7 @@ function FoundWords({
   words,
   messages,
 }: {
-  words: readonly { word: string; points: number }[]
+  words: readonly { word: string; points: number; wilds?: readonly number[] }[]
   messages: Messages
 }): React.JSX.Element {
   if (words.length === 0) {
@@ -649,7 +671,19 @@ function FoundWords({
           title={`${found.word} +${String(found.points)}`}
           style={{ ['--len' as string]: String([...found.word].length) }}
         >
-          <span className="found-word">{found.word}</span>
+          <span className="found-word">
+            {/* Letters the wild was given are marked, so the player can see what the board
+                handed them rather than what they chose. Marked per character rather than
+                highlighting the whole word, because usually only one of them was a gift. */}
+            {[...found.word].map((letter, at) => (
+              <span
+                key={`${String(at)}-${letter}`}
+                className={found.wilds?.includes(at) === true ? 'from-wild' : undefined}
+              >
+                {letter}
+              </span>
+            ))}
+          </span>
           <span className="found-points">{found.points}</span>
         </li>
       ))}
@@ -706,7 +740,9 @@ function useFeedback(
               ? messages.reasonDuplicate
               : effect.reason === 'too-short'
                 ? messages.reasonTooShort
-                : messages.reasonNotAWord
+                : effect.reason === 'all-found'
+                  ? messages.reasonAllFound
+                  : messages.reasonNotAWord
           return {
             kind: 'rejected',
             epoch,

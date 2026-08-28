@@ -21,6 +21,8 @@ export const fi: Messages = {
 
   boardOfTiles: 'Pelilauta, {n} laattaa',
   faceDown: 'nurin',
+  wildCard: 'jokeri',
+  wildKey: 'mikä tahansa kirjain',
   spentTile: 'käytetty laatta',
   hiddenWhilePaused: 'piilotettu tauon ajaksi',
   letterInWord: '{letter}, sanan {position}. kirjain',
@@ -48,6 +50,7 @@ export const fi: Messages = {
   reasonDuplicate: 'jo löydetty',
   reasonTooShort: 'liian lyhyt',
   reasonNotAWord: 'ei ole sana',
+  reasonAllFound: 'sinulla on ne jo kaikki',
   noSuchLetterUp: 'ei {letter}-kirjainta näkyvissä',
   nothingUp: 'ei mitään näkyvissä',
   shuffled: 'sekoitettu',
@@ -66,6 +69,7 @@ export const fi: Messages = {
   holdTicks: 'pitoaskeleet',
   minWord: 'lyhin sana',
   startingFlips: 'siirrot alussa',
+  wildChance: 'jokerin todennäköisyys',
   wordCompleteMode: 'sana valmis',
   wordCompleteNames: { shuffle: 'sekoita', spend: 'kuluta', keep: 'säilytä' },
   flipEconomy: 'siirtotalous',
@@ -143,6 +147,9 @@ export const fi: Messages = {
   htLanguagesBody:
     'Kuusitoista. Jokainen lauta ratkeaa arkisilla sanoilla. Harvinainen sana kelpaa silti, jos sanakirja tuntee sen.',
   htKeysTitle: 'Näppäimistö',
+  htWildTitle: 'Jokerit',
+  htWildBody:
+    'Osa laatoista kääntyy jokeriksi kirjaimen sijaan. Jokeri käy siitä kirjaimesta, joka muodostaa sanan, valittuna niistä jotka sopivat, ja kumpi se oli näkyy kun sana ilmestyy listaasi. Jo löytämäsi sana ei kelpaa.',
   htTouchTitle: 'Kosketusnäyttö',
   htTouchBody:
     'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa mitä tahansa ottamaasi kirjainta palauttaaksesi sen. Hyväksy ja Tyhjennä ovat laudan alla.',

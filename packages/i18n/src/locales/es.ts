@@ -18,6 +18,8 @@ export const es: Messages = {
 
   boardOfTiles: 'Tablero de {n} fichas',
   faceDown: 'boca abajo',
+  wildCard: 'comodín',
+  wildKey: 'cualquier letra',
   spentTile: 'ficha gastada',
   hiddenWhilePaused: 'oculta en pausa',
   letterInWord: '{letter}, letra {position} de la palabra',
@@ -46,6 +48,7 @@ export const es: Messages = {
   reasonDuplicate: 'ya encontrada',
   reasonTooShort: 'demasiado corta',
   reasonNotAWord: 'no es una palabra',
+  reasonAllFound: 'ya los tienes todos',
   noSuchLetterUp: 'ninguna {letter} descubierta',
   nothingUp: 'nada descubierto',
   shuffled: 'mezclado',
@@ -64,6 +67,7 @@ export const es: Messages = {
   holdTicks: 'tiempos de espera',
   minWord: 'palabra mínima',
   startingFlips: 'giros iniciales',
+  wildChance: 'probabilidad de comodín',
   wordCompleteMode: 'palabra completada',
   wordCompleteNames: { shuffle: 'mezclar', spend: 'gastar', keep: 'conservar' },
   flipEconomy: 'economía de giros',
@@ -141,6 +145,9 @@ export const es: Messages = {
   htLanguagesBody:
     'Dieciséis. Cada tablero se puede resolver con palabras de uso real. Una palabra poco común también puntúa, si el diccionario la conoce.',
   htKeysTitle: 'El teclado',
+  htWildTitle: 'Los comodines',
+  htWildBody:
+    'Algunas fichas se destapan como comodín en vez de letra. Un comodín vale la letra que forme una palabra, elegida entre las que sirven, y descubres cuál cuando la palabra aparece en tu lista. Una palabra que ya tienes no cuenta.',
   htTouchTitle: 'La pantalla táctil',
   htTouchBody:
     'Toca una ficha destapada para tomar su letra. Toca cualquier letra ya tomada para soltarla. Completar y Borrar están debajo del tablero.',

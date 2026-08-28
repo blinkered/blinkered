@@ -18,6 +18,8 @@ export const pt: Messages = {
 
   boardOfTiles: 'Tabuleiro de {n} peças',
   faceDown: 'voltada para baixo',
+  wildCard: 'coringa',
+  wildKey: 'qualquer letra',
   spentTile: 'peça gasta',
   hiddenWhilePaused: 'oculta em pausa',
   letterInWord: '{letter}, letra {position} da palavra',
@@ -45,6 +47,7 @@ export const pt: Messages = {
   reasonDuplicate: 'já encontrada',
   reasonTooShort: 'demasiado curta',
   reasonNotAWord: 'não é uma palavra',
+  reasonAllFound: 'já os tem todos',
   noSuchLetterUp: 'nenhum {letter} à vista',
   nothingUp: 'nada à vista',
   shuffled: 'baralhado',
@@ -63,6 +66,7 @@ export const pt: Messages = {
   holdTicks: 'tempos de espera',
   minWord: 'palavra mínima',
   startingFlips: 'viradas iniciais',
+  wildChance: 'probabilidade de coringa',
   wordCompleteMode: 'palavra completa',
   wordCompleteNames: { shuffle: 'baralhar', spend: 'gastar', keep: 'manter' },
   flipEconomy: 'economia de viradas',
@@ -140,6 +144,9 @@ export const pt: Messages = {
   htLanguagesBody:
     'Dezasseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra invulgar também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
+  htWildTitle: 'Os coringas',
+  htWildBody:
+    'Algumas peças viram como coringa em vez de letra. Um coringa vale a letra que forma uma palavra, escolhida entre as que servem, e descobre qual quando a palavra aparece na sua lista. Uma palavra que já tem não conta.',
   htTouchTitle: 'O ecrã tátil',
   htTouchBody:
     'Toque numa peça virada para tomar a sua letra. Toque numa letra já tomada para a devolver. Completar e Limpar ficam sob o tabuleiro.',

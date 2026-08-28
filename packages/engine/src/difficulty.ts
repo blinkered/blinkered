@@ -8,6 +8,17 @@ export const ENGINE_VERSION = '0.1.0'
 export const DEFAULT_BOARD_SIZE = 12
 
 /**
+ * Chance per tile per deal of a wild card, before nerd mode says otherwise.
+ *
+ * 0.02 against twelve tiles puts a wild in 21.5% of rounds and two in 2.2%, which is between two
+ * and three in a game depending on how many rounds the setting allows. Knowingly generous for a
+ * first pass: a wild can be a whole word by fishing, and three of them against a fourteen-word
+ * game is a fifth of the words. A treat nobody sees teaches nothing about whether it is fun, so
+ * this starts high and comes down if play says so.
+ */
+export const DEFAULT_WILD_CHANCE = 0.02
+
+/**
  * Board size is a player's choice, not a difficulty axis. A bigger board is harder to track
  * and gives less time per tile, but it admits far more words and much longer ones, so it is
  * easier to score on: at N=6 a seven-letter word is arithmetically impossible. So a profile
@@ -126,6 +137,7 @@ export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig>
 
   const resolved: GameConfig = {
     n,
+    wildChance: overrides.wildChance ?? DEFAULT_WILD_CHANCE,
     speedMultiplier: profile.speedMultiplier,
     holdTicks: profile.holdTicks,
     initialFlips: profile.initialRounds * n,

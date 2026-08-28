@@ -115,6 +115,22 @@ export function NerdPanel({
             onOverride({ initialFlips })
           }}
         />
+        {/*
+         * Per tile, per deal. 0.02 puts a wild in about a fifth of rounds; zero turns them off.
+         * Stepped in hundredths because the interesting range is small and a slider that can
+         * reach 0.5 invites a board that is mostly wild cards.
+         */}
+        <Number
+          label={messages.wildChance}
+          value={config.wildChance}
+          min={0}
+          max={0.5}
+          step={0.01}
+          disabled={locked}
+          onChange={(wildChance) => {
+            onOverride({ wildChance })
+          }}
+        />
         <Choice
           label={messages.wordCompleteMode}
           value={config.wordCompleteMode}

@@ -29,6 +29,7 @@ export function HowToPlay({
     { title: messages.htWordsTitle, body: messages.htWordsBody },
     { title: messages.htFlipsTitle, body: messages.htFlipsBody },
     { title: messages.htRoundTitle, body: messages.htRoundBody },
+    { title: messages.htWildTitle, body: messages.htWildBody },
     { title: messages.htLanguagesTitle, body: messages.htLanguagesBody },
   ]
 

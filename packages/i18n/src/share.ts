@@ -21,6 +21,14 @@ export interface ShareOptions {
   /** Whether this game came top of the player's own table, on the leaderboard's own terms. */
   readonly personalBest: boolean
   readonly url: string
+  /**
+   * The board's letters, in the order they were dealt.
+   *
+   * What makes the message worth reading rather than a scoreboard: anyone who plays can see what
+   * there was to work with and judge the score against it. The letters are the same for the whole
+   * game, so one line of them describes the whole thing.
+   */
+  readonly letters: readonly string[]
 }
 
 export function shareText(messages: Messages, result: GameResult, options: ShareOptions): string {
@@ -33,7 +41,7 @@ export function shareText(messages: Messages, result: GameResult, options: Share
    */
   const rules = result.canonical ? messages.difficultyNames[result.difficulty] : messages.nerdMode
   const lines = [
-    `Blinkered, ${rules}`,
+    `Blinkered, ${rules}, ${options.letters.join('')}`,
     format(messages.finalResult, {
       score: result.score,
       words: plural(messages.tag, messages.plurals.words, result.words),

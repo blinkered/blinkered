@@ -1,6 +1,7 @@
 import { alphabetFor } from './languages.js'
 import { reduce, revealNext, settle, type Reduction } from './reducer.js'
 import { seedRng } from './rng.js'
+import { dealWilds } from './wild.js'
 import type { Dictionary, Effect, GameConfig, GameEvent, GameState, Tile } from './types.js'
 
 export interface NewGame {
@@ -25,18 +26,23 @@ export function createGame({ config, letters, seed }: NewGame): Reduction {
   if (config.holdTicks < 0) throw new RangeError('holdTicks cannot be negative')
 
   const alphabet = alphabetFor(config.language)
-  const tiles: Tile[] = letters.map((letter, index) => ({
+  const dealt: Tile[] = letters.map((letter, index) => ({
     id: index,
     letter: alphabet.fold(letter),
     position: index,
     revealed: false,
     spent: false,
+    wild: false,
   }))
+
+  // The first round's wilds come off the same seeded stream as everything else, so the whole
+  // game is still reproducible from the seed alone.
+  const [tiles, rng] = dealWilds(seedRng(seed), dealt, config.wildChance)
 
   return settle(
     revealNext({
       config,
-      rng: seedRng(seed),
+      rng,
       tiles,
       selection: [],
       roundIndex: 0,
