@@ -585,10 +585,19 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 99px;
   font-size: 0.85rem;
+}
+/*
+ * Only the list being played into. The game-over panel renders the same component with the whole
+ * game already in it, and a mounted element runs its animation: twelve words arrived at once, all
+ * flashing green, announcing news several minutes old. The direct-child selector separates them,
+ * because the panel's copy is nested inside `.panel`.
+ *
+ * The points travel with it, since the points are the reason to want a longer word.
+ */
+.play > .found li {
   animation: word-landed 1.6s ease-out;
 }
-/* The points travel with it, because the points are the reason to want a longer word. */
-.found li .found-points {
+.play > .found li .found-points {
   animation: word-landed-points 1.6s ease-out;
 }
 @keyframes word-landed-points {
@@ -1253,7 +1262,7 @@ kbd {
    * and the list scrolls inside whatever that turns out to be. Newest first, so the words worth
    * checking are the ones already in view.
    */
-  .found {
+  .play.has-board > .found {
     grid-area: found;
     align-self: stretch;
     /*
@@ -1276,7 +1285,7 @@ kbd {
    * happened to be. A word too long for the rail is clipped with an ellipsis instead, and the
    * whole thing stays available on the tooltip.
    */
-  .found li {
+  .play.has-board > .found li {
     display: flex;
     align-items: baseline;
     gap: 0.2rem;
@@ -1313,7 +1322,7 @@ kbd {
    * both here. Past about thirteen characters the ellipsis takes over, which is the last resort
    * rather than the first.
    */
-  .found-word {
+  .play.has-board > .found .found-word {
     --rail-text: 4.45rem;
     --advance: 0.72;
     flex: 1;
@@ -1322,12 +1331,12 @@ kbd {
     text-overflow: ellipsis;
     font-size: clamp(0.5rem, calc(var(--rail-text) / (var(--len, 5) * var(--advance))), 0.7rem);
   }
-  .found-points {
+  .play.has-board > .found .found-points {
     flex: none;
     font-size: 0.6rem;
   }
   /* An empty rail says "no words yet" by being empty. The sentence wrapped over three lines. */
-  .found.dim {
+  .play.has-board > .found.dim {
     display: none;
   }
   /* Setup and the leaderboard have no board to sit beside. */
@@ -1604,4 +1613,34 @@ kbd {
       opacity: 0;
     }
   }
+}
+
+/*
+ * Sharing a finished game. Lives on the game-over panel, which is the one screen in the game with
+ * room to spare, so it needs no compacting.
+ */
+.share {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  width: 100%;
+}
+.share-note {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+/* Only ever seen where there is no clipboard to write to, which is any build served over plain
+   HTTP. Monospace and full width because the job is to select it, not to read it. */
+.share-text {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  resize: none;
 }

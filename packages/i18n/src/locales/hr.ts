@@ -35,6 +35,9 @@ export const hr: Messages = {
   outOfFlips: 'Nema više okreta',
   finalResult: '{score} bodova, {words} u {rounds}',
   playAgain: 'Igraj ponovno',
+  share: 'Podijeli',
+  shareCopied: 'Kopirano.',
+  shareSelect: 'Kopirajte ovo:',
 
   lettersSelect: 'slova označavaju',
   clearsEvery: 'briše sva označena {letter}',

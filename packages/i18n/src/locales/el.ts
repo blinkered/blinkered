@@ -32,6 +32,9 @@ export const el: Messages = {
   outOfFlips: 'Τέλος οι κινήσεις',
   finalResult: '{score} βαθμοί από {words} σε {rounds}',
   playAgain: 'Ξανά',
+  share: 'Κοινοποίηση',
+  shareCopied: 'Αντιγράφηκε.',
+  shareSelect: 'Αντιγράψτε αυτό:',
 
   lettersSelect: 'τα γράμματα επιλέγουν',
   clearsEvery: 'αφαιρεί όλα τα επιλεγμένα {letter}',

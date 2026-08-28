@@ -35,6 +35,9 @@ export const fi: Messages = {
   outOfFlips: 'Siirrot loppuivat',
   finalResult: '{score} pistettä, {words} {rounds}',
   playAgain: 'Pelaa uudelleen',
+  share: 'Jaa',
+  shareCopied: 'Kopioitu.',
+  shareSelect: 'Kopioi tämä:',
 
   lettersSelect: 'kirjaimet valitsevat',
   clearsEvery: 'poistaa kaikki valitut {letter}-kirjaimet',

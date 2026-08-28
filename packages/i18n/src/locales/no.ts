@@ -32,6 +32,9 @@ export const no: Messages = {
   outOfFlips: 'Tom for trekk',
   finalResult: '{score} poeng på {words} over {rounds}',
   playAgain: 'Spill igjen',
+  share: 'Del',
+  shareCopied: 'Kopiert.',
+  shareSelect: 'Kopier dette:',
 
   lettersSelect: 'bokstaver velger',
   clearsEvery: 'fjerner alle valgte {letter}',

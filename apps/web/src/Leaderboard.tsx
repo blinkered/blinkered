@@ -1,6 +1,7 @@
 import type { GameResult } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
+import { isPersonalBest } from './scores.js'
 import type { Standing } from './scores.js'
 
 interface LeaderboardProps {
@@ -39,7 +40,7 @@ export function Leaderboard({ standing, current, messages }: LeaderboardProps): 
       {/* Only when there was something to beat. Calling a first game a new personal best is
           the same species of nonsense as telling somebody who just finished one that no
           finished games exist yet. */}
-      {rank === 1 && ranked.length > 1 ? (
+      {isPersonalBest(standing) ? (
         <p className="leaderboard-crown">{messages.newPersonalBest}</p>
       ) : null}
       <table className="nerd-table">

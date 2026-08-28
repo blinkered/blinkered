@@ -32,6 +32,9 @@ export const nl: Messages = {
   outOfFlips: 'Geen zetten meer',
   finalResult: '{score} punten met {words} in {rounds}',
   playAgain: 'Opnieuw spelen',
+  share: 'Delen',
+  shareCopied: 'Gekopieerd.',
+  shareSelect: 'Kopieer dit:',
 
   lettersSelect: 'letters selecteren',
   clearsEvery: 'wist alle geselecteerde {letter}',

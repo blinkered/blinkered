@@ -32,6 +32,9 @@ export const ms: Messages = {
   outOfFlips: 'Balikan habis',
   finalResult: '{score} mata daripada {words} dalam {rounds}',
   playAgain: 'Main lagi',
+  share: 'Kongsi',
+  shareCopied: 'Disalin.',
+  shareSelect: 'Salin ini:',
 
   lettersSelect: 'huruf memilih',
   clearsEvery: 'membuang semua {letter} yang dipilih',

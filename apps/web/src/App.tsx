@@ -16,9 +16,11 @@ import { Leaderboard } from './Leaderboard.js'
 import { NerdPanel } from './NerdPanel.js'
 import { Title } from './Title.js'
 import { loadCatalogue, loadDictionary } from './dictionary.js'
+import { overFixture } from './fixtures.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { useFocusRelease, withoutStealingFocus } from './focus.js'
-import { recordScore, standingOf } from './scores.js'
+import { Share } from './Share.js'
+import { isPersonalBest, recordScore, standingOf } from './scores.js'
 import type { Standing } from './scores.js'
 import {
   configOf,
@@ -145,9 +147,19 @@ function Session({
     : (catalogue[0]?.tag ?? settings.gameLanguage)
 
   const { dictionary, error } = useDictionary(language, messages)
-  const [phase, setPhase] = useState<Phase>('setup')
+  /*
+   * `?fixture=over` opens straight onto the game-over panel with a canned game behind it, because
+   * reaching that panel for real is several minutes of deliberately playing badly. The components
+   * and the leaderboard logic are the real ones; only the game that preceded them is invented.
+   *
+   * Development only, and `import.meta.env.DEV` is what keeps it out of a production bundle
+   * entirely. A URL that fakes a finished game is a URL that fakes a personal best, and
+   * screenshots travel. See fixtures.ts for the parameters.
+   */
+  const fixture = import.meta.env.DEV ? overFixture(globalThis.location.search) : null
+  const [phase, setPhase] = useState<Phase>(fixture === null ? 'setup' : 'over')
   const [spec, setSpec] = useState<GameSpec | null>(null)
-  const [finished, setFinished] = useState<Finished | null>(null)
+  const [finished, setFinished] = useState<Finished | null>(fixture)
 
   // The wordmark deals itself as a hand of Blinkered on arrival. Pressing Start during it hurries
   // it along rather than cutting it off, so the game begins on a title that reads BLINKERED.
@@ -327,6 +339,11 @@ function Session({
                   messages={messages}
                 />
                 <FoundWords words={finished.words} messages={messages} />
+                <Share
+                  result={finished.result}
+                  personalBest={isPersonalBest(finished.standing)}
+                  messages={messages}
+                />
                 {setup(messages.newGame)}
               </div>
             ) : null}

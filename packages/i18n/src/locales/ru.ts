@@ -37,6 +37,9 @@ export const ru: Messages = {
   outOfFlips: 'Ходы закончились',
   finalResult: '{score} очков, {words} за {rounds}',
   playAgain: 'Играть снова',
+  share: 'Поделиться',
+  shareCopied: 'Скопировано.',
+  shareSelect: 'Скопируйте это:',
 
   lettersSelect: 'буквы выбирают',
   clearsEvery: 'снимает все выбранные {letter}',

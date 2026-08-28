@@ -32,6 +32,9 @@ export const sv: Messages = {
   outOfFlips: 'Inga drag kvar',
   finalResult: '{score} poäng på {words} under {rounds}',
   playAgain: 'Spela igen',
+  share: 'Dela',
+  shareCopied: 'Kopierat.',
+  shareSelect: 'Kopiera detta:',
 
   lettersSelect: 'bokstäver väljer',
   clearsEvery: 'rensar alla valda {letter}',

@@ -1,4 +1,6 @@
 export { format, plural } from './messages.js'
+export { shareText } from './share.js'
+export type { ShareOptions } from './share.js'
 export type { Messages, Plurals, PluralForms, Replacements } from './messages.js'
 export {
   DEFAULT_LOCALE,

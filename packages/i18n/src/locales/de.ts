@@ -35,6 +35,9 @@ export const de: Messages = {
   outOfFlips: 'Keine Züge mehr',
   finalResult: '{score} Punkte mit {words} in {rounds}',
   playAgain: 'Nochmal spielen',
+  share: 'Teilen',
+  shareCopied: 'Kopiert.',
+  shareSelect: 'Das hier kopieren:',
 
   lettersSelect: 'Buchstaben wählen',
   clearsEvery: 'entfernt alle gewählten {letter}',

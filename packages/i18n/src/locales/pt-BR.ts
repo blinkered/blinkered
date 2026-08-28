@@ -36,6 +36,9 @@ export const ptBR: Messages = {
   outOfFlips: 'Sem viradas',
   finalResult: '{score} pontos com {words} em {rounds}',
   playAgain: 'Jogar novamente',
+  share: 'Compartilhar',
+  shareCopied: 'Copiado.',
+  shareSelect: 'Copie isto:',
 
   lettersSelect: 'as letras selecionam',
   clearsEvery: 'remove todos os {letter} selecionados',

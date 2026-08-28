@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { ALPHABET_IDS } from '@blinkered/engine'
-import { DEFAULT_LOCALE, LOCALES, localeFor, messagesFor, preferredLocale } from '../src/index.js'
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  localeFor,
+  messagesFor,
+  preferredLocale,
+  shareText,
+} from '../src/index.js'
 import { format, plural } from '../src/messages.js'
 import { en } from '../src/locales/en.js'
 
@@ -162,6 +169,83 @@ describe('every locale', () => {
         same / keys.length,
         `${tag} matches English on ${String(same)} of ${String(keys.length)} keys`,
       ).toBeLessThan(0.3)
+    }
+  })
+})
+
+describe('shareText', () => {
+  const result = {
+    score: 96,
+    words: 14,
+    rounds: 12,
+    language: 'en',
+    difficulty: 'medium',
+    canonical: true,
+    at: 1_700_000_000_000,
+    seed: 42,
+    engineVersion: '1',
+  } as const
+
+  const url = 'https://playblinkered.com'
+
+  it('is three lines when there is nothing to boast about', () => {
+    expect(shareText(en, result, { personalBest: false, url })).toBe(
+      ['Blinkered, medium', '96 points from 14 words over 12 rounds', url].join('\n'),
+    )
+  })
+
+  it('adds the boast when there is one, and no more than one line of it', () => {
+    const text = shareText(en, result, { personalBest: true, url })
+    expect(text.split('\n')).toEqual([
+      'Blinkered, medium',
+      '96 points from 14 words over 12 rounds',
+      'A new personal best.',
+      url,
+    ])
+  })
+
+  it('names custom rules rather than a difficulty that did not apply', () => {
+    // A game played on edited rules has a `difficulty` field, and repeating it would be a lie.
+    const text = shareText(en, { ...result, canonical: false }, { personalBest: false, url })
+    // The same words the setup screen's chip uses for an edited ruleset.
+    expect(text.startsWith(`Blinkered, ${en.nerdMode}`)).toBe(true)
+    expect(text).not.toContain('medium')
+  })
+
+  it('is written in the language the game was read in, plurals included', () => {
+    const one = shareText(
+      messagesFor('ru'),
+      { ...result, words: 1, rounds: 1 },
+      {
+        personalBest: false,
+        url,
+      },
+    )
+    // Russian picks a different form for 1 than for 14, which is the whole reason this goes
+    // through Intl.PluralRules rather than through string concatenation.
+    expect(one).toContain('1 слово')
+    const many = shareText(messagesFor('ru'), result, { personalBest: false, url })
+    expect(many).toContain('14 слов')
+  })
+
+  it('ends with the link, whatever else it says', () => {
+    for (const best of [true, false]) {
+      for (const canonical of [true, false]) {
+        const text = shareText(
+          messagesFor('el'),
+          { ...result, canonical },
+          { personalBest: best, url },
+        )
+        expect(text.endsWith(url)).toBe(true)
+      }
+    }
+  })
+
+  it('carries no dash as a separator, in any of the sixteen', () => {
+    // House style, and it survives a paste into anything.
+    for (const locale of LOCALES) {
+      const text = shareText(locale.messages, result, { personalBest: true, url })
+      expect(text, locale.tag).not.toMatch(/[—–]/)
     }
   })
 })

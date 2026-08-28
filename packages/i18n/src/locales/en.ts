@@ -40,6 +40,9 @@ export const en: Messages = {
   outOfFlips: 'Out of flips',
   finalResult: '{score} points from {words} over {rounds}',
   playAgain: 'Play again',
+  share: 'Share',
+  shareCopied: 'Copied.',
+  shareSelect: 'Copy this:',
 
   lettersSelect: 'letters select',
   clearsEvery: 'clears all selected {letter}s',

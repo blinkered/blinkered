@@ -36,6 +36,9 @@ export const id: Messages = {
   outOfFlips: 'Balikan habis',
   finalResult: '{score} poin dari {words} dalam {rounds}',
   playAgain: 'Main lagi',
+  share: 'Bagikan',
+  shareCopied: 'Tersalin.',
+  shareSelect: 'Salin ini:',
 
   lettersSelect: 'huruf memilih',
   clearsEvery: 'menghapus semua {letter} terpilih',

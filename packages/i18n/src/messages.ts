@@ -112,6 +112,12 @@ export interface Messages {
   /** `{score}` `{words}` `{rounds}` */
   readonly finalResult: string
   readonly playAgain: string
+  /** The button offered once a game is over. */
+  readonly share: string
+  /** Shown instead when there is no share sheet, so the synopsis went to the clipboard. */
+  readonly shareCopied: string
+  /** And when there is no clipboard either, so the text is on screen to be selected. */
+  readonly shareSelect: string
 
   // The keyboard legend. Only the bindings the buttons cannot advertise themselves.
   readonly lettersSelect: string

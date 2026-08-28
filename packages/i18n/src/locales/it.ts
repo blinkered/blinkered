@@ -33,6 +33,9 @@ export const it: Messages = {
   outOfFlips: 'Giri esauriti',
   finalResult: '{score} punti con {words} in {rounds}',
   playAgain: 'Gioca ancora',
+  share: 'Condividi',
+  shareCopied: 'Copiato.',
+  shareSelect: 'Copia questo:',
 
   lettersSelect: 'le lettere selezionano',
   clearsEvery: 'togle tutte le {letter} selezionate',

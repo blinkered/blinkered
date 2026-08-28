@@ -74,6 +74,17 @@ export interface Standing {
   readonly rank: number
 }
 
+/**
+ * Whether a game topped the player's own table, with something to have topped.
+ *
+ * One definition, because two things say so now: the crown on the leaderboard and the line in the
+ * share text. A first game is not a personal best, which is the same reason the crown waits for a
+ * second game before appearing.
+ */
+export function isPersonalBest(standing: Standing): boolean {
+  return standing.rank === 1 && standing.ranked.length > 1
+}
+
 export function standingOf(
   scores: readonly GameResult[],
   result: GameResult,
