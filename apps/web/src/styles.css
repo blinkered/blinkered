@@ -731,13 +731,6 @@ kbd {
   background: color-mix(in srgb, var(--sel) 18%, var(--bg));
   color: var(--up);
 }
-.chip-note {
-  color: var(--dim);
-  font-size: 0.75rem;
-}
-.chip.is-on .chip-note {
-  color: color-mix(in srgb, var(--up) 70%, transparent);
-}
 .btn-start {
   min-width: 11rem;
 }
@@ -1081,7 +1074,13 @@ kbd {
  */
 @media (max-width: 30rem) {
   .play {
-    grid-template-columns: 4.5rem minmax(0, 1fr);
+    /*
+     * 6rem, which buys room for the points beside the word and for a ten-letter word to still be
+     * readable, and costs the board almost nothing: at 390px a three-column board is limited by
+     * height, so its tiles stay 72px whatever this is, and only a four-column board gives up a
+     * few pixels.
+     */
+    grid-template-columns: 6rem minmax(0, 1fr);
     grid-template-areas:
       'hud    hud'
       'found  board'
@@ -1149,28 +1148,54 @@ kbd {
    * whole thing stays available on the tooltip.
    */
   .found li {
-    display: block;
-    flex: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
     /*
-     * `max-width` is what makes the ellipsis happen, and without it the previous three lines did
-     * nothing. `align-items: stretch` gives a flex item the container's width as a *minimum*, not
-     * a maximum, so a long word simply made its own row wider: SUPERCALIFRAGILISTIC came out
-     * 141px wide inside a 72px rail and scrolled sideways instead of being clipped.
+     * `max-width` is what stops a row growing wider than the rail. `align-items: stretch` gives a
+     * flex item the container's width as a *minimum*, not a maximum, so before this a long word
+     * simply made its own row wider: SUPERCALIFRAGILISTIC came out 141px inside a 72px rail and
+     * scrolled sideways instead of being contained.
      */
     max-width: 100%;
-    /* The flex `gap` went with the flex container. */
+    /* The flex `gap` went with the flex container, so rows space themselves. */
     margin-bottom: 0.25rem;
     padding: 0.15rem 0.3rem;
     border-radius: 6px;
-    font-size: 0.7rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
-  /* The score is in the HUD. Here the question is only "did I already play this", and the points
-     were taking the width that made MARRIES wrap. */
+  /*
+   * The word shrinks to fit rather than being cut off, because the points next to it are the
+   * reason to reach for a longer word and dropping either half loses something.
+   *
+   * The arithmetic: `--rail-text` is what is left for the word once the padding, the gap and a
+   * two-digit score are taken out, and `--advance` is how much width one uppercase character
+   * costs in ems. The size that exactly fills the space is therefore
+   * `--rail-text / (len * --advance)`, capped at the normal 0.7rem so short words are not blown
+   * up, and floored so it stays legible.
+   *
+   * `--advance` is 0.72 because it has to hold for every alphabet, not just the convenient ones.
+   * Measured: Latin uppercase runs about 0.63em, but Cyrillic ПРИНЯТЬ and Greek ΥΠΟΒΟΛΗ both come
+   * out at 0.71em. The first attempt used 0.62, which is the Latin figure, and ten-letter words in
+   * Russian and Greek were ellipsised while their English equivalents fitted.
+   *
+   * It is still an average rather than a promise, which is why the floor and the ellipsis are
+   * both here. Past about thirteen characters the ellipsis takes over, which is the last resort
+   * rather than the first.
+   */
+  .found-word {
+    --rail-text: 4.45rem;
+    --advance: 0.72;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.5rem, calc(var(--rail-text) / (var(--len, 5) * var(--advance))), 0.7rem);
+  }
   .found-points {
-    display: none;
+    flex: none;
+    font-size: 0.6rem;
   }
   /* An empty rail says "no words yet" by being empty. The sentence wrapped over three lines. */
   .found.dim {

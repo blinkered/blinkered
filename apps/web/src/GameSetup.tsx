@@ -1,4 +1,3 @@
-import { DIFFICULTIES } from '@blinkered/engine'
 import type { Messages } from '@blinkered/i18n'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { withoutStealingFocus } from './focus.js'
@@ -103,10 +102,14 @@ export function RulesetPicker({
               onChange(ruleset)
             }}
           >
+            {/*
+             * The name and nothing else. This used to carry `initialRounds` as a bare number --
+             * "easy 14" -- which is the starting flip budget expressed in rounds: an
+             * implementation detail of the difficulty table, unlabelled, in the one place it
+             * reads as a difficulty rating. It also ran backwards, the largest number being the
+             * easiest setting. Anyone who wants the actual numbers has nerd mode.
+             */}
             {ruleset === CUSTOM_RULES ? messages.nerdMode : messages.difficultyNames[ruleset]}
-            {ruleset === CUSTOM_RULES ? null : (
-              <span className="chip-note">{DIFFICULTIES[ruleset].initialRounds}r</span>
-            )}
           </button>
         ))}
       </div>

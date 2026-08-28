@@ -578,9 +578,17 @@ function FoundWords({
   return (
     <ul className="found">
       {[...words].reverse().map((found) => (
-        // The narrow rail hides the points and may clip a long word, so the title carries both.
-        <li key={found.word} title={`${found.word} +${String(found.points)}`}>
-          {found.word}
+        // `--len` is the word's length, which the narrow rail uses to size the text so that a
+        // long word shrinks to fit rather than being cut. Spread rather than measured in JS: the
+        // length is already known here, and a ResizeObserver per word would be a lot of
+        // machinery for an answer arithmetic can give. The title still carries the whole thing,
+        // for the rare word too long even at the smallest size.
+        <li
+          key={found.word}
+          title={`${found.word} +${String(found.points)}`}
+          style={{ ['--len' as string]: String([...found.word].length) }}
+        >
+          <span className="found-word">{found.word}</span>
           <span className="found-points">{found.points}</span>
         </li>
       ))}
