@@ -57,6 +57,13 @@ next.
 4. Then accounts, verified score submission, and history: PLAN.md phase 4 onward. That is when
    the deployment stops being a static site and grows a backend and a Postgres.
 
+## Wanted, not built
+
+Three features are written up in [PROPOSALS.md](PROPOSALS.md) with the decisions each still needs:
+sharing a finished game, wild-card tiles, and replacing a letter during a shuffle. Share wants no
+engine change. The other two both want the balance simulator first, because each introduces a
+frequency that cannot be settled by argument.
+
 ## Settled
 
 - **Tight Line LLC owns this.** NOTICE was already written that way; it is now a decision
