@@ -78,6 +78,9 @@ worth wanting on purpose.
 
 - **A look that is neither a letter nor a face-down tile.** A star or asterisk, and a shape rather
   than only a colour, since a colour-only distinction fails for a colour-blind player.
+- **A one-line key on the board**, small: `🃏 = any letter` or similar. A symbol nobody has been
+  taught needs saying once, and it has to cost almost no room, which on a phone means the same
+  budget the tap prompt lives on.
 - **The seeded RNG, not `Math.random`.** The whole engine is deterministic from
   `(seed, difficulty, event log)` so a server can one day verify a score instead of believing it.
   A wild resolved from `Math.random` silently ends that. The RNG state is already in `GameState`.
@@ -161,6 +164,16 @@ should be taken before this is designed any further.
   different number from one chosen to feel good.
 
 ---
+
+## The help page is part of the feature
+
+Every string the game says exists in sixteen languages, and the rules page is a string like any
+other. Wild cards and letter replacement both change what a player has to understand, so each one
+lands with its own section in `htTouch*`-style keys across all sixteen locales, in the same commit
+as the mechanic. Share needs nothing there: a button that shares a result explains itself.
+
+This is easy to forget because the feature works without it, and the sixteenth translation is
+never the interesting part of the day.
 
 ## Order
 
