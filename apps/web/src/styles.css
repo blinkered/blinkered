@@ -1088,6 +1088,21 @@ kbd {
       'ctrl   ctrl'
       'legend legend';
   }
+  /*
+   * The board's row gets a definite height, and that is the fix rather than a tidy-up.
+   *
+   * An `auto` row is sized to its items' max-content, so `min-height: 0` on the word list did not
+   * stop twenty words making the row 532px tall and pushing Complete a hundred and fifty pixels
+   * below the bottom of the screen. A definite height ends the argument: the row is the board's
+   * budget, the list scrolls inside it, and the controls sit in the same place no matter how the
+   * game is going.
+   *
+   * Only while a board exists. An empty row with a definite height is still 300px of nothing, and
+   * the setup panel would have had it hanging underneath.
+   */
+  .play.has-board {
+    grid-template-rows: auto var(--board-height) auto auto;
+  }
   .hud {
     grid-area: hud;
   }
@@ -1100,25 +1115,62 @@ kbd {
   .legend {
     grid-area: legend;
   }
+  /*
+   * As tall as the board and no taller, whatever is in it.
+   *
+   * `min-height: 0` is the whole trick, and without it this was a bug rather than a rail: a grid
+   * row is sized by its items' content, so eighteen words made the row taller than the board and
+   * pushed Complete off the bottom of the screen. Zeroing the minimum drops the list's
+   * contribution to the row's height to nothing, so the board alone decides how tall the row is
+   * and the list scrolls inside whatever that turns out to be. Newest first, so the words worth
+   * checking are the ones already in view.
+   */
   .found {
     grid-area: found;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-    max-height: 100%;
-    overflow-y: auto;
+    align-self: stretch;
+    /*
+     * `block`, not the `flex` this inherits from the wide layout, and that is the difference
+     * between a rail that scrolls and one that does not. A column flex container with overflowing
+     * items refused to scroll at all in WebKit: 456px of words sat inside a 305px box, `scrollTop`
+     * would not move off zero, and the surplus was simply unreachable. Block children in a block
+     * scroller behave everywhere, and they also come out the same width, which a flex line's
+     * `stretch` did not manage.
+     */
+    display: block;
+    min-height: 0;
+    /* Sideways never, downwards when there are more words than fit. */
+    overflow: hidden auto;
     overscroll-behavior: contain;
   }
+  /*
+   * One line per word, always. This had `overflow-wrap: anywhere`, which broke MARRIES across two
+   * lines as MARRIE/S: unreadable, and it made the rail's height depend on how long the words
+   * happened to be. A word too long for the rail is clipped with an ellipsis instead, and the
+   * whole thing stays available on the tooltip.
+   */
   .found li {
-    gap: 0.1rem;
-    justify-content: space-between;
+    display: block;
+    flex: none;
+    /*
+     * `max-width` is what makes the ellipsis happen, and without it the previous three lines did
+     * nothing. `align-items: stretch` gives a flex item the container's width as a *minimum*, not
+     * a maximum, so a long word simply made its own row wider: SUPERCALIFRAGILISTIC came out
+     * 141px wide inside a 72px rail and scrolled sideways instead of being clipped.
+     */
+    max-width: 100%;
+    /* The flex `gap` went with the flex container. */
+    margin-bottom: 0.25rem;
     padding: 0.15rem 0.3rem;
     border-radius: 6px;
     font-size: 0.7rem;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+  /* The score is in the HUD. Here the question is only "did I already play this", and the points
+     were taking the width that made MARRIES wrap. */
   .found-points {
-    font-size: 0.65rem;
+    display: none;
   }
   /* An empty rail says "no words yet" by being empty. The sentence wrapped over three lines. */
   .found.dim {

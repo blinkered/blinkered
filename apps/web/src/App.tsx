@@ -291,7 +291,7 @@ function Session({
         </div>
 
         <div className={`body${settings.nerdMode ? ' has-nerd' : ''}`}>
-          <div className="play">
+          <div className={`play${playing ? ' has-board' : ''}`}>
             {error !== null ? <p className="error">{error}</p> : null}
 
             {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
@@ -578,7 +578,8 @@ function FoundWords({
   return (
     <ul className="found">
       {[...words].reverse().map((found) => (
-        <li key={found.word}>
+        // The narrow rail hides the points and may clip a long word, so the title carries both.
+        <li key={found.word} title={`${found.word} +${String(found.points)}`}>
           {found.word}
           <span className="found-points">{found.points}</span>
         </li>
