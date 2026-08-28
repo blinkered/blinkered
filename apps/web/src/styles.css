@@ -8,7 +8,18 @@
   --sel: #2f81f7;
   --good: #3fb950;
   --bad: #f85149;
-  --warn: #d29922;
+  /* The wild card, wherever it appears: the tile's border, the key, and the letter it gave.
+     One colour for the whole feature, so the player learns it once.
+
+     Bright, not the mid amber #d29922 this started as. That was 7.5:1 against the page, which
+     passes on paper and fails in the rail, where the word is drawn at eight to eleven pixels: a
+     mid-luminance amber has no strokes left at that size. This is 12.3:1, and it is the reason
+     the rail is legible rather than merely compliant.
+
+     Amber because every other hue in this palette already means something. Green is an accepted
+     word, red a refused one, blue the current selection; a fourth meaning in any of those hues
+     would be read as a fifth state of the third. */
+  --wild: #f2cc60;
   --radius: 10px;
   /* How big a tile may get, and how much height the board may claim. Both are retuned in the
      touch block near the bottom of this file; the board computes its tile size from them. */
@@ -1653,9 +1664,9 @@ kbd {
  * so the difference survives a colour-blind reader and a black-and-white screenshot.
  */
 .tile.is-wild .tile-front {
-  border-color: var(--warn);
+  border-color: var(--wild);
   border-style: dashed;
-  color: var(--warn);
+  color: var(--wild);
 }
 .tile.is-wild.is-selected .tile-front {
   border-style: solid;
@@ -1668,8 +1679,23 @@ kbd {
   color: var(--dim);
   font-size: 0.8rem;
 }
-/* A letter the board gave rather than one the player chose. */
+/*
+ * A letter the board gave rather than one the player chose.
+ *
+ * Underlined as well as coloured, because colour alone is not a distinction: a reader who cannot
+ * separate gold from white sees an ordinary word, and this is the only place in the game where
+ * the wild is marked by colour by itself. The tile has a dashed border and a card glyph to fall
+ * back on; the rail row had nothing.
+ *
+ * An underline rather than a chip or a bracket because it costs no width. The rail sizes each
+ * word by arithmetic on its length, so anything that widened a character would push words into
+ * the ellipsis a letter earlier than the sum predicts. Uppercase has no descenders for it to
+ * collide with.
+ */
 .from-wild {
-  color: var(--warn);
+  color: var(--wild);
   font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }

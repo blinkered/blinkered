@@ -33,26 +33,36 @@ import type { Standing } from './scores.js'
 export interface Fixture {
   readonly result: GameResult
   readonly standing: Standing
-  readonly words: readonly { word: string; points: number }[]
+  readonly words: readonly { word: string; points: number; wilds?: readonly number[] }[]
   readonly letters: readonly string[]
 }
 
 /** A board the canned words could plausibly have come from. */
 const LETTERS = [...'STRAIGHENMVY']
 
-/** Long enough to exercise the rail's shrinking, short enough to be plausible. */
-const WORDS: readonly { word: string; points: number }[] = [
-  { word: 'STRAIGHTEN', points: 13 },
+/**
+ * Long enough to exercise the rail's shrinking, short enough to be plausible.
+ *
+ * Three of them carry wilds, because the marking is the part of a found word most easily got
+ * wrong and least easily reached by playing: at the real 0.02 a wild turns up about once every
+ * four rounds, and one that resolves into a word the player then submits is rarer still. The
+ * three cover the cases that differ. `STRAIGHTEN` is the longest word here, so it is drawn at the
+ * smallest size the rail allows: whatever marks a wild has to survive that. `SEEM` carries two,
+ * which is the cap and so the most a word can hold. `FIE` is the shortest, where the mark is
+ * drawn at full size and has nowhere to hide.
+ */
+const WORDS: readonly { word: string; points: number; wilds?: readonly number[] }[] = [
+  { word: 'STRAIGHTEN', points: 13, wilds: [4] },
   { word: 'MARRIES', points: 5 },
   { word: 'SENATOR', points: 5 },
   { word: 'FEVERS', points: 3 },
   { word: 'SAVER', points: 3 },
   { word: 'MERRY', points: 3 },
-  { word: 'SEEM', points: 2 },
+  { word: 'SEEM', points: 2, wilds: [0, 3] },
   { word: 'RIME', points: 2 },
   { word: 'FRAY', points: 2 },
   { word: 'VARY', points: 2 },
-  { word: 'FIE', points: 1 },
+  { word: 'FIE', points: 1, wilds: [1] },
   { word: 'FRY', points: 1 },
 ]
 
