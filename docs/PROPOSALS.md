@@ -108,13 +108,26 @@ worth wanting on purpose.
   same rate is worth less on a harder setting because there is less time to use it: the mechanic
   self-balances without a second number to guess. Making it level-dependent later is one field in
   `DIFFICULTIES`, so nothing is lost by waiting for play to say it is needed.
-- **Per tile, per deal**, re-rolled on every shuffle rather than fixed for the game. At 0.02 and
-  n=12 that is 21.5% of rounds with a wild, 2.2% with two, and 2.4 to 3.4 wilds per game depending
-  on the setting. Fixing it per board instead would concentrate the mechanic into one game in five
-  and hand that game a wild every single round, which is a different and much stronger feature.
-- **The per-game figure is what to judge**, not the 0.02. Three wilds against a fourteen-word game
-  is a fifth of the words, and a wild can be a whole word by fishing. That is knowingly generous
-  for a first pass, because a treat nobody sees teaches nothing about whether it is fun.
+- **Per tile, drawn once with the board and fixed for the game.** A wild is a face like any other
+  face: it moves position on every shuffle and it is still there next round, and the board is the
+  same twelve faces from first deal to last.
+
+  This was briefly decided the other way, per deal, and that was wrong for a reason worth keeping.
+  Re-rolling wild-ness each shuffle changes the face set between rounds -- `ABCDEFGHIJKL`, then
+  `A*CDEFGHIJKL`, then `ABCDEF*HIJKL` -- which is letter replacement, proposal 3, arriving early
+  and in disguise. It would also have spoiled the experiment: if wild cards already churn the board
+  between rounds, nothing measured afterwards can say what replacement adds.
+
+- **What 0.02 then means.** 21.5% of _games_ have a wild and 2.2% have two, and a game that has one
+  has it in every round. That is a strong board rather than an occasional treat, and it is the
+  number to watch in play. Two things soften it: a wild is only worth a word when the other letters
+  are up and willing, and words already found are excluded, so a wild decays as the game fills up
+  the list of what it can no longer make.
+
+- **The wrinkle to watch is ranked fairness.** One game in five being materially easier is variance
+  the leaderboard cannot see, since a wild board and a plain board are both canonical. If play says
+  that matters, the answers are a lower frequency, or a wild that can be spent only once in a game
+  rather than once in a round.
 
 ### Still open
 
