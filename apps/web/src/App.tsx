@@ -605,12 +605,22 @@ function FoundWords({
  * round, which is the difference between a reward and a nag.
  */
 function useFlipGain(effects: readonly Effect[], epoch: number): FlipGain | null {
-  return useMemo(() => {
+  // Latched, not derived. Deriving it from the current effects tied the badge's life to the next
+  // dispatch, and the next dispatch is a TICK: measured, the badge was destroyed 745ms into its
+  // own 1000ms animation, and where a submit fell in the tick cycle decided whether the player
+  // saw the whole thing, a fragment, or nothing. Holding the last gain hands the timing back to
+  // the animation, which is the only thing that knows when it has finished. Nothing clears it,
+  // because the last keyframe is transparent and a new word replaces it with a fresh key.
+  const [gain, setGain] = useState<FlipGain | null>(null)
+  useEffect(() => {
     for (const effect of effects) {
-      if (effect.type === 'WORD_ACCEPTED' && effect.flips > 0) return { flips: effect.flips, epoch }
+      if (effect.type === 'WORD_ACCEPTED' && effect.flips > 0) {
+        setGain({ flips: effect.flips, epoch })
+        return
+      }
     }
-    return null
   }, [effects, epoch])
+  return gain
 }
 
 /** Turns the most interesting effect of the last dispatch into one line of feedback. */
