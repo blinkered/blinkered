@@ -14,7 +14,7 @@
  * Paths are deliberately plain. At 20px nothing subtle survives.
  */
 interface IconProps {
-  readonly name: 'reset' | 'pause' | 'resume' | 'restart' | 'quit'
+  readonly name: 'reset' | 'pause' | 'resume' | 'restart' | 'quit' | 'help'
 }
 
 export function Icon({ name }: IconProps): React.JSX.Element {
@@ -62,6 +62,14 @@ const PATHS: Record<IconProps['name'], React.JSX.Element> = {
     <>
       <path d="M20 12a8 8 0 1 1-2.4-5.7" />
       <path d="M20 3.5V7h-3.5" />
+    </>
+  ),
+  // The one glyph nobody has to be taught.
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.4 9.2a2.7 2.7 0 1 1 3.4 2.6c-.5.2-.8.7-.8 1.3v.6" />
+      <path d="M12 17.2h.01" />
     </>
   ),
   // Out through a door, rather than a cross, which would mean "close this" instead of "leave".

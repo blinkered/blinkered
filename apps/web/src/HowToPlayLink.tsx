@@ -1,5 +1,6 @@
 import type { Messages } from '@blinkered/i18n'
 import { howToPlayUrl } from './HowToPlay.js'
+import { Icon } from './Icon.js'
 import { isNativeApp } from './platform.js'
 
 interface HowToPlayLinkProps {
@@ -41,12 +42,15 @@ export function HowToPlayLink({
       <button
         type="button"
         className="how-to-play how-to-play-button"
+        title={messages.howToPlay}
+        aria-label={messages.howToPlay}
         onClick={() => {
           onOpen?.()
           onShowInApp()
         }}
       >
-        {messages.howToPlay}
+        <Icon name="help" />
+        <span className="btn-text">{messages.howToPlay}</span>
       </button>
     )
   }
@@ -56,9 +60,12 @@ export function HowToPlayLink({
       href={howToPlayUrl(language)}
       target="_blank"
       rel="noreferrer"
+      title={messages.howToPlay}
+      aria-label={messages.howToPlay}
       onClick={onOpen}
     >
-      {messages.howToPlay}
+      <Icon name="help" />
+      <span className="btn-text">{messages.howToPlay}</span>
     </a>
   )
 }

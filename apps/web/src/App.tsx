@@ -10,7 +10,7 @@ import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
 import { Icon } from './Icon.js'
-import type { Feedback, FlipGain } from './Hud.js'
+import type { Feedback, WordGain } from './Hud.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { Leaderboard } from './Leaderboard.js'
 import { NerdPanel } from './NerdPanel.js'
@@ -216,13 +216,9 @@ function Session({
   const setup = (startLabel: string): React.JSX.Element => (
     <GameSetup
       settings={settings}
-      language={language}
       messages={messages}
       ready={dictionary !== null && !waitingToStart}
       startLabel={startLabel}
-      onShowRules={() => {
-        setReadingRules(true)
-      }}
       onRuleset={(ruleset: Ruleset) => {
         onChange(withRuleset(settings, ruleset))
       }}
@@ -264,6 +260,25 @@ function Session({
               setTitleDone(true)
             }}
           />
+          {/*
+           * One How to play, for every phase of the game. It used to be two: one under the Start
+           * button and one at the end of the legend, where it was an unstyled blue link hanging
+           * off the bottom of the page. A control always in the same place is easier to find than
+           * one that moves with the phase.
+           *
+           * Beside the wordmark rather than after the language picker, which is packing rather
+           * than taste. The title bar wraps greedily in this order, and with the help control
+           * further along, the second row came to 290px against 288px available at 320px wide and
+           * pushed the nerd toggle onto a third row. Here the rows are 266px and 234px.
+           */}
+          <HowToPlayLink
+            language={settings.uiLanguage}
+            messages={messages}
+            onShowInApp={() => {
+              setReadingRules(true)
+            }}
+          />
+
           {/* Always here, and live except while a game is running. Somebody arriving at a page
             in a language they cannot read has to be able to fix that before anything else. */}
           <LanguagePicker
@@ -322,14 +337,11 @@ function Session({
                 dictionary={dictionary}
                 spec={spec}
                 settings={settings}
-                language={language}
                 messages={messages}
                 onRestart={start}
                 onQuit={quit}
                 onFinish={onFinish}
-                onShowRules={() => {
-                  setReadingRules(true)
-                }}
+                rulesOpen={readingRules}
               />
             ) : null}
           </div>
@@ -357,29 +369,35 @@ function Playing({
   dictionary,
   spec,
   settings,
-  language,
   messages,
   onRestart,
   onQuit,
   onFinish,
-  onShowRules,
+  rulesOpen,
 }: {
   dictionary: TieredIndex
   spec: GameSpec
   settings: Settings
-  language: string
   messages: Messages
   onRestart: () => void
   onQuit: () => void
   onFinish: (state: GameState, seed: number) => void
-  /** Native only: shows the rules in-app, since there is no tab to open them in. */
-  onShowRules: () => void
+  /**
+   * True while the in-app rules cover the game, which only happens in the native shell. Reading
+   * the rules must not cost flips, and the clock lives in here rather than in Session, so Session
+   * says the rules are open and this decides what that means.
+   */
+  rulesOpen: boolean
 }): React.JSX.Element {
   const portrait = usePortrait()
   const [confirmingQuit, setConfirmingQuit] = useState(false)
   const game = useGame(dictionary, spec, settings.keyScheme)
   const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
-  const flipGain = useFlipGain(game.effects, game.epoch)
+  const gain = useWordGain(game.effects, game.epoch)
+
+  useEffect(() => {
+    if (rulesOpen) game.setPaused(true)
+  }, [rulesOpen, game])
 
   const over = game.state.status === 'over'
   // Reported once the reducer says so; the parent then takes over and unmounts this.
@@ -391,7 +409,7 @@ function Playing({
 
   return (
     <>
-      <Hud state={game.state} feedback={feedback} flipGain={flipGain} messages={messages} />
+      <Hud state={game.state} feedback={feedback} gain={gain} messages={messages} />
 
       <div className="board-wrap">
         <Board
@@ -497,7 +515,8 @@ function Playing({
 
       {/* Only the bindings the buttons cannot advertise. Enter and Escape are already written
           on the two buttons that own them, so repeating them here is noise, and the keyboard
-          items are hidden where there is no keyboard.
+          items are hidden where there is no keyboard. How to play moved to the title bar, which
+          leaves every item here a keyboard item, so the whole list goes on a touch screen.
 
 
           A list rather than a paragraph of spans, because the items are only separated by a
@@ -510,16 +529,6 @@ function Playing({
         </li>
         <li className="keys-only">
           <kbd>&#x232b;</kbd> {messages.undoLastLetter}
-        </li>
-        <li>
-          <HowToPlayLink
-            language={language}
-            messages={messages}
-            onOpen={() => {
-              game.setPaused(true)
-            }}
-            onShowInApp={onShowRules}
-          />
         </li>
       </ul>
 
@@ -598,24 +607,24 @@ function FoundWords({
 }
 
 /**
- * What the last accepted word paid back in flips, for the badge that floats over the counter.
+ * What the last accepted word was worth, for the badges that float over the figures.
  *
- * Only the gain. Flips are also spent, one per tile that turns, and a round can charge for the
- * ones it did not use; animating those would mean a number floating over the HUD several times a
+ * Gains only. Flips are also spent, one per tile that turns, and a round can charge for the ones
+ * it did not use; animating those would mean a number floating over the HUD several times a
  * round, which is the difference between a reward and a nag.
  */
-function useFlipGain(effects: readonly Effect[], epoch: number): FlipGain | null {
+function useWordGain(effects: readonly Effect[], epoch: number): WordGain | null {
   // Latched, not derived. Deriving it from the current effects tied the badge's life to the next
   // dispatch, and the next dispatch is a TICK: measured, the badge was destroyed 745ms into its
   // own 1000ms animation, and where a submit fell in the tick cycle decided whether the player
   // saw the whole thing, a fragment, or nothing. Holding the last gain hands the timing back to
   // the animation, which is the only thing that knows when it has finished. Nothing clears it,
   // because the last keyframe is transparent and a new word replaces it with a fresh key.
-  const [gain, setGain] = useState<FlipGain | null>(null)
+  const [gain, setGain] = useState<WordGain | null>(null)
   useEffect(() => {
     for (const effect of effects) {
-      if (effect.type === 'WORD_ACCEPTED' && effect.flips > 0) {
-        setGain({ flips: effect.flips, epoch })
+      if (effect.type === 'WORD_ACCEPTED') {
+        setGain({ points: effect.points, flips: effect.flips, epoch })
         return
       }
     }

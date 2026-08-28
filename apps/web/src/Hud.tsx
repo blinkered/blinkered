@@ -6,14 +6,15 @@ import { format, plural } from '@blinkered/i18n'
 interface HudProps {
   readonly state: GameState
   readonly feedback: Feedback | null
-  /** What the last accepted word paid back, so the FLIPS figure can show where it came from. */
-  readonly flipGain: FlipGain | null
+  /** What the last accepted word was worth, so the figures can show where it came from. */
+  readonly gain: WordGain | null
   readonly messages: Messages
 }
 
-export interface FlipGain {
+export interface WordGain {
+  readonly points: number
   readonly flips: number
-  /** Changes on every dispatch, so two words paying the same amount both animate. */
+  /** Changes on every dispatch, so two words worth the same amount both animate. */
   readonly epoch: number
 }
 
@@ -24,7 +25,25 @@ export interface Feedback {
   readonly epoch: number
 }
 
-export function Hud({ state, feedback, flipGain, messages }: HudProps): React.JSX.Element {
+/**
+ * The two amounts a word is worth, floating over the figures they changed.
+ *
+ * Staggered rather than simultaneous: two numbers appearing at once in different places read as
+ * one event and the eye picks one of them. Flips first because FLIPS is the leftmost figure, so
+ * the pair runs the way the row is read.
+ */
+function gainBadge(gain: WordGain, amount: number, late: boolean): React.ReactNode {
+  // Keyed by epoch so the animation replays for every word, including two in a row worth the
+  // same. Hidden from assistive technology: both figures are already live regions, and saying
+  // "+3" beside them would be the same news twice.
+  return (
+    <span key={gain.epoch} className={`stat-gain${late ? ' is-late' : ''}`} aria-hidden="true">
+      +{amount}
+    </span>
+  )
+}
+
+export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.Element {
   const total = state.config.n + state.config.holdTicks
   const word = selectedLetters(state)
   const low = state.flipsRemaining <= state.config.n
@@ -36,20 +55,17 @@ export function Hud({ state, feedback, flipGain, messages }: HudProps): React.JS
           label={messages.flips}
           value={state.flipsRemaining}
           emphasis={low ? 'warn' : 'strong'}
-          {...(flipGain === null
+          {...(gain === null || gain.flips <= 0
             ? {}
-            : {
-                // Keyed by epoch so the animation replays for every word, including two in a row
-                // paying the same. Hidden from assistive technology: the figure it decorates is
-                // already live, and announcing "+3" separately would be the same news twice.
-                badge: (
-                  <span key={flipGain.epoch} className="flip-gain" aria-hidden="true">
-                    +{flipGain.flips}
-                  </span>
-                ),
-              })}
+            : { badge: gainBadge(gain, gain.flips, false) })}
         />
-        <Stat label={messages.score} value={state.score} />
+        <Stat
+          label={messages.score}
+          value={state.score}
+          {...(gain === null || gain.points <= 0
+            ? {}
+            : { badge: gainBadge(gain, gain.points, true) })}
+        />
         <Stat label={messages.words} value={state.wordsFound.length} />
         <Stat label={messages.round} value={state.roundIndex + 1} />
       </div>

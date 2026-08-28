@@ -1,19 +1,11 @@
 import type { Messages } from '@blinkered/i18n'
-import { HowToPlayLink } from './HowToPlayLink.js'
 import { withoutStealingFocus } from './focus.js'
 import { CUSTOM_RULES, DIFFICULTY_NAMES } from './settings.js'
 import type { Ruleset, Settings } from './settings.js'
 
 interface GameSetupProps {
   readonly settings: Settings
-  readonly language: string
   readonly messages: Messages
-  /**
-   * Native only: shows the rules in-app. Needed here as much as during a game, because the
-   * reason a WebView cannot open the link is that it has no second tab, not that there is a
-   * game to lose.
-   */
-  readonly onShowRules?: () => void
   /** False while the dictionary for the chosen language is still loading. */
   readonly ready: boolean
   readonly startLabel: string
@@ -30,11 +22,9 @@ interface GameSetupProps {
  */
 export function GameSetup({
   settings,
-  language,
   messages,
   ready,
   startLabel,
-  onShowRules,
   onRuleset,
   onStart,
 }: GameSetupProps): React.JSX.Element {
@@ -50,11 +40,6 @@ export function GameSetup({
       >
         {ready ? startLabel : messages.readingDictionary}
       </button>
-      <HowToPlayLink
-        language={language}
-        messages={messages}
-        {...(onShowRules === undefined ? {} : { onShowInApp: onShowRules })}
-      />
     </div>
   )
 }
