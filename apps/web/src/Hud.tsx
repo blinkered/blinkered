@@ -6,7 +6,15 @@ import { format, plural } from '@blinkered/i18n'
 interface HudProps {
   readonly state: GameState
   readonly feedback: Feedback | null
+  /** What the last accepted word paid back, so the FLIPS figure can show where it came from. */
+  readonly flipGain: FlipGain | null
   readonly messages: Messages
+}
+
+export interface FlipGain {
+  readonly flips: number
+  /** Changes on every dispatch, so two words paying the same amount both animate. */
+  readonly epoch: number
 }
 
 export interface Feedback {
@@ -16,7 +24,7 @@ export interface Feedback {
   readonly epoch: number
 }
 
-export function Hud({ state, feedback, messages }: HudProps): React.JSX.Element {
+export function Hud({ state, feedback, flipGain, messages }: HudProps): React.JSX.Element {
   const total = state.config.n + state.config.holdTicks
   const word = selectedLetters(state)
   const low = state.flipsRemaining <= state.config.n
@@ -28,6 +36,18 @@ export function Hud({ state, feedback, messages }: HudProps): React.JSX.Element 
           label={messages.flips}
           value={state.flipsRemaining}
           emphasis={low ? 'warn' : 'strong'}
+          {...(flipGain === null
+            ? {}
+            : {
+                // Keyed by epoch so the animation replays for every word, including two in a row
+                // paying the same. Hidden from assistive technology: the figure it decorates is
+                // already live, and announcing "+3" separately would be the same news twice.
+                badge: (
+                  <span key={flipGain.epoch} className="flip-gain" aria-hidden="true">
+                    +{flipGain.flips}
+                  </span>
+                ),
+              })}
         />
         <Stat label={messages.score} value={state.score} />
         <Stat label={messages.words} value={state.wordsFound.length} />
@@ -82,15 +102,19 @@ function Stat({
   label,
   value,
   emphasis,
+  badge,
 }: {
   label: string
   value: number
   emphasis?: 'strong' | 'warn'
+  /** Floats over the figure and fades. Positioned absolutely, so it cannot move the layout. */
+  badge?: React.ReactNode
 }): React.JSX.Element {
   return (
     <div className={`stat${emphasis === undefined ? '' : ` is-${emphasis}`}`}>
       <span className="stat-value">{value}</span>
       <span className="stat-label">{label}</span>
+      {badge}
     </div>
   )
 }

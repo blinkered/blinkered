@@ -10,7 +10,7 @@ import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
 import { Icon } from './Icon.js'
-import type { Feedback } from './Hud.js'
+import type { Feedback, FlipGain } from './Hud.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { Leaderboard } from './Leaderboard.js'
 import { NerdPanel } from './NerdPanel.js'
@@ -379,6 +379,7 @@ function Playing({
   const [confirmingQuit, setConfirmingQuit] = useState(false)
   const game = useGame(dictionary, spec, settings.keyScheme)
   const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
+  const flipGain = useFlipGain(game.effects, game.epoch)
 
   const over = game.state.status === 'over'
   // Reported once the reducer says so; the parent then takes over and unmounts this.
@@ -390,7 +391,7 @@ function Playing({
 
   return (
     <>
-      <Hud state={game.state} feedback={feedback} messages={messages} />
+      <Hud state={game.state} feedback={feedback} flipGain={flipGain} messages={messages} />
 
       <div className="board-wrap">
         <Board
@@ -594,6 +595,22 @@ function FoundWords({
       ))}
     </ul>
   )
+}
+
+/**
+ * What the last accepted word paid back in flips, for the badge that floats over the counter.
+ *
+ * Only the gain. Flips are also spent, one per tile that turns, and a round can charge for the
+ * ones it did not use; animating those would mean a number floating over the HUD several times a
+ * round, which is the difference between a reward and a nag.
+ */
+function useFlipGain(effects: readonly Effect[], epoch: number): FlipGain | null {
+  return useMemo(() => {
+    for (const effect of effects) {
+      if (effect.type === 'WORD_ACCEPTED' && effect.flips > 0) return { flips: effect.flips, epoch }
+    }
+    return null
+  }, [effects, epoch])
 }
 
 /** Turns the most interesting effect of the last dispatch into one line of feedback. */

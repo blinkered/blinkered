@@ -1440,3 +1440,64 @@ kbd {
     max(0.5rem, env(safe-area-inset-bottom)) max(0rem, env(safe-area-inset-left));
   -webkit-overflow-scrolling: touch;
 }
+
+/*
+ * What a word paid back in flips, floating over the counter it changed.
+ *
+ * The FLIPS figure jumping is easy to miss while looking at the board, and the number is the whole
+ * economy of the game: a word is worth playing because it buys more turns. So the amount says so
+ * once, over the figure, and leaves.
+ *
+ * Absolutely positioned and `pointer-events: none`, so however loud it looks it cannot move the
+ * layout or intercept a tap. Only the gain is ever shown; flips are spent one per tile that turns,
+ * and animating that would be a number floating over the HUD several times a round.
+ */
+.stat {
+  position: relative;
+}
+/*
+ * `bottom: 100%` puts it directly above the figure rather than on top of it. The first attempt
+ * used `top: 0` and centred it, which drew "+3" straight over "143" and made an unreadable green
+ * smear of the two. It rises from behind the number, so it reads as having come out of it.
+ */
+.flip-gain {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  pointer-events: none;
+  color: var(--good);
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  animation: flip-gain 1s ease-out forwards;
+}
+@keyframes flip-gain {
+  0% {
+    opacity: 0;
+    transform: translateY(0.55rem);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-0.9rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The amount is information; the travel is not. Keep the first, drop the second. */
+  .flip-gain {
+    animation: flip-gain-still 700ms ease-out forwards;
+  }
+  @keyframes flip-gain-still {
+    0%,
+    45% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
