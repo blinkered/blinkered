@@ -1,4 +1,4 @@
-import { nextFloat, nextInt } from './rng.js'
+import { nextFloat, nextInt, shuffle } from './rng.js'
 import type { Alphabet } from './alphabet.js'
 import type { Dictionary, RngState, Tile } from './types.js'
 
@@ -15,14 +15,23 @@ import type { Dictionary, RngState, Tile } from './types.js'
  */
 
 /**
- * How many wilds one word may contain.
+ * How many wilds may be on the board at once.
  *
  * Resolution costs a dictionary lookup per candidate, so one wild is an alphabet's worth and two
  * is that squared: about a thousand for Russian, which is nothing. Three is thirty-five thousand
- * and four is a million, and a board can in principle deal four. The cap is a refusal rather than
- * a slow answer, and it also declines to write a word entirely by itself.
+ * and four is a million.
+ *
+ * The cap belongs on the deal rather than on the submission, and the first version had it the
+ * wrong way round. Refusing a word for containing three wilds tells the player "not a word" about
+ * a selection that is thousands of words, and they cannot see why: exactly the confusion
+ * `all-found` exists to prevent. At 0.02 it would almost never happen, which is what made it look
+ * harmless, but `wildChance` is adjustable up to 0.5, and there three wilds is the usual case.
+ *
+ * Capping the deal removes the failure instead of hiding it, and leaves nothing to explain in the
+ * rules. With a minimum word length of three it also guarantees at least one real letter in every
+ * word, so the engine never writes one entirely by itself.
  */
-export const MAX_WILDS_PER_WORD = 2
+export const MAX_WILDS = 2
 
 /**
  * What a wild shows, and what a rejected selection containing one is called back to the player.
@@ -32,21 +41,38 @@ export const MAX_WILDS_PER_WORD = 2
  */
 export const WILD_GLYPH = '🃏'
 
-/** Rolls which tiles are dealt as wilds. Called on every deal, so a wild moves from round to round. */
+/**
+ * Rolls which tiles are dealt as wilds. Called on every deal, so a wild moves round to round.
+ *
+ * Every tile rolls independently, and the result is then capped at `MAX_WILDS`. When the roll
+ * produces more than that, which ones survive is drawn rather than taken in order: keeping the
+ * first two would make tile 0 likelier to be wild than tile 11, and a board whose bonus favours
+ * the top-left is a board with a tell.
+ */
 export function dealWilds(
   rng: RngState,
   tiles: readonly Tile[],
   chance: number,
 ): [Tile[], RngState] {
   if (chance <= 0) return [tiles.map((tile) => ({ ...tile, wild: false })), rng]
+
   let state = rng
-  const out: Tile[] = []
+  const rolled: number[] = []
   for (const tile of tiles) {
     const [roll, next] = nextFloat(state)
     state = next
-    out.push({ ...tile, wild: roll < chance })
+    if (roll < chance) rolled.push(tile.id)
   }
-  return [out, state]
+
+  let keep = rolled
+  if (rolled.length > MAX_WILDS) {
+    const [order, next] = shuffle(state, rolled)
+    state = next
+    keep = order.slice(0, MAX_WILDS)
+  }
+
+  const wild = new Set(keep)
+  return [tiles.map((tile) => ({ ...tile, wild: wild.has(tile.id) })), state]
 }
 
 export interface Resolution {
@@ -90,7 +116,10 @@ export function resolveWilds(
   rng: RngState,
 ): ResolveOutcome {
   const slots = faces.map((face, at) => ({ at, wild: face.wild })).filter((face) => face.wild)
-  if (slots.length > MAX_WILDS_PER_WORD) return { kind: 'too-many-wilds' }
+  // A guard, not a rule: the deal caps wilds at `MAX_WILDS`, so a selection cannot exceed it in
+  // play. It stays because this function is callable on any faces at all, and a million lookups
+  // is a worse answer than a refusal.
+  if (slots.length > MAX_WILDS) return { kind: 'too-many-wilds' }
 
   const wilds = slots.map((slot) => slot.at)
   // Every real word the wilds could make, before excluding the ones already played. Keeping both

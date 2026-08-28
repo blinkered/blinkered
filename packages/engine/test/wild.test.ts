@@ -4,6 +4,7 @@ import {
   alphabetFor,
   dealWilds,
   resolveWilds,
+  MAX_WILDS,
   seedRng,
   selectedLetters,
 } from '../src/index.js'
@@ -38,9 +39,41 @@ describe('dealing wilds', () => {
     expect(after).toEqual(rng)
   })
 
-  it('deals every tile wild when the chance is one', () => {
+  it('never deals more than the cap, even when the chance is one', () => {
     const [tiles] = dealWilds(seedRng(7), plain, 1)
-    expect(tiles.every((tile) => tile.wild)).toBe(true)
+    expect(tiles.filter((tile) => tile.wild)).toHaveLength(MAX_WILDS)
+  })
+
+  it('does not favour the front of the board when the roll overflows the cap', () => {
+    // Keeping the first two would make tile 0 likelier to be wild than tile 5, which is a tell.
+    // Every tile rolls wild here, so the cap alone decides which survive, and it should spread.
+    const counts = new Array<number>(plain.length).fill(0)
+    let rng = seedRng(11)
+    for (let round = 0; round < 300; round++) {
+      const [tiles, next] = dealWilds(rng, plain, 1)
+      rng = next
+      for (const tile of tiles) if (tile.wild) counts[tile.id] = (counts[tile.id] ?? 0) + 1
+    }
+    // Six tiles sharing two slots over three hundred deals averages a hundred each.
+    for (const [id, count] of counts.entries()) {
+      expect(count, `tile ${String(id)}`).toBeGreaterThan(40)
+    }
+  })
+
+  it('caps the count but not the places, so a wild still moves between deals', () => {
+    let rng = seedRng(23)
+    const seen = new Set<string>()
+    for (let round = 0; round < 20; round++) {
+      const [tiles, next] = dealWilds(rng, plain, 1)
+      rng = next
+      seen.add(
+        tiles
+          .filter((tile) => tile.wild)
+          .map((tile) => tile.id)
+          .join(','),
+      )
+    }
+    expect(seen.size).toBeGreaterThan(1)
   })
 
   it('leaves the letters underneath alone', () => {
@@ -139,25 +172,33 @@ describe('resolving a selection that contains a wild', () => {
 })
 
 describe('a wild in a real game', () => {
-  /** Opens ALISX with every tile wild, so the board is entirely wilds and the rules still hold. */
-  const allWild = (): GameState =>
-    play(
-      open('OATRSX', { wildChance: 1, minWordLength: 3 }).state,
+  /** OATRSX fully revealed, with wilds wherever the test puts them. */
+  const boardWith = (...wildIds: number[]): GameState => {
+    const opened = play(
+      open('OATRSX', { wildChance: 0, minWordLength: 3 }).state,
       Array.from({ length: 5 }, () => tick),
     ).state
+    return {
+      ...opened,
+      tiles: opened.tiles.map((tile) => ({ ...tile, wild: wildIds.includes(tile.id) })),
+    }
+  }
 
-  it('shows the glyph rather than the letter when a word is refused', () => {
-    const board = allWild()
-    const up = board.tiles.filter((tile) => tile.revealed).map((tile) => tile.id)
-    // Three wilds is more than resolution will search, so this is refused and named honestly.
-    const { effects } = play(board, [
-      tap(up[0] as number),
-      tap(up[1] as number),
-      tap(up[2] as number),
-      submit,
-    ])
-    const rejected = effects.at(-1)
-    expect(rejected).toEqual({
+  it('shows the glyphs rather than the letters when a word is refused', () => {
+    // Nothing in the fixture dictionary is three letters ending in X, so no letter completes it.
+    const { effects } = play(boardWith(0, 1), [tap(0), tap(1), tap(5), submit])
+    expect(effects.at(-1)).toEqual({
+      type: 'WORD_REJECTED',
+      word: `${WILD_GLYPH}${WILD_GLYPH}X`,
+      reason: 'unknown',
+    })
+  })
+
+  it('refuses a selection over the cap rather than searching an alphabet cubed', () => {
+    // The deal cannot produce three, so this exercises the guard rather than the rule. Worth
+    // holding: the alternative to refusing here is a million lookups on the main thread.
+    const { effects } = play(boardWith(0, 1, 2), [tap(0), tap(1), tap(2), submit])
+    expect(effects.at(-1)).toEqual({
       type: 'WORD_REJECTED',
       word: WILD_GLYPH.repeat(3),
       reason: 'unknown',
@@ -184,10 +225,13 @@ describe('a wild in a real game', () => {
     expect(selectedLetters(state)).not.toContain('A')
   })
 
-  it('keeps its letter underneath, so the board is the same letters all game', () => {
-    const board = allWild()
-    expect(board.tiles.map((tile) => tile.letter).join('')).toBe('OATRSX')
-    expect(board.tiles.every((tile) => tile.wild)).toBe(true)
+  it('caps the deal and keeps every letter underneath, so a high chance cannot flood a board', () => {
+    const flooded = play(
+      open('OATRSX', { wildChance: 1, minWordLength: 3 }).state,
+      Array.from({ length: 5 }, () => tick),
+    ).state
+    expect(flooded.tiles.filter((tile) => tile.wild)).toHaveLength(MAX_WILDS)
+    expect(flooded.tiles.map((tile) => tile.letter).join('')).toBe('OATRSX')
   })
 
   it('refuses when the wild can only make words already found, and says which refusal it is', () => {

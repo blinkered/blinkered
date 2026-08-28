@@ -59,5 +59,5 @@ export {
   type ResultGroup,
 } from './results.js'
 export { seedRng, nextFloat, nextInt, nextUint32, shuffle } from './rng.js'
-export { MAX_WILDS_PER_WORD, WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
+export { MAX_WILDS, WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
 export type { Resolution, ResolveOutcome } from './wild.js'

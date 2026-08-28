@@ -89,9 +89,14 @@ worth wanting on purpose.
 - **A rejection message of its own.** If every resolution is a word already found, the submission
   fails for a reason the player cannot see, because they cannot see what it would have picked.
   "No new word there" or similar, distinct from "not a word".
-- **A cap on wilds per word.** Resolution costs one dictionary lookup per candidate, so one wild
-  is 26–33 lookups and two is a thousand. Fine. Four is not, and the board can in principle hold
-  four.
+- **A cap on wilds per board**, not per word. Resolution costs one dictionary lookup per
+  candidate, so one wild is 26–33 lookups and two is a thousand; four is a million, and the board
+  can in principle deal four. Capping the submission was the first answer and the wrong one: it
+  refuses a three-wild selection as "not a word", which is a lie about something that is thousands
+  of words, and the player cannot see why. At 0.02 that would almost never happen, which is what
+  made it look harmless, but `wildChance` goes to 0.5 in nerd mode and there it is the usual case.
+  Capping the deal removes the failure rather than hiding it, and leaves nothing to explain in the
+  rules.
 - **Board generation needs no change at all**, which was not obvious and is worth stating. The
   worry was that replacing a drawn letter with a wild could break the guarantee that the board
   admits W words. It cannot: a wild resolves over the whole alphabet, so it can always become the
