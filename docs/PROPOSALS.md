@@ -92,20 +92,36 @@ worth wanting on purpose.
 - **A cap on wilds per word.** Resolution costs one dictionary lookup per candidate, so one wild
   is 26–33 lookups and two is a thousand. Fine. Four is not, and the board can in principle hold
   four.
-- **Board generation in the right order.** If a wild replaces a drawn letter, the guarantee that
-  the board admits W words can break. Deal the board first, then turn a tile wild only if the
-  floor still holds with that tile removed.
+- **Board generation needs no change at all**, which was not obvious and is worth stating. The
+  worry was that replacing a drawn letter with a wild could break the guarantee that the board
+  admits W words. It cannot: a wild resolves over the whole alphabet, so it can always become the
+  letter it replaced, and the set of achievable words is therefore a superset of what that letter
+  allowed. Deal the board with letters, verify the floor as now, then turn a tile wild. The
+  generator and the solver are untouched.
 
-### What needs deciding
+### Decided
 
-- **Frequency, and against what.** Per tile per deal, or at most one per board with a probability?
-  Per tile is simpler and gives the multi-wild case for free.
-- **Does a wild survive a shuffle**, or is it redrawn each round like everything else?
+- **The player finds out afterwards, in the rail.** No live preview. They select and hope, and the
+  word they were given appears with its wild letters marked. The gamble is the mechanic.
+- **Frequency is one fixed number**, 0.02, adjustable in nerd mode, and not part of the difficulty
+  table. `n` is 12 on every setting and only the clock and the minimum word length change, so the
+  same rate is worth less on a harder setting because there is less time to use it: the mechanic
+  self-balances without a second number to guess. Making it level-dependent later is one field in
+  `DIFFICULTIES`, so nothing is lost by waiting for play to say it is needed.
+- **Per tile, per deal**, re-rolled on every shuffle rather than fixed for the game. At 0.02 and
+  n=12 that is 21.5% of rounds with a wild, 2.2% with two, and 2.4 to 3.4 wilds per game depending
+  on the setting. Fixing it per board instead would concentrate the mechanic into one game in five
+  and hand that game a wild every single round, which is a different and much stronger feature.
+- **The per-game figure is what to judge**, not the 0.02. Three wilds against a fourteen-word game
+  is a fifth of the words, and a wild can be a whole word by fishing. That is knowingly generous
+  for a first pass, because a treat nobody sees teaches nothing about whether it is fun.
+
+### Still open
+
 - **Can a wild be part of a two-letter word** where the minimum length is 3? Not a real question
   unless the minimum is ever 2.
-- **Does the player find out before submitting?** Currently no: they select and hope. Showing the
-  resolution live would remove the gamble and most of the fishing problem, and would also remove
-  the surprise. This is the interesting question of the three.
+- **Whether three wilds in one word should be refused outright.** At 0.02 the odds are about two in
+  a thousand rounds, but a word made entirely of wilds is a word the engine wrote by itself.
 
 ---
 
