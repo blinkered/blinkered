@@ -107,6 +107,8 @@ export const ms: Messages = {
   restart: 'Mula semula',
   quit: 'Keluar',
   quitTitle: 'Keluar dari permainan ini?',
+  restartTitle: 'Mula semula permainan ini?',
+  restartConfirm: 'Mula semula',
   quitConfirm: 'Keluar',
   keepPlaying: 'Terus bermain',
   personalBest: 'Permainan terbaik anda',

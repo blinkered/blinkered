@@ -110,6 +110,8 @@ export const fi: Messages = {
   restart: 'Aloita uudelleen',
   quit: 'Lopeta',
   quitTitle: 'Lopetetaanko tämä peli?',
+  restartTitle: 'Aloitetaanko peli alusta?',
+  restartConfirm: 'Alusta',
   quitConfirm: 'Lopeta',
   keepPlaying: 'Jatka pelaamista',
   personalBest: 'Parhaat pelisi',

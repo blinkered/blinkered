@@ -112,6 +112,8 @@ export const ru: Messages = {
   restart: 'Заново',
   quit: 'Выйти',
   quitTitle: 'Выйти из этой игры?',
+  restartTitle: 'Начать игру заново?',
+  restartConfirm: 'Заново',
   quitConfirm: 'Выйти',
   keepPlaying: 'Продолжить',
   personalBest: 'Ваши лучшие игры',

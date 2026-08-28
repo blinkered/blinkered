@@ -111,6 +111,8 @@ export const ptBR: Messages = {
   restart: 'Reiniciar',
   quit: 'Sair',
   quitTitle: 'Sair deste jogo?',
+  restartTitle: 'Reiniciar este jogo?',
+  restartConfirm: 'Reiniciar',
   quitConfirm: 'Sair',
   keepPlaying: 'Continuar jogando',
   personalBest: 'Seus melhores jogos',

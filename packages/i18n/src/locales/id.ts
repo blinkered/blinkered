@@ -111,6 +111,8 @@ export const id: Messages = {
   restart: 'Mulai ulang',
   quit: 'Keluar',
   quitTitle: 'Keluar dari permainan ini?',
+  restartTitle: 'Mulai ulang permainan ini?',
+  restartConfirm: 'Mulai ulang',
   quitConfirm: 'Keluar',
   keepPlaying: 'Lanjut bermain',
   personalBest: 'Permainan terbaik Anda',

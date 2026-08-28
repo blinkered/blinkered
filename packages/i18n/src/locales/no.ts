@@ -107,6 +107,8 @@ export const no: Messages = {
   restart: 'Start på nytt',
   quit: 'Avslutt',
   quitTitle: 'Avslutte dette spillet?',
+  restartTitle: 'Starte dette spillet på nytt?',
+  restartConfirm: 'Start på nytt',
   quitConfirm: 'Avslutt',
   keepPlaying: 'Fortsett å spille',
   personalBest: 'Dine beste spill',

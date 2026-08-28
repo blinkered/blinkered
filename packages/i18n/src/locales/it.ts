@@ -109,6 +109,8 @@ export const it: Messages = {
   restart: 'Ricomincia',
   quit: 'Esci',
   quitTitle: 'Uscire da questa partita?',
+  restartTitle: 'Ricominciare questa partita?',
+  restartConfirm: 'Ricomincia',
   quitConfirm: 'Esci',
   keepPlaying: 'Continua',
   personalBest: 'Le tue migliori partite',

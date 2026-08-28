@@ -107,6 +107,8 @@ export const pt: Messages = {
   restart: 'Reiniciar',
   quit: 'Sair',
   quitTitle: 'Sair deste jogo?',
+  restartTitle: 'Reiniciar este jogo?',
+  restartConfirm: 'Reiniciar',
   quitConfirm: 'Sair',
   keepPlaying: 'Continuar a jogar',
   personalBest: 'Os seus melhores jogos',

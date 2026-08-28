@@ -111,6 +111,8 @@ export const fr: Messages = {
   restart: 'Recommencer',
   quit: 'Quitter',
   quitTitle: 'Quitter cette partie ?',
+  restartTitle: 'Recommencer cette partie ?',
+  restartConfirm: 'Recommencer',
   quitConfirm: 'Quitter',
   keepPlaying: 'Continuer',
   personalBest: 'Vos meilleures parties',

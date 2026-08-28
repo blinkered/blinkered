@@ -107,6 +107,8 @@ export const el: Messages = {
   restart: 'Από την αρχή',
   quit: 'Έξοδος',
   quitTitle: 'Έξοδος από αυτό το παιχνίδι;',
+  restartTitle: 'Επανεκκίνηση αυτού του παιχνιδιού;',
+  restartConfirm: 'Επανεκκίνηση',
   quitConfirm: 'Έξοδος',
   keepPlaying: 'Συνέχεια',
   personalBest: 'Τα καλύτερά σας παιχνίδια',

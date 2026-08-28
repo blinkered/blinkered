@@ -110,6 +110,8 @@ export const de: Messages = {
   restart: 'Neu starten',
   quit: 'Beenden',
   quitTitle: 'Dieses Spiel beenden?',
+  restartTitle: 'Dieses Spiel neu starten?',
+  restartConfirm: 'Neu starten',
   quitConfirm: 'Beenden',
   keepPlaying: 'Weiterspielen',
   personalBest: 'Deine besten Spiele',

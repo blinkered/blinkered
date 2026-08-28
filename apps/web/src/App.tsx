@@ -390,7 +390,9 @@ function Playing({
   rulesOpen: boolean
 }): React.JSX.Element {
   const portrait = usePortrait()
-  const [confirmingQuit, setConfirmingQuit] = useState(false)
+  // Both of the two ways to lose a game in progress ask first, so this is which question is
+  // being asked rather than a flag per button.
+  const [confirming, setConfirming] = useState<'quit' | 'restart' | null>(null)
   const game = useGame(dictionary, spec, settings.keyScheme)
   const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
   const gain = useWordGain(game.effects, game.epoch)
@@ -421,32 +423,7 @@ function Playing({
             game.dispatch({ type: 'TAP_TILE', tileId })
           }}
         />
-        {confirmingQuit ? (
-          <div className="veil">
-            <p className="veil-title">{messages.quitTitle}</p>
-            <div className="controls">
-              <button
-                type="button"
-                className="btn"
-                onMouseDown={withoutStealingFocus}
-                onClick={onQuit}
-              >
-                {messages.quitConfirm}
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onMouseDown={withoutStealingFocus}
-                onClick={() => {
-                  setConfirmingQuit(false)
-                  game.setPaused(false)
-                }}
-              >
-                {messages.keepPlaying}
-              </button>
-            </div>
-          </div>
-        ) : game.paused ? (
+        {game.paused && confirming === null ? (
           <div className="veil">
             <p>{messages.paused}</p>
             <button
@@ -462,6 +439,52 @@ function Playing({
           </div>
         ) : null}
       </div>
+
+      {/*
+       * The confirmations, outside the board rather than over it.
+       *
+       * They used to be a `.veil` inside `.board-wrap`, which made them 266px wide on a phone:
+       * "Quit this game?" wrapped mid-phrase and the two buttons could not fit the track, so they
+       * spilled out to the right and looked misaligned because they were. `.board-wrap` is also an
+       * inline-size container, and containment makes it the containing block for `position: fixed`,
+       * so a full-screen modal could not be built in there at all. Out here it can.
+       */}
+      {confirming === null ? null : (
+        <div className="modal" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <p className="veil-title">
+              {confirming === 'quit' ? messages.quitTitle : messages.restartTitle}
+            </p>
+            <div className="modal-choices">
+              <button
+                type="button"
+                className="btn"
+                onMouseDown={withoutStealingFocus}
+                onClick={() => {
+                  if (confirming === 'quit') onQuit()
+                  else {
+                    setConfirming(null)
+                    onRestart()
+                  }
+                }}
+              >
+                {confirming === 'quit' ? messages.quitConfirm : messages.restartConfirm}
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onMouseDown={withoutStealingFocus}
+                onClick={() => {
+                  setConfirming(null)
+                  game.setPaused(false)
+                }}
+              >
+                {messages.keepPlaying}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/*
        * One row, on every screen and in every language. Five word-labelled buttons cannot do
@@ -495,19 +518,30 @@ function Playing({
         <IconButton
           label={game.paused ? messages.resume : messages.pause}
           icon={game.paused ? 'resume' : 'pause'}
-          disabled={confirmingQuit}
+          disabled={confirming !== null}
           onClick={() => {
             game.setPaused(!game.paused)
           }}
         />
-        <IconButton label={messages.restart} icon="restart" onClick={onRestart} />
+        {/*
+         * Both of these ask first, and the clock stops while they do: a mis-tap must not throw
+         * away a game in progress, and the offer to keep playing must not cost flips. Restart used
+         * to go straight through, which on a phone meant an accidental brush of the thumb silently
+         * dealt a new board with no explanation of where the old one went.
+         */}
+        <IconButton
+          label={messages.restart}
+          icon="restart"
+          onClick={() => {
+            setConfirming('restart')
+            game.setPaused(true)
+          }}
+        />
         <IconButton
           label={messages.quit}
           icon="quit"
           onClick={() => {
-            // Confirmed, and the clock stops while it is: a mis-click must not throw away a
-            // game in progress, and the offer to keep playing must not cost flips.
-            setConfirmingQuit(true)
+            setConfirming('quit')
             game.setPaused(true)
           }}
         />

@@ -107,6 +107,8 @@ export const nl: Messages = {
   restart: 'Opnieuw',
   quit: 'Stoppen',
   quitTitle: 'Dit spel stoppen?',
+  restartTitle: 'Dit spel opnieuw starten?',
+  restartConfirm: 'Opnieuw',
   quitConfirm: 'Stoppen',
   keepPlaying: 'Doorspelen',
   personalBest: 'Je beste spellen',

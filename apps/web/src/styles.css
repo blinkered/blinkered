@@ -416,6 +416,46 @@ h2 {
   font-weight: 650;
 }
 
+/*
+ * A confirmation, over the whole page rather than over the board.
+ *
+ * It was a `.veil` inside `.board-wrap`, which on a phone made it 266px wide: the question wrapped
+ * mid-phrase and the two answers could not fit, so they spilled out to the right. It could not
+ * simply be made `position: fixed` in there either, because `.board-wrap` is an inline-size
+ * container and containment makes it the containing block for fixed positioning. Out here it is
+ * the viewport's, which is what a question this consequential should be.
+ */
+.modal {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(4px);
+}
+.modal-card {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: center;
+  width: 100%;
+  max-width: 22rem;
+  padding: 1.5rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  text-align: center;
+}
+/* Its own class rather than `.controls`, which is the game's bar and is deliberately unwrappable:
+   borrowing it is what stopped these two from fitting. */
+.modal-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
 /* ---------- controls ---------- */
 /*
  * One row, and no wrapping. This used to be `flex-wrap: wrap`, and on a 320px screen five
@@ -1114,6 +1154,24 @@ kbd {
   /* The keys the buttons advertise, which do not exist here. */
   .btn kbd {
     display: none;
+  }
+
+  /*
+   * Reversed, so Complete is on the right and Quit on the far left.
+   *
+   * A phone held in the right hand -- which is most hands -- has its easiest reach at the bottom
+   * right and its hardest at the far side. The row had that exactly backwards: the button pressed
+   * once per word was furthest away and the button that throws the game away was directly under
+   * the thumb. Reversing puts the frequent, safe action where the thumb already is and moves the
+   * destructive one to where it has to be reached for, which is the right place for it whether or
+   * not it also asks first.
+   *
+   * `row-reverse` rather than reordering the markup, so the reading order stays primary-first for
+   * anything that follows the DOM. There is no tab order to disagree with here: this block only
+   * applies where there is no keyboard.
+   */
+  .controls {
+    flex-direction: row-reverse;
   }
 
   /* Wide enough for a finger, and the icon alone: the words are hidden on a narrow screen by the

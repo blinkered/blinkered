@@ -115,6 +115,8 @@ export const en: Messages = {
   restart: 'Restart',
   quit: 'Quit',
   quitTitle: 'Quit this game?',
+  restartTitle: 'Restart this game?',
+  restartConfirm: 'Restart',
   quitConfirm: 'Quit',
   keepPlaying: 'Keep playing',
   personalBest: 'Your best games',

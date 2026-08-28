@@ -107,6 +107,8 @@ export const sv: Messages = {
   restart: 'Börja om',
   quit: 'Avsluta',
   quitTitle: 'Avsluta det här spelet?',
+  restartTitle: 'Starta om det här spelet?',
+  restartConfirm: 'Starta om',
   quitConfirm: 'Avsluta',
   keepPlaying: 'Fortsätt spela',
   personalBest: 'Dina bästa spel',

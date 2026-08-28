@@ -82,6 +82,8 @@ export interface Messages {
   readonly restart: string
   readonly quit: string
   readonly quitTitle: string
+  readonly restartTitle: string
+  readonly restartConfirm: string
   readonly quitConfirm: string
   readonly keepPlaying: string
 

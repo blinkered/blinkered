@@ -108,6 +108,8 @@ export const es: Messages = {
   restart: 'Reiniciar',
   quit: 'Salir',
   quitTitle: '¿Salir de esta partida?',
+  restartTitle: '¿Reiniciar esta partida?',
+  restartConfirm: 'Reiniciar',
   quitConfirm: 'Salir',
   keepPlaying: 'Seguir jugando',
   personalBest: 'Tus mejores partidas',

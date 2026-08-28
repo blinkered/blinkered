@@ -110,6 +110,8 @@ export const hr: Messages = {
   restart: 'Ponovi',
   quit: 'Izađi',
   quitTitle: 'Izaći iz ove igre?',
+  restartTitle: 'Ponovno započeti ovu igru?',
+  restartConfirm: 'Ponovno',
   quitConfirm: 'Izađi',
   keepPlaying: 'Nastavi igrati',
   personalBest: 'Tvoje najbolje igre',
