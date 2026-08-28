@@ -119,8 +119,6 @@ export interface Messages {
   readonly noWordsYet: string
 
   // What the game says back.
-  /** `{word}` `{points}` `{flips}` */
-  readonly wordAccepted: string
   /** `{word}` `{reason}` */
   readonly wordRejected: string
   readonly reasonDuplicate: string

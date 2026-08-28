@@ -42,7 +42,6 @@ export const ptBR: Messages = {
   undoLastLetter: 'desfaz a última letra',
   noWordsYet: 'Nenhuma palavra ainda.',
 
-  wordAccepted: '{word}  +{points} pontos, +{flips} viradas',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'já encontrada',
   reasonTooShort: 'muito curta',

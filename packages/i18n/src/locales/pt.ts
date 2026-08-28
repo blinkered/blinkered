@@ -38,7 +38,6 @@ export const pt: Messages = {
   undoLastLetter: 'desfaz a última letra',
   noWordsYet: 'Ainda nenhuma palavra.',
 
-  wordAccepted: '{word}  +{points} pontos, +{flips} viradas',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'já encontrada',
   reasonTooShort: 'demasiado curta',

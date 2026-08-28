@@ -41,7 +41,6 @@ export const de: Messages = {
   undoLastLetter: 'letzten Buchstaben zurück',
   noWordsYet: 'Noch keine Wörter.',
 
-  wordAccepted: '{word}  +{points} Punkte, +{flips} Züge',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'schon gefunden',
   reasonTooShort: 'zu kurz',

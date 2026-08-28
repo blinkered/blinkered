@@ -38,7 +38,6 @@ export const nl: Messages = {
   undoLastLetter: 'laatste letter terug',
   noWordsYet: 'Nog geen woorden.',
 
-  wordAccepted: '{word}  +{points} punten, +{flips} zetten',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'al gevonden',
   reasonTooShort: 'te kort',

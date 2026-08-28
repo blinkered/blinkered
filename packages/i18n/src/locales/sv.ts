@@ -38,7 +38,6 @@ export const sv: Messages = {
   undoLastLetter: 'ångrar sista bokstaven',
   noWordsYet: 'Inga ord än.',
 
-  wordAccepted: '{word}  +{points} poäng, +{flips} drag',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'redan hittat',
   reasonTooShort: 'för kort',

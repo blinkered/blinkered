@@ -42,7 +42,6 @@ export const fr: Messages = {
   undoLastLetter: 'annule la dernière lettre',
   noWordsYet: 'Aucun mot pour le moment.',
 
-  wordAccepted: '{word}  +{points} points, +{flips} coups',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'déjà trouvé',
   reasonTooShort: 'trop court',

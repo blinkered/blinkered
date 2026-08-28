@@ -42,7 +42,6 @@ export const id: Messages = {
   undoLastLetter: 'membatalkan huruf terakhir',
   noWordsYet: 'Belum ada kata.',
 
-  wordAccepted: '{word}  +{points} poin, +{flips} balikan',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'sudah ditemukan',
   reasonTooShort: 'terlalu pendek',

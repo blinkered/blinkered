@@ -38,7 +38,6 @@ export const el: Messages = {
   undoLastLetter: 'αναιρεί το τελευταίο γράμμα',
   noWordsYet: 'Καμία λέξη ακόμη.',
 
-  wordAccepted: '{word}  +{points} βαθμοί, +{flips} κινήσεις',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'βρέθηκε ήδη',
   reasonTooShort: 'πολύ μικρή',

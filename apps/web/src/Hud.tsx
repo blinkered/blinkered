@@ -49,20 +49,24 @@ export function Hud({ state, feedback, messages }: HudProps): React.JSX.Element 
 
       <div className="word-line">
         <output className="word" aria-live="polite">
-          {word === '' ? (
+          {word !== '' ? (
+            word
+          ) : feedback === null ? (
             /* Both are rendered and one is drawn, per device. "Type a word" on a phone is an
              instruction to use a thing the phone does not have, and the touch version is now
              the only place the tap rules are stated: they used to also sit under the board,
-             which spent a row saying something already on screen. */
+             which spent a row saying something already on screen.
+
+             It stands down while there is a message, rather than sharing the line with one. A
+             rejected word clears the selection, so the two would otherwise appear together, and
+             the pair wrapped to a second line and moved the board. */
             <>
               <span className="word-empty keys-only">{messages.typeAWord}</span>
               <span className="word-empty touch-only">
                 {format(messages.tapPrompt, { action: messages.completeShort })}
               </span>
             </>
-          ) : (
-            word
-          )}
+          ) : null}
         </output>
         {feedback === null ? null : (
           <span key={feedback.epoch} className={`feedback is-${feedback.kind}`} role="status">

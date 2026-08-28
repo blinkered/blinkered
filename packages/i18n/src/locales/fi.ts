@@ -41,7 +41,6 @@ export const fi: Messages = {
   undoLastLetter: 'peruu viimeisen kirjaimen',
   noWordsYet: 'Ei vielä sanoja.',
 
-  wordAccepted: '{word}  +{points} pistettä, +{flips} siirtoa',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'jo löydetty',
   reasonTooShort: 'liian lyhyt',

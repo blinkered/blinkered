@@ -41,7 +41,6 @@ export const hr: Messages = {
   undoLastLetter: 'briše zadnje slovo',
   noWordsYet: 'Još nema riječi.',
 
-  wordAccepted: '{word}  +{points} bodova, +{flips} okreta',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'već nađena',
   reasonTooShort: 'previše kratka',

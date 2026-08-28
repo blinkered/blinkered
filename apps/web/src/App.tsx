@@ -608,15 +608,11 @@ function useFeedback(
     for (const effect of [...effects].reverse()) {
       switch (effect.type) {
         case 'WORD_ACCEPTED':
-          return {
-            kind: 'accepted',
-            epoch,
-            text: format(messages.wordAccepted, {
-              word: effect.word,
-              points: effect.points,
-              flips: effect.flips,
-            }),
-          }
+          // Nothing to say here. The word arrives in the rail with its points, announcing itself
+          // by turning green and settling, and the flips it paid back are the FLIPS figure
+          // changing. Saying it a third time in the word line was what made that line wrap and
+          // shove the board down at the exact moment the player was looking at it.
+          return null
         case 'WORD_REJECTED': {
           const reason =
             effect.reason === 'duplicate'

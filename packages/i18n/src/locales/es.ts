@@ -39,7 +39,6 @@ export const es: Messages = {
   undoLastLetter: 'deshace la última letra',
   noWordsYet: 'Todavía ninguna palabra.',
 
-  wordAccepted: '{word}  +{points} puntos, +{flips} giros',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'ya encontrada',
   reasonTooShort: 'demasiado corta',

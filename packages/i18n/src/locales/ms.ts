@@ -38,7 +38,6 @@ export const ms: Messages = {
   undoLastLetter: 'membatalkan huruf terakhir',
   noWordsYet: 'Belum ada kata.',
 
-  wordAccepted: '{word}  +{points} mata, +{flips} balikan',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'sudah dijumpai',
   reasonTooShort: 'terlalu pendek',

@@ -38,7 +38,6 @@ export const no: Messages = {
   undoLastLetter: 'angrer siste bokstav',
   noWordsYet: 'Ingen ord ennå.',
 
-  wordAccepted: '{word}  +{points} poeng, +{flips} trekk',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'allerede funnet',
   reasonTooShort: 'for kort',

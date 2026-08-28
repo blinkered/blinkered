@@ -428,6 +428,7 @@ h2 {
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
+  justify-content: center;
   gap: 0.5rem;
 }
 .btn-icon {
@@ -510,6 +511,32 @@ kbd {
   margin: 0;
   padding: 0;
 }
+/*
+ * A word arrives green and settles.
+ *
+ * This is where an accepted word is announced now. It used to also be spelled out in the word
+ * line, in green, with its points and its flips, which wrapped that line onto a second row and
+ * shoved the board down at the exact moment the player was watching it.
+ *
+ * The animation needs no state and no timer: each row is keyed by its word, so a new word is a
+ * newly mounted element and a mounted element runs its animation once. The end of the keyframes
+ * is the row's ordinary appearance, so there is nothing to clean up afterwards.
+ */
+@keyframes word-landed {
+  0%,
+  30% {
+    color: var(--good);
+    border-color: var(--good);
+    background: color-mix(in srgb, var(--good) 20%, transparent);
+    font-weight: 700;
+  }
+  100% {
+    color: var(--ink);
+    border-color: var(--line);
+    background: transparent;
+    font-weight: 400;
+  }
+}
 .found li {
   display: flex;
   gap: 0.35rem;
@@ -518,6 +545,20 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 99px;
   font-size: 0.85rem;
+  animation: word-landed 1.6s ease-out;
+}
+/* The points travel with it, because the points are the reason to want a longer word. */
+.found li .found-points {
+  animation: word-landed-points 1.6s ease-out;
+}
+@keyframes word-landed-points {
+  0%,
+  30% {
+    color: var(--good);
+  }
+  100% {
+    color: var(--dim);
+  }
 }
 .found-points {
   color: var(--dim);
@@ -610,6 +651,11 @@ kbd {
   /* The shuffle still moves tiles, just briefly: the position change is information. */
   .tile {
     transition-duration: 120ms;
+  }
+  /* So is the green: it is how an accepted word announces itself. Shortened, not removed. */
+  .found li,
+  .found li .found-points {
+    animation-duration: 400ms;
   }
   .tile-inner {
     transition-duration: 90ms;

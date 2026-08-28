@@ -43,7 +43,6 @@ export const ru: Messages = {
   undoLastLetter: 'отменяет последнюю букву',
   noWordsYet: 'Слов пока нет.',
 
-  wordAccepted: '{word}  +{points} очков, +{flips} ходов',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'уже найдено',
   reasonTooShort: 'слишком короткое',

@@ -39,7 +39,6 @@ export const it: Messages = {
   undoLastLetter: 'annulla ultima lettera',
   noWordsYet: 'Nessuna parola per ora.',
 
-  wordAccepted: '{word}  +{points} punti, +{flips} giri',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'già trovata',
   reasonTooShort: 'troppo corta',

@@ -46,7 +46,6 @@ export const en: Messages = {
   undoLastLetter: 'undo last letter',
   noWordsYet: 'No words yet.',
 
-  wordAccepted: '{word}  +{points} points, +{flips} flips',
   wordRejected: '{word}  {reason}',
   reasonDuplicate: 'already found',
   reasonTooShort: 'too short',
