@@ -19,6 +19,19 @@ export const DEFAULT_BOARD_SIZE = 12
 export const DEFAULT_WILD_CHANCE = 0.02
 
 /**
+ * Chance per deal that one tile's letter is replaced, before nerd mode says otherwise.
+ *
+ * Chosen against the cheat rather than against the feel. A player can photograph the board during
+ * the hold phase and hand twelve letters to a solver, and nothing can stop them seeing it, because
+ * being seen is the mechanic. What stops the photograph being useful is the board changing under
+ * it. At 0.5 a transcription is wrong within a round or two.
+ *
+ * Deliberately not a column in the difficulty table. One guessed number is easier to argue with
+ * than four, and splitting it later is one field in `DIFFICULTIES`.
+ */
+export const DEFAULT_REPLACE_CHANCE = 0.5
+
+/**
  * Board size is a player's choice, not a difficulty axis. A bigger board is harder to track
  * and gives less time per tile, but it admits far more words and much longer ones, so it is
  * easier to score on: at N=6 a seven-letter word is arithmetically impossible. So a profile
@@ -138,6 +151,7 @@ export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig>
   const resolved: GameConfig = {
     n,
     wildChance: overrides.wildChance ?? DEFAULT_WILD_CHANCE,
+    replaceChance: overrides.replaceChance ?? DEFAULT_REPLACE_CHANCE,
     speedMultiplier: profile.speedMultiplier,
     holdTicks: profile.holdTicks,
     initialFlips: profile.initialRounds * n,

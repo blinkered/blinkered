@@ -20,6 +20,7 @@ export const pt: Messages = {
   faceDown: 'voltada para baixo',
   wildCard: 'coringa',
   wildKey: 'qualquer letra',
+  letterReplaced: '{from} passou a {to}',
   spentTile: 'peça gasta',
   hiddenWhilePaused: 'oculta em pausa',
   letterInWord: '{letter}, letra {position} da palavra',
@@ -67,6 +68,7 @@ export const pt: Messages = {
   minWord: 'palavra mínima',
   startingFlips: 'viradas iniciais',
   wildChance: 'probabilidade de coringa',
+  replaceChance: 'probabilidade de troca de letra',
   wordCompleteMode: 'palavra completa',
   wordCompleteNames: { shuffle: 'baralhar', spend: 'gastar', keep: 'manter' },
   flipEconomy: 'economia de viradas',
@@ -147,6 +149,9 @@ export const pt: Messages = {
   htWildTitle: 'Os coringas',
   htWildBody:
     'Algumas peças viram como coringa em vez de letra. Um coringa vale a letra que forma uma palavra, escolhida entre as que servem, e descobre qual quando a palavra aparece na sua lista. Uma palavra que já tem não conta.',
+  htSwapTitle: 'As letras mudam',
+  htSwapBody:
+    'Entre rondas, uma peça pode mudar de letra. Enquanto o tabuleiro é distribuído, mostra-se-lhe uma vez qual é e o que lá estava antes. O tabuleiro nunca fica igual muito tempo, por isso uma lista das suas letras fica desatualizada.',
   htTouchTitle: 'O ecrã tátil',
   htTouchBody:
     'Toque numa peça virada para tomar a sua letra. Toque numa letra já tomada para a devolver. Completar e Limpar ficam sob o tabuleiro.',

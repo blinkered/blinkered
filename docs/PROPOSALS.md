@@ -1,14 +1,14 @@
 # Proposals
 
-Features that are wanted but not built, and the decisions each one still needs. Written down
-while they were being thought about, so nothing here is settled. [PLAN.md](PLAN.md) is the design
-that exists; this is the queue.
+All three of these are now built. This started as a queue and is kept as a record, because what
+is worth having is not the list but the reasoning: what was decided, what turned out to be
+measurable, and the two places where the first answer was wrong and had to be replaced.
 
-Each entry ends with **what needs deciding**, which is the part worth arguing about before code.
+[PLAN.md](PLAN.md) is the design. [STATUS.md](STATUS.md) is the state of play.
 
 ---
 
-## 1. Share a finished game
+## 1. Share a finished game — built
 
 A short synopsis a player can paste anywhere, offered once a game is over: difficulty, words
 made, score, whether it beat their own best, and a link to playblinkered.com.
@@ -43,7 +43,7 @@ locales, with the URL left alone.
 
 ---
 
-## 2. Wild cards
+## 2. Wild cards — built
 
 A tile that stands for whatever letter would make a word. Drawn at random, more often on the
 easier settings, with a frequency that is a nerd-mode number like everything else. More than one
@@ -145,7 +145,7 @@ worth wanting on purpose.
 
 ---
 
-## 3. Letter replacement
+## 3. Letter replacement — built
 
 The same letters last all game, so a player can transcribe the board once and hand it to a
 Scrabble engine. A nerd-mode percentage, rarer on easy and commoner as the settings harden, gives
@@ -164,57 +164,120 @@ Pause conceals the board, so pausing does not help. But the hold phase at the en
 every tile face up on purpose — that is the mechanic — and a photograph of that is the whole board.
 There is no way to close that hole by hiding things, because the exposure is the game.
 
-### The hard part is not the rule, it is where the rule lives
+### Where the rule lives, and why the answer here was wrong
 
-`Dictionary` as the reducer sees it is exactly one method:
+`Dictionary` as the reducer saw it was one method, `has`. Deciding whether a candidate letter
+clears the word floor needs the common tier and the anagram solver, which is a far larger thing.
+
+**The answer proposed here was to precompute a replacement table** at board generation: for each
+tile and each candidate letter, whether the board still clears W, carried in state so that
+`reduce` only reads a table. It does not work. After a replacement the board is a different board,
+so the table describes one that no longer exists. It buys exactly one swap, and the feature is
+about the board changing repeatedly.
+
+**What was actually needed was the measurement**, which this file said to take and which turned
+out to answer the question by itself. On the shipped dictionaries, one `profile()` run costs
+1.1–1.4ms, and 85% to 94% of single-letter swaps clear the floor first time. Testing one tile
+against every letter of its alphabet exhaustively is 26 to 33 runs, about 30–42ms measured across
+English, Russian and Croatian at all four difficulties. The deal is already stopped for a second
+and a half while the change is animated, so there is nothing to optimise and nothing to cache.
+
+So `Dictionary` grew a second method rather than the state growing a table:
 
 ```ts
 export interface Dictionary {
   has(word: string): boolean
+  profile(letters: readonly string[], minLength: number): BoardProfile
 }
 ```
 
-Deciding whether a candidate letter clears the word floor needs the common tier and the anagram
-solver, which is a far larger dependency than `has`. Widening the port to carry a solver would put
-the heaviest object in the codebase into the most load-bearing interface in it.
+Required, not optional. `WordIndex` already satisfied it exactly, so the web app changed by
+nothing at all; the only other implementer was the test helper. Optional was tempting and wrong: a
+dictionary that could not profile would replay a game differently from one that could, and silent
+divergence between a client and the server verifying it is precisely what the pure reducer exists
+to rule out. Required makes it a type error.
 
-**A better shape**: compute the replacement table once, when the board is generated, and carry it
-in state. For each tile and each candidate letter, whether the board still clears W. That is
-`n × alphabet` solver runs at generation — measurable, done once, off the critical path — and at
-shuffle time the reducer only reads a table and draws from the seeded RNG. `reduce` keeps its
-signature and stays pure.
+### What the search does
 
-Whether `n × 33` solver runs is affordable at board generation is a measurement, not a guess, and
-should be taken before this is designed any further.
+Slots are tried in a drawn order rather than in tile order, and every candidate for a slot is
+tested rather than trying them until one passes.
 
-### What needs deciding
+Trying candidates in a clever order was the other idea worth measuring: start near the outgoing
+letter's own frequency and work outwards, so a common letter finds a common replacement quickly.
+The median search finds a passing letter on its **first** try, so there is nothing to speed up.
+The ordering would also have cost something real, twice over. It biases replacements towards
+letters of similar frequency, which makes the board drift less, and drift is the entire point.
+And "first that passed in a heuristic order" is not a fair draw. Enumerating and then drawing is
+simpler, has a fixed cost, and makes "this tile has no valid replacement" a fact rather than an
+artifact of when the search gave up.
 
-- **One letter per shuffle, or a chance per letter?** "A percentage chance that a letter is
-  replaced" reads as the former, and the former is easier to animate and easier to follow.
-- **Does a replaced letter's tile keep its position** through the shuffle, so the player can watch
-  it, or does it move like the others? The animation described implies it holds still.
-- **What happens to a spent tile**, or a tile currently selected, when its letter is replaced?
-- **Does this interact with wild cards** — can a wild be replaced, can a replacement be a wild?
-- **Is the anti-cheat the point, or is the churn the point?** If it is anti-cheat, the frequency
-  wants to be high enough that a transcribed board goes stale within a round or two, and that is a
-  different number from one chosen to feel good.
+The draw among the survivors is weighted by the alphabet's own letter weights. A uniform draw
+would put Ž on the board as often as A, and at this rate a game is six or so swaps long: the board
+would drift from a plausible mix of letters towards a flat one, getting steadily stranger to play
+on.
 
----
+### Decided
 
-## The help page is part of the feature
+- **The floor takes no notice of words already found.** The promise a board makes is that it holds
+  W words, not W words nobody has played yet. A floor that shrank as the game went on would end
+  every long game by refusing to change anything.
+- **One letter per deal, not a chance per letter.** A replacement is announced and watched; two at
+  once would be two things to watch and the player would catch neither.
+- **0.5, fixed, adjustable in nerd mode.** Set against the cheat rather than against the feel: a
+  transcribed board is wrong within a round or two. Not a column in the difficulty table, for the
+  same reason `wildChance` is not.
+- **Nothing at all rather than a broken floor.** When no tile has a valid replacement the deal
+  passes. Churn is a defence against a cheat and the floor is a promise to the player. Measured
+  over 432 swaps across three languages and four difficulties, it never came up.
+- **Replace first, then deal wilds, and never both on the same tile.** A tile that changed and was
+  then masked would spend its announcement on a letter the board immediately hides, and the two
+  mechanics have to stay tellable apart or the board stops being trustworthy.
+- **The questions about spent and selected tiles dissolved.** Replacement happens at the deal,
+  where the selection is already cleared and every tile is already unspent.
+
+### Saying it happened, which was the hard part
+
+The animation was the easy half. A wild card works because it is a **state**: visible for as long
+as it is there. A replacement is an **event**, and if the player was reading the rail or the tab
+was in the background, all that survives is a board that quietly disagrees with their memory.
+
+What it gets: the tile turns up under a cover, shows the old letter, the old letter leaves, the
+new one arrives, and the cover turns away. The clock is stopped for the whole 1.5s, which costs
+the player nothing because a round is spent in ticks. The message bar says `R → S`, which is the
+same in all sixteen languages and short enough not to wrap the one fixed-height row in the layout;
+a screen reader gets a sentence instead, since an arrow is a shape.
+
+Nothing persists afterwards, and that is deliberate rather than lazy. A permanent mark on the
+changed tile is an **anti**-anti-cheat feature: it lets a player who was not watching repair their
+transcription reliably, which is the thing the 0.5 rate exists to prevent. The player who watches
+can keep up. That is the trade the feature is making.
+
+Two things found by looking at it rather than by reading it: the cover was drawn at the size of
+the whole board, because `.tile` was not a positioning context; and cross-fading the two letters
+in one cell is unreadable, because for a fifth of a second both are half-drawn on top of each
+other and it reads as a broken glyph rather than as a change. They take turns now, with a gap.
+
+### Still open
+
+- **Is the rate right?** 0.5 was chosen against the cheat and has not been played. It is one nerd
+  mode number.
+- **The balance simulator** would settle it, along with `wildChance` and the difficulty tables.
+
+## The help page was part of the feature
 
 Every string the game says exists in sixteen languages, and the rules page is a string like any
-other. Wild cards and letter replacement both change what a player has to understand, so each one
-lands with its own section in `htTouch*`-style keys across all sixteen locales, in the same commit
-as the mechanic. Share needs nothing there: a button that shares a result explains itself.
+other. Wild cards and letter replacement both changed what a player has to understand, so each
+shipped with its own section across all sixteen locales, in the same commit as the mechanic. Share
+needed nothing there: a button that shares a result explains itself.
 
-This is easy to forget because the feature works without it, and the sixteenth translation is
+This was easy to forget because the feature works without it, and the sixteenth translation is
 never the interesting part of the day.
 
-## Order
+## What the order turned out to be
 
-Share is small, self-contained, and wants no engine change. The other two both touch the reducer
-and both want the balance simulator ([STATUS.md](STATUS.md) item 3) to exist first, because both
-introduce a number that cannot be chosen by argument: how often a wild appears, and how often a
-letter turns over. Those are the same class of number as the difficulty tables, which are still
-the only guessed numbers in the repo.
+Share first, being small and self-contained and wanting no engine change. Then wild cards, then
+replacement. The stated reason to do the last two after the balance simulator was that each
+introduces a frequency that cannot be chosen by argument, and that is still true; both were built
+anyway, with the frequency as a nerd-mode number and a stated guess. That is the cheaper order:
+the simulator can calibrate a mechanic that exists, and a mechanic nobody has played teaches
+nothing about whether it is worth calibrating.

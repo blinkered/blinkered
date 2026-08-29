@@ -27,6 +27,7 @@ export const en: Messages = {
   faceDown: 'face down',
   wildCard: 'wild card',
   wildKey: 'any letter',
+  letterReplaced: '{from} became {to}',
   spentTile: 'spent tile',
   hiddenWhilePaused: 'hidden while paused',
   letterInWord: '{letter}, letter {position} of the word',
@@ -75,6 +76,7 @@ export const en: Messages = {
   minWord: 'min word',
   startingFlips: 'starting flips',
   wildChance: 'wild card chance',
+  replaceChance: 'letter swap chance',
   wordCompleteMode: 'word complete',
   wordCompleteNames: { shuffle: 'shuffle', spend: 'spend', keep: 'keep' },
   flipEconomy: 'flip economy',
@@ -155,6 +157,9 @@ export const en: Messages = {
   htWildTitle: 'Wild cards',
   htWildBody:
     'Some tiles turn over as a card instead of a letter. A card counts as whatever letter makes a word, chosen from the ones that work, and you find out which when the word appears in your list. A word you have already found does not count.',
+  htSwapTitle: 'Changing letters',
+  htSwapBody:
+    'Between rounds, one tile may change its letter. As the board deals you are shown which tile it is and what it used to be, once. The board is never the same for long, so a list of its letters goes stale.',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
     'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',

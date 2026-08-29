@@ -36,6 +36,8 @@ export {
 } from './languages.js'
 export {
   DEFAULT_BOARD_SIZE,
+  DEFAULT_REPLACE_CHANCE,
+  DEFAULT_WILD_CHANCE,
   DIFFICULTIES,
   ENGINE_VERSION,
   PROFITABLE_LENGTH,
@@ -61,3 +63,5 @@ export {
 export { seedRng, nextFloat, nextInt, nextUint32, shuffle } from './rng.js'
 export { MAX_WILDS, WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
 export type { Resolution, ResolveOutcome } from './wild.js'
+export { replaceLetter } from './replace.js'
+export type { Replacement } from './replace.js'

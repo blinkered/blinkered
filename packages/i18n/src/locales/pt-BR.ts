@@ -24,6 +24,7 @@ export const ptBR: Messages = {
   faceDown: 'virada para baixo',
   wildCard: 'curinga',
   wildKey: 'qualquer letra',
+  letterReplaced: '{from} virou {to}',
   spentTile: 'peça gasta',
   hiddenWhilePaused: 'oculta na pausa',
   letterInWord: '{letter}, letra {position} da palavra',
@@ -71,6 +72,7 @@ export const ptBR: Messages = {
   minWord: 'palavra mínima',
   startingFlips: 'viradas iniciais',
   wildChance: 'chance de curinga',
+  replaceChance: 'chance de troca de letra',
   wordCompleteMode: 'palavra completa',
   wordCompleteNames: { shuffle: 'embaralhar', spend: 'gastar', keep: 'manter' },
   flipEconomy: 'economia de viradas',
@@ -151,6 +153,9 @@ export const ptBR: Messages = {
   htWildTitle: 'Os curingas',
   htWildBody:
     'Algumas peças viram como curinga em vez de letra. Um curinga vale a letra que forma uma palavra, escolhida entre as que servem, e você descobre qual quando a palavra aparece na sua lista. Uma palavra que você já tem não conta.',
+  htSwapTitle: 'As letras mudam',
+  htSwapBody:
+    'Entre rodadas, uma peça pode trocar de letra. Enquanto o tabuleiro é distribuído, você vê uma vez qual é e o que havia nela antes. O tabuleiro nunca fica igual por muito tempo, então uma lista das suas letras fica desatualizada.',
   htTouchTitle: 'A tela sensível ao toque',
   htTouchBody:
     'Toque numa peça virada para pegar a letra dela. Toque numa letra já pega para devolvê-la. Completar e Limpar ficam abaixo do tabuleiro.',

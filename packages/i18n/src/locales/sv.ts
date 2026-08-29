@@ -20,6 +20,7 @@ export const sv: Messages = {
   faceDown: 'nedåtvänd',
   wildCard: 'joker',
   wildKey: 'vilken bokstav som helst',
+  letterReplaced: '{from} blev {to}',
   spentTile: 'förbrukad bricka',
   hiddenWhilePaused: 'dold under pausen',
   letterInWord: '{letter}, bokstav {position} i ordet',
@@ -67,6 +68,7 @@ export const sv: Messages = {
   minWord: 'kortaste ord',
   startingFlips: 'drag vid start',
   wildChance: 'jokerchans',
+  replaceChance: 'chans för bokstavsbyte',
   wordCompleteMode: 'ordet klart',
   wordCompleteNames: { shuffle: 'blanda', spend: 'förbruka', keep: 'behåll' },
   flipEconomy: 'draghushållning',
@@ -147,6 +149,9 @@ export const sv: Messages = {
   htWildTitle: 'Jokrar',
   htWildBody:
     'Vissa brickor vänds upp som en joker i stället för en bokstav. En joker gäller som den bokstav som bildar ett ord, vald bland dem som fungerar, och vilken det blev ser du när ordet dyker upp i din lista. Ett ord du redan hittat räknas inte.',
+  htSwapTitle: 'Bokstäver som byts',
+  htSwapBody:
+    'Mellan omgångarna kan en bricka byta bokstav. Medan brädet delas ut får du en gång se vilken bricka det är och vad som stod på den förut. Brädet är aldrig sig likt särskilt länge, så en lista över dess bokstäver blir snabbt inaktuell.',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
     'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',

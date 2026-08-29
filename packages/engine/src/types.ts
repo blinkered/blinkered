@@ -10,6 +10,19 @@ export interface GameConfig {
    * is less time to use it: the mechanic self-balances. Zero turns wild cards off entirely.
    */
   readonly wildChance: number
+  /**
+   * Chance, per deal, that one tile's letter is replaced by another.
+   *
+   * Per deal and not per tile, unlike `wildChance`. A replacement is announced and watched; two at
+   * once would be two things to watch and the player would catch neither.
+   *
+   * Set for anti-cheat rather than for flavour. The hold phase shows the whole board face up on
+   * purpose, so a player can photograph it and hand twelve letters to a solver, and no amount of
+   * hiding can close that: the exposure is the mechanic. What closes it is the board going stale.
+   * At 0.5 a transcription is wrong within a round or two, which is a different number from one
+   * chosen to feel good. Zero turns replacement off entirely.
+   */
+  readonly replaceChance: number
   /** Real seconds per tick. The visible timer counts ticks, not seconds. */
   readonly speedMultiplier: number
   readonly initialFlips: number
@@ -170,9 +183,45 @@ export type Effect =
       readonly layout: readonly number[]
       readonly flipsCharged: number
     }
+  /**
+   * One tile's letter became another, at the deal.
+   *
+   * Carries both letters because the view has to show the change rather than the result: by the
+   * time this arrives the board already holds the new letter, and a player who is told only what
+   * a tile is now has no way to know what it used to be.
+   */
+  | {
+      readonly type: 'LETTER_REPLACED'
+      readonly tileId: number
+      readonly from: string
+      readonly to: string
+    }
   | { readonly type: 'GAME_OVER' }
 
-/** The full-tier word list. Credit is granted against this. */
+/** What a set of tiles is worth: the two numbers board acceptance is decided on. */
+export interface BoardProfile {
+  /** Distinct words of at least `minLength` tiles the letters admit, each tile used once. */
+  readonly count: number
+  /** Tiles in the longest such word: the ceiling that decides whether a board can pay. */
+  readonly longest: number
+}
+
+/**
+ * The word list, in its two roles.
+ *
+ * `has` is credit and answers from the full tier, so an unusual word still scores. `profile` is
+ * the floor and counts only the common tier, so a board is guaranteed solvable from vocabulary
+ * people actually use. See docs/DICTIONARIES.md.
+ *
+ * `profile` is here rather than in @blinkered/words because letter replacement needs it inside
+ * `reduce`: a replacement has to leave the board still admitting its words, and that is the
+ * generator's acceptance test applied to a board that already exists. Requiring it rather than
+ * making it optional is deliberate. A dictionary that could not profile would replay a game
+ * differently from one that could, and silent divergence between a client and the server
+ * verifying it is the exact failure the pure reducer exists to rule out. Required makes it a type
+ * error instead.
+ */
 export interface Dictionary {
   has(word: string): boolean
+  profile(letters: readonly string[], minLength: number): BoardProfile
 }

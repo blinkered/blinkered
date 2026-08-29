@@ -159,6 +159,7 @@ describe('dictionary boundary', () => {
         asked.push(candidate)
         return WORDS.has(candidate)
       },
+      profile: WORDS.profile.bind(WORDS),
     }
     play(exposed(), [letter('a'), letter('t'), letter('e'), submit], spy)
     expect(asked).toEqual(['ATE'])

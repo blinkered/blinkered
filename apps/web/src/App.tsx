@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ENGINE_VERSION, WILD_GLYPH } from '@blinkered/engine'
 import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
-import { Board } from './Board.js'
+import { Board, SWAP_MS } from './Board.js'
+import type { Swap } from './Board.js'
 import { GameSetup } from './GameSetup.js'
 import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
@@ -424,6 +425,7 @@ function Playing({
   const game = useGame(dictionary, spec, settings.keyScheme)
   const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
   const gain = useWordGain(game.effects, game.epoch)
+  const swap = useSwap(game.effects, game.epoch)
 
   useEffect(() => {
     if (rulesOpen) game.setPaused(true)
@@ -457,6 +459,7 @@ function Playing({
           state={game.state}
           portrait={portrait}
           concealed={game.paused}
+          swap={swap}
           messages={messages}
           onTapTile={(tileId) => {
             game.dispatch({ type: 'TAP_TILE', tileId })
@@ -717,6 +720,41 @@ function useWordGain(effects: readonly Effect[], epoch: number): WordGain | null
   return gain
 }
 
+/**
+ * The letter change to play over its tile, latched for the same reason the gain badge is.
+ *
+ * Deriving it from the current effects would end the animation at the next dispatch, and a player
+ * who taps a tile while watching would cancel the very thing they were watching.
+ *
+ * Unlike the gain badge this one is also cleared, rather than being left to fade to nothing on its
+ * last keyframe. An invisible cover is still two letters in the DOM, one of which is what that
+ * tile is now: the board goes to some trouble to keep face-down letters out of the document at
+ * all, and leaving one behind here would undo that for the tile the game just drew attention to.
+ */
+function useSwap(effects: readonly Effect[], epoch: number): Swap | null {
+  const [swap, setSwap] = useState<Swap | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (timer.current !== null) clearTimeout(timer.current)
+    },
+    [],
+  )
+  useEffect(() => {
+    for (const effect of effects) {
+      if (effect.type === 'LETTER_REPLACED') {
+        setSwap({ tileId: effect.tileId, from: effect.from, to: effect.to, epoch })
+        if (timer.current !== null) clearTimeout(timer.current)
+        timer.current = setTimeout(() => {
+          setSwap(null)
+        }, SWAP_MS)
+        return
+      }
+    }
+  }, [effects, epoch])
+  return swap
+}
+
 /** Turns the most interesting effect of the last dispatch into one line of feedback. */
 function useFeedback(
   effects: readonly Effect[],
@@ -749,6 +787,22 @@ function useFeedback(
             text: format(messages.wordRejected, { word: effect.word || '—', reason }),
           }
         }
+        case 'LETTER_REPLACED':
+          /*
+           * Found before ROUND_ENDED because the loop runs backwards, so the swap displaces the
+           * "shuffled" line rather than adding a row to a bar that has none to give. It is also
+           * the more useful of the two: every round shuffles, and this one did something else.
+           *
+           * An arrow rather than a sentence. It is the same in all sixteen languages, and it is
+           * short enough not to wrap, which matters because this bar is fixed-height and a line
+           * that wrapped would push the board.
+           */
+          return {
+            kind: 'note',
+            epoch,
+            text: `${effect.from} \u2192 ${effect.to}`,
+            label: format(messages.letterReplaced, { from: effect.from, to: effect.to }),
+          }
         case 'ROUND_ENDED':
           return {
             kind: 'note',

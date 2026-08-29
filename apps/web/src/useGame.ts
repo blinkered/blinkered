@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createGame, keyToEvent, reduce } from '@blinkered/engine'
 import type { Effect, GameConfig, GameEvent, GameState, KeyScheme } from '@blinkered/engine'
 import { generateBoard } from '@blinkered/words'
+import { SWAP_MS } from './Board.js'
 import type { GeneratedBoard, WordIndex } from '@blinkered/words'
 import { alphabetFor } from '@blinkered/engine'
 
@@ -105,19 +106,49 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
     }
   }, [])
 
+  /*
+   * The clock stops while a letter is being changed.
+   *
+   * Not a pause: the veil stays down and the board stays visible, because the whole point is that
+   * the player watches. It costs them nothing, since a round is only spent by ticks and no ticks
+   * happen. Without it the swap would play over a board that was already turning tiles, and the
+   * one moment the mechanic gets to explain itself would be competing with the deal.
+   *
+   * The timer lives in a ref rather than in the effect's cleanup. Tying it to the dependency
+   * array looked tidier and was wrong: `effects` is a new array on every dispatch, and a player
+   * who taps a tile mid-swap dispatches, so the cleanup would cancel the hold and start the clock
+   * again halfway through the animation.
+   */
+  const [swapping, setSwapping] = useState(false)
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (!session.effects.some((effect) => effect.type === 'LETTER_REPLACED')) return
+    setSwapping(true)
+    if (swapTimer.current !== null) clearTimeout(swapTimer.current)
+    swapTimer.current = setTimeout(() => {
+      setSwapping(false)
+    }, SWAP_MS)
+  }, [session.effects])
+  useEffect(
+    () => () => {
+      if (swapTimer.current !== null) clearTimeout(swapTimer.current)
+    },
+    [],
+  )
+
   const paused = manuallyPaused || hidden
   const over = session.state.status === 'over'
   const tickMs = session.state.config.speedMultiplier * 1000
 
   useEffect(() => {
-    if (paused || over) return undefined
+    if (paused || over || swapping) return undefined
     const timer = setInterval(() => {
       dispatch({ type: 'TICK' })
     }, tickMs)
     return () => {
       clearInterval(timer)
     }
-  }, [paused, over, tickMs, dispatch])
+  }, [paused, over, swapping, tickMs, dispatch])
 
   // The listener is bound once. It no longer needs to read game state at all: keyToEvent
   // maps a keystroke to an intent and the reducer resolves it against live state, so there

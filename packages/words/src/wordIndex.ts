@@ -1,16 +1,17 @@
-import type { Alphabet, Dictionary } from '@blinkered/engine'
+import type { Alphabet, BoardProfile, Dictionary } from '@blinkered/engine'
 
-export interface BoardProfile {
-  /** Distinct words of at least `minLength` tiles the letters admit, each tile used once. */
-  readonly count: number
-  /** Tiles in the longest such word: the ceiling that decides whether a board can pay. */
-  readonly longest: number
-}
+// `BoardProfile` moved to the engine when letter replacement needed `profile` inside `reduce`.
+// Re-exported here because this is where it has always been imported from.
+export type { BoardProfile }
 
+/**
+ * The shipped dictionary: a `Dictionary` that also knows how big it is.
+ *
+ * `profile` is the engine's now, since a replaced letter has to be checked against the board
+ * floor while a game is running. What is left here is the implementation and the tiering.
+ */
 export interface WordIndex extends Dictionary {
   readonly size: number
-  /** Solves a board by enumerating sub-multisets of its tiles and looking up anagram keys. */
-  profile(letters: readonly string[], minLength: number): BoardProfile
 }
 
 /** Subsets grow as 2^n, so refuse a board large enough to make solving expensive. */

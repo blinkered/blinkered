@@ -20,6 +20,7 @@ export const ms: Messages = {
   faceDown: 'tertutup',
   wildCard: 'kad liar',
   wildKey: 'mana-mana huruf',
+  letterReplaced: '{from} menjadi {to}',
   spentTile: 'jubin terpakai',
   hiddenWhilePaused: 'disembunyikan semasa henti',
   letterInWord: '{letter}, huruf ke-{position} dalam kata',
@@ -67,6 +68,7 @@ export const ms: Messages = {
   minWord: 'kata terpendek',
   startingFlips: 'balikan permulaan',
   wildChance: 'peluang kad liar',
+  replaceChance: 'peluang tukar huruf',
   wordCompleteMode: 'kata selesai',
   wordCompleteNames: { shuffle: 'kocak', spend: 'guna', keep: 'simpan' },
   flipEconomy: 'ekonomi balikan',
@@ -147,6 +149,9 @@ export const ms: Messages = {
   htWildTitle: 'Kad liar',
   htWildBody:
     'Sesetengah jubin terbuka sebagai kad dan bukan huruf. Kad itu berfungsi sebagai huruf yang membentuk kata, dipilih daripada yang sesuai, dan anda tahu yang mana apabila kata itu muncul dalam senarai anda. Kata yang sudah ada tidak dikira.',
+  htSwapTitle: 'Huruf yang bertukar',
+  htSwapBody:
+    'Antara pusingan, satu jubin boleh menukar hurufnya. Semasa papan diedarkan, anda ditunjukkan sekali jubin mana dan huruf apa yang ada padanya sebelum ini. Papan tidak pernah kekal sama lama, jadi senarai hurufnya cepat lapuk.',
   htTouchTitle: 'Skrin sentuh',
   htTouchBody:
     'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh mana-mana huruf yang diambil untuk memulangkannya. Hantar dan Kosongkan ada di bawah papan.',

@@ -30,6 +30,7 @@ export function HowToPlay({
     { title: messages.htFlipsTitle, body: messages.htFlipsBody },
     { title: messages.htRoundTitle, body: messages.htRoundBody },
     { title: messages.htWildTitle, body: messages.htWildBody },
+    { title: messages.htSwapTitle, body: messages.htSwapBody },
     { title: messages.htLanguagesTitle, body: messages.htLanguagesBody },
   ]
 

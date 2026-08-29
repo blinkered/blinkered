@@ -38,7 +38,10 @@ next.
   platform download, neither of which can be scripted; steps are in
   [../apps/mobile/README.md](../apps/mobile/README.md). This is PLAN.md phase 3 finished and
   phase 5 started. A **store** build still waits on the CC BY-SA call.
-- 325 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
+- **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
+  written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
+  is, so each ships with its own section in the rules page in all sixteen languages.
+- 369 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
   ubuntu and macos.
 
 ## Next, in order
@@ -59,10 +62,13 @@ next.
 
 ## Wanted, not built
 
-Three features are written up in [PROPOSALS.md](PROPOSALS.md) with the decisions each still needs:
-sharing a finished game, wild-card tiles, and replacing a letter during a shuffle. Share wants no
-engine change. The other two both want the balance simulator first, because each introduces a
-frequency that cannot be settled by argument.
+Nothing is queued. [PROPOSALS.md](PROPOSALS.md) is now a record of the three that shipped, kept
+because the reasoning is the part worth having: what was decided, what was measured, and the two
+places where the first answer was wrong.
+
+The two frequencies those features introduced, `wildChance` and `replaceChance`, are still guesses
+in the same way the difficulty tables are, and the balance simulator is still the thing that would
+settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 ## Settled
 

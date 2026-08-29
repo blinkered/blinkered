@@ -23,6 +23,7 @@ export const hr: Messages = {
   faceDown: 'okrenuta',
   wildCard: 'džoker',
   wildKey: 'bilo koje slovo',
+  letterReplaced: '{from} je postalo {to}',
   spentTile: 'potrošena pločica',
   hiddenWhilePaused: 'skrivena tijekom pauze',
   letterInWord: '{letter}, {position}. slovo riječi',
@@ -70,6 +71,7 @@ export const hr: Messages = {
   minWord: 'najkraća riječ',
   startingFlips: 'početni okreti',
   wildChance: 'vjerojatnost džokera',
+  replaceChance: 'vjerojatnost zamjene slova',
   wordCompleteMode: 'riječ dovršena',
   wordCompleteNames: { shuffle: 'promiješaj', spend: 'potroši', keep: 'zadrži' },
   flipEconomy: 'ekonomija okreta',
@@ -150,6 +152,9 @@ export const hr: Messages = {
   htWildTitle: 'Džokeri',
   htWildBody:
     'Neke se pločice okrenu kao džoker umjesto kao slovo. Džoker vrijedi kao slovo koje tvori riječ, izabrano između onih koja odgovaraju, a koje je bilo vidite kad se riječ pojavi na vašem popisu. Riječ koju već imate ne vrijedi.',
+  htSwapTitle: 'Slova se mijenjaju',
+  htSwapBody:
+    'Između rundi jedna pločica može promijeniti slovo. Dok se ploča dijeli, jednom vam se pokaže koja je to pločica i što je prije bilo na njoj. Ploča nikada dugo ne ostaje ista, pa popis njezinih slova brzo zastari.',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
     'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',

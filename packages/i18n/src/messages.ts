@@ -58,6 +58,14 @@ export interface Messages {
   readonly wildCard: string
   /** The key: what the symbol on the board means. Kept to a few words; it shares a tight row. */
   readonly wildKey: string
+  /**
+   * `{from}` `{to}` -- one tile's letter having become another.
+   *
+   * Read aloud rather than shown. On screen the swap is written `R -> S`, which needs no
+   * translating and fits a row that has none to spare, but an arrow is not a sentence and a
+   * screen reader would announce a shape. This is what it says instead.
+   */
+  readonly letterReplaced: string
   readonly spentTile: string
   readonly hiddenWhilePaused: string
   /** `{letter}` `{position}` */
@@ -80,6 +88,8 @@ export interface Messages {
   readonly htKeysTitle: string
   readonly htWildTitle: string
   readonly htWildBody: string
+  readonly htSwapTitle: string
+  readonly htSwapBody: string
   readonly htTouchTitle: string
   readonly htTouchBody: string
 
@@ -164,6 +174,7 @@ export interface Messages {
   readonly minWord: string
   readonly startingFlips: string
   readonly wildChance: string
+  readonly replaceChance: string
   readonly wordCompleteMode: string
   readonly wordCompleteNames: Readonly<Record<WordCompleteMode, string>>
   readonly flipEconomy: string

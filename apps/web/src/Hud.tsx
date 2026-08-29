@@ -21,6 +21,13 @@ export interface WordGain {
 export interface Feedback {
   readonly kind: 'accepted' | 'rejected' | 'note'
   readonly text: string
+  /**
+   * What a screen reader says instead, where `text` is not a sentence.
+   *
+   * Only the letter swap uses it. `R -> S` is the whole message in every language and fits a row
+   * with no room to spare, but read aloud it is a shape rather than a statement.
+   */
+  readonly label?: string
   /** Distinguishes repeats of the same message so the animation replays. */
   readonly epoch: number
 }
@@ -105,7 +112,12 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
           ) : null}
         </output>
         {feedback === null ? null : (
-          <span key={feedback.epoch} className={`feedback is-${feedback.kind}`} role="status">
+          <span
+            key={feedback.epoch}
+            className={`feedback is-${feedback.kind}`}
+            role="status"
+            aria-label={feedback.label}
+          >
             {feedback.text}
           </span>
         )}

@@ -131,6 +131,22 @@ export function NerdPanel({
             onOverride({ wildChance })
           }}
         />
+        {/*
+         * Per deal, not per tile: at most one letter changes at a time. 0.5 is set against the
+         * cheat rather than the feel, since what makes a photograph of the board useless is the
+         * board going stale. Zero turns it off and freezes the letters for the whole game.
+         */}
+        <Number
+          label={messages.replaceChance}
+          value={config.replaceChance}
+          min={0}
+          max={1}
+          step={0.05}
+          disabled={locked}
+          onChange={(replaceChance) => {
+            onOverride({ replaceChance })
+          }}
+        />
         <Choice
           label={messages.wordCompleteMode}
           value={config.wordCompleteMode}

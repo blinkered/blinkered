@@ -146,6 +146,8 @@ function describe(effects: readonly Effect[]): string | null {
               : 'not a word'
         return `${red}${effect.word || '(nothing)'}  ${reason}${reset}`
       }
+      case 'LETTER_REPLACED':
+        return `${dim}${effect.from} \u2192 ${effect.to}${reset}`
       case 'ROUND_ENDED':
         return effect.flipsCharged > 0
           ? `${dim}shuffled, billed ${String(effect.flipsCharged)} unused flips${reset}`

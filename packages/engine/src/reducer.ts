@@ -1,5 +1,6 @@
 import { shuffle } from './rng.js'
 import { WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
+import { replaceLetter } from './replace.js'
 import { alphabetFor } from './languages.js'
 import { flipReward, wordScore } from './score.js'
 import { isEligible, letterAvailability, tileAt, tileById } from './selection.js'
@@ -45,7 +46,7 @@ export function reduce(state: GameState, event: GameEvent, dictionary: Dictionar
 function apply(state: GameState, event: GameEvent, dictionary: Dictionary): Reduction {
   switch (event.type) {
     case 'TICK':
-      return tick(state)
+      return tick(state, dictionary)
     case 'TAP_TILE':
       return tapTile(state, event.tileId)
     case 'SELECT_LETTER':
@@ -81,10 +82,10 @@ export function revealNext(state: GameState): Reduction {
   return [next, [{ type: 'REVEALED', tileId: tile.id }]]
 }
 
-function tick(state: GameState): Reduction {
+function tick(state: GameState, dictionary: Dictionary): Reduction {
   const ticksRemaining = state.ticksRemaining - 1
   const advanced: GameState = { ...state, ticksRemaining, tick: state.tick + 1 }
-  if (ticksRemaining <= 0) return endRound(advanced)
+  if (ticksRemaining <= 0) return endRound(advanced, dictionary)
   return revealNext(advanced)
 }
 
@@ -92,7 +93,7 @@ function tick(state: GameState): Reduction {
  * Hides everything, shuffles, and opens the next round. Also the single place the
  * game can end, since the rule is that a round always finishes first.
  */
-function endRound(state: GameState): Reduction {
+function endRound(state: GameState, dictionary: Dictionary): Reduction {
   const { config } = state
   const unrevealed = config.n - state.revealsThisRound
   const flipsCharged = config.chargeFullRound ? Math.min(unrevealed, state.flipsRemaining) : 0
@@ -113,9 +114,29 @@ function endRound(state: GameState): Reduction {
     revealed: false,
     spent: false,
   }))
-  // Re-rolled on every deal, so a wild is a bonus that moves rather than a fixture of the board.
-  // The letters underneath never change, which is what keeps this apart from letter replacement.
-  const [tiles, dealtRng] = dealWilds(rng, reset, state.config.wildChance)
+  /*
+   * Replace first, then deal wilds, and never both on the same tile.
+   *
+   * A tile that was replaced and then masked would spend its announcement on a letter the board
+   * immediately hides: the player is shown "R became S" and then handed a card. Two mechanics
+   * arriving on one tile also makes them hard to tell apart, and they have to stay tellable apart
+   * or the board stops being trustworthy.
+   *
+   * Replacement is safe to run before the wild deal for the same reason it needs no change to
+   * board generation: it leaves the board above its word floor, and a wild is strictly better than
+   * the letter it hides.
+   */
+  const [swapped, replacement, replacedRng] = replaceLetter(
+    rng,
+    reset,
+    config,
+    alphabetFor(config.language),
+    dictionary,
+  )
+  const eligible = swapped.filter((tile) => tile.id !== replacement?.tileId)
+  const [dealt, dealtRng] = dealWilds(replacedRng, eligible, config.wildChance)
+  const wilds = new Set(dealt.filter((tile) => tile.wild).map((tile) => tile.id))
+  const tiles = swapped.map((tile) => ({ ...tile, wild: wilds.has(tile.id) }))
   const [opened, effects] = revealNext({
     ...state,
     tiles,
@@ -126,7 +147,18 @@ function endRound(state: GameState): Reduction {
     revealsThisRound: 0,
     selection: [],
   })
-  return [opened, [{ type: 'ROUND_ENDED', layout, flipsCharged }, ...effects]]
+  const announced: readonly Effect[] =
+    replacement === null
+      ? []
+      : [
+          {
+            type: 'LETTER_REPLACED',
+            tileId: replacement.tileId,
+            from: replacement.from,
+            to: replacement.to,
+          },
+        ]
+  return [opened, [{ type: 'ROUND_ENDED', layout, flipsCharged }, ...announced, ...effects]]
 }
 
 /**
@@ -261,7 +293,7 @@ function submitWord(state: GameState, dictionary: Dictionary): Reduction {
 
   switch (state.config.wordCompleteMode) {
     case 'shuffle': {
-      const [next, effects] = endRound(accepted)
+      const [next, effects] = endRound(accepted, dictionary)
       return [next, [announced, ...effects]]
     }
     case 'spend': {
