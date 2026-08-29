@@ -2,7 +2,11 @@ import { DEFAULT_LANGUAGE } from './languages.js'
 import { at } from './invariant.js'
 import type { Difficulty, GameConfig } from './types.js'
 
-export const ENGINE_VERSION = '0.1.0'
+/**
+ * Bumped when a rule changes what a game is, because results carry it and the leaderboard groups
+ * on it. 0.2.0 is the difficulty retune: `medium` before and after it are different games.
+ */
+export const ENGINE_VERSION = '0.2.0'
 
 /** Twelve tiles, 4x3 in landscape and 3x4 in portrait. A player may pick another size. */
 export const DEFAULT_BOARD_SIZE = 12
@@ -38,8 +42,8 @@ export const DEFAULT_REPLACE_CHANCE = 0.5
  * holds only the rules that do not scale with the board, and the two that do are derived
  * from N below, which keeps a level equally hard at every size.
  *
- * Opening bids. tools/simulate replaces these with numbers that came from watching thousands
- * of games rather than from a hunch. See docs/PLAN.md 1.9.
+ * Still bids rather than measurements. tools/simulate would replace them with numbers that came
+ * from watching thousands of games rather than from a hunch. See docs/PLAN.md 1.9.
  */
 export interface DifficultyProfile {
   readonly speedMultiplier: number
@@ -49,11 +53,30 @@ export interface DifficultyProfile {
   readonly minWordLength: number
 }
 
+/*
+ * Retuned after playing, which said every level was about one notch harder than its name:
+ * medium played as hard, hard as barely short of insane, and insane as unplayable.
+ *
+ * The number that did it is not `speedMultiplier` by itself but what it multiplies. The window
+ * with the whole board face up is `holdTicks * speedMultiplier`, and on the old table that window
+ * did not shrink from level to level so much as go out: 6.4s, 2.4s, 0.9s, then nothing at all.
+ * Insane gave the player zero seconds with twelve letters in front of them, so the only word
+ * available was one spotted while the board was still dealing; hard's 0.9s is a glance, which is
+ * why the two felt adjacent. A setting cannot be hard in an interesting way if the thing it takes
+ * away is the part of the round you think in.
+ *
+ * The window now halves rather than vanishing -- 9.0s, 6.0s, 3.6s, 1.8s -- and the tick slows
+ * across the board, each level landing roughly where the level below it used to be. Insane is
+ * still comfortably the hardest: 0.9s a tile is the old hard, with barely two seconds to look.
+ *
+ * `initialRounds` is untouched on purpose. It is the endurance budget rather than the perception
+ * budget, and moving both at once would leave nothing to learn from the next play.
+ */
 export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
-  easy: { speedMultiplier: 1.6, holdTicks: 4, initialRounds: 14, minWordLength: 3 },
-  medium: { speedMultiplier: 1.2, holdTicks: 2, initialRounds: 12, minWordLength: 3 },
-  hard: { speedMultiplier: 0.9, holdTicks: 1, initialRounds: 11, minWordLength: 4 },
-  insane: { speedMultiplier: 0.7, holdTicks: 0, initialRounds: 10, minWordLength: 4 },
+  easy: { speedMultiplier: 1.8, holdTicks: 5, initialRounds: 14, minWordLength: 3 },
+  medium: { speedMultiplier: 1.5, holdTicks: 4, initialRounds: 12, minWordLength: 3 },
+  hard: { speedMultiplier: 1.2, holdTicks: 3, initialRounds: 11, minWordLength: 4 },
+  insane: { speedMultiplier: 0.9, holdTicks: 2, initialRounds: 10, minWordLength: 4 },
 }
 
 /**

@@ -33,7 +33,7 @@ describe('compareResults', () => {
 })
 
 describe('rankedResults', () => {
-  const group = { language: 'en', difficulty: 'medium' } as const
+  const group = { language: 'en', difficulty: 'medium', engineVersion: '0.1.0' } as const
 
   it('compares only like with like', () => {
     // A score means nothing across languages or difficulties.
@@ -55,6 +55,17 @@ describe('rankedResults', () => {
     expect(rankedResults(results, group).map((r) => r.score)).toEqual([30, 20, 10])
   })
 
+  it('will not rank a game against a different engine version of the same difficulty', () => {
+    // The presets are still bids, so a retune makes `medium` a different game. A table mixing the
+    // two would compare a score set with six seconds of exposed board against one set with two.
+    const before = result({ score: 300, engineVersion: '0.1.0' })
+    const after = result({ score: 100, engineVersion: '0.2.0' })
+    expect(rankedResults([before, after], group).map((r) => r.score)).toEqual([300])
+    expect(
+      rankedResults([before, after], { ...group, engineVersion: '0.2.0' }).map((r) => r.score),
+    ).toEqual([100])
+  })
+
   it('does not disturb what it was given', () => {
     const results = [result({ score: 10 }), result({ score: 30 })]
     rankedResults(results, group)
@@ -66,7 +77,11 @@ describe('rankOf', () => {
   it('counts from one', () => {
     const best = result({ score: 300 })
     const worst = result({ score: 100 })
-    const ranked = rankedResults([worst, best], { language: 'en', difficulty: 'medium' })
+    const ranked = rankedResults([worst, best], {
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: '0.1.0',
+    })
     expect(rankOf(ranked, best)).toBe(1)
     expect(rankOf(ranked, worst)).toBe(2)
   })
@@ -74,7 +89,11 @@ describe('rankOf', () => {
   it('is zero for a game that is not in the ranking', () => {
     // Which is what happens to a custom-rules game, and is why the caller has to check.
     const custom = result({ canonical: false })
-    const ranked = rankedResults([custom], { language: 'en', difficulty: 'medium' })
+    const ranked = rankedResults([custom], {
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: '0.1.0',
+    })
     expect(rankOf(ranked, custom)).toBe(0)
   })
 })

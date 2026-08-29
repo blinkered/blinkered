@@ -820,7 +820,13 @@ kbd {
 .chip {
   display: inline-flex;
   gap: 0.35rem;
-  align-items: baseline;
+  /*
+   * Centred, not baseline-aligned. Baseline was right when a chip was two things, a name and its
+   * round budget, and had to line them up. The number is gone and the chip is one line of text,
+   * and on a touch screen `min-height: 2.75rem` makes the box taller than that line: baseline
+   * pins the text to the top of the box and leaves the whole difference sitting underneath it.
+   */
+  align-items: center;
   padding: 0.4rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 999px;

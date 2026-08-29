@@ -41,7 +41,7 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in all sixteen languages.
-- 369 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
+- 370 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
   ubuntu and macos.
 
 ## Next, in order
@@ -124,6 +124,14 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   survival rather than just score. Unconfirmed.
 - **minimum word length**: 3, with 4 on the harder presets. Unconfirmed. Floored at 3 in the
   interface now, because the shipped lists start there.
+- **the difficulty ladder**: retuned once from play, which said every level was a notch harder
+  than its name. The number that did it was the window with the whole board face up,
+  `holdTicks * speedMultiplier`, which used to run 6.4s, 2.4s, 0.9s, 0s: insane gave no thinking
+  time at all and hard gave a glance, so the top of the ladder had nothing between its rungs. It
+  now halves rather than vanishing, 9.0s to 1.8s, with the tick slowed across the board. Still a
+  bid; `initialRounds` was deliberately left alone so the next play has one variable to speak to.
+  `ENGINE_VERSION` went to 0.2.0 with it, and the leaderboard now groups on that, so scores set
+  under the old presets are kept but no longer ranked against new ones.
 - **difficulty numbers**: still guesses. The balance simulator replaces them.
 
 ## Traps already hit, so they are not hit again

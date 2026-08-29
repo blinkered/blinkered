@@ -73,14 +73,45 @@ export const KEY_SCHEMES: readonly KeyScheme[] = ['cycle', 'advance']
 export const CUSTOM_RULES = 'custom'
 export type Ruleset = Difficulty | typeof CUSTOM_RULES
 
-/** Which chip is lit: a preset, or the custom ruleset. */
-export function rulesetOf(settings: Settings): Ruleset {
-  return settings.custom ? CUSTOM_RULES : settings.difficulty
+/** Two rulesets that say the same thing. Every field of a GameConfig is a primitive. */
+function sameRules(a: GameConfig, b: GameConfig): boolean {
+  return (Object.keys(a) as (keyof GameConfig)[]).every((key) => a[key] === b[key])
 }
 
-/** Whether the custom chip should be offered at all. */
+/**
+ * Whether the stored ruleset actually forks from a preset.
+ *
+ * Having overrides at all is not the same question, and treating it as the same is what put a
+ * fifth chip on the setup panel for a ruleset identical to `medium`. Nerd mode writes a field
+ * the moment it is touched, so a player who nudged a number and put it back had a custom
+ * ruleset that was custom in name only.
+ *
+ * Compared against the preset it is built on, and only that one. Comparing against all four was
+ * the first version and it lights the wrong chip: hand-tune medium until it happens to equal hard
+ * and the ruleset stops counting as custom, so the picker highlights `medium` while the rules in
+ * play are hard's. Worse, the finished game is filed under `settings.difficulty`, so it would
+ * reach the leaderboard as a medium game played at hard's speed. A coincidence between two
+ * presets is not worth a wrong label.
+ *
+ * Language is pinned on both sides. It reaches the engine through the ruleset, since the word
+ * floor depends on how many words the dictionary admits, but it is chosen with the flag picker
+ * and is nobody's idea of a difficulty setting.
+ */
 export function hasCustomRules(settings: Settings): boolean {
-  return Object.keys(settings.overrides).length > 0
+  if (Object.keys(settings.overrides).length === 0) return false
+  const language = settings.gameLanguage
+  const rules = configFor(settings.difficulty, { ...settings.overrides, language })
+  return !sameRules(rules, configFor(settings.difficulty, { language }))
+}
+
+/**
+ * Which chip is lit: a preset, or the custom ruleset.
+ *
+ * Follows what is offered. A custom ruleset that matches a preset is not offered, so it cannot
+ * be the one lit either, and the preset it matches is what the player is actually playing.
+ */
+export function rulesetOf(settings: Settings): Ruleset {
+  return settings.custom && hasCustomRules(settings) ? CUSTOM_RULES : settings.difficulty
 }
 
 /**
@@ -104,9 +135,14 @@ export function configOf(settings: Settings): GameConfig {
   return configFor(settings.difficulty, { ...rules, language: settings.gameLanguage })
 }
 
-/** True when the rules are a published preset, which is what ranking requires. */
+/**
+ * True when the rules are a published preset, which is what ranking requires.
+ *
+ * Asks what the rules are, not how they were reached. A game played on numbers identical to a
+ * preset is a game on that preset and ranks, even if the player got there through nerd mode.
+ */
 export function isCanonical(settings: Settings): boolean {
-  return !settings.custom
+  return !settings.custom || !hasCustomRules(settings)
 }
 
 const STORAGE_KEY = 'blinkered.settings.v1'

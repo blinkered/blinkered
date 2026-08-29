@@ -97,8 +97,8 @@ describe('overrides', () => {
   it('leaves the rules that do not scale with the board alone', () => {
     for (const n of sizes) {
       expect(configFor('hard', { n })).toMatchObject({
-        speedMultiplier: 0.9,
-        holdTicks: 1,
+        speedMultiplier: 1.2,
+        holdTicks: 3,
         minWordLength: 4,
       })
     }

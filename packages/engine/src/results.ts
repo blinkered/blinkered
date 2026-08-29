@@ -33,6 +33,15 @@ export interface GameResult {
 export interface ResultGroup {
   readonly language: string
   readonly difficulty: Difficulty
+  /**
+   * Which engine's idea of that difficulty.
+   *
+   * The presets are still bids rather than measurements, so `medium` names a different game
+   * before and after a retune. `engineVersion` has been recorded on every result since the
+   * beginning for exactly this; until it was part of the group it was a field nobody read, and
+   * a table quietly mixing two rulesets is worse than one that starts again.
+   */
+  readonly engineVersion: string
 }
 
 /**
@@ -52,8 +61,8 @@ export function compareResults(left: GameResult, right: GameResult): number {
  *
  * A score means nothing across languages or difficulties: fourteen scoreless rounds of easy
  * English is not the same game as ten of insane Russian, and a Greek board admits well under
- * half what an Italian one does. So a leaderboard is per language, per difficulty, and
- * canonical only.
+ * half what an Italian one does. Nor does it mean anything across a change to what a difficulty
+ * is. So a leaderboard is per language, per difficulty, per engine version, and canonical only.
  */
 export function rankedResults(results: readonly GameResult[], group: ResultGroup): GameResult[] {
   return results
@@ -61,7 +70,8 @@ export function rankedResults(results: readonly GameResult[], group: ResultGroup
       (result) =>
         result.canonical &&
         result.language === group.language &&
-        result.difficulty === group.difficulty,
+        result.difficulty === group.difficulty &&
+        result.engineVersion === group.engineVersion,
     )
     .sort(compareResults)
 }

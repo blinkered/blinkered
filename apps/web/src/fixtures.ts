@@ -119,7 +119,11 @@ export function overFixture(search: string): Fixture | null {
 
   return {
     result,
-    standing: standingOf([...history, result], result, { language, difficulty }),
+    standing: standingOf([...history, result], result, {
+      language,
+      difficulty,
+      engineVersion: ENGINE_VERSION,
+    }),
     words: WORDS.slice(0, Math.max(0, Math.min(WORDS.length, result.words))),
     letters: LETTERS,
   }

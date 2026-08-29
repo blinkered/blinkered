@@ -88,7 +88,7 @@ export function isPersonalBest(standing: Standing): boolean {
 export function standingOf(
   scores: readonly GameResult[],
   result: GameResult,
-  group: { language: string; difficulty: Difficulty },
+  group: { language: string; difficulty: Difficulty; engineVersion: string },
 ): Standing {
   const ranked = rankedResults(scores, group)
   return { ranked, rank: rankOf(ranked, result) }

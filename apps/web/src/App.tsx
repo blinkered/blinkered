@@ -226,7 +226,11 @@ function Session({
       const stored = recordScore(result)
       setFinished({
         result,
-        standing: standingOf(stored, result, { language, difficulty: settings.difficulty }),
+        standing: standingOf(stored, result, {
+          language,
+          difficulty: settings.difficulty,
+          engineVersion: ENGINE_VERSION,
+        }),
         words: state.wordsFound,
         // Deal order, which is tile id order and is stable for the life of the game.
         letters: [...state.tiles].sort((a, b) => a.id - b.id).map((tile) => tile.letter),
