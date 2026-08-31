@@ -178,7 +178,7 @@ export const id: Messages = {
     'Beberapa kartu terbuka sebagai kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf yang membentuk kata, dipilih dari yang cocok, dan kamu tahu yang mana saat kata itu muncul di daftarmu. Kata yang sudah ada tidak dihitung.',
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
-    'Di antara ronde, satu ubin dapat mengganti hurufnya. Papan dikosongkan dan menampilkan huruf yang pergi serta huruf yang menggantikannya, tetapi bukan ubin yang mana. Papan tidak pernah sama untuk waktu lama, jadi daftar hurufnya cepat basi.',
+    'Di antara ronde, satu ubin berganti huruf. Anda melihat huruf mana yang pergi dan mana yang datang, tetapi bukan di mana letaknya. Hafalkan papan dan papan akan menjebak Anda.',
   htLevelsTitle: 'Tingkat kesulitan',
   htLevelEasy:
     'Dua belas huruf yang sama sepanjang permainan, jadi Anda bisa menghafalnya dan menyimpan daftar kata di kepala. Ubin terbuka perlahan dan papan penuh tetap terlihat cukup lama untuk menyusun satu kata.',

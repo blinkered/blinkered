@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { WILD_GLYPH, configFor } from '@blinkered/engine'
 import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
@@ -41,9 +41,33 @@ interface Frame {
   readonly caption: string
   /** The word line, when it should say something other than the plain selected letters. */
   readonly word?: string
+  /** Index into `word` of the letter a wild turned out to be, marked the way the rail marks it. */
+  readonly wildAt?: number
 }
 
-const FRAME_MS = 1400
+/**
+ * How long a frame stays up, from what it has to say rather than from a number per step.
+ *
+ * A frame that repeats the previous caption is a visual beat -- another tile turning, another
+ * letter taken -- and wants to be brisk. A frame that changes the caption has to be read before
+ * it goes, and the first version held every frame for 1.4s regardless, which on the controls
+ * screen meant four different sentences in under six seconds. You could watch it or read it.
+ *
+ * Reading time is derived from the caption's length because it has to hold in sixteen languages.
+ * German runs about 40% longer than English for the same sentence, so any hand-tuned number would
+ * be right in one language and wrong in the rest; a rate per character is right everywhere and
+ * needs nobody to remember it when a string changes.
+ */
+const BEAT_MS = 900
+const READ_BASE_MS = 1200
+const READ_PER_CHAR_MS = 30
+/** Long enough for the longest caption, short enough that a loop still feels like a loop. */
+const READ_MAX_MS = 6000
+
+function holdFor(frame: Frame, previous: Frame): number {
+  if (frame.caption === previous.caption) return BEAT_MS
+  return Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
+}
 
 function stateOf(frame: Frame): GameState {
   const config = configFor('easy', { n: LETTERS.length })
@@ -132,12 +156,24 @@ function stepsFor(messages: Messages): readonly Step[] {
     },
     {
       title: messages.htWildTitle,
+      /*
+       * The card becomes E, and E is the point: it is not one of the letters showing.
+       *
+       * It resolved to A first, which teaches the wrong lesson, because there is an A face up two
+       * tiles along. A demo where the card hands you a letter you could have tapped yourself makes
+       * the mechanic look like a long way round; one where it hands you a letter the board is not
+       * offering shows what it is for.
+       *
+       * `wildAt` marks the E gold and underlined, which is exactly how the found-word rail marks
+       * a letter the board gave rather than one the player chose. Same mark, same meaning, so the
+       * first time it appears in a real game it is already familiar.
+       */
       frames: [
         { up: 'SA*T..', caption: messages.htWildBody },
         { up: 'SA*T..', sel: '0', caption: messages.htWildBody },
         { up: 'SA*T..', sel: '02', caption: messages.htWildBody },
         { up: 'SA*T..', sel: '023', caption: messages.htWildBody },
-        { up: 'SA*T..', sel: '023', caption: messages.htWildBody, word: 'SAT' },
+        { up: 'SA*T..', sel: '023', caption: messages.htWildBody, word: 'SET', wildAt: 1 },
       ],
     },
     {
@@ -197,7 +233,9 @@ interface TutorialProps {
  * clear, and finishing assumes, with the box ticked.
  */
 export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element {
-  const steps = stepsFor(messages)
+  // Memoised because the frame timer depends on the current step: rebuilt every render, the
+  // timeout below would be cancelled and restarted by every render and never fire.
+  const steps = useMemo(() => stepsFor(messages), [messages])
   const [step, setStep] = useState(0)
   const [frame, setFrame] = useState(0)
   const [skipping, setSkipping] = useState(false)
@@ -210,14 +248,21 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
   // tour controls the pace of the thing it is showing, which is the way round that lets somebody
   // watch the letter-swap beat twice without having to find a replay button.
   useEffect(() => {
-    if (skipping || current.frames.length < 2) return undefined
-    const timer = setInterval(() => {
-      setFrame((at) => (at + 1) % current.frames.length)
-    }, FRAME_MS)
+    const beats = current.frames
+    if (skipping || beats.length < 2) return undefined
+    const showing = beats[frame] as Frame
+    const before = beats[(frame - 1 + beats.length) % beats.length] as Frame
+    // A timeout rather than an interval, because how long a frame stays up depends on the frame.
+    const timer = setTimeout(
+      () => {
+        setFrame((at) => (at + 1) % beats.length)
+      },
+      holdFor(showing, before),
+    )
     return () => {
-      clearInterval(timer)
+      clearTimeout(timer)
     }
-  }, [skipping, current.frames.length])
+  }, [skipping, current, frame])
 
   const go = (to: number): void => {
     setStep(to)
@@ -298,11 +343,22 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
             // The real component, replayed on the tour's own clock: a key that changes every
             // frame is what makes it start over rather than sit finished.
             <div className="tut-swap">
-              <LetterSwap swap={{ from: 'G', to: 'E', epoch: frame }} messages={messages} />
+              <LetterSwap swap={{ from: 'G', to: 'N', epoch: frame }} messages={messages} />
             </div>
           ) : (
             <>
-              <p className="tut-word">{word === '' ? ' ' : word}</p>
+              <p className="tut-word">
+                {word === ''
+                  ? '\u00a0'
+                  : [...word].map((letter, at) => (
+                      <span
+                        key={`${String(at)}-${letter}`}
+                        className={at === beat.wildAt ? 'from-wild' : undefined}
+                      >
+                        {letter}
+                      </span>
+                    ))}
+              </p>
               <div className="board-wrap">
                 <Board
                   state={stateOf(beat)}

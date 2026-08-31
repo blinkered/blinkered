@@ -179,7 +179,7 @@ export const de: Messages = {
     'Manche Plättchen zeigen beim Umdrehen einen Joker statt eines Buchstabens. Ein Joker gilt als der Buchstabe, der ein Wort ergibt, ausgewählt aus denen, die passen, und welcher es war siehst du, wenn das Wort in deiner Liste erscheint. Ein bereits gefundenes Wort zählt nicht.',
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
-    'Zwischen den Runden kann ein Plättchen seinen Buchstaben wechseln. Das Feld wird leer und zeigt den Buchstaben, der geht, und den, der seinen Platz einnimmt, aber nie, welches Plättchen es war. Das Feld bleibt nie lange gleich, deshalb veraltet eine Liste seiner Buchstaben schnell.',
+    'Zwischen den Runden tauscht ein Plättchen seinen Buchstaben. Sie sehen, welcher geht und welcher kommt, aber nicht wo er liegt. Wer sich das Feld einprägt, fällt darauf herein.',
   htLevelsTitle: 'Die Stufen',
   htLevelEasy:
     'Dieselben zwölf Buchstaben die ganze Partie über: Sie können sie sich einprägen und eine Wortliste im Kopf behalten. Die Plättchen drehen sich langsam, und das volle Feld bleibt lange genug sichtbar, um ein Wort zu planen.',

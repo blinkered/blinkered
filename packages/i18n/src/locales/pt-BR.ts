@@ -178,7 +178,7 @@ export const ptBR: Messages = {
     'Algumas peças viram como curinga em vez de letra. Um curinga vale a letra que forma uma palavra, escolhida entre as que servem, e você descobre qual quando a palavra aparece na sua lista. Uma palavra que você já tem não conta.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
-    'Entre rodadas, uma peça pode trocar de letra. O tabuleiro se esvazia e mostra a letra que sai e a que assume o lugar dela, mas nunca de qual peça se tratava. O tabuleiro nunca fica igual por muito tempo, então uma lista das suas letras fica desatualizada.',
+    'Entre rodadas, uma peça troca de letra. Você vê qual sai e qual entra, mas não onde fica. Decore o tabuleiro e ele te pega.',
   htLevelsTitle: 'Os níveis',
   htLevelEasy:
     'As mesmas doze letras durante o jogo inteiro: dá para aprendê-las e guardar uma lista de palavras na cabeça. As peças viram devagar e o tabuleiro completo fica à vista tempo suficiente para montar uma.',

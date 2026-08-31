@@ -175,7 +175,7 @@ export const es: Messages = {
     'Algunas fichas se destapan como comodín en vez de letra. Un comodín vale la letra que forme una palabra, elegida entre las que sirven, y descubres cuál cuando la palabra aparece en tu lista. Una palabra que ya tienes no cuenta.',
   htSwapTitle: 'Las letras cambian',
   htSwapBody:
-    'Entre rondas, una ficha puede cambiar de letra. El tablero se vacía y te muestra la letra que se va y la que ocupa su lugar, pero nunca de qué ficha se trataba. El tablero nunca sigue igual mucho tiempo, así que una lista de sus letras se queda obsoleta.',
+    'Entre rondas, una ficha cambia de letra. Ves cuál se va y cuál llega, pero no dónde está. Apréndete el tablero de memoria y te jugará una mala pasada.',
   htLevelsTitle: 'Los niveles',
   htLevelEasy:
     'Las mismas doce letras durante toda la partida: puedes aprendértelas y llevar una lista de palabras en la cabeza. Las fichas se giran despacio y el tablero completo se queda a la vista el tiempo suficiente para preparar una.',

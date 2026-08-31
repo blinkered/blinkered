@@ -1204,8 +1204,13 @@ kbd {
    * `row-reverse` rather than reordering the markup, so the reading order stays primary-first for
    * anything that follows the DOM. There is no tab order to disagree with here: this block only
    * applies where there is no keyboard.
+   *
+   * The tour's copy of the row is in the same rule rather than repeating it, because the two
+   * disagreeing is exactly the failure a tutorial cannot afford: it showed Complete on the left
+   * while the game put it under the right thumb.
    */
-  .controls {
+  .controls,
+  .tut-controls {
     flex-direction: row-reverse;
   }
 
@@ -1798,7 +1803,19 @@ kbd {
   gap: 0.35rem;
   width: 100%;
 }
+/*
+ * Centred, because these are spans rather than buttons.
+ *
+ * A `<button>` centres its own label; a span does not, and in this flex row the default
+ * `align-items: stretch` makes the primary as tall as the icon buttons beside it while leaving
+ * "Complete" sitting at the top of that box. The same mistake the difficulty chips made, from the
+ * other direction: there, a taller box left the text high because of baseline alignment; here,
+ * because a stretched block puts its text at the top.
+ */
 .tut-controls .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: default;
   padding: 0.45rem 0.55rem;
   font-size: 0.85rem;

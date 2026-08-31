@@ -175,7 +175,7 @@ export const nl: Messages = {
     'Sommige stenen komen als joker boven in plaats van als letter. Een joker geldt als de letter die een woord maakt, gekozen uit de letters die passen, en je ziet welke wanneer het woord in je lijst verschijnt. Een woord dat je al hebt telt niet.',
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
-    'Tussen de rondes kan een tegel van letter veranderen. Het bord wordt leeggemaakt en toont de letter die vertrekt en die haar plaats inneemt, maar nooit welke tegel het was. Het bord blijft nooit lang hetzelfde, dus een lijstje met zijn letters is snel achterhaald.',
+    'Tussen de rondes wisselt één tegel van letter. Je ziet welke weggaat en welke komt, maar niet waar hij ligt. Leer het bord uit je hoofd en het zet je klem.',
   htLevelsTitle: 'De niveaus',
   htLevelEasy:
     'Dezelfde twaalf letters de hele partij, dus je kunt ze leren en een lijstje met woorden in je hoofd houden. Tegels draaien langzaam en het volle bord blijft lang genoeg staan om er een te bedenken.',
