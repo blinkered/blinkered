@@ -128,7 +128,7 @@ The board's column is a percentage rather than `auto`, and that is not a style p
 `.board-wrap` is an inline-size container, which means its width may not depend on its contents;
 in an `auto` track it would depend on exactly that, and the column collapses to nothing.
 
-## Touch behaviour the browser supplies and we do not want
+## Touch behavior the browser supplies and we do not want
 
 Four defaults, all of them wrong here, none of them visible without a device:
 
@@ -137,7 +137,7 @@ Four defaults, all of them wrong here, none of them visible without a device:
   game.
 - **`user-select: none` and `-webkit-touch-callout: none`** on tiles. A long press on a letter
   otherwise raises the iOS selection callout, offering to copy or look up a tile mid-round.
-- **`-webkit-tap-highlight-color: transparent`**. WebKit paints a grey box over each tile as it
+- **`-webkit-tap-highlight-color: transparent`**. WebKit paints a gray box over each tile as it
   is tapped, which on a dark board reads as the tile breaking rather than as a tap landing.
 - **`overscroll-behavior: none`**. A page that does not scroll should not bounce; without it,
   tapping tiles drags the whole game up and down.
@@ -215,7 +215,7 @@ a file served as the wrong type is a thing waiting to break.
 ## There is no service worker, on purpose
 
 The obvious next PWA box to tick, and it is not ticked. Offline is not something the game does
-on the web either, so adding it here would be new behaviour rather than parity, and the payload
+on the web either, so adding it here would be new behavior rather than parity, and the payload
 is sixteen word lists of which Russian alone is 8.3MB — caching that is a decision about a
 player's storage, not a detail. A stale service worker is also the classic way to serve last
 week's bundle to somebody who has cleared everything else.
@@ -264,7 +264,7 @@ the game.
 
 What it cannot: **actual safe-area inset values** (the emulated viewport has none, so the
 landscape notch padding is reasoned from the spec rather than measured), **the URL bar
-resizing** the viewport, **the focus-zoom behaviour** itself as opposed to the font sizes that
+resizing** the viewport, **the focus-zoom behavior** itself as opposed to the font sizes that
 trigger it, and **home-screen installation**. Those four want five minutes on a real iPhone.
 
 The checks live in the scratchpad rather than the repo, which is the honest gap here: STATUS.md

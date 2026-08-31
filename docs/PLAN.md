@@ -283,7 +283,7 @@ interface Tile {
 
 interface GameState {
   readonly config: GameConfig // frozen for the life of the game
-  readonly rng: RngState // serialisable PRNG state
+  readonly rng: RngState // serializable PRNG state
   tiles: Tile[] // stable identity; position changes on shuffle
   selection: number[] // tile ids, in tap order
   roundIndex: number
@@ -453,7 +453,7 @@ Non-Latin scripts are a different project rather than another language. Arabic h
 
 ### 5.4 Where the word lists come from
 
-Sixteen playable languages, built and committed. The sourcing design, the licence audit and
+Sixteen playable languages, built and committed. The sourcing design, the license audit and
 every measurement behind the sizing live in [DICTIONARIES.md](DICTIONARIES.md). The short
 version: a frequency list selects candidates, a dictionary validates them, and we ship the
 intersection, which is smaller, better and a thinner derivative of either input than a copy of
@@ -473,7 +473,7 @@ The order is load-bearing: board density depends on the draw weights, and the wo
 
 The remaining work is a judgment pass on the suggested rare letters, a note of which letters are dead alone, and a `Messages` set in `packages/i18n/src/locales/`.
 
-So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a licence that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens: of the sixteen, a third had no usable morphological dictionary at all.
+So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a license that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens: of the sixteen, a third had no usable morphological dictionary at all.
 
 Because language is part of the recorded ruleset, ranked play groups by it, exactly as it does for board size.
 
@@ -507,7 +507,7 @@ Each phase ends with green tests and something you can actually play or click.
 | N as a difficulty dial                                  | Resolved: it is not one. Board size is a player's choice, default 9; the flip budget and word floor derive from it                                             |
 | Board acceptance                                        | Resolved: word count, a six-letter ceiling, and no duplicate rare consonant. Enforced in the harness today                                                     |
 | Reveal-order constraint (1.3) is load-bearing           | Confirm it plays as well as it reads; it is the main source of skill expression                                                                                |
-| SCOWL licence and attribution                           | Verify before shipping                                                                                                                                         |
+| SCOWL license and attribution                           | Verify before shipping                                                                                                                                         |
 | Native OAuth via custom scheme                          | Needs a spike in phase 5, most likely place to lose a day                                                                                                      |
 | Apple Developer Program, $99/yr, and Sign in with Apple | Required before any iOS build reaches a device other than yours                                                                                                |
 | Whether the economy is too lossy to feel fair           | Answered by the simulator plus real playtesting, not by argument                                                                                               |

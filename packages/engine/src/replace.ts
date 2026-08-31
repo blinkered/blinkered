@@ -95,8 +95,8 @@ function draw(passing: readonly string[], alphabet: Alphabet, rng: RngState): [s
  * against a deal the player is watching an animation through. See docs/PROPOSALS.md.
  *
  * Returning `null` rather than forcing a swap is the answer when nothing passes anywhere. The word
- * floor is a promise to the player and the churn is a defence against a cheat; breaking the first
- * to honour the second is the wrong way round.
+ * floor is a promise to the player and the churn is a defense against a cheat; breaking the first
+ * to honor the second is the wrong way round.
  */
 export function replaceLetter(
   rng: RngState,

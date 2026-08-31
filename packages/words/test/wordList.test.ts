@@ -4,25 +4,25 @@ import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
 import { ENGLISH, stripDiacritics, segmentBy } from '@blinkered/engine'
 import type { Alphabet } from '@blinkered/engine'
-import { normaliseWordList } from '../src/index.js'
+import { normalizeWordList } from '../src/index.js'
 import { readWordList } from '../src/node.js'
 
-describe('normaliseWordList', () => {
+describe('normalizeWordList', () => {
   it('folds words onto tiles and sorts them', () => {
-    expect(normaliseWordList(['ate', 'EAT', 'tea'], ENGLISH)).toEqual(['ATE', 'EAT', 'TEA'])
+    expect(normalizeWordList(['ate', 'EAT', 'tea'], ENGLISH)).toEqual(['ATE', 'EAT', 'TEA'])
   })
 
   it('drops duplicates that folding created', () => {
-    expect(normaliseWordList(['ate', 'ATE', 'Ate'], ENGLISH)).toEqual(['ATE'])
+    expect(normalizeWordList(['ate', 'ATE', 'Ate'], ENGLISH)).toEqual(['ATE'])
   })
 
   it('drops blank lines and stray whitespace', () => {
-    expect(normaliseWordList(['', '  ', ' ate '], ENGLISH)).toEqual(['ATE'])
+    expect(normalizeWordList(['', '  ', ' ate '], ENGLISH)).toEqual(['ATE'])
   })
 
-  it('honours the length window', () => {
+  it('honors the length window', () => {
     const words = ['at', 'ate', 'atone', 'antidisestablishmentarianism']
-    expect(normaliseWordList(words, ENGLISH, { minLength: 3, maxLength: 5 })).toEqual([
+    expect(normalizeWordList(words, ENGLISH, { minLength: 3, maxLength: 5 })).toEqual([
       'ATE',
       'ATONE',
     ])
@@ -30,7 +30,7 @@ describe('normaliseWordList', () => {
 
   it('drops anything carrying a letter the alphabet does not have', () => {
     // Apostrophes, hyphens and accents are not tiles in English.
-    expect(normaliseWordList(["can't", 'well-fed', 'café', 'cafe'], ENGLISH)).toEqual(['CAFE'])
+    expect(normalizeWordList(["can't", 'well-fed', 'café', 'cafe'], ENGLISH)).toEqual(['CAFE'])
   })
 
   it('keeps accented words when the alphabet folds accents away', () => {
@@ -41,7 +41,7 @@ describe('normaliseWordList', () => {
       id: 'test-fr',
       fold: (key) => stripDiacritics(key).toUpperCase(),
     }
-    expect(normaliseWordList(['épée', 'père', 'côte'], frenchish)).toEqual(['COTE', 'EPEE', 'PERE'])
+    expect(normalizeWordList(['épée', 'père', 'côte'], frenchish)).toEqual(['COTE', 'EPEE', 'PERE'])
   })
 
   it('keeps accented letters that are letters in their own right', () => {
@@ -56,7 +56,7 @@ describe('normaliseWordList', () => {
       fold: (key) => key.toUpperCase(),
       segment: segmentBy(['L', 'Ł', 'A', 'D', 'N', 'O', 'Ń']),
     }
-    expect(normaliseWordList(['ładna', 'ladna'], polishish)).toEqual(['LADNA', 'ŁADNA'])
+    expect(normalizeWordList(['ładna', 'ladna'], polishish)).toEqual(['LADNA', 'ŁADNA'])
   })
 })
 

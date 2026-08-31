@@ -173,7 +173,7 @@ describe('keeping the board legal', () => {
 
   it('replaces nothing at all rather than break the floor', () => {
     // OAT against a dictionary holding only OAT: every single-letter change destroys the board.
-    // Churn is a defence against a cheat and the floor is a promise to the player, so the floor
+    // Churn is a defense against a cheat and the floor is a promise to the player, so the floor
     // wins.
     const config = configFor('easy', { ...LOOSE, n: 3 })
     const [tiles, replacement] = replaceLetter(

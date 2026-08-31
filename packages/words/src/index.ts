@@ -1,6 +1,6 @@
 export { buildIndex, buildTieredIndex, anagramKey, MAX_SOLVABLE_TILES } from './wordIndex.js'
 export type { BoardProfile, TieredIndex, WordIndex } from './wordIndex.js'
-export { normaliseWordList } from './wordList.js'
+export { normalizeWordList } from './wordList.js'
 export type { WordListOptions } from './wordList.js'
 export { CALIBRATE_DEFAULTS, DERIVE_DEFAULTS, calibrate, deriveWeights } from './derive.js'
 export type { CalibrateOptions, CalibrationRow, DeriveOptions, DerivedWeights } from './derive.js'

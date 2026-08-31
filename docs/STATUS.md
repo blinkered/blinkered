@@ -9,7 +9,7 @@ next.
   Deterministic from `(seed, difficulty, event log)`, which is what will let a server verify
   a score rather than believe one. Sixteen alphabets, with draw weights derived from each
   language's own shipped vocabulary.
-- **`packages/words`** — word list normalisation, anagram solver, board generation, weight
+- **`packages/words`** — word list normalization, anagram solver, board generation, weight
   derivation, and the dictionary pipeline's pure half. Node-only filesystem access sits behind
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
 - **`packages/i18n`** — every string the game says, in sixteen languages. Plurals go through
@@ -59,7 +59,7 @@ next.
    board geometry per viewport, a 44pt audit of every target, and a game played by touch alone.
    They exist and were run; they live in a scratchpad rather than the repo, which is the gap.
 2. **In-progress game surviving reload**, via localStorage. Nearly free: state is
-   serialisable and the reducer is pure.
+   serializable and the reducer is pure.
 3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are
    still guesses — the only numbers in the repo that are. Everything else is now measured.
 4. Then accounts, verified score submission, and history: PLAN.md phase 4 onward. That is when
@@ -79,16 +79,16 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 - **Tight Line LLC owns this.** NOTICE was already written that way; it is now a decision
   rather than a default. It also settles the Apple Developer account type, which is the part
-  that is hard to undo: an organisation account, not an individual one.
+  that is hard to undo: an organization account, not an individual one.
 - **The Apple Developer Program is not Apple Business Manager**, and Tight Line's existing ABM
   account (used for MDM) does not provide TestFlight. They are separate enrolments: ABM is free
   and deploys apps and devices to people, the Developer Program is $99/yr and is what lets you
   build, beta-test and publish one. The two compose later, in that the Developer Program can
-  push a private Custom App to your own organisation _through_ ABM, which is the modern
+  push a private Custom App to your own organization _through_ ABM, which is the modern
   replacement for the $299 Enterprise Program and the wrong shape for a public game.
   The useful consequence: ABM enrolment already required a verified D-U-N-S number, so the part
-  of organisation enrolment with a multi-day wait in it is already done. The rest of what Apple
-  asks for is also in place: a legal entity, a work email on the organisation's own domain, and
+  of organization enrolment with a multi-day wait in it is already done. The rest of what Apple
+  asks for is also in place: a legal entity, a work email on the organization's own domain, and
   a functional website at that domain.
 - **`playblinkered.com` is registered.** `blinkered.game` is not: $300 a year against $10.
 - **Download size over vocabulary.** The credit tier is bounded by a lexicon rather than by
@@ -108,7 +108,7 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns
   up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
 - **No service worker**, so no offline play. Offline is not something the game does on the web
-  either, so it would be new behaviour rather than parity, and the payload is sixteen word lists
+  either, so it would be new behavior rather than parity, and the payload is sixteen word lists
   of which Russian alone is 8.3MB. A stale service worker is also the classic way to serve last
   week's bundle. Worth adding when somebody asks for offline; cache the shell and the one
   language in play.
@@ -142,7 +142,7 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   reason than balance: with the letters fixed you can learn the board and carry a word list
   between rounds, and once they drift you cannot. That is a different game rather than a harder
   one, so `easy` has no letter swaps at all and the rate climbs to `hard` and stops. It stops
-  because what a swap costs is a stale memorised list, and `insane` shows the full board for 1.8
+  because what a swap costs is a stale memorized list, and `insane` shows the full board for 1.8
   seconds, so there was never a list to go stale. Wild cards stay flat deliberately: moving two
   mechanics at once would leave the next play unable to say which one did what.
 - **difficulty numbers**: still guesses. The balance simulator replaces them.

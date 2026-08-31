@@ -3,12 +3,12 @@ import { join } from 'node:path'
 import { alphabetFor } from '@blinkered/engine'
 import type { Built } from './build.js'
 import { LENGTH_RANGE } from './build.js'
-import { FREQUENCY_ATTRIBUTION, FREQUENCY_LICENCE, frequencyUrl, type Source } from './manifest.js'
+import { FREQUENCY_ATTRIBUTION, FREQUENCY_LICENSE, frequencyUrl, type Source } from './manifest.js'
 
 export const DATA_DIR = 'packages/words/data'
 
 /**
- * Licences that carry a share-alike obligation onto the shipped list. Recorded rather than
+ * Licenses that carry a share-alike obligation onto the shipped list. Recorded rather than
  * hidden: a permissively validated language can go anywhere, and one of these needs a
  * decision before a store build applies DRM to the binary around it. See DICTIONARIES.md.
  */
@@ -20,11 +20,11 @@ const PUBLIC_DOMAIN = 'LicenseRef-public-domain'
 function describe(source: Source): string {
   switch (source.kind) {
     case 'hunspell':
-      return `hunspell \`${source.id}\` (${source.licence}) — ${source.attribution}`
+      return `hunspell \`${source.id}\` (${source.license}) — ${source.attribution}`
     case 'titles':
-      return `${source.wiki}.wiktionary.org page titles (${source.licence}) — ${source.attribution}`
+      return `${source.wiki}.wiktionary.org page titles (${source.license}) — ${source.attribution}`
     case 'wordList':
-      return `word list \`${source.id}\` (${source.licence}) — ${source.attribution}`
+      return `word list \`${source.id}\` (${source.license}) — ${source.attribution}`
   }
 }
 
@@ -40,8 +40,8 @@ function creditCut(spec: Built['spec']): string {
   return limit === undefined ? 'no limit' : `rank ${String(limit)}`
 }
 
-function licences(built: Built): string[] {
-  return [...new Set(built.spec.groups.flat().map((source) => source.licence))].sort()
+function licenses(built: Built): string[] {
+  return [...new Set(built.spec.groups.flat().map((source) => source.license))].sort()
 }
 
 /**
@@ -53,15 +53,15 @@ function licences(built: Built): string[] {
  * assuming otherwise is nil for the languages that need it.
  */
 function distributionTerms(built: Built): string {
-  const all = licences(built)
-  const found = all.filter((licence) => SHARE_ALIKE.has(licence))
+  const all = licenses(built)
+  const found = all.filter((license) => SHARE_ALIKE.has(license))
   if (found[0] !== undefined) return found[0]
   // Public domain adds no condition, so it adds nothing to the terms either.
-  const binding = all.filter((licence) => licence !== PUBLIC_DOMAIN)
+  const binding = all.filter((license) => license !== PUBLIC_DOMAIN)
   return binding.join(' AND ')
 }
 
-function licenceFile(built: Built): string {
+function licenseFile(built: Built): string {
   const { spec } = built
   const terms = distributionTerms(built)
   return `Blinkered word list for ${alphabetFor(spec.tag).endonym} (${spec.tag})
@@ -77,7 +77,7 @@ PROVENANCE.md for what was relied on and why.
 
 Ordering
   ${FREQUENCY_ATTRIBUTION}
-  ${FREQUENCY_LICENCE}
+  ${FREQUENCY_LICENSE}
 
 Validation
 ${spec.groups
@@ -85,7 +85,7 @@ ${spec.groups
   .map((source) => `  ${describe(source)}`)
   .join('\n')}
 
-The full text of each licence is in ../licences/.
+The full text of each license is in ../licenses/.
 `
 }
 
@@ -111,7 +111,7 @@ hand; edit the sources in \`tools/dictionary/src/manifest.ts\` and rebuild.
 
 ## Sources
 
-**Ordering.** ${FREQUENCY_ATTRIBUTION}, ${FREQUENCY_LICENCE}.
+**Ordering.** ${FREQUENCY_ATTRIBUTION}, ${FREQUENCY_LICENSE}.
 \`${frequencyUrl(spec)}\`
 
 Contributes which words are candidates and in what order. Contributes no content: a word it
@@ -134,11 +134,11 @@ fails without saying so.
 
 ## Terms relied on
 
-${licences(built)
-  .map((licence) => `- \`${licence}\``)
+${licenses(built)
+  .map((license) => `- \`${license}\``)
   .join('\n')}
 
-Where an upstream dictionary is offered under several licences, the branch above is the one
+Where an upstream dictionary is offered under several licenses, the branch above is the one
 relied on, and it is never GPL. Distributed under \`${distributionTerms(built)}\`.
 ${spec.caveat === undefined ? '' : `\n## Caveat\n\n${spec.caveat}\n`}`
 }
@@ -149,7 +149,7 @@ export interface ManifestEntry {
   readonly common: number
   readonly full: number
   readonly bytes: number
-  readonly licence: string
+  readonly license: string
   readonly shareAlike: boolean
   readonly density: number
 }
@@ -158,7 +158,7 @@ export function writeLanguage(built: Built): ManifestEntry {
   const dir = join(DATA_DIR, built.spec.tag)
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'words.txt'), built.text, 'utf8')
-  writeFileSync(join(dir, 'LICENSE'), licenceFile(built), 'utf8')
+  writeFileSync(join(dir, 'LICENSE'), licenseFile(built), 'utf8')
   writeFileSync(join(dir, 'PROVENANCE.md'), provenanceFile(built), 'utf8')
 
   const terms = distributionTerms(built)
@@ -168,7 +168,7 @@ export function writeLanguage(built: Built): ManifestEntry {
     common: built.tiers.common.length,
     full: built.tiers.full.length,
     bytes: Buffer.byteLength(built.text, 'utf8'),
-    licence: terms,
+    license: terms,
     shareAlike: SHARE_ALIKE.has(terms),
     density: built.density.median,
   }

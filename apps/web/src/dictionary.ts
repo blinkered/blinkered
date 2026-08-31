@@ -11,8 +11,8 @@ export interface CatalogueEntry {
   readonly common: number
   readonly full: number
   readonly bytes: number
-  readonly licence: string
-  /** True when the data licence carries a share-alike obligation. See DICTIONARIES.md. */
+  readonly license: string
+  /** True when the data license carries a share-alike obligation. See DICTIONARIES.md. */
   readonly shareAlike: boolean
   /** Median words a 12-tile board admits from the common tier. */
   readonly density: number

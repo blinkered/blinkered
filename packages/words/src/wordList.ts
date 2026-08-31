@@ -18,7 +18,7 @@ const DEFAULT_MAX_LENGTH = 16
  * accented forms are letters in their own right. Either way, anything still carrying a letter
  * the alphabet does not have is dropped rather than silently mangled.
  */
-export function normaliseWordList(
+export function normalizeWordList(
   raw: Iterable<string>,
   alphabet: Alphabet,
   options: WordListOptions = {},

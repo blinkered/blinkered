@@ -38,7 +38,7 @@ Tags the workflow pushes:
 | `1.2.3`, `1.2` | from a `v1.2.3` git tag                       |
 
 Deploy a `sha-` tag rather than `latest`. `latest` moves under you, so a pod restarting two
-weeks later comes up on different code than its neighbours.
+weeks later comes up on different code than its neighbors.
 
 ## Letting the cluster pull it
 

@@ -12,7 +12,7 @@ const MANIFEST = 'manifest.json'
 /**
  * Serves the shipped word lists straight out of `packages/words/data`.
  *
- * They live there rather than in `public/` because that directory is the licence audit: each
+ * They live there rather than in `public/` because that directory is the license audit: each
  * language sits next to its own LICENSE and PROVENANCE.md, and a copy in the app would drift
  * from them. In dev they are served from disk; in a build they are emitted as assets. Either
  * way the app fetches `/words/manifest.json` and discovers what is actually there, so a build

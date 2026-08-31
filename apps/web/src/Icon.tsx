@@ -9,7 +9,7 @@
  *
  * Inline SVG rather than emoji, which was the other option and a worse one: emoji are drawn from
  * whichever font the platform picked, at a size and a baseline the stylesheet cannot reach, in
- * colours that ignore the theme. These inherit `currentColor` and scale with the button.
+ * colors that ignore the theme. These inherit `currentColor` and scale with the button.
  *
  * Paths are deliberately plain. At 20px nothing subtle survives.
  */

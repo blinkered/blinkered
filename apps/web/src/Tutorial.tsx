@@ -234,7 +234,7 @@ interface TutorialProps {
  */
 export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element {
   // Memoised because the frame timer depends on the current step: rebuilt every render, the
-  // timeout below would be cancelled and restarted by every render and never fire.
+  // timeout below would be canceled and restarted by every render and never fire.
   const steps = useMemo(() => stepsFor(messages), [messages])
   const [step, setStep] = useState(0)
   const [frame, setFrame] = useState(0)

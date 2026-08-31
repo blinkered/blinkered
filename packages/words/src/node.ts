@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import type { Alphabet } from '@blinkered/engine'
-import { normaliseWordList } from './wordList.js'
+import { normalizeWordList } from './wordList.js'
 import type { WordListOptions } from './wordList.js'
 
 /**
@@ -15,5 +15,5 @@ export function readWordList(
   alphabet: Alphabet,
   options: WordListOptions = {},
 ): string[] {
-  return normaliseWordList(readFileSync(path, 'utf8').split('\n'), alphabet, options)
+  return normalizeWordList(readFileSync(path, 'utf8').split('\n'), alphabet, options)
 }

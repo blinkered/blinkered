@@ -38,7 +38,7 @@ fails without saying so.
 
 - `CC-BY-SA-4.0`
 
-Where an upstream dictionary is offered under several licences, the branch above is the one
+Where an upstream dictionary is offered under several licenses, the branch above is the one
 relied on, and it is never GPL. Distributed under `CC-BY-SA-4.0`.
 
 ## Caveat

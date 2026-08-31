@@ -64,7 +64,7 @@ describe('createGame', () => {
     expect(effects).toEqual([{ type: 'REVEALED', tileId: 0 }, { type: 'GAME_OVER' }])
   })
 
-  it('normalises letters to upper case', () => {
+  it('normalizes letters to upper case', () => {
     const [state] = createGame({
       config: configFor('easy', { n: 3 }),
       letters: [...'ate'],

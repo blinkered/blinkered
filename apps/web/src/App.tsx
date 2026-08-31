@@ -93,7 +93,7 @@ export function App(): React.JSX.Element {
 
   if (error !== null) {
     return (
-      <main className="shell centred">
+      <main className="shell centered">
         <h1>Blinkered</h1>
         <p className="error">{error}</p>
       </main>
@@ -101,7 +101,7 @@ export function App(): React.JSX.Element {
   }
   if (catalogue === null) {
     return (
-      <main className="shell centred">
+      <main className="shell centered">
         <h1>Blinkered</h1>
         <p className="dim">{messages.readingDictionary}</p>
       </main>
@@ -859,7 +859,7 @@ function useFeedback(
                 letter === null ? messages.nothingUp : format(messages.noSuchLetterUp, { letter }),
             }
           }
-          // Nothing to say for 'already-selected'. Under `cycle` the letters are cancelled
+          // Nothing to say for 'already-selected'. Under `cycle` the letters are canceled
           // and the word line shows that plainly; under `advance` the word simply does not
           // grow. Neither needs narrating.
           return null

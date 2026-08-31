@@ -33,7 +33,7 @@ export const DEFAULT_WILD_CHANCE = 0.02
  * been using stops working. That is the kind of thing a difficulty level should name.
  *
  * The rate stops climbing at `hard` rather than peaking at `insane`, which looks wrong on the
- * table and is right. What a swap costs you is a stale memorised list, and `insane` shows the full
+ * table and is right. What a swap costs you is a stale memorized list, and `insane` shows the full
  * board for 1.8 seconds, so there was never a list to go stale: the axis does its work in the
  * middle of the ladder. Pushing it higher would mostly buy `insane` more of the one thing it
  * should not have, since the clock stops for the announcement and a pause on a 12.6-second round

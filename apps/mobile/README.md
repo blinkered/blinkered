@@ -40,13 +40,13 @@ General > VPN & Device Management. Three devices at a time, no TestFlight.
 
 **On the paid Developer Program** the build signs for a year and TestFlight becomes possible,
 which is how the app gets to a phone without a cable. That account should be the Tight Line
-organisation account rather than an individual one, per docs/STATUS.md.
+organization account rather than an individual one, per docs/STATUS.md.
 
 Worth stating because it is a natural thing to assume: **Apple Business Manager is a different
-programme and does not include TestFlight.** ABM is free and deploys apps and devices to people;
+program and does not include TestFlight.** ABM is free and deploys apps and devices to people;
 the Developer Program is $99/yr and is what lets you build and beta-test one. Having ABM does
 help, in that its enrolment already required a verified D-U-N-S number, which is the slow part of
-organisation enrolment in the Developer Program.
+organization enrolment in the Developer Program.
 
 ## What the shell had to change about the game
 

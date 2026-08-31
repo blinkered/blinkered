@@ -13,7 +13,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
  *
  * Skippable, and skipping is not cancelling. Pressing Start mid-animation exposes and selects
  * everything at once and still runs the travel, because a title that vanished halfway through a
- * shuffle would read as a bug rather than as impatience being honoured.
+ * shuffle would read as a bug rather than as impatience being honored.
  */
 const TITLE = 'BLINKERED'
 

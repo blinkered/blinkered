@@ -40,7 +40,7 @@ export interface Locale {
  */
 export const LOCALES: readonly Locale[] = [
   // English takes the Union flag for the language's origin rather than for a dialect: the
-  // English word list is the union of en-US and en-GB, so COLOUR and COLOR both play.
+  // English word list is the union of en-US and en-GB, so COLOR and COLOR both play.
   { tag: 'en', endonym: 'English', flag: '🇬🇧', messages: en },
   { tag: 'fr', endonym: 'Français', flag: '🇫🇷', messages: fr },
   { tag: 'es', endonym: 'Español', flag: '🇪🇸', messages: es },

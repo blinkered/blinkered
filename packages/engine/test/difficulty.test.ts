@@ -30,7 +30,7 @@ describe('difficulty profiles', () => {
 
   it('never makes a harder level swap letters less often than an easier one', () => {
     // Non-decreasing rather than strictly rising: the rate stops climbing at `hard`, because what
-    // a swap costs is a stale memorised list and `insane` shows the whole board for under two
+    // a swap costs is a stale memorized list and `insane` shows the whole board for under two
     // seconds. A level that swapped *less* than the one below it would be a mistake; a level that
     // matches it is the axis having run out of room.
     const swaps = levels.map((level) => DIFFICULTIES[level].replaceChance)

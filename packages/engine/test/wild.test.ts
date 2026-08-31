@@ -44,7 +44,7 @@ describe('dealing wilds', () => {
     expect(tiles.filter((tile) => tile.wild)).toHaveLength(MAX_WILDS)
   })
 
-  it('does not favour the front of the board when the roll overflows the cap', () => {
+  it('does not favor the front of the board when the roll overflows the cap', () => {
     // Keeping the first two would make tile 0 likelier to be wild than tile 5, which is a tell.
     // Every tile rolls wild here, so the cap alone decides which survive, and it should spread.
     const counts = new Array<number>(plain.length).fill(0)

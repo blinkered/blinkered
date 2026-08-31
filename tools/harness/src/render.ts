@@ -33,7 +33,7 @@ export function render(state: GameState, view: View): string {
   ].join('  ')
 
   const hud = [
-    `${BOLD}flips${RESET} ${flipColour(state.flipsRemaining)}${String(state.flipsRemaining).padStart(4)}${RESET}`,
+    `${BOLD}flips${RESET} ${flipColor(state.flipsRemaining)}${String(state.flipsRemaining).padStart(4)}${RESET}`,
     `${BOLD}score${RESET} ${String(state.score).padStart(4)}`,
     `${BOLD}round${RESET} ${String(state.roundIndex + 1).padStart(3)}`,
     `${BOLD}words${RESET} ${String(state.wordsFound.length).padStart(3)}`,
@@ -58,7 +58,7 @@ export function render(state: GameState, view: View): string {
   ].join('\n')
 }
 
-function flipColour(flips: number): string {
+function flipColor(flips: number): string {
   if (flips <= 5) return RED + BOLD
   if (flips <= 20) return YELLOW
   return GREEN

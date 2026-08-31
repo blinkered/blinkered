@@ -2,7 +2,7 @@
 
 How Blinkered gets a word list for each language, and the evidence behind the choices.
 Numbers here were measured, not estimated; re-measure rather than trust them after any source
-changes. The pipeline is `tools/dictionary`, the licence audit is
+changes. The pipeline is `tools/dictionary`, the license audit is
 `tools/dictionary/src/manifest.ts`, and the pure logic is `packages/words/src/pipeline.ts`.
 
 ## The decision
@@ -69,7 +69,7 @@ languages with no lexicon, and it should be labelled as exactly that rather than
 quality decision.
 
 Spot checks the English list passes: SWALE, SWALES, WEAL, WEALS, HISSES, GRUNTS, ZYZZYVA, QUINE
-and SUSURRUS all present; COLOUR **and** COLOR both present; JAMES, MRS, MMM, LONDON, MONDAY and
+and SUSURRUS all present; COLOR **and** COLOR both present; JAMES, MRS, MMM, LONDON, MONDAY and
 ENGLAND all absent. CROMULENT is absent too, which is correct, if a little disappointing.
 
 ## Corpus frequency is the wrong instrument for credit
@@ -139,7 +139,7 @@ That change removed three problems at once, all of which had been measured:
 | Greek      | 828,807 | 828,806        | 1.0x   |
 
 83 million Portuguese forms is not merely impractical, it is wrong: productive verb conjugation
-crossed with enclitic pronouns generates forms no player would recognise.
+crossed with enclitic pronouns generates forms no player would recognize.
 
 **`unmunch` fails silently, twice.** Both of these produce a plausible-looking file:
 
@@ -157,10 +157,10 @@ hunspell accepted neither everything nor nothing, which catches an aff file that
 frequency list, and hunspell is case-aware: it accepts `hiss` and rejects `james`, because the
 dictionary lists the latter only as `James`. The spell check and the name filter are one pass.
 
-## Licences: nine clean, three GPL-only, four gaps
+## Licenses: nine clean, three GPL-only, four gaps
 
 Per [wooorm/dictionaries](https://github.com/wooorm/dictionaries), verified by reading each
-licence file rather than trusting the summary:
+license file rather than trusting the summary:
 
 | Clean, and the branch relied on  |              | GPL-only, so unusable      |
 | -------------------------------- | ------------ | -------------------------- |
@@ -181,7 +181,7 @@ non-GPL morphological dictionary for German or Italian anywhere obvious. GPL is 
 blocker, because a GPL word list bundled into a mobile binary argues the binary is a GPL work,
 and the FSF's position is that the GPL conflicts with the App Store's terms.
 
-**English unions three sources rather than intersecting them.** `en` alone rejects COLOUR;
+**English unions three sources rather than intersecting them.** `en` alone rejects COLOR;
 `en-GB` alone rejects COLOR; both reject SWALE. All three sit in one validator group and any one
 suffices, which is why the pipeline has two levels: groups are intersected, members of a group
 are unioned. The third member is ENABLE, and the reason it is needed is that a spell checker and
@@ -199,7 +199,7 @@ so an inflected form is refused; and a Wiktionary documents foreign words too, s
 cross-language noise gets through, bounded by the frequency list being that language's own
 corpus.
 
-**German needed a rule of its own.** Every German noun is capitalised, so the filter that drops
+**German needed a rule of its own.** Every German noun is capitalized, so the filter that drops
 proper nouns everywhere else would have deleted the nouns and left the verbs. German therefore
 ignores case on both sides, which is why its yield is the highest in the table (92%) and why it
 is the one language that admits some proper nouns. Recorded in its PROVENANCE.
@@ -327,7 +327,7 @@ frequency source as one pluggable input, so switching later is cheap.
 ## What we distribute it under
 
 Conservatively, the most restrictive of a language's inputs, recorded per language in its
-`LICENSE` with the verbatim text in `data/licences/`. The argument that a filtered list
+`LICENSE` with the verbatim text in `data/licenses/`. The argument that a filtered list
 inherits nothing from its filter is a good one; making it is not the same as being right about
 it, and assuming otherwise costs nothing.
 
@@ -348,4 +348,4 @@ GPL.
 
 Governed by [packages/words/data/README.md](../packages/words/data/README.md). One directory per
 language tag, each carrying its own `LICENSE` and a `PROVENANCE.md` naming every source, the
-licence branch relied on, the exact command, and the measurements above.
+license branch relied on, the exact command, and the measurements above.

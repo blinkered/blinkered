@@ -99,11 +99,11 @@ describe('buildValidator', () => {
     expect(buildValidator([' hiss ', '', '  ', 'grunt'])).toEqual(new Set(['hiss', 'grunt']))
   })
 
-  it('drops capitalised entries, which is how proper nouns go', () => {
+  it('drops capitalized entries, which is how proper nouns go', () => {
     expect(buildValidator(['hiss', 'Hiss', 'James', 'MRS'])).toEqual(new Set(['hiss']))
   })
 
-  it('lower-cases them instead when a language capitalises its nouns', () => {
+  it('lower-cases them instead when a language capitalizes its nouns', () => {
     // German would lose every noun to that filter, and a frequency list is lower-cased, so
     // German throws the case evidence away on both sides. See DICTIONARIES.md.
     expect(buildValidator(['Haus', 'haben'], { caseRule: 'ignoreCase' })).toEqual(
@@ -139,7 +139,9 @@ describe('isAccepted', () => {
   })
 
   it('needs only one member of a group, which is what unioning variants means', () => {
-    // en-US has "color" and en-GB has "colour"; both are English, so both play.
+    // en-US has "color" and en-GB has "colour"; both are English, so both play. The British
+    // spelling is the subject of this test rather than a slip: a spelling sweep that "corrected"
+    // it turned the test into `color` against `color` and it stopped testing anything.
     const variants = [new Set(['color']), new Set(['colour'])]
     expect(isAccepted(candidate(['colour']), [new Set(['color', 'colour'])])).toBe(true)
     expect(isAccepted(candidate(['colour']), variants)).toBe(false)

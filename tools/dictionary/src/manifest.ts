@@ -3,7 +3,7 @@ import type { CaseRule, TierCuts } from '@blinkered/words'
 /**
  * Where every language's words come from, and under what terms.
  *
- * This file is the licence audit. Each source names the SPDX branch we rely on, because a
+ * This file is the license audit. Each source names the SPDX branch we rely on, because a
  * tri-licensed hunspell dictionary read carelessly looks like GPL, and GPL data in a mobile
  * binary is the one outcome that would stop the game shipping. Nothing here is GPL.
  *
@@ -28,8 +28,8 @@ export interface HunspellSource {
   readonly id: string
   readonly dic: string
   readonly aff: string
-  /** The branch of the upstream licence we rely on, not the whole disjunction. */
-  readonly licence: string
+  /** The branch of the upstream license we rely on, not the whole disjunction. */
+  readonly license: string
   readonly attribution: string
 }
 
@@ -37,7 +37,7 @@ export interface TitlesSource {
   readonly kind: 'titles'
   /** Wiki prefix: `de` means de.wiktionary.org. */
   readonly wiki: string
-  readonly licence: string
+  readonly license: string
   readonly attribution: string
 }
 
@@ -46,7 +46,7 @@ export interface WordListSource {
   readonly kind: 'wordList'
   readonly id: string
   readonly url: string
-  readonly licence: string
+  readonly license: string
   readonly attribution: string
 }
 
@@ -70,19 +70,19 @@ export interface LanguageSpec {
   readonly caveat?: string
 }
 
-const wooorm = (id: string, licence: string, attribution: string): HunspellSource => ({
+const wooorm = (id: string, license: string, attribution: string): HunspellSource => ({
   kind: 'hunspell',
   id,
   dic: `https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/${id}/index.dic`,
   aff: `https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/${id}/index.aff`,
-  licence,
+  license,
   attribution,
 })
 
 const titles = (wiki: string): TitlesSource => ({
   kind: 'titles',
   wiki,
-  licence: 'CC-BY-SA-4.0',
+  license: 'CC-BY-SA-4.0',
   attribution: `${wiki}.wiktionary.org contributors, page titles in namespace 0`,
 })
 
@@ -119,7 +119,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
     tag: 'en',
     frequency: 'en',
     // One group, so any member suffices. Both spellings play, because a word game has no
-    // reason to make a player pick between COLOUR and COLOR. And ENABLE is in there because
+    // reason to make a player pick between COLOR and COLOR. And ENABLE is in there because
     // SCOWL at this size does not know SWALE: a spell checker aims to catch typos, whereas a
     // word-game lexicon aims to settle arguments, and the second is what we want.
     groups: [
@@ -130,7 +130,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
           kind: 'wordList',
           id: 'enable1',
           url: 'https://raw.githubusercontent.com/dolph/dictionary/master/enable1.txt',
-          licence: 'LicenseRef-public-domain',
+          license: 'LicenseRef-public-domain',
           attribution:
             'ENABLE (Enhanced North American Benchmark Lexicon), Alan Beale and M. Cooper, ' +
             'released into the public domain; see the YAWL package LICENSE for the statement',
@@ -162,7 +162,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
     tag: 'de',
     frequency: 'de',
     groups: [[titles('de')]],
-    // Every German noun is capitalised, so the filter that drops proper nouns everywhere
+    // Every German noun is capitalized, so the filter that drops proper nouns everywhere
     // else would delete the nouns and leave the verbs. Case stops being evidence.
     caseRule: 'ignoreCase',
     cuts: DEFAULT_CUTS,
@@ -214,7 +214,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
           id: 'id_ID',
           dic: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/id/id_ID.dic',
           aff: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/id/id_ID.aff',
-          licence: 'LGPL-3.0',
+          license: 'LGPL-3.0',
           attribution: 'Hunspell Indonesian, Kamus Besar Bahasa Indonesia contributors',
         },
       ],
@@ -270,6 +270,6 @@ export function frequencyUrl(spec: LanguageSpec): string {
   return `${base}/${spec.frequency}/${spec.frequency}_full.txt`
 }
 
-export const FREQUENCY_LICENCE = 'MIT'
+export const FREQUENCY_LICENSE = 'MIT'
 export const FREQUENCY_ATTRIBUTION =
   'hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS'

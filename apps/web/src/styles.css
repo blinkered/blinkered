@@ -9,7 +9,7 @@
   --good: #3fb950;
   --bad: #f85149;
   /* The wild card, wherever it appears: the tile's border, the key, and the letter it gave.
-     One colour for the whole feature, so the player learns it once.
+     One color for the whole feature, so the player learns it once.
 
      Bright, not the mid amber #d29922 this started as. That was 7.5:1 against the page, which
      passes on paper and fails in the rail, where the word is drawn at eight to eleven pixels: a
@@ -46,7 +46,7 @@ body {
   /* A page that does not scroll should not bounce. Without this, tapping tiles quickly on a
      phone drags the whole game up and down under your thumb. */
   overscroll-behavior: none;
-  /* Inherited by everything. WebKit otherwise paints a grey box over each tile as it is
+  /* Inherited by everything. WebKit otherwise paints a gray box over each tile as it is
      tapped, which on a dark board reads as the tile breaking rather than as a tap landing. */
   -webkit-tap-highlight-color: transparent;
 }
@@ -67,13 +67,13 @@ body {
   max-width: 48rem;
 }
 /*
- * Game and sidebar, snug and centred, with nothing wasted between them.
+ * Game and sidebar, snug and centered, with nothing wasted between them.
  *
  * The play column is capped rather than greedy. A `1fr` track takes every pixel left over, so
- * the game sat centred inside a very wide column with a band of nothing between it and the
+ * the game sat centered inside a very wide column with a band of nothing between it and the
  * sidebar, and at a smaller window the pair overflowed and the sidebar was cut off the right
  * edge. Capping the column means the two tracks add up to a known width, `justify-content`
- * centres the pair, and any slack ends up outside them where it is not a gap.
+ * centers the pair, and any slack ends up outside them where it is not a gap.
  *
  * The title bar sits above this rather than inside the play column, because its own width was
  * setting that column's floor.
@@ -89,7 +89,7 @@ body {
     align-items: start;
   }
 }
-.shell.centred {
+.shell.centered {
   min-height: 60dvh;
   place-content: center;
   text-align: center;
@@ -184,8 +184,8 @@ h2 {
   font-size: 0.85rem;
 }
 
-/* The centred shell puts the loading picker under the title rather than beside it. */
-.centred .picker {
+/* The centered shell puts the loading picker under the title rather than beside it. */
+.centered .picker {
   margin: 0.5rem auto 0;
 }
 
@@ -818,7 +818,7 @@ kbd {
   display: inline-flex;
   gap: 0.35rem;
   /*
-   * Centred, not baseline-aligned. Baseline was right when a chip was two things, a name and its
+   * Centered, not baseline-aligned. Baseline was right when a chip was two things, a name and its
    * round budget, and had to line them up. The number is gone and the chip is one line of text,
    * and on a touch screen `min-height: 2.75rem` makes the box taller than that line: baseline
    * pins the text to the top of the box and leaves the whole difference sitting underneath it.
@@ -1276,7 +1276,7 @@ kbd {
    *
    * `grid-area: board` on a bare `.board-wrap` places it into whatever grid it happens to sit in,
    * and a name no template declares creates an implicit track rather than being ignored. So the
-   * rule reached the tutorial's board, which lives in its own centred grid, and shoved it into a
+   * rule reached the tutorial's board, which lives in its own centered grid, and shoved it into a
    * new column at the right-hand edge. That is the second time these have leaked -- `grid-area:
    * found` did the same to the game-over panel -- and the shape of the bug is the same both times:
    * a placement rule is about one layout, so it belongs to that layout's selector.
@@ -1566,7 +1566,7 @@ kbd {
  *
  * The rules as a button rather than a link, which is what the native shell needs: a WebView has
  * no second tab, drops `target="_blank"` on a local URL without a word, and would lose a running
- * game if the rules were navigated to in place. Same words, same colour, so it reads as the link
+ * game if the rules were navigated to in place. Same words, same color, so it reads as the link
  * it is everywhere else.
  */
 .rules-back {
@@ -1691,8 +1691,8 @@ kbd {
  * A wild card, and the one line that says what it is.
  *
  * The tile is a card rather than a blank, because a blank is indistinguishable from a tile that
- * has not turned yet. Colour alone would not do it either: the border and the glyph both change,
- * so the difference survives a colour-blind reader and a black-and-white screenshot.
+ * has not turned yet. Color alone would not do it either: the border and the glyph both change,
+ * so the difference survives a color-blind reader and a black-and-white screenshot.
  */
 .tile.is-wild .tile-front {
   border-color: var(--wild);
@@ -1804,9 +1804,9 @@ kbd {
   width: 100%;
 }
 /*
- * Centred, because these are spans rather than buttons.
+ * Centered, because these are spans rather than buttons.
  *
- * A `<button>` centres its own label; a span does not, and in this flex row the default
+ * A `<button>` centers its own label; a span does not, and in this flex row the default
  * `align-items: stretch` makes the primary as tall as the icon buttons beside it while leaving
  * "Complete" sitting at the top of that box. The same mistake the difficulty chips made, from the
  * other direction: there, a taller box left the text high because of baseline alignment; here,
@@ -1891,9 +1891,9 @@ kbd {
 /*
  * Bright, and not `--wild`.
  *
- * Gold was the obvious choice for a heading that has to shout and it is the one colour that was
+ * Gold was the obvious choice for a heading that has to shout and it is the one color that was
  * unavailable: it means wild card everywhere else on this board, and a gold announcement over a
- * board that may also be holding a wild is two mechanics wearing one colour. Every other hue is
+ * board that may also be holding a wild is two mechanics wearing one color. Every other hue is
  * spoken for too -- blue is selection, green accepted, red refused -- so the emphasis is weight
  * and spacing rather than hue, and the before/after distinction is carried by dimming.
  */
@@ -2068,9 +2068,9 @@ kbd {
 /*
  * A letter the board gave rather than one the player chose.
  *
- * Underlined as well as coloured, because colour alone is not a distinction: a reader who cannot
+ * Underlined as well as colored, because color alone is not a distinction: a reader who cannot
  * separate gold from white sees an ordinary word, and this is the only place in the game where
- * the wild is marked by colour by itself. The tile has a dashed border and a card glyph to fall
+ * the wild is marked by color by itself. The tile has a dashed border and a card glyph to fall
  * back on; the rail row had nothing.
  *
  * An underline rather than a chip or a bracket because it costs no width. The rail sizes each

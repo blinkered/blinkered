@@ -109,16 +109,16 @@ export function foldCandidates(
 }
 
 /**
- * What a validator source's capitalisation is evidence of.
+ * What a validator source's capitalization is evidence of.
  *
  * A frequency list is lower-cased throughout, so the case in the *dictionary* is the only
  * case information the pipeline has, and it is worth a lot: an entry a dictionary lists only
  * as `James` is a name, and one it lists as `hiss` is a word.
  *
- * - `lowerCaseOnly` reads it that way and drops the capitalised entries. Right for almost
+ * - `lowerCaseOnly` reads it that way and drops the capitalized entries. Right for almost
  *   every language, and the reason JAMES, MRS and MMM are not in the English list.
  * - `ignoreCase` throws the evidence away. Required for German, where every noun is
- *   capitalised, so `lowerCaseOnly` would delete the nouns and leave the verbs. The cost is
+ *   capitalized, so `lowerCaseOnly` would delete the nouns and leave the verbs. The cost is
  *   that German admits some proper nouns; see the German section of docs/DICTIONARIES.md.
  */
 export type CaseRule = 'lowerCaseOnly' | 'ignoreCase'
@@ -166,7 +166,7 @@ export function isLowerCase(word: string): boolean {
  *
  * The two levels are both wanted. Independent sources for one language are intersected,
  * which is what makes the shipped list better than either of them. Variants of one language
- * are unioned: en-US and en-GB are one group, so COLOUR and COLOR both play, which is a gift
+ * are unioned: en-US and en-GB are one group, so COLOR and COLOR both play, which is a gift
  * to the player rather than a decision to make on their behalf.
  */
 export function isAccepted(candidate: Candidate, groups: readonly ReadonlySet<string>[]): boolean {

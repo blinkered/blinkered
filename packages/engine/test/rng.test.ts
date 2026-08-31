@@ -3,7 +3,7 @@ import fc from 'fast-check'
 import { nextFloat, nextInt, nextUint32, seedRng, shuffle } from '../src/index.js'
 
 describe('rng', () => {
-  it('normalises seeds to unsigned 32 bits', () => {
+  it('normalizes seeds to unsigned 32 bits', () => {
     expect(seedRng(-1).seed).toBe(0xffffffff)
     expect(seedRng(7).seed).toBe(7)
   })

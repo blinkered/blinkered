@@ -38,5 +38,5 @@ fails without saying so.
 
 - `MPL-1.1`
 
-Where an upstream dictionary is offered under several licences, the branch above is the one
+Where an upstream dictionary is offered under several licenses, the branch above is the one
 relied on, and it is never GPL. Distributed under `MPL-1.1`.

@@ -22,7 +22,7 @@ export interface GameResult {
    * still worth showing them, it just cannot be ranked against a canonical one.
    */
   readonly canonical: boolean
-  /** Epoch milliseconds, for display and to break ties in favour of whoever got there first. */
+  /** Epoch milliseconds, for display and to break ties in favor of whoever got there first. */
   readonly at: number
   /** With the ruleset, enough to replay the game and verify the score. */
   readonly seed: number

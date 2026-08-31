@@ -38,7 +38,7 @@ export interface Settings {
    * The language the interface is written in.
    *
    * Kept apart from `gameLanguage` even though one control sets both, because they are
-   * genuinely different questions: plenty of people would want to practise French with an
+   * genuinely different questions: plenty of people would want to practice French with an
    * interface they read fluently, and merging the two fields now would be hard to undo later.
    */
   readonly uiLanguage: string

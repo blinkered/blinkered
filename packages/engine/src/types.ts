@@ -58,7 +58,7 @@ export type WordCompleteMode = 'shuffle' | 'spend' | 'keep'
 /** What an accepted word pays in flips. */
 export type FlipEconomy = 'none' | 'perLetter' | 'fibonacci' | 'overMinimum'
 
-/** Serialisable PRNG state. Lives in game state so a seed replays exactly. */
+/** Serializable PRNG state. Lives in game state so a seed replays exactly. */
 export interface RngState {
   readonly seed: number
 }

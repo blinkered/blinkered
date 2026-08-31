@@ -32,7 +32,7 @@ interface ShareProps {
  *    exactly how this gets tested on a phone -- reaches step three every time. Without it the
  *    button would simply do nothing there, which is the worst failure a button has.
  *
- * A cancelled share sheet is not an error and says nothing. The player closed it on purpose.
+ * A canceled share sheet is not an error and says nothing. The player closed it on purpose.
  */
 export function Share({ result, letters, personalBest, messages }: ShareProps): React.JSX.Element {
   const [state, setState] = useState<'idle' | 'copied' | 'manual'>('idle')
@@ -65,7 +65,7 @@ export function Share({ result, letters, personalBest, messages }: ShareProps): 
         await navigator.share({ text })
         return
       } catch {
-        // Cancelled, or refused by the platform. Fall through to the clipboard rather than
+        // Canceled, or refused by the platform. Fall through to the clipboard rather than
         // telling the player something went wrong, because usually nothing did.
       }
     }

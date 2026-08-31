@@ -77,7 +77,7 @@ worth wanting on purpose.
 ### What it requires
 
 - **A look that is neither a letter nor a face-down tile.** A star or asterisk, and a shape rather
-  than only a colour, since a colour-only distinction fails for a colour-blind player.
+  than only a color, since a color-only distinction fails for a color-blind player.
 - **A one-line key on the board**, small: `🃏 = any letter` or similar. A symbol nobody has been
   taught needs saying once, and it has to cost almost no room, which on a phone means the same
   budget the tap prompt lives on.
@@ -180,7 +180,7 @@ out to answer the question by itself. On the shipped dictionaries, one `profile(
 1.1–1.4ms, and 85% to 94% of single-letter swaps clear the floor first time. Testing one tile
 against every letter of its alphabet exhaustively is 26 to 33 runs, about 30–42ms measured across
 English, Russian and Croatian at all four difficulties. The deal is already stopped for a second
-and a half while the change is animated, so there is nothing to optimise and nothing to cache.
+and a half while the change is animated, so there is nothing to optimize and nothing to cache.
 
 So `Dictionary` grew a second method rather than the state growing a table:
 
@@ -227,7 +227,7 @@ on.
   transcribed board is wrong within a round or two. Not a column in the difficulty table, for the
   same reason `wildChance` is not.
 - **Nothing at all rather than a broken floor.** When no tile has a valid replacement the deal
-  passes. Churn is a defence against a cheat and the floor is a promise to the player. Measured
+  passes. Churn is a defense against a cheat and the floor is a promise to the player. Measured
   over 432 swaps across three languages and four difficulties, it never came up.
 - **Replace first, then deal wilds, and never both on the same tile.** A tile that changed and was
   then masked would spend its announcement on a letter the board immediately hides, and the two
@@ -261,7 +261,7 @@ being shown to them. Ending on a dimmed R, an arrow and a bright S means the las
 says what happened.
 
 Neither the heading nor the incoming tile is gold, which was the obvious choice for something that
-has to shout and the one colour unavailable: gold means wild card everywhere else on this board.
+has to shout and the one color unavailable: gold means wild card everywhere else on this board.
 Blue is selection, green accepted, red refused. So the emphasis is weight and spacing, and the
 before/after distinction is carried by dimming rather than by hue.
 

@@ -46,7 +46,7 @@ export const WILD_GLYPH = '🃏'
  *
  * Every tile rolls independently, and the result is then capped at `MAX_WILDS`. When the roll
  * produces more than that, which ones survive is drawn rather than taken in order: keeping the
- * first two would make tile 0 likelier to be wild than tile 11, and a board whose bonus favours
+ * first two would make tile 0 likelier to be wild than tile 11, and a board whose bonus favors
  * the top-left is a board with a tell.
  */
 export function dealWilds(

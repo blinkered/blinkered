@@ -21,12 +21,12 @@ describe('compareResults', () => {
     expect(compareResults(result({ score: 100 }), result({ score: 200 }))).toBeGreaterThan(0)
   })
 
-  it('breaks a tie in favour of fewer rounds', () => {
+  it('breaks a tie in favor of fewer rounds', () => {
     // The same score off less board is the better game.
     expect(compareResults(result({ rounds: 8 }), result({ rounds: 12 }))).toBeLessThan(0)
   })
 
-  it('breaks a tie on both in favour of whoever got there first', () => {
+  it('breaks a tie on both in favor of whoever got there first', () => {
     expect(compareResults(result({ at: 10 }), result({ at: 20 }))).toBeLessThan(0)
     expect(compareResults(result(), result())).toBe(0)
   })
