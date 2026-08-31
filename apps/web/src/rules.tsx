@@ -23,6 +23,18 @@ function Rules(): React.JSX.Element {
   return <HowToPlay messages={messages} language={language} onLanguage={setLanguage} />
 }
 
+/*
+ * Always start at the top.
+ *
+ * The browser restores a saved scroll offset for a URL by default, and this page is one screen
+ * of prose with no anchors and nothing to navigate within: there is no arrival at it where the
+ * middle is the right place to be. Set before the first render, since a restore happens around
+ * load.
+ */
+if ('scrollRestoration' in globalThis.history) {
+  globalThis.history.scrollRestoration = 'manual'
+}
+
 const root = document.getElementById('root')
 if (root === null) throw new Error('no #root to render into')
 

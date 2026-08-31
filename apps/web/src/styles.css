@@ -877,10 +877,25 @@ kbd {
 }
 
 /* The rules page. Its own tab, so it gets a readable column rather than the game's layout. */
+/*
+ * The rules page pads for the safe area, the same way `.shell` does.
+ *
+ * It did not, and it declares `viewport-fit=cover` in its own `<head>`, which is the combination
+ * that puts content under the notch, the status bar and the home indicator. The game got this
+ * right and the rules page never did: the header with the title and the language picker was
+ * drawn under whatever the device puts across the top, which reads exactly like arriving at a
+ * page that is already scrolled.
+ *
+ * The two belong together and only one of them was here, which is the failure mode of a rule
+ * written once per page rather than once per document: `index.html` and `how-to-play.html` carry
+ * the same comment saying the shell pads itself, and on this page that comment was describing
+ * padding that did not exist.
+ */
 .rules {
   max-width: 34rem;
   margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
+  padding: max(2rem, env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right))
+    max(4rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
   line-height: 1.6;
 }
 .rules-lead {
@@ -1489,8 +1504,12 @@ kbd {
   .btn-icon {
     padding-inline: 0.35rem;
   }
+  /* The tighter phone padding, still respecting the insets. This is the rule that actually
+     applies on the device where the notch is, so leaving the insets out of it would have left
+     the bug in place while looking fixed on a desktop. */
   .rules {
-    padding: 1.5rem 1.1rem 3rem;
+    padding: max(1.5rem, env(safe-area-inset-top)) max(1.1rem, env(safe-area-inset-right))
+      max(3rem, env(safe-area-inset-bottom)) max(1.1rem, env(safe-area-inset-left));
   }
 }
 
