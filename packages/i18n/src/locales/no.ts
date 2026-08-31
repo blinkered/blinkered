@@ -21,6 +21,7 @@ export const no: Messages = {
   wildCard: 'joker',
   wildKey: 'hvilken som helst bokstav',
   letterReplaced: '{from} ble til {to}',
+  letterSwap: 'BOKSTAVBYTTE!',
   spentTile: 'brukt brikke',
   hiddenWhilePaused: 'skjult under pause',
   letterInWord: '{letter}, bokstav {position} i ordet',
@@ -151,7 +152,7 @@ export const no: Messages = {
     'Noen brikker snus som en joker i stedet for en bokstav. En joker teller som bokstaven som lager et ord, valgt blant dem som passer, og hvilken det ble ser du når ordet dukker opp i lista di. Et ord du allerede har funnet teller ikke.',
   htSwapTitle: 'Bokstaver som byttes',
   htSwapBody:
-    'Mellom rundene kan en brikke bytte bokstav. Mens brettet deles ut, får du én gang se hvilken brikke det er og hva som sto på den før. Brettet er aldri det samme lenge, så en liste over bokstavene blir fort utdatert.',
+    'Mellom rundene kan en brikke bytte bokstav. Brettet tømmes og viser bokstaven som går, og den som tar plassen dens, men aldri hvilken brikke det var. Brettet er aldri det samme lenge, så en liste over bokstavene blir fort utdatert.',
   htTouchTitle: 'Berøringsskjermen',
   htTouchBody:
     'Trykk på en brikke som ligger med forsiden opp for å ta bokstaven. Trykk på en bokstav du har tatt for å gi den tilbake. Lever og Tøm ligger under brettet.',

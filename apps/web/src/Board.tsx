@@ -4,25 +4,6 @@ import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 
-/**
- * How long the swap takes, start to finish.
- *
- * The clock stops for exactly this long, which is why the number lives here with the animation
- * rather than being guessed at twice. A round costs nothing while it is stopped, so the budget is
- * set by how long the change takes to read rather than by what it costs: about a second and a
- * half is long enough to see a letter, register that it is different, and see what replaced it.
- */
-export const SWAP_MS = 1500
-
-/** One tile's letter changing, for the animation that says so. */
-export interface Swap {
-  readonly tileId: number
-  readonly from: string
-  readonly to: string
-  /** Changes on every swap, so a repeat restarts the animation instead of being ignored. */
-  readonly epoch: number
-}
-
 /** Columns for a board of n tiles. Purely a view decision; the engine only knows order. */
 export function columnsFor(n: number, portrait: boolean): number {
   if (n <= 4) return 2
@@ -52,8 +33,6 @@ interface BoardProps {
    */
   readonly concealed: boolean
   readonly onTapTile: (tileId: number) => void
-  /** The letter change to play over its tile, or null when nothing changed this deal. */
-  readonly swap: Swap | null
   readonly messages: Messages
 }
 
@@ -70,7 +49,6 @@ export function Board({
   portrait,
   concealed,
   onTapTile,
-  swap,
   messages,
 }: BoardProps): React.JSX.Element {
   const columns = columnsFor(state.config.n, portrait)
@@ -131,7 +109,6 @@ export function Board({
           messages={messages}
           order={state.selection.indexOf(tile.id)}
           onTap={onTapTile}
-          swap={swap?.tileId === tile.id ? swap : null}
           register={(node) => {
             if (node) nodes.current.set(tile.id, node)
             else nodes.current.delete(tile.id)
@@ -149,8 +126,6 @@ interface TileProps {
   readonly order: number
   readonly onTap: (tileId: number) => void
   readonly register: (node: HTMLButtonElement | null) => void
-  /** Set only on the one tile whose letter changed. */
-  readonly swap: Swap | null
   readonly messages: Messages
 }
 
@@ -160,7 +135,6 @@ function TileButton({
   order,
   onTap,
   register,
-  swap,
   messages,
 }: TileProps): React.JSX.Element {
   const showing = tile.revealed && !concealed
@@ -211,23 +185,6 @@ function TileButton({
           {selected ? <span className="tile-order">{order + 1}</span> : null}
         </span>
       </span>
-      {/*
-       * The letter changing, played over the tile rather than inside it.
-       *
-       * A cover rather than a third face on `tile-inner`: the tile is mid-deal and owns its own
-       * flip, and two 3D transforms arguing over one element is how a tile ends up facing the
-       * wrong way. This borrows the tile's shape, says what it has to say, and leaves.
-       *
-       * Keyed on the swap, so two swaps in a row replay rather than the second being ignored as
-       * an unchanged element. Hidden from screen readers because the message bar already says it
-       * in a sentence, and the tile's own label carries the letter it ended up with.
-       */}
-      {swap === null ? null : (
-        <span key={swap.epoch} className="tile-swap" aria-hidden="true">
-          <span className="swap-face swap-from">{swap.from}</span>
-          <span className="swap-face swap-to">{swap.to}</span>
-        </span>
-      )}
     </button>
   )
 }

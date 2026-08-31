@@ -21,6 +21,7 @@ export const it: Messages = {
   wildCard: 'jolly',
   wildKey: 'una lettera qualsiasi',
   letterReplaced: '{from} è diventata {to}',
+  letterSwap: 'CAMBIO DI LETTERA!',
   spentTile: 'tessera usata',
   hiddenWhilePaused: 'nascosta in pausa',
   letterInWord: '{letter}, lettera {position} della parola',
@@ -153,7 +154,7 @@ export const it: Messages = {
     'Alcune tessere si scoprono come jolly invece che come lettera. Un jolly vale la lettera che forma una parola, scelta fra quelle possibili, e scopri quale quando la parola compare nella tua lista. Una parola già trovata non conta.',
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
-    "Tra un turno e l'altro una tessera può cambiare lettera. Durante la distribuzione ti viene mostrato una volta quale sia e cosa portava prima. Il tabellone non resta mai uguale a lungo, quindi un elenco delle sue lettere invecchia in fretta.",
+    "Tra un turno e l'altro una tessera può cambiare lettera. Il tabellone si svuota e ti mostra la lettera che esce e quella che prende il suo posto, ma mai di quale tessera si trattava. Il tabellone non resta mai uguale a lungo, quindi un elenco delle sue lettere invecchia in fretta.",
   htTouchTitle: 'Lo schermo a sfioramento',
   htTouchBody:
     'Tocca una tessera scoperta per prendere la sua lettera. Tocca una lettera già presa per restituirla. Completa e Cancella stanno sotto il tavoliere.',

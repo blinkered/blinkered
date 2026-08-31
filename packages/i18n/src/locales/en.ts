@@ -28,6 +28,7 @@ export const en: Messages = {
   wildCard: 'wild card',
   wildKey: 'any letter',
   letterReplaced: '{from} became {to}',
+  letterSwap: 'LETTER SWAP!',
   spentTile: 'spent tile',
   hiddenWhilePaused: 'hidden while paused',
   letterInWord: '{letter}, letter {position} of the word',
@@ -159,7 +160,7 @@ export const en: Messages = {
     'Some tiles turn over as a card instead of a letter. A card counts as whatever letter makes a word, chosen from the ones that work, and you find out which when the word appears in your list. A word you have already found does not count.',
   htSwapTitle: 'Changing letters',
   htSwapBody:
-    'Between rounds, one tile may change its letter. As the board deals you are shown which tile it is and what it used to be, once. The board is never the same for long, so a list of its letters goes stale.',
+    'Between rounds, one tile may change its letter. The board clears and shows you the letter that left and the one that took its place, but never which tile it was. The board is never the same for long, so a list of its letters goes stale.',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
     'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',

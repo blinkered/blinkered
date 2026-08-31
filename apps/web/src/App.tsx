@@ -4,8 +4,9 @@ import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
-import { Board, SWAP_MS } from './Board.js'
-import type { Swap } from './Board.js'
+import { Board } from './Board.js'
+import { LetterSwap, SWAP_MS } from './LetterSwap.js'
+import type { Swap } from './LetterSwap.js'
 import { GameSetup } from './GameSetup.js'
 import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
@@ -463,12 +464,15 @@ function Playing({
           state={game.state}
           portrait={portrait}
           concealed={game.paused}
-          swap={swap}
           messages={messages}
           onTapTile={(tileId) => {
             game.dispatch({ type: 'TAP_TILE', tileId })
           }}
         />
+        {/* Over the board rather than on a tile: which tile changed is exactly what this must
+            not give away, since the deal has already happened and naming a position would hand
+            the player a free reveal every time. */}
+        {swap === null ? null : <LetterSwap swap={swap} messages={messages} />}
         {game.paused && confirming === null ? (
           <div className="veil">
             <p>{messages.paused}</p>
@@ -747,7 +751,7 @@ function useSwap(effects: readonly Effect[], epoch: number): Swap | null {
   useEffect(() => {
     for (const effect of effects) {
       if (effect.type === 'LETTER_REPLACED') {
-        setSwap({ tileId: effect.tileId, from: effect.from, to: effect.to, epoch })
+        setSwap({ from: effect.from, to: effect.to, epoch })
         if (timer.current !== null) clearTimeout(timer.current)
         timer.current = setTimeout(() => {
           setSwap(null)

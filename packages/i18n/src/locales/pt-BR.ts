@@ -25,6 +25,7 @@ export const ptBR: Messages = {
   wildCard: 'curinga',
   wildKey: 'qualquer letra',
   letterReplaced: '{from} virou {to}',
+  letterSwap: 'TROCA DE LETRA!',
   spentTile: 'peça gasta',
   hiddenWhilePaused: 'oculta na pausa',
   letterInWord: '{letter}, letra {position} da palavra',
@@ -155,7 +156,7 @@ export const ptBR: Messages = {
     'Algumas peças viram como curinga em vez de letra. Um curinga vale a letra que forma uma palavra, escolhida entre as que servem, e você descobre qual quando a palavra aparece na sua lista. Uma palavra que você já tem não conta.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
-    'Entre rodadas, uma peça pode trocar de letra. Enquanto o tabuleiro é distribuído, você vê uma vez qual é e o que havia nela antes. O tabuleiro nunca fica igual por muito tempo, então uma lista das suas letras fica desatualizada.',
+    'Entre rodadas, uma peça pode trocar de letra. O tabuleiro se esvazia e mostra a letra que sai e a que assume o lugar dela, mas nunca de qual peça se tratava. O tabuleiro nunca fica igual por muito tempo, então uma lista das suas letras fica desatualizada.',
   htTouchTitle: 'A tela sensível ao toque',
   htTouchBody:
     'Toque numa peça virada para pegar a letra dela. Toque numa letra já pega para devolvê-la. Completar e Limpar ficam abaixo do tabuleiro.',

@@ -24,6 +24,7 @@ export const hr: Messages = {
   wildCard: 'džoker',
   wildKey: 'bilo koje slovo',
   letterReplaced: '{from} je postalo {to}',
+  letterSwap: 'ZAMJENA SLOVA!',
   spentTile: 'potrošena pločica',
   hiddenWhilePaused: 'skrivena tijekom pauze',
   letterInWord: '{letter}, {position}. slovo riječi',
@@ -154,7 +155,7 @@ export const hr: Messages = {
     'Neke se pločice okrenu kao džoker umjesto kao slovo. Džoker vrijedi kao slovo koje tvori riječ, izabrano između onih koja odgovaraju, a koje je bilo vidite kad se riječ pojavi na vašem popisu. Riječ koju već imate ne vrijedi.',
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
-    'Između rundi jedna pločica može promijeniti slovo. Dok se ploča dijeli, jednom vam se pokaže koja je to pločica i što je prije bilo na njoj. Ploča nikada dugo ne ostaje ista, pa popis njezinih slova brzo zastari.',
+    'Između rundi jedna pločica može promijeniti slovo. Ploča se prazni i pokazuje vam slovo koje odlazi i ono koje dolazi na njegovo mjesto, ali nikad koja je pločica bila. Ploča nikada dugo ne ostaje ista, pa popis njezinih slova brzo zastari.',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
     'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',

@@ -25,6 +25,7 @@ export const id: Messages = {
   wildCard: 'kartu liar',
   wildKey: 'huruf apa saja',
   letterReplaced: '{from} menjadi {to}',
+  letterSwap: 'GANTI HURUF!',
   spentTile: 'kartu terpakai',
   hiddenWhilePaused: 'disembunyikan saat jeda',
   letterInWord: '{letter}, huruf ke-{position} dari kata',
@@ -155,7 +156,7 @@ export const id: Messages = {
     'Beberapa kartu terbuka sebagai kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf yang membentuk kata, dipilih dari yang cocok, dan kamu tahu yang mana saat kata itu muncul di daftarmu. Kata yang sudah ada tidak dihitung.',
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
-    'Di antara ronde, satu ubin dapat mengganti hurufnya. Saat papan dibagikan, Anda ditunjukkan sekali ubin mana dan huruf apa yang ada sebelumnya. Papan tidak pernah sama untuk waktu lama, jadi daftar hurufnya cepat basi.',
+    'Di antara ronde, satu ubin dapat mengganti hurufnya. Papan dikosongkan dan menampilkan huruf yang pergi serta huruf yang menggantikannya, tetapi bukan ubin yang mana. Papan tidak pernah sama untuk waktu lama, jadi daftar hurufnya cepat basi.',
   htTouchTitle: 'Layar sentuh',
   htTouchBody:
     'Sentuh kartu yang terbuka untuk mengambil hurufnya. Sentuh huruf mana pun yang sudah diambil untuk mengembalikannya. Kirim dan Hapus ada di bawah papan.',

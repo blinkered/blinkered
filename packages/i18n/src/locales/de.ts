@@ -24,6 +24,7 @@ export const de: Messages = {
   wildCard: 'Joker',
   wildKey: 'ein beliebiger Buchstabe',
   letterReplaced: 'Aus {from} wurde {to}',
+  letterSwap: 'BUCHSTABENTAUSCH!',
   spentTile: 'verbrauchter Stein',
   hiddenWhilePaused: 'in der Pause verdeckt',
   letterInWord: '{letter}, Buchstabe {position} des Wortes',
@@ -154,7 +155,7 @@ export const de: Messages = {
     'Manche Plättchen zeigen beim Umdrehen einen Joker statt eines Buchstabens. Ein Joker gilt als der Buchstabe, der ein Wort ergibt, ausgewählt aus denen, die passen, und welcher es war siehst du, wenn das Wort in deiner Liste erscheint. Ein bereits gefundenes Wort zählt nicht.',
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
-    'Zwischen den Runden kann ein Plättchen seinen Buchstaben wechseln. Beim Austeilen wird einmal gezeigt, welches Plättchen es ist und was vorher darauf stand. Das Feld bleibt nie lange gleich, deshalb veraltet eine Liste seiner Buchstaben schnell.',
+    'Zwischen den Runden kann ein Plättchen seinen Buchstaben wechseln. Das Feld wird leer und zeigt den Buchstaben, der geht, und den, der seinen Platz einnimmt, aber nie, welches Plättchen es war. Das Feld bleibt nie lange gleich, deshalb veraltet eine Liste seiner Buchstaben schnell.',
   htTouchTitle: 'Der Berührungsbildschirm',
   htTouchBody:
     'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe einen genommenen Buchstaben an, um ihn zurückzugeben. Abgeben und Löschen liegen unter dem Brett.',

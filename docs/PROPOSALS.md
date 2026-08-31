@@ -241,21 +241,43 @@ The animation was the easy half. A wild card works because it is a **state**: vi
 as it is there. A replacement is an **event**, and if the player was reading the rail or the tab
 was in the background, all that survives is a board that quietly disagrees with their memory.
 
-What it gets: the tile turns up under a cover, shows the old letter, the old letter leaves, the
-new one arrives, and the cover turns away. The clock is stopped for the whole 1.5s, which costs
-the player nothing because a round is spent in ticks. The message bar says `R → S`, which is the
-same in all sixteen languages and short enough not to wrap the one fixed-height row in the layout;
-a screen reader gets a sentence instead, since an arrow is a shape.
+What it gets, after one revision from play: an interstitial over the whole board. The board is
+covered, a heading says so, and the two letters get a third of the board's width each, the
+outgoing one dimming on the left and the incoming one arriving on the right. The clock is stopped
+for the whole 2.6s, which costs the player nothing because a round is spent in ticks. The message
+bar still carries `R → S` as the record that outlasts it; a screen reader gets a sentence, since
+an arrow is a shape.
+
+The first version played on the changed tile itself and was wrong twice over. It **named the
+tile's position**: the deal has already happened when this runs, so flipping that tile up handed
+out one free reveal every time, in a game whose entire economy is paying flips for exactly that.
+A bonus nobody designed is a bug. And one tile for 1.5s is **too small and too brief to notice**
+on a board the player is not yet looking at — the same reason the message-bar line could not carry
+the news on its own, being a 13px row that also holds "shuffled" and every rejection.
+
+The outgoing letter dims rather than disappearing. A full fade is the literal reading of "fade it
+out" and it loses the story: a player who looks up late would see one letter and no reason it was
+being shown to them. Ending on a dimmed R, an arrow and a bright S means the last second still
+says what happened.
+
+Neither the heading nor the incoming tile is gold, which was the obvious choice for something that
+has to shout and the one colour unavailable: gold means wild card everywhere else on this board.
+Blue is selection, green accepted, red refused. So the emphasis is weight and spacing, and the
+before/after distinction is carried by dimming rather than by hue.
 
 Nothing persists afterwards, and that is deliberate rather than lazy. A permanent mark on the
 changed tile is an **anti**-anti-cheat feature: it lets a player who was not watching repair their
 transcription reliably, which is the thing the 0.5 rate exists to prevent. The player who watches
 can keep up. That is the trade the feature is making.
 
-Two things found by looking at it rather than by reading it: the cover was drawn at the size of
-the whole board, because `.tile` was not a positioning context; and cross-fading the two letters
-in one cell is unreadable, because for a fifth of a second both are half-drawn on top of each
-other and it reads as a broken glyph rather than as a change. They take turns now, with a gap.
+Four things found by looking at it rather than by reading it. The first cover was drawn at the
+size of the whole board, because `.tile` was not a positioning context. Cross-fading two letters
+in one cell is unreadable, since for a fifth of a second both are half-drawn on top of each other
+and it reads as a broken glyph. Sizing the big tiles from the board's width alone blew them out of
+a desktop board, which is 928px across and 226 tall — the `--tile: 10vmin` mistake again, in the
+other direction. And the same width rule flung the two letters 900px apart there, far enough that
+the eye cannot hold both and the arrow between them stops joining anything. Both are capped now,
+which leaves the phone layout, where the ask was made, untouched.
 
 ### Still open
 

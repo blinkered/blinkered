@@ -21,6 +21,7 @@ export const nl: Messages = {
   wildCard: 'joker',
   wildKey: 'een willekeurige letter',
   letterReplaced: '{from} werd {to}',
+  letterSwap: 'LETTERWISSEL!',
   spentTile: 'gebruikte steen',
   hiddenWhilePaused: 'verborgen tijdens pauze',
   letterInWord: '{letter}, letter {position} van het woord',
@@ -151,7 +152,7 @@ export const nl: Messages = {
     'Sommige stenen komen als joker boven in plaats van als letter. Een joker geldt als de letter die een woord maakt, gekozen uit de letters die passen, en je ziet welke wanneer het woord in je lijst verschijnt. Een woord dat je al hebt telt niet.',
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
-    'Tussen de rondes kan een tegel van letter veranderen. Terwijl het bord wordt gedeeld zie je één keer welke tegel het is en wat erop stond. Het bord blijft nooit lang hetzelfde, dus een lijstje met zijn letters is snel achterhaald.',
+    'Tussen de rondes kan een tegel van letter veranderen. Het bord wordt leeggemaakt en toont de letter die vertrekt en die haar plaats inneemt, maar nooit welke tegel het was. Het bord blijft nooit lang hetzelfde, dus een lijstje met zijn letters is snel achterhaald.',
   htTouchTitle: 'Het aanraakscherm',
   htTouchBody:
     'Tik op een omgedraaide steen om zijn letter te nemen. Tik op een genomen letter om hem terug te geven. Inleveren en Wissen staan onder het bord.',

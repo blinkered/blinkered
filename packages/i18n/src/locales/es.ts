@@ -21,6 +21,7 @@ export const es: Messages = {
   wildCard: 'comodín',
   wildKey: 'cualquier letra',
   letterReplaced: '{from} pasó a ser {to}',
+  letterSwap: '¡CAMBIO DE LETRA!',
   spentTile: 'ficha gastada',
   hiddenWhilePaused: 'oculta en pausa',
   letterInWord: '{letter}, letra {position} de la palabra',
@@ -152,7 +153,7 @@ export const es: Messages = {
     'Algunas fichas se destapan como comodín en vez de letra. Un comodín vale la letra que forme una palabra, elegida entre las que sirven, y descubres cuál cuando la palabra aparece en tu lista. Una palabra que ya tienes no cuenta.',
   htSwapTitle: 'Las letras cambian',
   htSwapBody:
-    'Entre rondas, una ficha puede cambiar de letra. Mientras se reparte el tablero se te muestra una vez cuál es y qué tenía antes. El tablero nunca sigue igual mucho tiempo, así que una lista de sus letras se queda obsoleta.',
+    'Entre rondas, una ficha puede cambiar de letra. El tablero se vacía y te muestra la letra que se va y la que ocupa su lugar, pero nunca de qué ficha se trataba. El tablero nunca sigue igual mucho tiempo, así que una lista de sus letras se queda obsoleta.',
   htTouchTitle: 'La pantalla táctil',
   htTouchBody:
     'Toca una ficha destapada para tomar su letra. Toca cualquier letra ya tomada para soltarla. Completar y Borrar están debajo del tablero.',

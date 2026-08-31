@@ -66,6 +66,13 @@ export interface Messages {
    * screen reader would announce a shape. This is what it says instead.
    */
   readonly letterReplaced: string
+  /**
+   * Heading on the interstitial that announces a letter change. Shouted, and short.
+   *
+   * It has to read as an event at a glance, which is the whole reason the announcement moved off
+   * the tile and off the message bar: both were too small and too brief to notice.
+   */
+  readonly letterSwap: string
   readonly spentTile: string
   readonly hiddenWhilePaused: string
   /** `{letter}` `{position}` */

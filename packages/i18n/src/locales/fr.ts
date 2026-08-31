@@ -24,6 +24,7 @@ export const fr: Messages = {
   wildCard: 'joker',
   wildKey: 'une lettre au choix',
   letterReplaced: '{from} est devenu {to}',
+  letterSwap: 'CHANGEMENT DE LETTRE !',
   spentTile: 'tuile utilisée',
   hiddenWhilePaused: 'masquée pendant la pause',
   letterInWord: '{letter}, lettre {position} du mot',
@@ -155,7 +156,7 @@ export const fr: Messages = {
     'Certaines tuiles se retournent sur un joker au lieu d’une lettre. Un joker vaut la lettre qui forme un mot, choisie parmi celles qui conviennent, et vous découvrez laquelle quand le mot apparaît dans votre liste. Un mot déjà trouvé ne compte pas.',
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
-    "Entre deux manches, une tuile peut changer de lettre. Pendant la distribution, on vous montre une fois laquelle et ce qu'elle portait avant. Le plateau ne reste jamais le même bien longtemps : une liste de ses lettres se périme.",
+    "Entre deux manches, une tuile peut changer de lettre. Le plateau se vide et vous montre la lettre qui part et celle qui la remplace, mais jamais de quelle tuile il s'agissait. Le plateau ne reste jamais le même bien longtemps : une liste de ses lettres se périme.",
   htTouchTitle: 'L’écran tactile',
   htTouchBody:
     'Touchez une tuile retournée pour prendre sa lettre. Touchez une lettre déjà prise pour la rendre. Valider et Effacer sont sous le plateau.',

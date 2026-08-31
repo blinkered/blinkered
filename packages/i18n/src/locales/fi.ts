@@ -24,6 +24,7 @@ export const fi: Messages = {
   wildCard: 'jokeri',
   wildKey: 'mikä tahansa kirjain',
   letterReplaced: '{from} muuttui kirjaimeksi {to}',
+  letterSwap: 'KIRJAIN VAIHTUI!',
   spentTile: 'käytetty laatta',
   hiddenWhilePaused: 'piilotettu tauon ajaksi',
   letterInWord: '{letter}, sanan {position}. kirjain',
@@ -154,7 +155,7 @@ export const fi: Messages = {
     'Osa laatoista kääntyy jokeriksi kirjaimen sijaan. Jokeri käy siitä kirjaimesta, joka muodostaa sanan, valittuna niistä jotka sopivat, ja kumpi se oli näkyy kun sana ilmestyy listaasi. Jo löytämäsi sana ei kelpaa.',
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
-    'Kierrosten välissä yksi laatta voi vaihtaa kirjaintaan. Laudan jaon aikana sinulle näytetään kerran, mikä laatta on kyseessä ja mikä kirjain siinä oli ennen. Lauta ei pysy koskaan kauan samana, joten luettelo sen kirjaimista vanhenee nopeasti.',
+    'Kierrosten välissä yksi laatta voi vaihtaa kirjaintaan. Lauta tyhjenee ja näyttää lähtevän kirjaimen ja sen tilalle tulevan, mutta ei koskaan sitä, mikä laatta oli kyseessä. Lauta ei pysy koskaan kauan samana, joten luettelo sen kirjaimista vanhenee nopeasti.',
   htTouchTitle: 'Kosketusnäyttö',
   htTouchBody:
     'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa mitä tahansa ottamaasi kirjainta palauttaaksesi sen. Hyväksy ja Tyhjennä ovat laudan alla.',

@@ -21,6 +21,7 @@ export const sv: Messages = {
   wildCard: 'joker',
   wildKey: 'vilken bokstav som helst',
   letterReplaced: '{from} blev {to}',
+  letterSwap: 'BOKSTAVSBYTE!',
   spentTile: 'förbrukad bricka',
   hiddenWhilePaused: 'dold under pausen',
   letterInWord: '{letter}, bokstav {position} i ordet',
@@ -151,7 +152,7 @@ export const sv: Messages = {
     'Vissa brickor vänds upp som en joker i stället för en bokstav. En joker gäller som den bokstav som bildar ett ord, vald bland dem som fungerar, och vilken det blev ser du när ordet dyker upp i din lista. Ett ord du redan hittat räknas inte.',
   htSwapTitle: 'Bokstäver som byts',
   htSwapBody:
-    'Mellan omgångarna kan en bricka byta bokstav. Medan brädet delas ut får du en gång se vilken bricka det är och vad som stod på den förut. Brädet är aldrig sig likt särskilt länge, så en lista över dess bokstäver blir snabbt inaktuell.',
+    'Mellan omgångarna kan en bricka byta bokstav. Brädet töms och visar bokstaven som lämnar och den som tar dess plats, men aldrig vilken bricka det var. Brädet är aldrig sig likt särskilt länge, så en lista över dess bokstäver blir snabbt inaktuell.',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
     'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',
