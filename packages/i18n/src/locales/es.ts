@@ -42,6 +42,7 @@ export const es: Messages = {
   shareSelect: 'Copia esto:',
 
   lettersSelect: 'las letras seleccionan',
+  keysWild: 'toma una carta si ninguna ficha muestra esa letra, e intenta serla',
   clearsEvery: 'quita todas las {letter} seleccionadas',
   undoLastLetter: 'deshace la última letra',
   noWordsYet: 'Todavía ninguna palabra.',

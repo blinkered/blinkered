@@ -180,6 +180,14 @@ export interface Messages {
 
   // The keyboard legend. Only the bindings the buttons cannot advertise themselves.
   readonly lettersSelect: string
+  /**
+   * What a letter key does when the board is not showing that letter: it takes a wild.
+   *
+   * In the keyboard list rather than with the wild-card rules, because it is the one part of the
+   * mechanic that is about the keyboard. A thumb takes a card by tapping it and says nothing
+   * about which letter it wanted; a key can say, and this is where that is written down.
+   */
+  readonly keysWild: string
   /** `{letter}`, shown as the literal X of "shift-X clears all selected Xs". */
   readonly clearsEvery: string
   readonly undoLastLetter: string

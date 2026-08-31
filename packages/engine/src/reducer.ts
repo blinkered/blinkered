@@ -3,7 +3,14 @@ import { WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
 import { replaceLetter } from './replace.js'
 import { alphabetFor } from './languages.js'
 import { flipReward, wordScore } from './score.js'
-import { isEligible, letterAvailability, tileAt, tileById } from './selection.js'
+import {
+  freeWild,
+  isEligible,
+  letterAvailability,
+  tileAt,
+  tileById,
+  wildsAskedFor,
+} from './selection.js'
 import type {
   Dictionary,
   Effect,
@@ -20,6 +27,26 @@ function ignored(state: GameState, reason: IgnoredReason): Reduction {
 }
 
 /**
+ * Changes the selection, and keeps the typed-card record honest while doing it.
+ *
+ * Every path that drops a tile has to drop what was typed onto it, and there are six of them:
+ * tap, backspace, escape, clear-letter, submit and the deal. Pruning here rather than at each
+ * one is the difference between an invariant and six places that have to remember the same
+ * thing.
+ */
+function reselect(
+  state: GameState,
+  selection: readonly number[],
+  intent: Readonly<Record<number, string>> = state.wildIntent,
+): GameState {
+  const held = new Set(selection)
+  const wildIntent = Object.fromEntries(
+    Object.entries(intent).filter(([id]) => held.has(Number(id))),
+  )
+  return { ...state, selection, wildIntent }
+}
+
+/**
  * No flips left to reveal with, and not enough exposed to spell anything with. Nothing the
  * player can do will change that, so the round has no reason to keep running.
  */
@@ -31,7 +58,7 @@ function isStranded(state: GameState): boolean {
 /** Ends a game that has nothing left in it, whichever event exposed that. */
 export function settle([state, effects]: Reduction): Reduction {
   if (state.status === 'over' || !isStranded(state)) return [state, effects]
-  return [{ ...state, selection: [], status: 'over' }, [...effects, { type: 'GAME_OVER' }]]
+  return [{ ...reselect(state, []), status: 'over' }, [...effects, { type: 'GAME_OVER' }]]
 }
 
 /**
@@ -100,7 +127,7 @@ function endRound(state: GameState, dictionary: Dictionary): Reduction {
   const flipsRemaining = state.flipsRemaining - flipsCharged
 
   if (flipsRemaining <= 0) {
-    const over: GameState = { ...state, flipsRemaining: 0, selection: [], status: 'over' }
+    const over: GameState = { ...reselect(state, []), flipsRemaining: 0, status: 'over' }
     return [over, [{ type: 'GAME_OVER' }]]
   }
 
@@ -146,6 +173,7 @@ function endRound(state: GameState, dictionary: Dictionary): Reduction {
     ticksRemaining: config.n + config.holdTicks,
     revealsThisRound: 0,
     selection: [],
+    wildIntent: {},
   })
   const announced: readonly Effect[] =
     replacement === null
@@ -176,50 +204,86 @@ function tapTile(state: GameState, tileId: number): Reduction {
   if (!tile || !isEligible(tile)) return ignored(state, 'not-tappable')
   if (state.selection.includes(tileId)) {
     return [
-      { ...state, selection: state.selection.filter((id) => id !== tileId) },
+      reselect(
+        state,
+        state.selection.filter((id) => id !== tileId),
+      ),
       [{ type: 'DESELECTED', tileIds: [tileId] }],
     ]
   }
-  return [{ ...state, selection: [...state.selection, tileId] }, [{ type: 'SELECTED', tileId }]]
+  // A tap says "take that card" and nothing about which letter it should be, so it records no
+  // intent and the resolution is the ordinary one.
+  return [reselect(state, [...state.selection, tileId]), [{ type: 'SELECTED', tileId }]]
 }
 
+/**
+ * Takes the next tile bearing this letter, or a card if the board is not showing one.
+ *
+ * The card keeps what was typed onto it. Resolution treats that as a preference and falls back to
+ * the ordinary search, so typing a letter onto a card is never worse than tapping it: the player
+ * gets the word they meant when it exists and the engine's pick when it does not.
+ */
 function selectLetter(state: GameState, letter: string): Reduction {
   const { eligible, selected } = letterAvailability(state, letter)
-  if (eligible.length === 0) return ignored(state, 'no-such-letter')
   const next = eligible.find((id) => !selected.includes(id))
-  if (next === undefined) return ignored(state, 'already-selected')
-  return [{ ...state, selection: [...state.selection, next] }, [{ type: 'SELECTED', tileId: next }]]
+  if (next !== undefined) {
+    return [reselect(state, [...state.selection, next]), [{ type: 'SELECTED', tileId: next }]]
+  }
+  const card = freeWild(state)
+  if (card !== undefined) {
+    const wanted = alphabetFor(state.config.language).fold(letter)
+    return [
+      reselect(state, [...state.selection, card], { ...state.wildIntent, [card]: wanted }),
+      [{ type: 'SELECTED', tileId: card }],
+    ]
+  }
+  if (eligible.length === 0) return ignored(state, 'no-such-letter')
+  return ignored(state, 'already-selected')
 }
 
-/** Advance to the next copy, or clear them all once every copy is selected. */
+/**
+ * Advance to the next copy, or clear them all once there is nothing left to take.
+ *
+ * "Nothing left to take" now includes the cards: with one E showing and a card on the board, the
+ * first press takes the E, the second takes the card, and only the third gives them back. Asking
+ * whether a selection is possible rather than counting copies is what keeps that in step, since
+ * the cards are not copies of anything.
+ */
 function cycleLetter(state: GameState, letter: string): Reduction {
   const { eligible, selected } = letterAvailability(state, letter)
-  if (eligible.length === 0) return ignored(state, 'no-such-letter')
-  if (selected.length === eligible.length) return clearLetter(state, letter)
+  const held = wildsAskedFor(state, letter)
+  if (eligible.length === 0 && held.length === 0 && freeWild(state) === undefined) {
+    return ignored(state, 'no-such-letter')
+  }
+  if (selected.length === eligible.length && freeWild(state) === undefined) {
+    return clearLetter(state, letter)
+  }
   return selectLetter(state, letter)
 }
 
+/** Gives back every tile taken for this letter, cards the player typed it onto included. */
 function clearLetter(state: GameState, letter: string): Reduction {
   const { selected } = letterAvailability(state, letter)
-  if (selected.length === 0) return ignored(state, 'nothing-selected')
+  const releasing = [...selected, ...wildsAskedFor(state, letter)]
+  if (releasing.length === 0) return ignored(state, 'nothing-selected')
   return [
-    { ...state, selection: state.selection.filter((id) => !selected.includes(id)) },
-    [{ type: 'DESELECTED', tileIds: selected }],
+    reselect(
+      state,
+      state.selection.filter((id) => !releasing.includes(id)),
+    ),
+    [{ type: 'DESELECTED', tileIds: releasing }],
   ]
 }
 
 function undoLetter(state: GameState): Reduction {
   const last = state.selection.at(-1)
   if (last === undefined) return ignored(state, 'nothing-selected')
-  return [
-    { ...state, selection: state.selection.slice(0, -1) },
-    [{ type: 'DESELECTED', tileIds: [last] }],
-  ]
+  return [reselect(state, state.selection.slice(0, -1)), [{ type: 'DESELECTED', tileIds: [last] }]]
 }
 
 function resetWord(state: GameState): Reduction {
   if (state.selection.length === 0) return ignored(state, 'nothing-selected')
-  return [{ ...state, selection: [] }, [{ type: 'DESELECTED', tileIds: state.selection }]]
+  return [reselect(state, []), [{ type: 'DESELECTED', tileIds: state.selection }]]
 }
 
 function submitWord(state: GameState, dictionary: Dictionary): Reduction {
@@ -236,7 +300,7 @@ function submitWord(state: GameState, dictionary: Dictionary): Reduction {
   // Length is measured in tiles, never in characters. They agree in English; they will not
   // agree in a language whose alphabet has digraphs or combining accents.
   const length = state.selection.length
-  const cleared: GameState = { ...state, selection: [] }
+  const cleared: GameState = reselect(state, [])
   const reject = (reason: RejectReason): Reduction => [
     cleared,
     [{ type: 'WORD_REJECTED', word, reason }],
@@ -251,7 +315,17 @@ function submitWord(state: GameState, dictionary: Dictionary): Reduction {
 
   if (anyWild) {
     const found = new Set(state.wordsFound.map((entry) => entry.word))
-    const outcome = resolveWilds(faces, alphabetFor(state.config.language), dictionary, found, rng)
+    // Aligned with `faces`, which is `selection` in order, so slot `n` is the same tile either
+    // side of the call and `resolveWilds` never has to know a tile id.
+    const asked = state.selection.map((id) => state.wildIntent[id])
+    const outcome = resolveWilds(
+      faces,
+      alphabetFor(state.config.language),
+      dictionary,
+      found,
+      rng,
+      asked,
+    )
     switch (outcome.kind) {
       case 'too-many-wilds':
       case 'unknown':

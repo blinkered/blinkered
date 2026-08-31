@@ -46,6 +46,7 @@ export const ru: Messages = {
   shareSelect: 'Скопируйте это:',
 
   lettersSelect: 'буквы выбирают',
+  keysWild: 'берёт карту, если такой буквы нет на поле, и пытается стать ею',
   clearsEvery: 'снимает все выбранные {letter}',
   undoLastLetter: 'отменяет последнюю букву',
   noWordsYet: 'Слов пока нет.',

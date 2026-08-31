@@ -45,6 +45,8 @@ export const id: Messages = {
   shareSelect: 'Salin ini:',
 
   lettersSelect: 'huruf memilih',
+  keysWild:
+    'mengambil kartu jika tidak ada ubin yang menampilkan huruf itu, dan mencoba menjadi huruf itu',
   clearsEvery: 'menghapus semua {letter} terpilih',
   undoLastLetter: 'membatalkan huruf terakhir',
   noWordsYet: 'Belum ada kata.',

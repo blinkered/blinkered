@@ -41,6 +41,7 @@ export const nl: Messages = {
   shareSelect: 'Kopieer dit:',
 
   lettersSelect: 'letters selecteren',
+  keysWild: 'neemt een kaart als geen tegel die letter toont, en probeert die te worden',
   clearsEvery: 'wist alle geselecteerde {letter}',
   undoLastLetter: 'laatste letter terug',
   noWordsYet: 'Nog geen woorden.',

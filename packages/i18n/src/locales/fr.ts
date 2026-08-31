@@ -45,6 +45,7 @@ export const fr: Messages = {
   shareSelect: 'Copiez ceci :',
 
   lettersSelect: 'les lettres sélectionnent',
+  keysWild: 'prend une carte si aucune tuile ne montre cette lettre, et essaie de la devenir',
   clearsEvery: 'retire tous les {letter} sélectionnés',
   undoLastLetter: 'annule la dernière lettre',
   noWordsYet: 'Aucun mot pour le moment.',

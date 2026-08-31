@@ -87,6 +87,7 @@ function stateOf(frame: Frame): GameState {
     rng: { seed: 1 },
     tiles,
     selection: [...(frame.sel ?? '')].map(Number),
+    wildIntent: {},
     roundIndex: 0,
     ticksRemaining: config.n,
     revealsThisRound: 0,

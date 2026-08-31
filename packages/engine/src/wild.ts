@@ -100,6 +100,14 @@ export type ResolveOutcome =
  * same length, so they are all worth exactly the same. There is nothing for a cleverer choice to
  * win.
  *
+ * `preferred` is what the player typed, per slot, and it is a preference rather than a rule. The
+ * draw happens among the resolutions that honour every letter they asked for; only if none of
+ * those is a new word does it fall back to the rest. That costs the player nothing, because
+ * `wordScore` is length-only and every resolution of one selection is worth the same, and it
+ * means a typed card can never do worse than a tapped one. Binding it instead would make the
+ * keyboard strictly harder than the thumb -- a tapped card fishes across the whole alphabet --
+ * and two input methods playing different games would share one leaderboard.
+ *
  * The draw comes from the game's own seeded RNG rather than `Math.random`, because the engine is
  * deterministic from `(seed, difficulty, event log)` and a server has to be able to replay a game
  * to verify its score. One `Math.random` here would end that quietly.
@@ -114,6 +122,8 @@ export function resolveWilds(
   dictionary: Dictionary,
   found: ReadonlySet<string>,
   rng: RngState,
+  /** The letter the player typed for each slot, where they typed one. Aligned with `faces`. */
+  preferred: readonly (string | undefined)[] = [],
 ): ResolveOutcome {
   const slots = faces.map((face, at) => ({ at, wild: face.wild })).filter((face) => face.wild)
   // A guard, not a rule: the deal caps wilds at `MAX_WILDS`, so a selection cannot exceed it in
@@ -123,14 +133,18 @@ export function resolveWilds(
 
   const wilds = slots.map((slot) => slot.at)
   // Every real word the wilds could make, before excluding the ones already played. Keeping both
-  // lists is what separates "this is not a word" from "you have had all of these already".
-  const matches: string[] = []
+  // lists is what separates "this is not a word" from "you have had all of these already". Each
+  // match carries the letters that produced it, because the word alone cannot be read back into
+  // an assignment: in an alphabet with digraphs, character `n` of the word is not tile `n`.
+  const matches: { readonly word: string; readonly letters: readonly string[] }[] = []
 
   // Every assignment of alphabet tiles to wild slots, depth-first. Bounded by the cap above.
   const walk = (index: number, letters: string[]): void => {
     if (index === wilds.length) {
       const word = letters.join('')
-      if (dictionary.has(word)) matches.push(word)
+      if (dictionary.has(word)) {
+        matches.push({ word, letters: wilds.map((at) => letters[at] as string) })
+      }
       return
     }
     const at = wilds[index] as number
@@ -145,15 +159,24 @@ export function resolveWilds(
     faces.map((face) => face.letter),
   )
 
-  const candidates = matches.filter((word) => !found.has(word))
+  const candidates = matches.filter((match) => !found.has(match.word))
   if (candidates.length === 0) {
     return matches.length > 0 ? { kind: 'all-found' } : { kind: 'unknown' }
   }
 
-  const [pick, next] = nextInt(rng, candidates.length)
+  // Honour what was typed where anything typed can still be honoured, and otherwise ignore it.
+  const asked = candidates.filter((match) =>
+    wilds.every((at, index) => {
+      const wanted = preferred[at]
+      return wanted === undefined || match.letters[index] === wanted
+    }),
+  )
+  const pool = asked.length > 0 ? asked : candidates
+
+  const [pick, next] = nextInt(rng, pool.length)
   return {
     kind: 'resolved',
-    resolution: { word: candidates[pick] as string, wilds },
+    resolution: { word: (pool[pick] as { word: string }).word, wilds },
     rng: next,
   }
 }

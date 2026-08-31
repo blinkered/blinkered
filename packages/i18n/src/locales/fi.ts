@@ -44,6 +44,7 @@ export const fi: Messages = {
   shareSelect: 'Kopioi tämä:',
 
   lettersSelect: 'kirjaimet valitsevat',
+  keysWild: 'ottaa kortin, jos yksikään laatta ei näytä kirjainta, ja yrittää olla se',
   clearsEvery: 'poistaa kaikki valitut {letter}-kirjaimet',
   undoLastLetter: 'peruu viimeisen kirjaimen',
   noWordsYet: 'Ei vielä sanoja.',

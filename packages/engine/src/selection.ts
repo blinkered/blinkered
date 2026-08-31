@@ -50,12 +50,40 @@ export interface LetterAvailability {
  *
  * Only revealed tiles count. If this consulted face-down tiles the keyboard would
  * become an oracle for the hidden board, which would dissolve the entire game.
+ *
+ * A wild is not showing the letter under it either, and leaving that out was a real leak rather
+ * than an oversight of taste. Matching a card by `tile.letter` meant typing the masked letter
+ * selected it and typing anything else did not, so the keyboard answered the one question the
+ * whole mechanic rests on: twenty-six keystrokes read the mask, and you would hit it by accident
+ * long before that. It also left no legitimate way to use a card from a keyboard, since the only
+ * key that worked was the one you were not supposed to know. `freeWild` is the route now.
  */
 export function letterAvailability(state: GameState, letter: string): LetterAvailability {
   const wanted = alphabetFor(state.config.language).fold(letter)
   const eligible = state.tiles
-    .filter((tile) => tile.letter === wanted && isEligible(tile))
+    .filter((tile) => !tile.wild && tile.letter === wanted && isEligible(tile))
     .sort((a, b) => a.position - b.position)
     .map((tile) => tile.id)
   return { eligible, selected: eligible.filter((id) => state.selection.includes(id)) }
+}
+
+/**
+ * A card the keyboard can still take, in reading order, or nothing.
+ *
+ * Typing a letter takes a real tile bearing it if the board is showing one, and falls back to a
+ * card. Falling back rather than preferring: a card is worth more than a letter, so spending one
+ * while the letter itself is sitting there face up would be the interface making a bad trade on
+ * the player's behalf.
+ */
+export function freeWild(state: GameState): number | undefined {
+  return state.tiles
+    .filter((tile) => tile.wild && isEligible(tile) && !state.selection.includes(tile.id))
+    .sort((a, b) => a.position - b.position)
+    .map((tile) => tile.id)[0]
+}
+
+/** Selected cards the player typed this letter onto, so the same key gives them back. */
+export function wildsAskedFor(state: GameState, letter: string): number[] {
+  const wanted = alphabetFor(state.config.language).fold(letter)
+  return state.selection.filter((id) => state.wildIntent[id] === wanted)
 }

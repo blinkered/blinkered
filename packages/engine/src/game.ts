@@ -45,6 +45,7 @@ export function createGame({ config, letters, seed }: NewGame): Reduction {
       rng,
       tiles,
       selection: [],
+      wildIntent: {},
       roundIndex: 0,
       ticksRemaining: config.n + config.holdTicks,
       revealsThisRound: 0,

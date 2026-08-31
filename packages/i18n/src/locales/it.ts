@@ -42,6 +42,7 @@ export const it: Messages = {
   shareSelect: 'Copia questo:',
 
   lettersSelect: 'le lettere selezionano',
+  keysWild: 'prende una carta se nessuna tessera mostra quella lettera, e prova a diventarla',
   clearsEvery: 'togle tutte le {letter} selezionate',
   undoLastLetter: 'annulla ultima lettera',
   noWordsYet: 'Nessuna parola per ora.',

@@ -41,6 +41,7 @@ export const sv: Messages = {
   shareSelect: 'Kopiera detta:',
 
   lettersSelect: 'bokstäver väljer',
+  keysWild: 'tar ett kort om ingen bricka visar bokstaven, och försöker bli den',
   clearsEvery: 'rensar alla valda {letter}',
   undoLastLetter: 'ångrar sista bokstaven',
   noWordsYet: 'Inga ord än.',

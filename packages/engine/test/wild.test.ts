@@ -8,8 +8,20 @@ import {
   seedRng,
   selectedLetters,
 } from '../src/index.js'
-import type { GameState, Tile } from '../src/index.js'
-import { WORDS, dictionaryOf, open, play, submit, tap, tick } from './helpers.js'
+import type { GameEvent, GameState, Tile } from '../src/index.js'
+import {
+  WORDS,
+  clearLetter,
+  dictionaryOf,
+  letter,
+  open,
+  play,
+  resetWord,
+  submit,
+  tap,
+  tick,
+  undo,
+} from './helpers.js'
 
 /**
  * Wild cards mask a letter for a round. The letter underneath is untouched, which is the line
@@ -168,6 +180,127 @@ describe('resolving a selection that contains a wild', () => {
     const out = resolveWilds(faces('_UT', 0), hr, dictionary, new Set(), seedRng(1))
     expect(out.kind).toBe('resolved')
     if (out.kind === 'resolved') expect(out.resolution.word).toBe('LJUT')
+  })
+})
+
+describe('taking a wild from the keyboard', () => {
+  /** OAT with one tile masked, fully revealed. */
+  const masked = (wildId: number): GameState => {
+    const opened = play(
+      open('OAT', { wildChance: 0, minWordLength: 3 }).state,
+      Array.from({ length: 2 }, () => tick),
+    ).state
+    return {
+      ...opened,
+      tiles: opened.tiles.map((tile) => (tile.id === wildId ? { ...tile, wild: true } : tile)),
+    }
+  }
+
+  it('tells you nothing about the letter underneath', () => {
+    /*
+     * The leak this fixes. Matching a card by `tile.letter` meant typing the masked letter picked
+     * it and typing anything else was refused, so the keyboard answered the one question the
+     * mechanic rests on. The property that says it is gone is that every letter behaves the same:
+     * A is what the card is hiding and Z is not, and neither of them can tell you that.
+     */
+    const board = masked(1)
+    const hiding = play(board, [letter('a')])
+    const notHiding = play(board, [letter('z')])
+    expect(hiding.state.selection).toEqual([1])
+    expect(notHiding.state.selection).toEqual([1])
+    expect(hiding.effects).toEqual(notHiding.effects)
+  })
+
+  it('prefers a real tile, because a card is worth more than the letter it stands in for', () => {
+    const { state } = play(masked(1), [letter('t')])
+    expect(state.selection).toEqual([2])
+    expect(state.wildIntent).toEqual({})
+  })
+
+  it('remembers which letter was typed onto the card', () => {
+    const { state } = play(masked(0), [letter('e')])
+    expect(state.selection).toEqual([0])
+    expect(state.wildIntent).toEqual({ 0: 'E' })
+  })
+
+  it('resolves to the letter that was typed', () => {
+    // _AT is EAT, OAT and RAT in the fixture. Which one comes back is the player's to choose.
+    for (const [typed, word] of [
+      ['e', 'EAT'],
+      ['o', 'OAT'],
+      ['r', 'RAT'],
+    ] as const) {
+      const { state } = play(masked(0), [letter(typed), letter('a'), letter('t'), submit])
+      expect(
+        state.wordsFound.map((found) => found.word),
+        typed,
+      ).toEqual([word])
+    }
+  })
+
+  it('falls back to the ordinary draw when the typed letter makes nothing', () => {
+    // ZAT is not a word, so asking for Z cannot be honoured. Refusing would make the keyboard
+    // worse than the thumb for the same selection, so it resolves as a tap would.
+    const { state } = play(masked(0), [letter('z'), letter('a'), letter('t'), submit])
+    expect(state.wordsFound).toHaveLength(1)
+    expect(['EAT', 'OAT', 'RAT']).toContain(state.wordsFound[0]?.word)
+  })
+
+  it('gives the card back to the key that took it', () => {
+    const taken = play(masked(0), [letter('e')])
+    expect(taken.state.selection).toEqual([0])
+    const given = play(taken.state, [clearLetter('e')])
+    expect(given.state.selection).toEqual([])
+    expect(given.state.wildIntent).toEqual({})
+  })
+
+  it('forgets what was typed as soon as the card is given back', () => {
+    for (const undoing of [undo, resetWord, tap(0)]) {
+      const taken = play(masked(0), [letter('e')])
+      const back = play(taken.state, [undoing])
+      expect(back.state.selection, undoing.type).toEqual([])
+      expect(back.state.wildIntent, undoing.type).toEqual({})
+    }
+  })
+
+  it('records nothing for a card that was tapped rather than typed', () => {
+    const { state } = play(masked(0), [tap(0)])
+    expect(state.selection).toEqual([0])
+    expect(state.wildIntent).toEqual({})
+  })
+
+  it('cycles through the copies, then the card, then gives them all back', () => {
+    const cycle: GameEvent = { type: 'CYCLE_LETTER', letter: 't' }
+    let state = masked(0)
+    state = play(state, [cycle]).state
+    expect(state.selection).toEqual([2])
+    state = play(state, [cycle]).state
+    expect(state.selection).toEqual([2, 0])
+    state = play(state, [cycle]).state
+    expect(state.selection).toEqual([])
+  })
+
+  it('is refused when the board has neither the letter nor a card', () => {
+    const plain = play(
+      open('OAT', { wildChance: 0, minWordLength: 3 }).state,
+      Array.from({ length: 2 }, () => tick),
+    ).state
+    const cycle: GameEvent = { type: 'CYCLE_LETTER', letter: 'z' }
+    for (const event of [letter('z'), cycle]) {
+      expect(play(plain, [event]).effects.at(-1), event.type).toEqual({
+        type: 'INPUT_IGNORED',
+        reason: 'no-such-letter',
+      })
+    }
+  })
+
+  it('is refused when every copy is held and there is no card left', () => {
+    const plain = play(
+      open('OAT', { wildChance: 0, minWordLength: 3 }).state,
+      Array.from({ length: 2 }, () => tick),
+    ).state
+    const { effects } = play(plain, [letter('t'), letter('t')])
+    expect(effects.at(-1)).toEqual({ type: 'INPUT_IGNORED', reason: 'already-selected' })
   })
 })
 

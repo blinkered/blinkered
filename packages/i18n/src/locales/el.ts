@@ -41,6 +41,8 @@ export const el: Messages = {
   shareSelect: 'Αντιγράψτε αυτό:',
 
   lettersSelect: 'τα γράμματα επιλέγουν',
+  keysWild:
+    'παίρνει μια κάρτα αν κανένα πλακίδιο δεν δείχνει το γράμμα, και προσπαθεί να γίνει αυτό',
   clearsEvery: 'αφαιρεί όλα τα επιλεγμένα {letter}',
   undoLastLetter: 'αναιρεί το τελευταίο γράμμα',
   noWordsYet: 'Καμία λέξη ακόμη.',

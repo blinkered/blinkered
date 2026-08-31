@@ -109,6 +109,18 @@ export interface GameState {
   readonly tiles: readonly Tile[]
   /** Tile ids in tap order. This is the sole source of truth for the current word. */
   readonly selection: readonly number[]
+  /**
+   * Letters typed onto a wild, by tile id, for the cards currently selected.
+   *
+   * A tap says "take that card" and nothing more; a keystroke says which letter the player was
+   * reaching for, and throwing that away would make the keyboard less expressive than the thumb.
+   * It is a preference rather than a promise: resolution tries it first and falls back to the
+   * ordinary search, so a typed card can never do worse than a tapped one.
+   *
+   * Kept in step with `selection` -- an unselected tile never has an entry -- so that it cannot
+   * outlive the card it describes.
+   */
+  readonly wildIntent: Readonly<Record<number, string>>
   readonly roundIndex: number
   readonly ticksRemaining: number
   readonly revealsThisRound: number

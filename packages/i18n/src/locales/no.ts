@@ -41,6 +41,7 @@ export const no: Messages = {
   shareSelect: 'Kopier dette:',
 
   lettersSelect: 'bokstaver velger',
+  keysWild: 'tar et kort hvis ingen brikke viser bokstaven, og prøver å bli den',
   clearsEvery: 'fjerner alle valgte {letter}',
   undoLastLetter: 'angrer siste bokstav',
   noWordsYet: 'Ingen ord ennå.',
