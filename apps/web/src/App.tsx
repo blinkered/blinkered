@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ENGINE_VERSION, WILD_GLYPH } from '@blinkered/engine'
+import { ENGINE_VERSION } from '@blinkered/engine'
 import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -472,17 +472,6 @@ function Playing({
   return (
     <>
       <Hud state={game.state} feedback={feedback} gain={gain} messages={messages} />
-
-      {/*
-       * What the symbol means, and only while one is on the board. A key for a thing that is not
-       * there is a row of chrome spent on nothing, which on a phone is a row the board could have
-       * had. It sits with the word line rather than under the board for the same reason.
-       */}
-      {game.state.tiles.some((tile) => tile.wild && tile.revealed && !tile.spent) ? (
-        <p className="wild-key">
-          <span aria-hidden="true">{WILD_GLYPH}</span> {messages.wildKey}
-        </p>
-      ) : null}
 
       <div className="board-wrap">
         <Board

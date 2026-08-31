@@ -1,4 +1,4 @@
-import { selectedLetters } from '@blinkered/engine'
+import { WILD_GLYPH, selectedLetters } from '@blinkered/engine'
 import type { GameState } from '@blinkered/engine'
 import type { Messages } from '@blinkered/i18n'
 import { format, plural } from '@blinkered/i18n'
@@ -54,6 +54,7 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
   const total = state.config.n + state.config.holdTicks
   const word = selectedLetters(state)
   const low = state.flipsRemaining <= state.config.n
+  const wildUp = state.tiles.some((tile) => tile.wild && tile.revealed && !tile.spent)
 
   return (
     <header className="hud">
@@ -90,7 +91,16 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
         ))}
       </div>
 
-      <div className="word-line">
+      {/*
+       * One line, always exactly as tall as itself.
+       *
+       * Everything that has anything to say about the current move says it here: the prompt, the
+       * word being built, the message about it, and the card key. They arrive and leave
+       * constantly, and the board is directly underneath, so any of them changing the height of
+       * this box makes the board flinch on a submission. The height is fixed in CSS at every
+       * width and the overflow is hidden; nothing in here is allowed to grow it.
+       */}
+      <div className={`word-line${wildUp ? ' has-key' : ''}`}>
         <output className="word" aria-live="polite">
           {word !== '' ? (
             word
@@ -111,6 +121,15 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
             </>
           ) : null}
         </output>
+        {/* The key sits in this line rather than in a row of its own. It used to be a paragraph
+            between the HUD and the board that appeared with the first card of a round and left
+            with the last, which moved the board every time. Inside a fixed box it can come and go
+            for free. */}
+        {wildUp ? (
+          <span className="wild-key">
+            <span aria-hidden="true">{WILD_GLYPH}</span> {messages.wildKey}
+          </span>
+        ) : null}
         {feedback === null ? null : (
           <span
             key={feedback.epoch}
