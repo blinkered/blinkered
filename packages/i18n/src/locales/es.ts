@@ -132,6 +132,28 @@ export const es: Messages = {
   howToPlay: 'Cómo jugar',
 
   backToGame: 'Volver al juego',
+  welcomeTitle: 'Te damos la bienvenida a Blinkered',
+  tutorialSkip: 'Saltar',
+  tutorialNext: 'Siguiente',
+  tutorialBack: 'Atrás',
+  tutorialStart: 'Empezar a jugar',
+  tutorialHideAgain: 'No volver a mostrar',
+  tutorialProgress: '{n} de {total}',
+  tutorialSkipTitle: '¿Saltar la introducción?',
+  tutPickLetters: 'Toca las letras que quieras. Se unen a la palabra en el orden en que las tocas.',
+  tutMoreTurn:
+    'Las fichas siguen girándose mientras piensas, así que aún puede llegar una letra mejor.',
+  tutTapBack:
+    '¿Has tocado una que no querías? Tócala otra vez para devolverla. Cualquiera, no solo la última.',
+  tutComplete: 'Pulsa Completar cuando la palabra esté lista.',
+  tutControlsTitle: 'Los botones',
+  tutReset: 'Borrar vacía la palabra que estás formando. Las fichas se quedan donde están.',
+  tutPause:
+    'Pausa detiene el reloj y oculta el tablero, para que un descanso no sirva para estudiarlo.',
+  tutRestart: 'Reiniciar reparte un tablero nuevo desde el principio. Pide confirmación.',
+  tutQuit: 'Salir termina la partida y muestra tu puntuación. Pide confirmación.',
+  tutDoneTitle: 'Eso es todo el juego',
+  tutDoneBody: 'Elige un nivel y juega. Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
     'Las fichas se descubren una a una, en orden de lectura. No se ve una letra hasta que gira su ficha.',

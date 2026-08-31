@@ -131,6 +131,27 @@ export const no: Messages = {
   howToPlay: 'Slik spiller du',
 
   backToGame: 'Tilbake til spillet',
+  welcomeTitle: 'Velkommen til Blinkered',
+  tutorialSkip: 'Hopp over',
+  tutorialNext: 'Neste',
+  tutorialBack: 'Tilbake',
+  tutorialStart: 'Begynn å spille',
+  tutorialHideAgain: 'Ikke vis igjen',
+  tutorialProgress: '{n} av {total}',
+  tutorialSkipTitle: 'Hoppe over introduksjonen?',
+  tutPickLetters: 'Trykk på bokstavene du vil ha. De havner i ordet i den rekkefølgen du trykker.',
+  tutMoreTurn: 'Brikkene fortsetter å snus mens du tenker, så en bedre bokstav kan være på vei.',
+  tutTapBack:
+    'Tok du feil? Trykk på den igjen for å levere den tilbake. Hvilken som helst, ikke bare den siste.',
+  tutComplete: 'Trykk Ferdig når ordet er klart.',
+  tutControlsTitle: 'Knappene',
+  tutReset: 'Tøm rydder ordet du holder på med. Brikkene blir liggende.',
+  tutPause:
+    'Pause stopper klokken og skjuler brettet, slik at en pause ikke kan brukes til å studere det.',
+  tutRestart: 'Start på nytt deler ut et nytt brett fra begynnelsen. Den spør først.',
+  tutQuit: 'Avslutt avslutter partiet og viser poengsummen din. Den spør først.',
+  tutDoneTitle: 'Det er hele spillet',
+  tutDoneBody: 'Velg et nivå og spill. Slik spiller du ligger alltid i tittellinjen.',
   htBoardTitle: 'Brettet',
   htBoardBody:
     'Brikkene snus opp én om gangen, i leseretningen. En bokstav er ikke synlig før brikken snus.',

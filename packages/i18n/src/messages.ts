@@ -82,6 +82,28 @@ export interface Messages {
   readonly howToPlay: string
   /** Leaves the in-app rules in the native shell, which has no tab to close. */
   readonly backToGame: string
+  // The first-run tour. Shown once, over the setup screen, until it is dismissed for good.
+  readonly welcomeTitle: string
+  readonly tutorialSkip: string
+  readonly tutorialNext: string
+  readonly tutorialBack: string
+  readonly tutorialStart: string
+  readonly tutorialHideAgain: string
+  /** `{n}` `{total}` */
+  readonly tutorialProgress: string
+  readonly tutorialSkipTitle: string
+  readonly tutPickLetters: string
+  readonly tutMoreTurn: string
+  readonly tutTapBack: string
+  readonly tutComplete: string
+  readonly tutControlsTitle: string
+  readonly tutReset: string
+  readonly tutPause: string
+  readonly tutRestart: string
+  readonly tutQuit: string
+  readonly tutDoneTitle: string
+  readonly tutDoneBody: string
+
   readonly htBoardTitle: string
   readonly htBoardBody: string
   readonly htWordsTitle: string

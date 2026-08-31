@@ -135,6 +135,31 @@ export const fr: Messages = {
   howToPlay: 'Comment jouer',
 
   backToGame: 'Retour au jeu',
+  welcomeTitle: 'Bienvenue dans Blinkered',
+  tutorialSkip: 'Passer',
+  tutorialNext: 'Suivant',
+  tutorialBack: 'Retour',
+  tutorialStart: 'Commencer à jouer',
+  tutorialHideAgain: 'Ne plus afficher',
+  tutorialProgress: '{n} sur {total}',
+  tutorialSkipTitle: 'Passer la visite ?',
+  tutPickLetters:
+    "Touchez les lettres voulues. Elles rejoignent le mot dans l'ordre où vous les touchez.",
+  tutMoreTurn:
+    'Les tuiles continuent de se retourner pendant que vous réfléchissez : une meilleure lettre peut encore arriver.',
+  tutTapBack:
+    "Vous en avez pris une par erreur ? Touchez-la de nouveau pour la rendre. N'importe laquelle, pas seulement la dernière.",
+  tutComplete: 'Appuyez sur Terminer quand le mot est prêt.',
+  tutControlsTitle: 'Les boutons',
+  tutReset: 'Effacer vide le mot en cours. Les tuiles restent en place.',
+  tutPause:
+    "Pause arrête le chronomètre et cache le plateau, pour qu'une pause ne serve pas à l'étudier.",
+  tutRestart:
+    'Recommencer distribue un nouveau plateau depuis le début. Une confirmation est demandée.',
+  tutQuit: 'Quitter met fin à la partie et affiche votre score. Une confirmation est demandée.',
+  tutDoneTitle: 'Voilà tout le jeu',
+  tutDoneBody:
+    'Choisissez un niveau et jouez. Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
     'Les tuiles se retournent une à une, dans le sens de la lecture. Une lettre reste invisible jusqu’à ce que sa tuile se retourne.',

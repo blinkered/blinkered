@@ -133,6 +133,27 @@ export const it: Messages = {
   howToPlay: 'Come si gioca',
 
   backToGame: 'Torna al gioco',
+  welcomeTitle: 'Benvenuto in Blinkered',
+  tutorialSkip: 'Salta',
+  tutorialNext: 'Avanti',
+  tutorialBack: 'Indietro',
+  tutorialStart: 'Inizia a giocare',
+  tutorialHideAgain: 'Non mostrare più',
+  tutorialProgress: '{n} di {total}',
+  tutorialSkipTitle: 'Saltare la presentazione?',
+  tutPickLetters: "Tocca le lettere che vuoi. Entrano nella parola nell'ordine in cui le tocchi.",
+  tutMoreTurn:
+    'Le tessere continuano a girarsi mentre pensi, quindi può ancora arrivare una lettera migliore.',
+  tutTapBack:
+    "Ne hai presa una per sbaglio? Toccala di nuovo per restituirla. Una qualsiasi, non solo l'ultima.",
+  tutComplete: 'Premi Completa quando la parola è pronta.',
+  tutControlsTitle: 'I pulsanti',
+  tutReset: 'Azzera svuota la parola che stai formando. Le tessere restano dove sono.',
+  tutPause: 'Pausa ferma il tempo e nasconde il tabellone, così una pausa non serve a studiarlo.',
+  tutRestart: "Ricomincia distribuisce un tabellone nuovo dall'inizio. Chiede conferma.",
+  tutQuit: 'Esci chiude la partita e mostra il punteggio. Chiede conferma.',
+  tutDoneTitle: 'Il gioco è tutto qui',
+  tutDoneBody: 'Scegli un livello e gioca. Come si gioca resta sempre nella barra del titolo.',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
     'Le tessere si girano una alla volta, in ordine di lettura. Una lettera non si vede finché la sua tessera non si gira.',

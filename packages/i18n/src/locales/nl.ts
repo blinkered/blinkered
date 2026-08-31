@@ -131,6 +131,29 @@ export const nl: Messages = {
   howToPlay: 'Hoe je speelt',
 
   backToGame: 'Terug naar het spel',
+  welcomeTitle: 'Welkom bij Blinkered',
+  tutorialSkip: 'Overslaan',
+  tutorialNext: 'Volgende',
+  tutorialBack: 'Terug',
+  tutorialStart: 'Beginnen met spelen',
+  tutorialHideAgain: 'Dit niet meer tonen',
+  tutorialProgress: '{n} van {total}',
+  tutorialSkipTitle: 'Rondleiding overslaan?',
+  tutPickLetters:
+    'Tik de letters aan die je wilt. Ze komen in het woord in de volgorde waarin je ze aantikt.',
+  tutMoreTurn:
+    'Er blijven tegels omdraaien terwijl je nadenkt, dus er kan nog een betere letter komen.',
+  tutTapBack:
+    'Per ongeluk een aangetikt? Tik hem nog eens aan om hem terug te geven. Elke letter, niet alleen de laatste.',
+  tutComplete: 'Druk op Klaar als het woord af is.',
+  tutControlsTitle: 'De knoppen',
+  tutReset: 'Wissen maakt het woord leeg dat je aan het vormen bent. De tegels blijven liggen.',
+  tutPause:
+    'Pauze stopt de klok en verbergt het bord, zodat een pauze niet gebruikt kan worden om het te bestuderen.',
+  tutRestart: 'Opnieuw deelt een nieuw bord vanaf het begin. Het vraagt eerst.',
+  tutQuit: 'Stoppen beëindigt het spel en toont je score. Het vraagt eerst.',
+  tutDoneTitle: 'Dat is het hele spel',
+  tutDoneBody: 'Kies een niveau en speel. Spelregels staan altijd in de titelbalk.',
   htBoardTitle: 'Het bord',
   htBoardBody:
     'De stenen draaien één voor één om, in leesrichting. Een letter is niet te zien tot zijn steen draait.',

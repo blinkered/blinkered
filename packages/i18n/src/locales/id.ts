@@ -135,6 +135,28 @@ export const id: Messages = {
   howToPlay: 'Cara bermain',
 
   backToGame: 'Kembali ke permainan',
+  welcomeTitle: 'Selamat datang di Blinkered',
+  tutorialSkip: 'Lewati',
+  tutorialNext: 'Berikutnya',
+  tutorialBack: 'Kembali',
+  tutorialStart: 'Mulai bermain',
+  tutorialHideAgain: 'Jangan tampilkan lagi',
+  tutorialProgress: '{n} dari {total}',
+  tutorialSkipTitle: 'Lewati pengenalan?',
+  tutPickLetters: 'Ketuk huruf yang Anda inginkan. Huruf masuk ke kata sesuai urutan ketukan Anda.',
+  tutMoreTurn:
+    'Ubin terus terbuka selagi Anda berpikir, jadi huruf yang lebih baik mungkin masih datang.',
+  tutTapBack:
+    'Salah ketuk? Ketuk lagi untuk mengembalikannya. Huruf mana pun, bukan hanya yang terakhir.',
+  tutComplete: 'Tekan Selesai saat kata sudah siap.',
+  tutControlsTitle: 'Tombol',
+  tutReset: 'Atur ulang mengosongkan kata yang sedang Anda susun. Ubin tetap di tempatnya.',
+  tutPause:
+    'Jeda menghentikan waktu dan menyembunyikan papan, agar istirahat tidak dipakai untuk mempelajarinya.',
+  tutRestart: 'Ulangi membagikan papan baru dari awal. Ia bertanya dahulu.',
+  tutQuit: 'Keluar mengakhiri permainan dan menampilkan skor Anda. Ia bertanya dahulu.',
+  tutDoneTitle: 'Itulah seluruh permainannya',
+  tutDoneBody: 'Pilih tingkat lalu bermain. Cara bermain selalu ada di bilah judul.',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Kartu dibuka satu per satu, mengikuti arah baca. Huruf tidak terlihat sampai kartunya berbalik.',

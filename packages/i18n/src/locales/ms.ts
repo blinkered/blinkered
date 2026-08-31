@@ -131,6 +131,29 @@ export const ms: Messages = {
   howToPlay: 'Cara bermain',
 
   backToGame: 'Kembali ke permainan',
+  welcomeTitle: 'Selamat datang ke Blinkered',
+  tutorialSkip: 'Langkau',
+  tutorialNext: 'Seterusnya',
+  tutorialBack: 'Kembali',
+  tutorialStart: 'Mula bermain',
+  tutorialHideAgain: 'Jangan tunjuk lagi',
+  tutorialProgress: '{n} daripada {total}',
+  tutorialSkipTitle: 'Langkau pengenalan?',
+  tutPickLetters:
+    'Ketik huruf yang anda mahu. Huruf masuk ke dalam perkataan mengikut urutan ketikan anda.',
+  tutMoreTurn:
+    'Jubin terus terbalik semasa anda berfikir, jadi huruf yang lebih baik mungkin masih akan datang.',
+  tutTapBack:
+    'Tersalah ketik? Ketik sekali lagi untuk memulangkannya. Mana-mana huruf, bukan yang terakhir sahaja.',
+  tutComplete: 'Tekan Selesai apabila perkataan sudah siap.',
+  tutControlsTitle: 'Butang',
+  tutReset: 'Set semula mengosongkan perkataan yang sedang anda bina. Jubin kekal di tempatnya.',
+  tutPause:
+    'Jeda menghentikan jam dan menyembunyikan papan, supaya rehat tidak boleh digunakan untuk mengkajinya.',
+  tutRestart: 'Mula semula mengedar papan baharu dari awal. Ia bertanya dahulu.',
+  tutQuit: 'Keluar menamatkan permainan dan menunjukkan markah anda. Ia bertanya dahulu.',
+  tutDoneTitle: 'Itulah keseluruhan permainan',
+  tutDoneBody: 'Pilih satu tahap dan bermain. Cara bermain sentiasa ada pada bar tajuk.',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Jubin dibuka satu demi satu, mengikut arah bacaan. Huruf tidak kelihatan sehingga jubinnya terbalik.',

@@ -42,6 +42,15 @@ export interface Settings {
    * interface they read fluently, and merging the two fields now would be hard to undo later.
    */
   readonly uiLanguage: string
+  /**
+   * Whether the first-run tour has been dismissed for good.
+   *
+   * False until the player either finishes the tour with the box ticked or skips and ticks it, so
+   * a first visit and a visit from somebody who closed the tab mid-tour both get it again. Its own
+   * field rather than being inferred from anything else here: "has played before" and "has been
+   * shown the rules" are different facts and only one of them is this one.
+   */
+  readonly tutorialSeen: boolean
 }
 
 /**
@@ -157,6 +166,7 @@ export function defaultSettings(): Settings {
     nerdMode: false,
     gameLanguage: guess,
     uiLanguage: guess,
+    tutorialSeen: false,
   }
 }
 
@@ -182,6 +192,9 @@ export function loadSettings(): Settings {
       nerdMode: parsed.nerdMode === true,
       gameLanguage: parsed.gameLanguage ?? fallback.gameLanguage,
       uiLanguage: uiLanguage ?? fallback.uiLanguage,
+      // Anything but a stored `true` means show it: a corrupt value should err towards offering
+      // the tour, which costs one click, rather than hiding it from somebody who has never played.
+      tutorialSeen: parsed.tutorialSeen === true,
     }
   } catch {
     // A corrupt or unavailable store is not worth failing a game over.

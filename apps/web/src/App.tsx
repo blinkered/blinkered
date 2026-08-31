@@ -8,6 +8,7 @@ import { Board } from './Board.js'
 import { LetterSwap, SWAP_MS } from './LetterSwap.js'
 import type { Swap } from './LetterSwap.js'
 import { GameSetup } from './GameSetup.js'
+import { Tutorial } from './Tutorial.js'
 import { HowToPlay } from './HowToPlay.js'
 import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
@@ -179,6 +180,12 @@ function Session({
   // Only ever true in the native shell, which has no second tab to put the rules in. On the web
   // the link is a link and this stays false forever.
   const [readingRules, setReadingRules] = useState(false)
+  /*
+   * Closing the tour without ticking the box has to hold for this visit, or the tour reopens the
+   * instant it closes: `tutorialSeen` stays false on purpose in that case, since "not now" and
+   * "never again" are different answers and only the box means the second one.
+   */
+  const [tourDone, setTourDone] = useState(false)
 
   const config = useMemo(() => configOf(settings), [settings])
   const playing = phase === 'playing'
@@ -265,6 +272,24 @@ function Session({
        * over, which is worse than the dropped link this exists to fix. Rendering both keeps the
        * game mounted, so it is still there, still paused, still holding its selection.
        */}
+      {/*
+       * The tour, over the setup screen rather than in place of it.
+       *
+       * Only on a phase where there is no game to interrupt, and only while it has not been
+       * dismissed for good. Rendered before the shell so it is the first thing in the document
+       * for a screen reader, and over it so the setup screen is already there when it closes:
+       * finishing the tour should reveal the choice it just described, not navigate to it.
+       */}
+      {!settings.tutorialSeen && !tourDone && phase === 'setup' ? (
+        <Tutorial
+          messages={messages}
+          onDone={(hideAgain) => {
+            onChange({ ...settings, tutorialSeen: hideAgain })
+            setTourDone(true)
+          }}
+        />
+      ) : null}
+
       {readingRules ? (
         <div className="rules-overlay">
           <HowToPlay

@@ -134,6 +134,29 @@ export const fi: Messages = {
   howToPlay: 'Näin pelataan',
 
   backToGame: 'Takaisin peliin',
+  welcomeTitle: 'Tervetuloa Blinkerediin',
+  tutorialSkip: 'Ohita',
+  tutorialNext: 'Seuraava',
+  tutorialBack: 'Takaisin',
+  tutorialStart: 'Aloita peli',
+  tutorialHideAgain: 'Älä näytä uudelleen',
+  tutorialProgress: '{n} / {total}',
+  tutorialSkipTitle: 'Ohitetaanko esittely?',
+  tutPickLetters:
+    'Napauta haluamiasi kirjaimia. Ne liittyvät sanaan siinä järjestyksessä kuin napautat.',
+  tutMoreTurn:
+    'Laatat kääntyvät edelleen sillä aikaa kun mietit, joten parempi kirjain voi olla vielä tulossa.',
+  tutTapBack:
+    'Napautitko väärää? Napauta sitä uudelleen ja saat sen takaisin. Mitä tahansa, ei vain viimeistä.',
+  tutComplete: 'Paina Valmis, kun sana on kasassa.',
+  tutControlsTitle: 'Painikkeet',
+  tutReset: 'Tyhjennä poistaa sanan, jota olet kokoamassa. Laatat jäävät paikoilleen.',
+  tutPause:
+    'Tauko pysäyttää kellon ja piilottaa laudan, jottei taukoa voi käyttää sen tutkimiseen.',
+  tutRestart: 'Aloita alusta jakaa uuden laudan alusta. Se kysyy ensin.',
+  tutQuit: 'Lopeta päättää pelin ja näyttää pistemääräsi. Se kysyy ensin.',
+  tutDoneTitle: 'Siinä koko peli',
+  tutDoneBody: 'Valitse taso ja pelaa. Pelin ohjeet löytyvät aina otsikkopalkista.',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
     'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Kirjainta ei näe ennen kuin sen laatta kääntyy.',

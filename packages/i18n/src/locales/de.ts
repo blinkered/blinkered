@@ -134,6 +134,30 @@ export const de: Messages = {
   howToPlay: 'Spielanleitung',
 
   backToGame: 'Zurück zum Spiel',
+  welcomeTitle: 'Willkommen bei Blinkered',
+  tutorialSkip: 'Überspringen',
+  tutorialNext: 'Weiter',
+  tutorialBack: 'Zurück',
+  tutorialStart: 'Spiel starten',
+  tutorialHideAgain: 'Nicht mehr anzeigen',
+  tutorialProgress: '{n} von {total}',
+  tutorialSkipTitle: 'Einführung überspringen?',
+  tutPickLetters:
+    'Tippen Sie die Buchstaben an, die Sie wollen. Sie kommen in der Reihenfolge ins Wort, in der Sie sie antippen.',
+  tutMoreTurn:
+    'Während Sie überlegen, drehen sich weitere Plättchen um: ein besserer Buchstabe kann noch kommen.',
+  tutTapBack:
+    'Versehentlich einen genommen? Tippen Sie ihn noch einmal an, um ihn zurückzugeben. Jeden, nicht nur den letzten.',
+  tutComplete: 'Drücken Sie Fertig, wenn das Wort steht.',
+  tutControlsTitle: 'Die Schaltflächen',
+  tutReset: 'Zurücksetzen leert das Wort, das Sie gerade bilden. Die Plättchen bleiben liegen.',
+  tutPause:
+    'Pause hält die Uhr an und verdeckt das Feld, damit eine Pause nicht zum Studieren dient.',
+  tutRestart: 'Neustart teilt ein neues Feld von vorn aus. Es fragt vorher nach.',
+  tutQuit: 'Beenden schließt die Partie ab und zeigt Ihr Ergebnis. Es fragt vorher nach.',
+  tutDoneTitle: 'Das ist das ganze Spiel',
+  tutDoneBody:
+    'Wählen Sie eine Stufe und spielen Sie. Die Anleitung bleibt oben in der Titelleiste.',
   htBoardTitle: 'Das Feld',
   htBoardBody:
     'Die Steine werden einzeln umgedreht, in Leserichtung. Einen Buchstaben sieht man erst, wenn sein Stein sich dreht.',

@@ -139,6 +139,27 @@ export const en: Messages = {
   howToPlay: 'How to play',
 
   backToGame: 'Back to the game',
+  welcomeTitle: 'Welcome to Blinkered',
+  tutorialSkip: 'Skip',
+  tutorialNext: 'Next',
+  tutorialBack: 'Back',
+  tutorialStart: 'Start playing',
+  tutorialHideAgain: "Don't show this again",
+  tutorialProgress: '{n} of {total}',
+  tutorialSkipTitle: 'Skip the tour?',
+  tutPickLetters: 'Tap the letters you want. They join the word in the order you tap them.',
+  tutMoreTurn: 'Tiles keep turning while you think, so a better letter may still be coming.',
+  tutTapBack:
+    'Tapped one you did not want? Tap it again to give it back. Any of them, not just the last.',
+  tutComplete: 'Press Complete when the word is ready.',
+  tutControlsTitle: 'The buttons',
+  tutReset: 'Reset clears the word you are building. The tiles stay where they are.',
+  tutPause: 'Pause stops the clock and hides the board, so a break cannot be used to study it.',
+  tutRestart: 'Restart deals a new board from the beginning. It asks first.',
+  tutQuit: 'Quit ends the game and shows what you scored. It asks first.',
+  tutDoneTitle: 'That is the whole game',
+  tutDoneBody:
+    'Pick a level and play. How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
     'Tiles turn face up one at a time, in reading order. You cannot see a letter until its tile turns.',

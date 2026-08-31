@@ -131,6 +131,28 @@ export const pt: Messages = {
   howToPlay: 'Como jogar',
 
   backToGame: 'Voltar ao jogo',
+  welcomeTitle: 'Bem-vindo ao Blinkered',
+  tutorialSkip: 'Ignorar',
+  tutorialNext: 'Seguinte',
+  tutorialBack: 'Voltar',
+  tutorialStart: 'Começar a jogar',
+  tutorialHideAgain: 'Não mostrar novamente',
+  tutorialProgress: '{n} de {total}',
+  tutorialSkipTitle: 'Ignorar a apresentação?',
+  tutPickLetters: 'Toque nas letras que quiser. Entram na palavra pela ordem por que lhes tocar.',
+  tutMoreTurn:
+    'As peças continuam a virar enquanto pensa, por isso ainda pode aparecer uma letra melhor.',
+  tutTapBack:
+    'Tocou numa sem querer? Toque outra vez para a devolver. Em qualquer uma, não só na última.',
+  tutComplete: 'Carregue em Concluir quando a palavra estiver pronta.',
+  tutControlsTitle: 'Os botões',
+  tutReset: 'Limpar esvazia a palavra que está a formar. As peças ficam onde estão.',
+  tutPause:
+    'Pausa para o relógio e esconde o tabuleiro, para que uma pausa não sirva para o estudar.',
+  tutRestart: 'Reiniciar distribui um tabuleiro novo desde o início. Pede confirmação.',
+  tutQuit: 'Sair termina o jogo e mostra a sua pontuação. Pede confirmação.',
+  tutDoneTitle: 'O jogo é isto',
+  tutDoneBody: 'Escolha um nível e jogue. Como jogar está sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
     'As peças viram-se uma a uma, na ordem de leitura. Não se vê uma letra até a sua peça virar.',

@@ -131,6 +131,27 @@ export const sv: Messages = {
   howToPlay: 'Så spelar du',
 
   backToGame: 'Tillbaka till spelet',
+  welcomeTitle: 'Välkommen till Blinkered',
+  tutorialSkip: 'Hoppa över',
+  tutorialNext: 'Nästa',
+  tutorialBack: 'Tillbaka',
+  tutorialStart: 'Börja spela',
+  tutorialHideAgain: 'Visa inte igen',
+  tutorialProgress: '{n} av {total}',
+  tutorialSkipTitle: 'Hoppa över introduktionen?',
+  tutPickLetters: 'Tryck på de bokstäver du vill ha. De hamnar i ordet i den ordning du trycker.',
+  tutMoreTurn: 'Brickorna fortsätter vändas medan du tänker, så en bättre bokstav kan vara på väg.',
+  tutTapBack:
+    'Tog du fel? Tryck på den igen för att lämna tillbaka den. Vilken som helst, inte bara den sista.',
+  tutComplete: 'Tryck på Klar när ordet är färdigt.',
+  tutControlsTitle: 'Knapparna',
+  tutReset: 'Rensa tömmer ordet du håller på med. Brickorna ligger kvar.',
+  tutPause:
+    'Paus stoppar klockan och döljer brädet, så att en paus inte går att använda för att studera det.',
+  tutRestart: 'Börja om delar ut ett nytt bräde från början. Den frågar först.',
+  tutQuit: 'Avsluta avslutar partiet och visar din poäng. Den frågar först.',
+  tutDoneTitle: 'Det är hela spelet',
+  tutDoneBody: 'Välj en nivå och spela. Så spelar du finns alltid i titelraden.',
   htBoardTitle: 'Brädet',
   htBoardBody:
     'Brickorna vänds upp en i taget, i läsordning. En bokstav syns inte förrän dess bricka vänds.',

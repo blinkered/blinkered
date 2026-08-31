@@ -38,6 +38,11 @@ next.
   platform download, neither of which can be scripted; steps are in
   [../apps/mobile/README.md](../apps/mobile/README.md). This is PLAN.md phase 3 finished and
   phase 5 started. A **store** build still waits on the CC BY-SA call.
+- **A first-run tour**, shown over the setup screen until it is dismissed for good. Six screens:
+  the board turning over, taking and giving back letters, the control row, wild cards, a letter
+  swap, and done. Every screen drives the game's own `Board` from a scripted state rather than
+  drawing a picture of one, so a tutorial that teaches the wrong thing would have to be a game
+  that does the wrong thing. Skipping asks before it hides the tour for good; finishing assumes.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in all sixteen languages.
