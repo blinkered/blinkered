@@ -36,7 +36,6 @@ export {
 } from './languages.js'
 export {
   DEFAULT_BOARD_SIZE,
-  DEFAULT_REPLACE_CHANCE,
   DEFAULT_WILD_CHANCE,
   DIFFICULTIES,
   ENGINE_VERSION,

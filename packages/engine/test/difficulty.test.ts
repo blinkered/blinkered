@@ -28,6 +28,24 @@ describe('difficulty profiles', () => {
     expect(rounds).toEqual([...rounds].sort((a, b) => b - a))
   })
 
+  it('never makes a harder level swap letters less often than an easier one', () => {
+    // Non-decreasing rather than strictly rising: the rate stops climbing at `hard`, because what
+    // a swap costs is a stale memorised list and `insane` shows the whole board for under two
+    // seconds. A level that swapped *less* than the one below it would be a mistake; a level that
+    // matches it is the axis having run out of room.
+    const swaps = levels.map((level) => DIFFICULTIES[level].replaceChance)
+    expect(swaps).toEqual([...swaps].sort((a, b) => a - b))
+  })
+
+  it('leaves the letters alone on easy, so a board can be learned', () => {
+    // The one level where the whole twelve are the same from first deal to last. That is a
+    // different game rather than an easier one, which is why it is a level and not a slider.
+    expect(configFor('easy').replaceChance).toBe(0)
+    for (const level of ['medium', 'hard', 'insane'] as const) {
+      expect(configFor(level).replaceChance, level).toBeGreaterThan(0)
+    }
+  })
+
   it('says nothing about board size, because that is not a difficulty axis', () => {
     for (const level of levels) {
       expect(DIFFICULTIES[level]).not.toHaveProperty('n')

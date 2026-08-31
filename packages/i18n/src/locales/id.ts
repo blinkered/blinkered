@@ -157,6 +157,15 @@ export const id: Messages = {
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
     'Di antara ronde, satu ubin dapat mengganti hurufnya. Papan dikosongkan dan menampilkan huruf yang pergi serta huruf yang menggantikannya, tetapi bukan ubin yang mana. Papan tidak pernah sama untuk waktu lama, jadi daftar hurufnya cepat basi.',
+  htLevelsTitle: 'Tingkat kesulitan',
+  htLevelEasy:
+    'Dua belas huruf yang sama sepanjang permainan, jadi Anda bisa menghafalnya dan menyimpan daftar kata di kepala. Ubin terbuka perlahan dan papan penuh tetap terlihat cukup lama untuk menyusun satu kata.',
+  htLevelMedium:
+    'Sesekali satu huruf berubah, sehingga daftar yang Anda simpan tidak lagi tepat. Lebih sedikit waktu untuk melihat dan berpikir.',
+  htLevelHard:
+    'Kata tiga huruf tidak lagi dihitung, dan satu huruf berubah kira-kira setiap dua ronde. Papan baru saja terlihat sebelum diacak lagi.',
+  htLevelInsane:
+    'Semuanya sekaligus, dengan kecepatan penuh. Papan lenyap hampir begitu lengkap, dan tidak ada waktu untuk mengingat daftar apa pun.',
   htTouchTitle: 'Layar sentuh',
   htTouchBody:
     'Sentuh kartu yang terbuka untuk mengambil hurufnya. Sentuh huruf mana pun yang sudah diambil untuk mengembalikannya. Kirim dan Hapus ada di bawah papan.',

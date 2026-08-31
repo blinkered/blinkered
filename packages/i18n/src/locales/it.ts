@@ -155,6 +155,15 @@ export const it: Messages = {
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
     "Tra un turno e l'altro una tessera può cambiare lettera. Il tabellone si svuota e ti mostra la lettera che esce e quella che prende il suo posto, ma mai di quale tessera si trattava. Il tabellone non resta mai uguale a lungo, quindi un elenco delle sue lettere invecchia in fretta.",
+  htLevelsTitle: 'I livelli',
+  htLevelEasy:
+    'Le stesse dodici lettere per tutta la partita: puoi impararle e tenere a mente un elenco di parole. Le tessere si girano piano e il tabellone completo resta in vista abbastanza a lungo per prepararne una.',
+  htLevelMedium:
+    "Ogni tanto una lettera cambia, e l'elenco che stavi tenendo non è più valido. Meno tempo per guardare e meno per pensare.",
+  htLevelHard:
+    'Le parole di tre lettere non contano più e una lettera cambia circa un turno sì e uno no. Il tabellone si vede appena prima di rimescolarsi.',
+  htLevelInsane:
+    "Tutto insieme, alla massima velocità. Il tabellone sparisce quasi appena è completo e non c'è tempo per tenere a mente niente.",
   htTouchTitle: 'Lo schermo a sfioramento',
   htTouchBody:
     'Tocca una tessera scoperta per prendere la sua lettera. Tocca una lettera già presa per restituirla. Completa e Cancella stanno sotto il tavoliere.',

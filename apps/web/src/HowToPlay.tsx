@@ -31,7 +31,6 @@ export function HowToPlay({
     { title: messages.htRoundTitle, body: messages.htRoundBody },
     { title: messages.htWildTitle, body: messages.htWildBody },
     { title: messages.htSwapTitle, body: messages.htSwapBody },
-    { title: messages.htLanguagesTitle, body: messages.htLanguagesBody },
   ]
 
   return (
@@ -58,6 +57,39 @@ export function HowToPlay({
           <p>{section.body}</p>
         </section>
       ))}
+
+      {/*
+       * What separates the four levels, in qualities rather than numbers.
+       *
+       * A list rather than a paragraph, because this is the first choice anyone makes and four
+       * levels run together in prose are four things nobody reads. The names come from
+       * `difficultyNames`, which the setup panel already uses, so the page and the chips cannot
+       * end up calling the same level two different things.
+       *
+       * No numbers on purpose. "1.2 seconds a tile" means nothing to somebody who has not played;
+       * "the board is barely showing before it goes" means something immediately, and the numbers
+       * are all in nerd mode for anyone who wants them.
+       */}
+      <section>
+        <h2>{messages.htLevelsTitle}</h2>
+        <dl className="rules-keys rules-levels">
+          <dt>{messages.difficultyNames.easy}</dt>
+          <dd>{messages.htLevelEasy}</dd>
+          <dt>{messages.difficultyNames.medium}</dt>
+          <dd>{messages.htLevelMedium}</dd>
+          <dt>{messages.difficultyNames.hard}</dt>
+          <dd>{messages.htLevelHard}</dd>
+          <dt>{messages.difficultyNames.insane}</dt>
+          <dd>{messages.htLevelInsane}</dd>
+        </dl>
+      </section>
+
+      {/* After the levels rather than before: it is a note about the dictionaries, not a rule,
+          and it was sitting between the mechanics and the choice they describe. */}
+      <section>
+        <h2>{messages.htLanguagesTitle}</h2>
+        <p>{messages.htLanguagesBody}</p>
+      </section>
 
       {/* Both, always, in this order. The page opens in its own tab and is shareable, so it
           cannot assume the device reading it is the device playing on it: somebody reads the

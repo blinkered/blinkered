@@ -161,6 +161,15 @@ export const en: Messages = {
   htSwapTitle: 'Changing letters',
   htSwapBody:
     'Between rounds, one tile may change its letter. The board clears and shows you the letter that left and the one that took its place, but never which tile it was. The board is never the same for long, so a list of its letters goes stale.',
+  htLevelsTitle: 'The levels',
+  htLevelEasy:
+    'The same twelve letters all game, so you can learn them and carry a list of words in your head. Tiles turn slowly, and the full board stays in view long enough to plan one.',
+  htLevelMedium:
+    'A letter changes now and then, so a list you have been keeping goes out of date. Less time to look, and less time to think.',
+  htLevelHard:
+    'Three-letter words stop counting, and a letter changes about every other round. The board is barely showing before it shuffles.',
+  htLevelInsane:
+    'Everything at once, at speed. The board is gone almost as soon as it is whole, and there is no time to hold a list of anything.',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
     'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',

@@ -153,6 +153,15 @@ export const sv: Messages = {
   htSwapTitle: 'Bokstäver som byts',
   htSwapBody:
     'Mellan omgångarna kan en bricka byta bokstav. Brädet töms och visar bokstaven som lämnar och den som tar dess plats, men aldrig vilken bricka det var. Brädet är aldrig sig likt särskilt länge, så en lista över dess bokstäver blir snabbt inaktuell.',
+  htLevelsTitle: 'Nivåerna',
+  htLevelEasy:
+    'Samma tolv bokstäver hela partiet, så du hinner lära dig dem och hålla en ordlista i huvudet. Brickorna vänds långsamt och hela brädet syns tillräckligt länge för att planera ett ord.',
+  htLevelMedium:
+    'Då och då byts en bokstav, och listan du hållit reda på stämmer inte längre. Mindre tid att titta och mindre att tänka.',
+  htLevelHard:
+    'Ord på tre bokstäver räknas inte längre, och en bokstav byts ungefär varannan omgång. Brädet hinner knappt synas innan det blandas om.',
+  htLevelInsane:
+    'Allt på en gång, i full fart. Brädet är borta nästan så fort det är helt, och det finns ingen tid att hålla reda på något.',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
     'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',

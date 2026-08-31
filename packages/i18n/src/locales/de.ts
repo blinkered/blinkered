@@ -156,6 +156,15 @@ export const de: Messages = {
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
     'Zwischen den Runden kann ein Plättchen seinen Buchstaben wechseln. Das Feld wird leer und zeigt den Buchstaben, der geht, und den, der seinen Platz einnimmt, aber nie, welches Plättchen es war. Das Feld bleibt nie lange gleich, deshalb veraltet eine Liste seiner Buchstaben schnell.',
+  htLevelsTitle: 'Die Stufen',
+  htLevelEasy:
+    'Dieselben zwölf Buchstaben die ganze Partie über: Sie können sie sich einprägen und eine Wortliste im Kopf behalten. Die Plättchen drehen sich langsam, und das volle Feld bleibt lange genug sichtbar, um ein Wort zu planen.',
+  htLevelMedium:
+    'Ab und zu wechselt ein Buchstabe, und die Liste, die Sie sich gemerkt haben, stimmt nicht mehr. Weniger Zeit zum Schauen und weniger zum Nachdenken.',
+  htLevelHard:
+    'Wörter mit drei Buchstaben zählen nicht mehr, und etwa jede zweite Runde wechselt ein Buchstabe. Das Feld ist kaum zu sehen, bevor neu gemischt wird.',
+  htLevelInsane:
+    'Alles auf einmal, in vollem Tempo. Das Feld ist fast schon wieder weg, sobald es vollständig ist, und für eine Liste bleibt keine Zeit.',
   htTouchTitle: 'Der Berührungsbildschirm',
   htTouchBody:
     'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe einen genommenen Buchstaben an, um ihn zurückzugeben. Abgeben und Löschen liegen unter dem Brett.',

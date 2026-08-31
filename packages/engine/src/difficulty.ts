@@ -4,9 +4,10 @@ import type { Difficulty, GameConfig } from './types.js'
 
 /**
  * Bumped when a rule changes what a game is, because results carry it and the leaderboard groups
- * on it. 0.2.0 is the difficulty retune: `medium` before and after it are different games.
+ * on it. 0.2.0 was the difficulty retune; 0.3.0 makes the swap rate a difficulty column, which
+ * among other things means `easy` no longer changes its letters at all.
  */
-export const ENGINE_VERSION = '0.2.0'
+export const ENGINE_VERSION = '0.3.0'
 
 /** Twelve tiles, 4x3 in landscape and 3x4 in portrait. A player may pick another size. */
 export const DEFAULT_BOARD_SIZE = 12
@@ -23,17 +24,21 @@ export const DEFAULT_BOARD_SIZE = 12
 export const DEFAULT_WILD_CHANCE = 0.02
 
 /**
- * Chance per deal that one tile's letter is replaced, before nerd mode says otherwise.
+ * How the swap rate came to be a difficulty column after all.
  *
- * Chosen against the cheat rather than against the feel. A player can photograph the board during
- * the hold phase and hand twelve letters to a solver, and nothing can stop them seeing it, because
- * being seen is the mechanic. What stops the photograph being useful is the board changing under
- * it. At 0.5 a transcription is wrong within a round or two.
+ * It shipped as one flat number, on the grounds that one guessed number is easier to argue with
+ * than four. Playing said otherwise, and for a better reason than balance: whether the board holds
+ * still is not a *degree* of difficulty, it is a different game. With the letters fixed you can
+ * learn them and carry a word list between rounds; once they drift you cannot, and a skill you had
+ * been using stops working. That is the kind of thing a difficulty level should name.
  *
- * Deliberately not a column in the difficulty table. One guessed number is easier to argue with
- * than four, and splitting it later is one field in `DIFFICULTIES`.
+ * The rate stops climbing at `hard` rather than peaking at `insane`, which looks wrong on the
+ * table and is right. What a swap costs you is a stale memorised list, and `insane` shows the full
+ * board for 1.8 seconds, so there was never a list to go stale: the axis does its work in the
+ * middle of the ladder. Pushing it higher would mostly buy `insane` more of the one thing it
+ * should not have, since the clock stops for the announcement and a pause on a 12.6-second round
+ * is a rest.
  */
-export const DEFAULT_REPLACE_CHANCE = 0.5
 
 /**
  * Board size is a player's choice, not a difficulty axis. A bigger board is harder to track
@@ -51,6 +56,8 @@ export interface DifficultyProfile {
   /** Rounds you survive having scored nothing at all. Flips are this times the board size. */
   readonly initialRounds: number
   readonly minWordLength: number
+  /** Chance per deal that one tile's letter is replaced. Zero on `easy`; see the note above. */
+  readonly replaceChance: number
 }
 
 /*
@@ -73,11 +80,53 @@ export interface DifficultyProfile {
  * budget, and moving both at once would leave nothing to learn from the next play.
  */
 export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
-  easy: { speedMultiplier: 1.8, holdTicks: 5, initialRounds: 14, minWordLength: 3 },
-  medium: { speedMultiplier: 1.5, holdTicks: 4, initialRounds: 12, minWordLength: 3 },
-  hard: { speedMultiplier: 1.2, holdTicks: 3, initialRounds: 11, minWordLength: 4 },
-  insane: { speedMultiplier: 0.9, holdTicks: 2, initialRounds: 10, minWordLength: 4 },
+  easy: {
+    speedMultiplier: 1.8,
+    holdTicks: 5,
+    initialRounds: 14,
+    minWordLength: 3,
+    replaceChance: 0,
+  },
+  medium: {
+    speedMultiplier: 1.5,
+    holdTicks: 4,
+    initialRounds: 12,
+    minWordLength: 3,
+    replaceChance: 0.25,
+  },
+  hard: {
+    speedMultiplier: 1.2,
+    holdTicks: 3,
+    initialRounds: 11,
+    minWordLength: 4,
+    replaceChance: 0.5,
+  },
+  insane: {
+    speedMultiplier: 0.9,
+    holdTicks: 2,
+    initialRounds: 10,
+    minWordLength: 4,
+    replaceChance: 0.5,
+  },
 }
+
+/*
+ * What each step adds, which is the part a player can be told.
+ *
+ * The old table escalated three numbers between every pair of levels and changed the *kind* of
+ * game exactly once, at medium-to-hard, where three-letter words stop counting. So the ladder had
+ * one interesting rung and two quantitative ones. Turning swaps off on easy puts a second named
+ * pressure in the gap:
+ *
+ *   easy    the board you can learn      twelve letters, all game
+ *   medium  the board starts drifting    a letter changes now and then
+ *   hard    small change stops counting  three-letter words are out
+ *   insane  nothing holds still          all of it, as fast as it goes
+ *
+ * Wild cards are deliberately NOT a fourth scaled axis. The same wild is worth less where there is
+ * less time to use it, so a flat rate already self-balances, and moving two mechanics at once
+ * would leave the next play unable to say which one did what.
+ */
 
 /**
  * Median distinct words a board of n tiles admits at minimum length 3, indexed from n=4.
@@ -174,7 +223,7 @@ export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig>
   const resolved: GameConfig = {
     n,
     wildChance: overrides.wildChance ?? DEFAULT_WILD_CHANCE,
-    replaceChance: overrides.replaceChance ?? DEFAULT_REPLACE_CHANCE,
+    replaceChance: overrides.replaceChance ?? profile.replaceChance,
     speedMultiplier: profile.speedMultiplier,
     holdTicks: profile.holdTicks,
     initialFlips: profile.initialRounds * n,

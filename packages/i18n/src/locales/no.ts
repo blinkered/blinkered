@@ -153,6 +153,15 @@ export const no: Messages = {
   htSwapTitle: 'Bokstaver som byttes',
   htSwapBody:
     'Mellom rundene kan en brikke bytte bokstav. Brettet tømmes og viser bokstaven som går, og den som tar plassen dens, men aldri hvilken brikke det var. Brettet er aldri det samme lenge, så en liste over bokstavene blir fort utdatert.',
+  htLevelsTitle: 'Nivåene',
+  htLevelEasy:
+    'De samme tolv bokstavene hele partiet, så du rekker å lære dem og holde en ordliste i hodet. Brikkene snus sakte, og hele brettet blir stående lenge nok til å planlegge et ord.',
+  htLevelMedium:
+    'Nå og da byttes en bokstav, og listen du har holdt styr på stemmer ikke lenger. Mindre tid til å se og mindre til å tenke.',
+  htLevelHard:
+    'Ord på tre bokstaver teller ikke lenger, og en bokstav byttes omtrent annenhver runde. Brettet rekker knapt å vises før det stokkes om.',
+  htLevelInsane:
+    'Alt på én gang, i full fart. Brettet er borte nesten så snart det er helt, og det er ingen tid til å huske noe som helst.',
   htTouchTitle: 'Berøringsskjermen',
   htTouchBody:
     'Trykk på en brikke som ligger med forsiden opp for å ta bokstaven. Trykk på en bokstav du har tatt for å gi den tilbake. Lever og Tøm ligger under brettet.',

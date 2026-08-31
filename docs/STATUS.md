@@ -41,7 +41,7 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in all sixteen languages.
-- 370 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
+- 372 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
   ubuntu and macos.
 
 ## Next, in order
@@ -132,6 +132,14 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   bid; `initialRounds` was deliberately left alone so the next play has one variable to speak to.
   `ENGINE_VERSION` went to 0.2.0 with it, and the leaderboard now groups on that, so scores set
   under the old presets are kept but no longer ranked against new ones.
+- **whether letters change is now a difficulty, not a slider** (0.3.0). It shipped as one flat
+  rate on the grounds that one guessed number beats four, and play said otherwise for a better
+  reason than balance: with the letters fixed you can learn the board and carry a word list
+  between rounds, and once they drift you cannot. That is a different game rather than a harder
+  one, so `easy` has no letter swaps at all and the rate climbs to `hard` and stops. It stops
+  because what a swap costs is a stale memorised list, and `insane` shows the full board for 1.8
+  seconds, so there was never a list to go stale. Wild cards stay flat deliberately: moving two
+  mechanics at once would leave the next play unable to say which one did what.
 - **difficulty numbers**: still guesses. The balance simulator replaces them.
 
 ## Traps already hit, so they are not hit again

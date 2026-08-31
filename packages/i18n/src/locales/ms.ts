@@ -153,6 +153,15 @@ export const ms: Messages = {
   htSwapTitle: 'Huruf yang bertukar',
   htSwapBody:
     'Antara pusingan, satu jubin boleh menukar hurufnya. Papan dikosongkan dan menunjukkan huruf yang keluar serta huruf yang menggantikannya, tetapi bukan jubin yang mana. Papan tidak pernah kekal sama lama, jadi senarai hurufnya cepat lapuk.',
+  htLevelsTitle: 'Tahap kesukaran',
+  htLevelEasy:
+    'Dua belas huruf yang sama sepanjang permainan, jadi anda boleh menghafalnya dan menyimpan senarai perkataan dalam kepala. Jubin terbalik perlahan dan papan penuh kekal kelihatan cukup lama untuk merancang satu.',
+  htLevelMedium:
+    'Sekali-sekala satu huruf bertukar, jadi senarai yang anda simpan sudah tidak tepat. Kurang masa untuk melihat dan kurang untuk berfikir.',
+  htLevelHard:
+    'Perkataan tiga huruf tidak lagi dikira, dan satu huruf bertukar kira-kira setiap dua pusingan. Papan baru sahaja kelihatan sebelum ia dikocak semula.',
+  htLevelInsane:
+    'Semuanya serentak, pada kelajuan penuh. Papan hilang hampir sebaik sahaja ia penuh, dan tiada masa untuk mengingat apa-apa senarai.',
   htTouchTitle: 'Skrin sentuh',
   htTouchBody:
     'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh mana-mana huruf yang diambil untuk memulangkannya. Hantar dan Kosongkan ada di bawah papan.',

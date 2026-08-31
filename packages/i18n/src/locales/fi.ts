@@ -156,6 +156,15 @@ export const fi: Messages = {
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
     'Kierrosten välissä yksi laatta voi vaihtaa kirjaintaan. Lauta tyhjenee ja näyttää lähtevän kirjaimen ja sen tilalle tulevan, mutta ei koskaan sitä, mikä laatta oli kyseessä. Lauta ei pysy koskaan kauan samana, joten luettelo sen kirjaimista vanhenee nopeasti.',
+  htLevelsTitle: 'Vaikeustasot',
+  htLevelEasy:
+    'Samat kaksitoista kirjainta koko pelin ajan, joten ehdit opetella ne ja pitää sanalistaa mielessäsi. Laatat kääntyvät hitaasti ja koko lauta näkyy tarpeeksi kauan, että ehdit suunnitella sanan.',
+  htLevelMedium:
+    'Silloin tällöin yksi kirjain vaihtuu, eikä mielessä pitämäsi lista enää pidä paikkaansa. Vähemmän aikaa katsoa ja vähemmän aikaa ajatella.',
+  htLevelHard:
+    'Kolmen kirjaimen sanat eivät enää kelpaa, ja kirjain vaihtuu suunnilleen joka toinen kierros. Lauta ehtii tuskin näkyä ennen kuin se sekoitetaan.',
+  htLevelInsane:
+    'Kaikki yhtä aikaa ja täydellä vauhdilla. Lauta katoaa lähes heti kun se on kokonainen, eikä mitään ehdi painaa mieleen.',
   htTouchTitle: 'Kosketusnäyttö',
   htTouchBody:
     'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa mitä tahansa ottamaasi kirjainta palauttaaksesi sen. Hyväksy ja Tyhjennä ovat laudan alla.',

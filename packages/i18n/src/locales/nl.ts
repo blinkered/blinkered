@@ -153,6 +153,15 @@ export const nl: Messages = {
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
     'Tussen de rondes kan een tegel van letter veranderen. Het bord wordt leeggemaakt en toont de letter die vertrekt en die haar plaats inneemt, maar nooit welke tegel het was. Het bord blijft nooit lang hetzelfde, dus een lijstje met zijn letters is snel achterhaald.',
+  htLevelsTitle: 'De niveaus',
+  htLevelEasy:
+    'Dezelfde twaalf letters de hele partij, dus je kunt ze leren en een lijstje met woorden in je hoofd houden. Tegels draaien langzaam en het volle bord blijft lang genoeg staan om er een te bedenken.',
+  htLevelMedium:
+    'Af en toe verandert er een letter, waardoor het lijstje dat je bijhield niet meer klopt. Minder tijd om te kijken en minder om na te denken.',
+  htLevelHard:
+    'Woorden van drie letters tellen niet meer en ongeveer om de ronde verandert er een letter. Het bord staat er amper of het schudt alweer.',
+  htLevelInsane:
+    'Alles tegelijk, op volle snelheid. Het bord is bijna weg zodra het compleet is, en er is geen tijd om iets te onthouden.',
   htTouchTitle: 'Het aanraakscherm',
   htTouchBody:
     'Tik op een omgedraaide steen om zijn letter te nemen. Tik op een genomen letter om hem terug te geven. Inleveren en Wissen staan onder het bord.',

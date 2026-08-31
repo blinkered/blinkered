@@ -156,6 +156,15 @@ export const hr: Messages = {
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
     'Između rundi jedna pločica može promijeniti slovo. Ploča se prazni i pokazuje vam slovo koje odlazi i ono koje dolazi na njegovo mjesto, ali nikad koja je pločica bila. Ploča nikada dugo ne ostaje ista, pa popis njezinih slova brzo zastari.',
+  htLevelsTitle: 'Razine',
+  htLevelEasy:
+    'Istih dvanaest slova cijelu igru, pa ih možete naučiti i držati popis riječi u glavi. Pločice se okreću polako, a puna ploča ostaje na vidiku dovoljno dugo da smislite riječ.',
+  htLevelMedium:
+    'Slovo se povremeno promijeni, pa popis koji ste držali u glavi više ne vrijedi. Manje vremena za gledanje i manje za razmišljanje.',
+  htLevelHard:
+    'Riječi od tri slova više se ne broje, a slovo se mijenja otprilike svake druge runde. Ploča se jedva vidi prije nego što se promiješa.',
+  htLevelInsane:
+    'Sve odjednom i punom brzinom. Ploča nestane gotovo čim se popuni i nema vremena da išta zapamtite.',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
     'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',

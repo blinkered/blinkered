@@ -157,6 +157,15 @@ export const fr: Messages = {
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
     "Entre deux manches, une tuile peut changer de lettre. Le plateau se vide et vous montre la lettre qui part et celle qui la remplace, mais jamais de quelle tuile il s'agissait. Le plateau ne reste jamais le même bien longtemps : une liste de ses lettres se périme.",
+  htLevelsTitle: 'Les niveaux',
+  htLevelEasy:
+    'Les mêmes douze lettres pendant toute la partie : vous pouvez les apprendre et garder une liste de mots en tête. Les tuiles se retournent lentement et le plateau complet reste visible assez longtemps pour en préparer un.',
+  htLevelMedium:
+    "Une lettre change de temps en temps, et la liste que vous gardiez n'est plus à jour. Moins de temps pour regarder, moins pour réfléchir.",
+  htLevelHard:
+    "Les mots de trois lettres ne comptent plus, et une lettre change environ une manche sur deux. Le plateau est à peine visible qu'il se remélange déjà.",
+  htLevelInsane:
+    "Tout à la fois, à toute vitesse. Le plateau disparaît presque aussitôt qu'il est complet, et il n'y a le temps de retenir aucune liste.",
   htTouchTitle: 'L’écran tactile',
   htTouchBody:
     'Touchez une tuile retournée pour prendre sa lettre. Touchez une lettre déjà prise pour la rendre. Valider et Effacer sont sous le plateau.',

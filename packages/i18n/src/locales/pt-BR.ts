@@ -157,6 +157,15 @@ export const ptBR: Messages = {
   htSwapTitle: 'As letras mudam',
   htSwapBody:
     'Entre rodadas, uma peça pode trocar de letra. O tabuleiro se esvazia e mostra a letra que sai e a que assume o lugar dela, mas nunca de qual peça se tratava. O tabuleiro nunca fica igual por muito tempo, então uma lista das suas letras fica desatualizada.',
+  htLevelsTitle: 'Os níveis',
+  htLevelEasy:
+    'As mesmas doze letras durante o jogo inteiro: dá para aprendê-las e guardar uma lista de palavras na cabeça. As peças viram devagar e o tabuleiro completo fica à vista tempo suficiente para montar uma.',
+  htLevelMedium:
+    'De vez em quando uma letra muda e a lista que você vinha guardando fica desatualizada. Menos tempo para olhar e menos para pensar.',
+  htLevelHard:
+    'Palavras de três letras deixam de contar e uma letra muda mais ou menos a cada duas rodadas. O tabuleiro mal aparece e já embaralha.',
+  htLevelInsane:
+    'Tudo ao mesmo tempo, na velocidade máxima. O tabuleiro some quase assim que fica completo e não dá tempo de guardar lista nenhuma.',
   htTouchTitle: 'A tela sensível ao toque',
   htTouchBody:
     'Toque numa peça virada para pegar a letra dela. Toque numa letra já pega para devolvê-la. Completar e Limpar ficam abaixo do tabuleiro.',

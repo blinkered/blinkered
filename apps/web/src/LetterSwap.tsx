@@ -8,9 +8,11 @@ import type { Messages } from '@blinkered/i18n'
  * animation rather than being guessed at in two places. A round costs nothing while it is
  * stopped, so the budget is set by how long the change takes to *read* rather than by what it
  * costs: long enough to look up, find the old letter, watch it hand over, and register the new
- * one. The first version ran at 1.5s over a single tile and was gone before the eye arrived.
+ * one. The first version ran at 1.5s over a single tile and was gone before the eye arrived; 2.6s
+ * over the whole board was legible but still hurried, so this is 3.6s. The keyframes are all
+ * percentages, so the holds stretch with it and nothing else needs retiming.
  */
-export const SWAP_MS = 2600
+export const SWAP_MS = 3600
 
 /** One tile's letter having changed, for the interstitial that announces it. */
 export interface Swap {

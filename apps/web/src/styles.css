@@ -914,6 +914,15 @@ kbd {
   margin: 0;
   color: var(--dim);
 }
+/* The level names are words rather than key caps, so they carry the emphasis the `kbd` boxes
+   give the keyboard list, and the rows need room to breathe between them. */
+.rules-levels {
+  row-gap: 0.7rem;
+}
+.rules-levels dt {
+  color: var(--up);
+  font-weight: 650;
+}
 
 /*
  * A control shaped like the ones beside it, rather than a bare blue link.

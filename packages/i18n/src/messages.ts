@@ -97,6 +97,20 @@ export interface Messages {
   readonly htWildBody: string
   readonly htSwapTitle: string
   readonly htSwapBody: string
+  /**
+   * What separates the four difficulty levels, one short line each.
+   *
+   * Qualities, never numbers. "1.2 seconds a tile" means nothing to somebody who has not played
+   * the game yet; "the board is barely showing before it shuffles" means something at once. The
+   * numbers are all in nerd mode for anyone who wants them. The level *names* are not here: they
+   * come from `difficultyNames`, which the setup panel already uses, so the page and the chips
+   * cannot end up calling the same level two different things.
+   */
+  readonly htLevelsTitle: string
+  readonly htLevelEasy: string
+  readonly htLevelMedium: string
+  readonly htLevelHard: string
+  readonly htLevelInsane: string
   readonly htTouchTitle: string
   readonly htTouchBody: string
 
