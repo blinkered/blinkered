@@ -181,7 +181,7 @@ export const fr: Messages = {
     'Certaines tuiles se retournent sur un joker au lieu d’une lettre. Un joker vaut la lettre qui forme un mot, choisie parmi celles qui conviennent, et vous découvrez laquelle quand le mot apparaît dans votre liste. Un mot déjà trouvé ne compte pas.',
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
-    'Entre deux manches, une tuile change de lettre. Vous voyez laquelle part et laquelle arrive, mais pas où elle se trouve. Apprenez le plateau par cœur et il vous piégera.',
+    'Entre deux manches, une tuile change de lettre. Vous voyez laquelle part et laquelle arrive, mais pas où elle se trouve. Les lettres dont vous vous souvenez ne sont peut-être plus là.',
   htLevelsTitle: 'Les niveaux',
   htLevelEasy:
     'Les mêmes douze lettres pendant toute la partie : vous pouvez les apprendre et garder une liste de mots en tête. Les tuiles se retournent lentement et le plateau complet reste visible assez longtemps pour en préparer un.',

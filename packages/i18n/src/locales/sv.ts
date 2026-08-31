@@ -173,7 +173,7 @@ export const sv: Messages = {
     'Vissa brickor vänds upp som en joker i stället för en bokstav. En joker gäller som den bokstav som bildar ett ord, vald bland dem som fungerar, och vilken det blev ser du när ordet dyker upp i din lista. Ett ord du redan hittat räknas inte.',
   htSwapTitle: 'Bokstäver som byts',
   htSwapBody:
-    'Mellan omgångarna byter en bricka bokstav. Du ser vilken som går och vilken som kommer, men inte var den ligger. Lär dig brädet utantill så lurar det dig.',
+    'Mellan omgångarna byter en bricka bokstav. Du ser vilken som går och vilken som kommer, men inte var den ligger. Bokstäverna du minns finns kanske inte kvar.',
   htLevelsTitle: 'Nivåerna',
   htLevelEasy:
     'Samma tolv bokstäver hela partiet, så du hinner lära dig dem och hålla en ordlista i huvudet. Brickorna vänds långsamt och hela brädet syns tillräckligt länge för att planera ett ord.',

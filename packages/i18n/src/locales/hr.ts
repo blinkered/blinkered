@@ -174,7 +174,7 @@ export const hr: Messages = {
     'Neke se pločice okrenu kao džoker umjesto kao slovo. Džoker vrijedi kao slovo koje tvori riječ, izabrano između onih koja odgovaraju, a koje je bilo vidite kad se riječ pojavi na vašem popisu. Riječ koju već imate ne vrijedi.',
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
-    'Između rundi jedna pločica mijenja slovo. Vidite koje odlazi i koje dolazi, ali ne i gdje je. Naučite ploču napamet i prevarit će vas.',
+    'Između rundi jedna pločica mijenja slovo. Vidite koje odlazi i koje dolazi, ali ne i gdje je. Slova kojih se sjećate možda više nisu ondje.',
   htLevelsTitle: 'Razine',
   htLevelEasy:
     'Istih dvanaest slova cijelu igru, pa ih možete naučiti i držati popis riječi u glavi. Pločice se okreću polako, a puna ploča ostaje na vidiku dovoljno dugo da smislite riječ.',

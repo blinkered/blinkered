@@ -181,7 +181,7 @@ export const en: Messages = {
     'Some tiles turn over as a card instead of a letter. A card counts as whatever letter makes a word, chosen from the ones that work, and you find out which when the word appears in your list. A word you have already found does not count.',
   htSwapTitle: 'Changing letters',
   htSwapBody:
-    'Between rounds, one tile swaps its letter. You see which letter went and which arrived, but not where it sits. Memorise the board and it will catch you out.',
+    'Between rounds, one tile swaps its letter. You see which letter went and which arrived, but not where it sits. The letters you remember may not be there any more.',
   htLevelsTitle: 'The levels',
   htLevelEasy:
     'The same twelve letters all game, so you can learn them and carry a list of words in your head. Tiles turn slowly, and the full board stays in view long enough to plan one.',

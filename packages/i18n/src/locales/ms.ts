@@ -175,7 +175,7 @@ export const ms: Messages = {
     'Sesetengah jubin terbuka sebagai kad dan bukan huruf. Kad itu berfungsi sebagai huruf yang membentuk kata, dipilih daripada yang sesuai, dan anda tahu yang mana apabila kata itu muncul dalam senarai anda. Kata yang sudah ada tidak dikira.',
   htSwapTitle: 'Huruf yang bertukar',
   htSwapBody:
-    'Antara pusingan, satu jubin bertukar hurufnya. Anda nampak huruf mana yang pergi dan mana yang datang, tetapi bukan di mana. Hafal papan dan ia akan memperdayakan anda.',
+    'Antara pusingan, satu jubin bertukar hurufnya. Anda nampak huruf mana yang pergi dan mana yang datang, tetapi bukan di mana. Huruf yang anda ingat mungkin sudah tiada.',
   htLevelsTitle: 'Tahap kesukaran',
   htLevelEasy:
     'Dua belas huruf yang sama sepanjang permainan, jadi anda boleh menghafalnya dan menyimpan senarai perkataan dalam kepala. Jubin terbalik perlahan dan papan penuh kekal kelihatan cukup lama untuk merancang satu.',

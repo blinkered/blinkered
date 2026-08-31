@@ -174,7 +174,7 @@ export const pt: Messages = {
     'Algumas peças viram como coringa em vez de letra. Um coringa vale a letra que forma uma palavra, escolhida entre as que servem, e descobre qual quando a palavra aparece na sua lista. Uma palavra que já tem não conta.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
-    'Entre rondas, uma peça troca de letra. Vê qual sai e qual entra, mas não onde fica. Decore o tabuleiro e ele apanha-o.',
+    'Entre rondas, uma peça troca de letra. Vê qual sai e qual entra, mas não onde fica. As letras de que se lembra podem já não estar lá.',
   htLevelsTitle: 'Os níveis',
   htLevelEasy:
     'As mesmas doze letras durante toda a partida: pode aprendê-las e guardar uma lista de palavras de cabeça. As peças viram devagar e o tabuleiro completo fica à vista tempo suficiente para preparar uma.',
