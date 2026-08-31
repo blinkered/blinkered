@@ -178,7 +178,7 @@ export const fi: Messages = {
     'Osa laatoista kääntyy jokeriksi kirjaimen sijaan. Jokeri käy siitä kirjaimesta, joka muodostaa sanan, valittuna niistä jotka sopivat, ja kumpi se oli näkyy kun sana ilmestyy listaasi. Jo löytämäsi sana ei kelpaa.',
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
-    'Kierrosten välissä yksi laatta vaihtaa kirjaintaan. Näet kumpi lähtee ja kumpi tulee, mutta et sitä missä se on. Muistamiasi kirjaimia ei ehkä enää ole.',
+    'Joskus kierrosten välissä yksi laatta vaihtaa kirjaintaan. Näet kumpi lähtee ja kumpi tulee, mutta et sitä missä se on. Muistamiasi kirjaimia ei ehkä enää ole.',
   htLevelsTitle: 'Vaikeustasot',
   htLevelEasy:
     'Samat kaksitoista kirjainta koko pelin ajan, joten ehdit opetella ne ja pitää sanalistaa mielessäsi. Laatat kääntyvät hitaasti ja koko lauta näkyy tarpeeksi kauan, että ehdit suunnitella sanan.',

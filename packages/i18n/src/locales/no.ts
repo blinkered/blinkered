@@ -173,7 +173,7 @@ export const no: Messages = {
     'Noen brikker snus som en joker i stedet for en bokstav. En joker teller som bokstaven som lager et ord, valgt blant dem som passer, og hvilken det ble ser du når ordet dukker opp i lista di. Et ord du allerede har funnet teller ikke.',
   htSwapTitle: 'Bokstaver som byttes',
   htSwapBody:
-    'Mellom rundene bytter en brikke bokstav. Du ser hvilken som går og hvilken som kommer, men ikke hvor den ligger. Bokstavene du husker, er kanskje ikke der lenger.',
+    'Av og til bytter en brikke bokstav mellom rundene. Du ser hvilken som går og hvilken som kommer, men ikke hvor den ligger. Bokstavene du husker, er kanskje ikke der lenger.',
   htLevelsTitle: 'Nivåene',
   htLevelEasy:
     'De samme tolv bokstavene hele partiet, så du rekker å lære dem og holde en ordliste i hodet. Brikkene snus sakte, og hele brettet blir stående lenge nok til å planlegge et ord.',

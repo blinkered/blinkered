@@ -175,7 +175,7 @@ export const it: Messages = {
     'Alcune tessere si scoprono come jolly invece che come lettera. Un jolly vale la lettera che forma una parola, scelta fra quelle possibili, e scopri quale quando la parola compare nella tua lista. Una parola già trovata non conta.',
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
-    "Tra un turno e l'altro una tessera cambia lettera. Vedi quale se ne va e quale arriva, ma non dove si trova. Le lettere che ricordi potrebbero non esserci più.",
+    "A volte, tra un turno e l'altro, una tessera cambia lettera. Vedi quale se ne va e quale arriva, ma non dove si trova. Le lettere che ricordi potrebbero non esserci più.",
   htLevelsTitle: 'I livelli',
   htLevelEasy:
     'Le stesse dodici lettere per tutta la partita: puoi impararle e tenere a mente un elenco di parole. Le tessere si girano piano e il tabellone completo resta in vista abbastanza a lungo per prepararne una.',
