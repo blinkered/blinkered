@@ -246,6 +246,11 @@ h2 {
  * The rule is structural rather than something to remember: a fixed `height`, `nowrap` and hidden
  * overflow mean no content can grow it. A long message ellipsises instead, which is the right
  * thing to lose, being the most repeated text on the screen.
+ *
+ * DO NOT relax any of those three, and do not add a row between the HUD and the board, without
+ * asking first. This has bitten three times -- the prompt sharing the line with a message, the
+ * score badge, and the card key arriving as a row of its own -- and each time the symptom was the
+ * board moving under the player's thumb rather than anything that looked like a layout bug.
  */
 .word-line {
   display: flex;
