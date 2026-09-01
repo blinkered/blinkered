@@ -14,18 +14,26 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['packages/*/test/**/*.test.ts'],
+    include: ['packages/*/test/**/*.test.ts', 'apps/server/test/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       include: [
         'packages/engine/src/**/*.ts',
         'packages/words/src/**/*.ts',
         'packages/i18n/src/**/*.ts',
+        'apps/server/src/**/*.ts',
       ],
       // Barrels and type-only modules hold no logic. The locale files hold no logic
       // either, and a coverage number for a translation would only measure which strings a
       // test happened to render; completeness is checked structurally instead.
-      exclude: ['**/index.ts', '**/types.ts', 'packages/i18n/src/locales/**'],
+      exclude: [
+        '**/index.ts',
+        '**/types.ts',
+        'packages/i18n/src/locales/**',
+        // The server's entrypoint, which reads a port and listens. Everything worth testing is
+        // in `app.ts`; covering this one would mean binding a socket to prove `serve` was called.
+        'apps/server/src/main.ts',
+      ],
       thresholds: { lines: 100, functions: 100, branches: 100, statements: 100 },
       reporter: ['text', 'lcov'],
     },

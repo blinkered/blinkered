@@ -46,8 +46,12 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in all sixteen languages.
-- 372 tests, 100% line/branch/function/statement coverage on engine, words and i18n. CI on
-  ubuntu and macos.
+- **`apps/server`** — started, and honest about how far. A Hono app answering `/healthz`, and
+  `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
+  believed. No database yet, so no other route exists: one that answered from nothing would be a
+  fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
+- 404 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server. CI
+  on ubuntu and macos.
 
 ## Next, in order
 

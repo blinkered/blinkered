@@ -74,6 +74,7 @@ packages/words      word lists, the anagram solver, board generation, weight der
 tools/harness       terminal front end for the engine
 tools/derive        derives draw weights and calibration from a word list
 docs/PLAN.md        rules, architecture, phases, open questions
+apps/server         Hono API. Accounts, history and leaderboards; owns no game rules
 apps/mobile         Capacitor iOS shell. Runs apps/web's build; owns no game code
 docs/IOS.md         what had to change for a phone, and how each bit was measured
 docs/PROPOSALS.md   features that are wanted but not built, and what each still needs

@@ -23,6 +23,9 @@
       "path": "./apps/web"
     },
     {
+      "path": "./apps/server"
+    },
+    {
       "path": "./apps/mobile"
     }
   ]
