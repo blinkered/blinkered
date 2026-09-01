@@ -62,14 +62,26 @@ next.
    serializable and the reducer is pure.
 3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are
    still guesses — the only numbers in the repo that are. Everything else is now measured.
-4. Then accounts, verified score submission, and history: PLAN.md phase 4 onward. That is when
-   the deployment stops being a static site and grows a backend and a Postgres.
+4. Then accounts, history and leaderboards: PLAN.md phase 4 onward, designed in
+   [ACCOUNTS.md](ACCOUNTS.md). That is when the deployment stops being a static site and grows
+   a backend and a Postgres.
+
+The balance simulator stays at 3 for a sharper reason than before: `ENGINE_VERSION` is cheap to
+bump while the only table it wipes is the player's own, and it stops being cheap the day the
+boards are public.
 
 ## Wanted, not built
 
-Nothing is queued. [PROPOSALS.md](PROPOSALS.md) is now a record of the three that shipped, kept
-because the reasoning is the part worth having: what was decided, what was measured, and the two
-places where the first answer was wrong.
+**Accounts, history and leaderboards** is queued and designed:
+[ACCOUNTS.md](ACCOUNTS.md). Decided so far: sign-in is a six-digit emailed code plus Google and
+Apple, with no password anywhere; avatars are generated rather than uploaded, so there is nothing
+hosted to moderate; personal history ships before any public board, and the boards wait for the
+balance simulator. Scores are checked rather than replayed: the client sends the words it found
+and the server scores them, since `points` is a function of word length alone.
+
+Otherwise nothing is queued. [PROPOSALS.md](PROPOSALS.md) is now a record of the three that
+shipped, kept because the reasoning is the part worth having: what was decided, what was measured,
+and the two places where the first answer was wrong.
 
 The two frequencies those features introduced, `wildChance` and `replaceChance`, are still guesses
 in the same way the difficulty tables are, and the balance simulator is still the thing that would
