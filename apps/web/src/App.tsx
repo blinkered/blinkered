@@ -51,14 +51,6 @@ interface Finished {
   readonly result: GameResult
   readonly standing: Standing
   readonly words: readonly { word: string; points: number }[]
-  /**
-   * The board's letters, in deal order, for the shared synopsis.
-   *
-   * Kept here rather than on `GameResult` on purpose: `GameResult` is what goes into localStorage
-   * and one day to a server, and widening it would strand every score already stored under the
-   * current shape. This only has to survive until the panel closes.
-   */
-  readonly letters: readonly string[]
 }
 
 export function App(): React.JSX.Element {
@@ -240,8 +232,6 @@ function Session({
           engineVersion: ENGINE_VERSION,
         }),
         words: state.wordsFound,
-        // Deal order, which is tile id order and is stable for the life of the game.
-        letters: [...state.tiles].sort((a, b) => a.id - b.id).map((tile) => tile.letter),
       })
       setPhase('over')
     },
@@ -382,7 +372,6 @@ function Session({
                 <FoundWords words={finished.words} messages={messages} />
                 <Share
                   result={finished.result}
-                  letters={finished.letters}
                   personalBest={isPersonalBest(finished.standing)}
                   messages={messages}
                 />
