@@ -25,6 +25,25 @@ RUN set -eu; \
       -o -name '*.json' -o -name '*.map' -o -name '*.webmanifest' -o -name '*.svg' \) -print0 \
     | while IFS= read -r -d '' file; do gzip -9 -c "$file" > "$file.gz"; done
 
+# The development image, which is not deployed and is not meant to be.
+#
+# It exists to hold `node_modules`. The source is bind-mounted over the top by compose, so edits
+# on the machine are live inside the container, but `node_modules` stays the container's own:
+# a host install is built for the host, and esbuild and Vite ship native binaries that a Linux
+# container cannot execute. Mounting the whole tree, `node_modules` included, is the version of
+# this that appears to work and then fails on the first native module.
+#
+# Rebuild it when a dependency changes -- `docker compose build` -- and not otherwise.
+FROM node:22-alpine AS dev
+WORKDIR /repo
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
+COPY . .
+RUN pnpm install --frozen-lockfile
+# `tsc --build` once, so the workspace packages have their declaration output before anything
+# imports them. The watchers keep it current from there.
+RUN pnpm typecheck
+
 # The API, which is Node and therefore cannot share the web image.
 #
 # `pnpm deploy` is what makes this small: it resolves the workspace links and writes a

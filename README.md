@@ -26,21 +26,26 @@ from and why they are the size they are.
 ## Run the whole thing
 
 ```
-docker compose up          # postgres, migrations, the API, and the site on http://localhost:8080
-docker compose down -v
+docker compose up
 ```
 
-One origin, exactly as it is deployed: the site at `/` and the API under `/v1`, with nginx doing
-locally what Traefik does in production. This is not the fast edit loop, which is `pnpm dev`
-above; it is for seeing the deployed shape work, which Vite cannot show you because it serves the
-site and not the API.
+Then <http://localhost:5173>. Postgres, the API and the site, and **all three reload when you
+save**: edit `apps/web/src` and the page hot-reloads, edit `apps/server/src` and the API restarts,
+edit `apps/server/src/schema.ts` and the migration is generated and applied to the database. Each
+takes about two seconds. Nothing else to run and nothing to remember.
 
-`docker compose up -d postgres` is the database on its own, which is all the tests need.
+The site and the API are on one origin there, as they are in production, so a session cookie
+behaves the same way in both.
 
-Nothing in the compose stack reloads: it builds images. The live loop is three terminals, and
-`apps/server/README.md` has it -- the database in a container, `pnpm --filter @blinkered/server
-dev` for the API, and `pnpm dev` for the site, which proxies `/v1` to the API so that the dev
-server is one origin exactly as production is.
+`docker compose down -v` stops it and discards the database. `docker compose build` is needed
+only after changing a dependency, because `node_modules` lives in the image rather than in the
+mount.
+
+**None of this is deployable and none of it is trying to be.** What deploys is built by CI on a
+Linux runner; a laptop builds arm64 and the cluster would pull it and die with `exec format
+error`. See [docs/DEPLOY.md](docs/DEPLOY.md).
+
+`docker compose up -d postgres` is the database on its own, which is all the test suites need.
 
 ## Play it in a terminal
 

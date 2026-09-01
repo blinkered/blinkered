@@ -10,7 +10,6 @@
     "migrate": "node dist/src/bin/migrate.js",
     "db:up": "docker compose -f ../../compose.yaml up -d --wait postgres",
     "db:down": "docker compose -f ../../compose.yaml down -v",
-    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

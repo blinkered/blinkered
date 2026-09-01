@@ -1,4 +1,5 @@
 import { defineConfig } from 'drizzle-kit'
+import { DATABASE_SCHEMA } from './src/schema.js'
 
 /**
  * For the `drizzle-kit` commands.
@@ -17,6 +18,16 @@ export default defineConfig({
   dialect: 'postgresql',
   schema: './src/schema.ts',
   out: './drizzle',
+  /*
+   * Which schemas `push` and `introspect` look at in the database, and it is **not** optional.
+   *
+   * It defaults to `["public"]`, and every table here is in `blinkered`, so without this the two
+   * sides of the comparison are our schema against an empty half of the database. Push then
+   * reports "No changes detected" and does nothing, against a database with no tables in it at
+   * all, which is a confident-sounding way of saying it was looking somewhere else. `generate`
+   * is unaffected: it reads the TypeScript and never asks the database anything.
+   */
+  schemaFilter: [DATABASE_SCHEMA],
   dbCredentials: {
     host: process.env.BLINKERED_DB_HOST ?? 'localhost',
     port: Number(process.env.BLINKERED_DB_PORT ?? 55432),

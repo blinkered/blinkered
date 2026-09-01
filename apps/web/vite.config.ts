@@ -108,6 +108,17 @@ export default defineConfig({
         changeOrigin: false,
       },
     },
+    /*
+     * Poll for changes when asked to, which is when this runs in a container.
+     *
+     * A bind mount on macOS or Windows does not deliver filesystem events reliably, so the
+     * default watcher sees nothing and hot reload silently stops being hot: the page simply
+     * never updates, with no error anywhere to explain it. Polling costs a little idle CPU and
+     * is the difference between the feature working and appearing to be broken.
+     *
+     * Off by default, because running on the machine directly needs none of it.
+     */
+    watch: process.env.BLINKERED_POLL === '1' ? { usePolling: true, interval: 300 } : null,
   },
   build: {
     target: 'es2022',

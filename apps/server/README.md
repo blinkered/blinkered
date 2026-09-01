@@ -10,48 +10,36 @@ what has to be configured in Google's and Apple's consoles, and
 
 ## Running it locally
 
-The whole application, built and wired the way it is deployed, is one command at the repo root:
-
 ```
-docker compose up          # http://localhost:8080, site at / and this at /v1
+docker compose up          # from the repo root
 ```
 
-That builds images, so it is for checking the deployed shape rather than for editing. Nothing in
-it reloads.
+Postgres, the API and the site, in containers, all reloading on save. <http://localhost:5173>,
+with this served under `/v1` on the same origin. Editing `src/schema.ts` generates the migration
+and applies it; editing anything else under `src` restarts the API. About two seconds either way.
 
-## The edit loop, which does reload
+`docker compose build` is only needed after a dependency changes, since `node_modules` lives in
+the image rather than in the bind mount. That is deliberate: a host install is built for the host,
+and esbuild and Vite ship native binaries a Linux container cannot execute, so mounting the tree
+with `node_modules` in it is the version that appears to work until the first native module.
 
-Three terminals, and everything in them is live:
+To run the server on the machine instead of in a container:
 
 ```
-pnpm --filter @blinkered/server db:up        # 1. Postgres on 55432, waits until it answers
-pnpm --filter @blinkered/server dev          # 2. the API, restarts on save
-pnpm dev                                     # 3. the site with hot reload, on :5173
+pnpm --filter @blinkered/server db:up        # Postgres on 55432, waits until it answers
+pnpm build
+pnpm --filter @blinkered/server migrate
+pnpm --filter @blinkered/server dev          # or `start` for the built output
 ```
 
-**`pnpm dev` proxies `/v1` to the API**, so the dev server is one origin exactly as production
-is. That matters more than convenience: the session is a same-origin cookie, and running the two
-on separate ports would need CORS to work at all, which is a difference between development and
-production that hides bugs in both directions.
-
-The API's watcher is `tsx`, which runs the TypeScript directly, so a save is a restart in about
-two seconds and there is no build step in the loop. What ships is still `tsc` output; `tsx` is
-only ever the developer's.
-
-Set the seven variables in the API's terminal, or it will refuse to start and tell you which are
-missing:
+Getting a variable wrong is not subtle on purpose: the process reports every problem at once and
+refuses to start, rather than one problem per attempt.
 
 ```
 export BLINKERED_DB_HOST=localhost BLINKERED_DB_PORT=55432 BLINKERED_DB_TLS=false \
        BLINKERED_DB_USER=blinkered BLINKERED_DB_PASSWORD=testpass \
        BLINKERED_DB_NAME=blinkered BLINKERED_DB_SCHEMA=blinkered
 ```
-
-To run the built server instead of the watcher, `pnpm build` then
-`pnpm --filter @blinkered/server start`.
-
-Getting a variable wrong is not subtle on purpose: the process reports every problem at once and
-refuses to start, rather than one problem per attempt.
 
 `pnpm --filter @blinkered/server db:down` removes the container **and its volume**.
 
@@ -90,19 +78,20 @@ from the last one. It does that to the database named above and nothing else.
 
 `src/schema.ts` is the source of truth. After changing it:
 
-While iterating, `pnpm --filter @blinkered/server db:push` writes `schema.ts` straight into the
-local database with no migration file in between, so a column can be tried and changed again
-without leaving a trail of experiments in `drizzle/`. It is a development tool and nothing else:
-**never push to a database holding rows somebody cares about.** There is also `db:studio`, which
-opens drizzle's browser for the same database.
-
-Once the shape has settled, generate the migration that ships:
+Under `docker compose up` this is automatic: saving `schema.ts` generates the migration and
+applies it, and the generated SQL appears in `drizzle/` on the machine, ready to commit. By hand
+it is:
 
 ```
 cd apps/server && npx drizzle-kit generate --name=<what-changed>
 ```
 
-Then commit the generated SQL. It is applied by `runMigrations`, which is an entrypoint of its
+**Not `drizzle-kit push`**, which is the usual tool for this loop and does not work here. With the
+tables in a schema of their own rather than in `public`, push creates them correctly and then
+emits `DROP SCHEMA "blinkered"` as the whole of its plan, every run; `schemaFilter` gets it as far
+as looking in the right place and no further. Generating and migrating is better anyway: it
+exercises the path that runs in production, and it leaves behind the artifact that has to exist
+before the change can ship rather than a database quietly disagreeing with `drizzle/`. It is applied by `runMigrations`, which is an entrypoint of its
 own rather than something the API does at startup: there is more than one replica, and two pods
 starting together would race.
 
