@@ -8,6 +8,7 @@
   "scripts": {
     "typecheck": "tsc --build --force",
     "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",

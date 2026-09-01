@@ -13,3 +13,7 @@ apps/mobile/ios/
 # Helm templates are Go templates wearing a .yaml suffix, so a YAML parser cannot read them.
 # `helm lint` and `helm template` are what check these; see docs/DEPLOY.md.
 deploy/helm/*/templates/
+
+# Written by `drizzle-kit generate` from src/schema.ts. The SQL is the migration and the snapshot
+# is how the next diff is computed; reformatting either only invites a conflict with the tool.
+apps/server/drizzle/

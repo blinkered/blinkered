@@ -15,6 +15,9 @@ export default defineConfig({
   },
   test: {
     include: ['packages/*/test/**/*.test.ts', 'apps/server/test/**/*.test.ts'],
+    // The database suite is `pnpm test:integration`, and needs a Postgres. See
+    // vitest.integration.config.ts for why it is a separate run rather than a conditional skip.
+    exclude: ['**/node_modules/**', '**/*.integration.test.ts'],
     coverage: {
       provider: 'v8',
       include: [
@@ -33,6 +36,18 @@ export default defineConfig({
         // The server's entrypoint, which reads a port and listens. Everything worth testing is
         // in `app.ts`; covering this one would mean binding a socket to prove `serve` was called.
         'apps/server/src/main.ts',
+        // Opening a pool and running migrations. Both are exercised by `pnpm test:integration`
+        // against a real Postgres, which is the only place they mean anything: a mocked pool
+        // would prove that the mock was called, not that the schema is right.
+        'apps/server/src/db.ts',
+        'apps/server/src/migrate.ts',
+        // Table declarations. The uncovered parts are drizzle's index and `relations` callbacks,
+        // which only run when SQL is built, so a percentage here measures which callback a test
+        // happened to trigger rather than whether the schema is right. That is the same reason
+        // the locale files are excluded above, and the answer is the same: check it structurally.
+        // `test/schema.test.ts` pins the schema name and the columns, and the integration suite
+        // checks the migration and the leaderboard index against a real Postgres.
+        'apps/server/src/schema.ts',
       ],
       thresholds: { lines: 100, functions: 100, branches: 100, statements: 100 },
       reporter: ['text', 'lcov'],

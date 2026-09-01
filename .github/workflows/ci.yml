@@ -27,3 +27,44 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm coverage
+
+  # Ubuntu only, and that is not an oversight. GitHub's macOS runners have no Docker, so a
+  # database test in the `check` matrix would fail there and nowhere else. It is a separate
+  # suite (`pnpm test:integration`) for the same reason, rather than a skip inside the main
+  # one, because a suite that quietly runs nothing looks exactly like a suite that passed.
+  database:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: blinkered
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: blinkered
+        ports:
+          - 55432:5432
+        # Without this the job races the database: the port is open well before Postgres will
+        # answer a query, so the first connection fails on a cold runner and passes on a warm one.
+        options: >-
+          --health-cmd "pg_isready -U blinkered -d blinkered"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test:integration
+        env:
+          BLINKERED_DB_HOST: localhost
+          BLINKERED_DB_PORT: '55432'
+          BLINKERED_DB_TLS: 'false'
+          BLINKERED_DB_USER: blinkered
+          BLINKERED_DB_PASSWORD: testpass
+          BLINKERED_DB_NAME: blinkered
+          BLINKERED_DB_SCHEMA: blinkered
