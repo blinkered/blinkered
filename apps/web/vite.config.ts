@@ -87,7 +87,28 @@ export default defineConfig({
       '@blinkered/i18n': source('../../packages/i18n/src/index.ts'),
     },
   },
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    /*
+     * `/v1` goes to the API, so the dev server is one origin exactly as production is.
+     *
+     * Without this, working on anything that talks to the API means either giving up hot reload
+     * and using `docker compose up`, or running the two on different ports and adding CORS to
+     * make it work -- and CORS in development, absent in production, is a difference that hides
+     * bugs in both directions. The session is a same-origin cookie; the dev server should be one
+     * origin too.
+     *
+     * The API is not started by this. Run `pnpm --filter @blinkered/server dev` alongside. With
+     * nothing listening, a request here fails rather than hanging, which is the honest outcome:
+     * `/v1` is not something Vite can serve.
+     */
+    proxy: {
+      '/v1': {
+        target: process.env.BLINKERED_API ?? 'http://localhost:8080',
+        changeOrigin: false,
+      },
+    },
+  },
   build: {
     target: 'es2022',
     sourcemap: true,

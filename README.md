@@ -37,6 +37,11 @@ site and not the API.
 
 `docker compose up -d postgres` is the database on its own, which is all the tests need.
 
+Nothing in the compose stack reloads: it builds images. The live loop is three terminals, and
+`apps/server/README.md` has it -- the database in a container, `pnpm --filter @blinkered/server
+dev` for the API, and `pnpm dev` for the site, which proxies `/v1` to the API so that the dev
+server is one origin exactly as production is.
+
 ## Play it in a terminal
 
 ```

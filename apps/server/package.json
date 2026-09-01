@@ -6,9 +6,12 @@
   "main": "./dist/src/bin/serve.js",
   "scripts": {
     "start": "node dist/src/bin/serve.js",
+    "dev": "tsx watch src/bin/serve.ts",
     "migrate": "node dist/src/bin/migrate.js",
     "db:up": "docker compose -f ../../compose.yaml up -d --wait postgres",
-    "db:down": "docker compose -f ../../compose.yaml down -v"
+    "db:down": "docker compose -f ../../compose.yaml down -v",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@blinkered/engine": "workspace:*",
@@ -18,6 +21,7 @@
     "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.13"
   }
 }

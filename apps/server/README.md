@@ -16,18 +16,30 @@ The whole application, built and wired the way it is deployed, is one command at
 docker compose up          # http://localhost:8080, site at / and this at /v1
 ```
 
-That builds images, so it is for checking the deployed shape rather than for editing. To work on
-the server itself, run the database in a container and the process on the machine:
+That builds images, so it is for checking the deployed shape rather than for editing. Nothing in
+it reloads.
+
+## The edit loop, which does reload
+
+Three terminals, and everything in them is live:
 
 ```
-pnpm --filter @blinkered/server db:up        # Postgres on 55432, waits until it answers
-pnpm build                                   # or `pnpm typecheck`; the server runs from dist
-pnpm --filter @blinkered/server migrate      # creates the schema and the tables
-pnpm --filter @blinkered/server start        # http://localhost:8080/healthz
+pnpm --filter @blinkered/server db:up        # 1. Postgres on 55432, waits until it answers
+pnpm --filter @blinkered/server dev          # 2. the API, restarts on save
+pnpm dev                                     # 3. the site with hot reload, on :5173
 ```
 
-`migrate` and `start` read the same seven environment variables the deployment secret carries, so
-running them by hand means setting them:
+**`pnpm dev` proxies `/v1` to the API**, so the dev server is one origin exactly as production
+is. That matters more than convenience: the session is a same-origin cookie, and running the two
+on separate ports would need CORS to work at all, which is a difference between development and
+production that hides bugs in both directions.
+
+The API's watcher is `tsx`, which runs the TypeScript directly, so a save is a restart in about
+two seconds and there is no build step in the loop. What ships is still `tsc` output; `tsx` is
+only ever the developer's.
+
+Set the seven variables in the API's terminal, or it will refuse to start and tell you which are
+missing:
 
 ```
 export BLINKERED_DB_HOST=localhost BLINKERED_DB_PORT=55432 BLINKERED_DB_TLS=false \
@@ -35,8 +47,11 @@ export BLINKERED_DB_HOST=localhost BLINKERED_DB_PORT=55432 BLINKERED_DB_TLS=fals
        BLINKERED_DB_NAME=blinkered BLINKERED_DB_SCHEMA=blinkered
 ```
 
-Getting one of them wrong is not subtle on purpose: the process reports every problem at once and
-refuses to start, rather than reporting the first one per deploy.
+To run the built server instead of the watcher, `pnpm build` then
+`pnpm --filter @blinkered/server start`.
+
+Getting a variable wrong is not subtle on purpose: the process reports every problem at once and
+refuses to start, rather than one problem per attempt.
 
 `pnpm --filter @blinkered/server db:down` removes the container **and its volume**.
 
@@ -74,6 +89,14 @@ from the last one. It does that to the database named above and nothing else.
 ## Migrations
 
 `src/schema.ts` is the source of truth. After changing it:
+
+While iterating, `pnpm --filter @blinkered/server db:push` writes `schema.ts` straight into the
+local database with no migration file in between, so a column can be tried and changed again
+without leaving a trail of experiments in `drizzle/`. It is a development tool and nothing else:
+**never push to a database holding rows somebody cares about.** There is also `db:studio`, which
+opens drizzle's browser for the same database.
+
+Once the shape has settled, generate the migration that ships:
 
 ```
 cd apps/server && npx drizzle-kit generate --name=<what-changed>
