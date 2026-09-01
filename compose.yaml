@@ -1,0 +1,81 @@
+# The whole application, as it is deployed: Postgres, the migrations, the API, and the web front
+# end on one origin.
+#
+# `docker compose up` builds and runs all of it. `docker compose up -d postgres` is the database
+# on its own, which is all the test suites need and is much faster.
+#
+# This is not the fast edit loop -- that is `pnpm dev`, which runs Vite against the sources with
+# hot reload. This is for seeing the deployed shape work end to end, which Vite cannot show you,
+# because in production the API and the site share an origin and Vite serves only the site.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: blinkered
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: blinkered
+    ports:
+      # 55432, not 5432, so it cannot collide with a Postgres already on the machine, and so
+      # that pointing the tests at the wrong database is not something that happens by accident.
+      - '55432:5432'
+    volumes:
+      - data:/var/lib/postgresql/data
+    healthcheck:
+      # The port opens well before the database will answer a query, so a TCP check would report
+      # healthy while the first connection still fails.
+      test: ['CMD-SHELL', 'pg_isready -U blinkered -d blinkered']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  # Runs to completion and stops. The API waits for it rather than migrating on the way up,
+  # which is the same reason it is a Job and not an init step in the cluster: there is more than
+  # one replica, and two of them starting together would race.
+  migrate:
+    build:
+      context: .
+      target: api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &database
+      BLINKERED_DB_HOST: postgres
+      BLINKERED_DB_PORT: '5432'
+      BLINKERED_DB_TLS: 'false'
+      BLINKERED_DB_USER: blinkered
+      BLINKERED_DB_PASSWORD: testpass
+      BLINKERED_DB_NAME: blinkered
+      BLINKERED_DB_SCHEMA: blinkered
+    command: ['node', 'dist/src/bin/migrate.js']
+    restart: 'no'
+
+  api:
+    build:
+      context: .
+      target: api
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: *database
+      PORT: '8080'
+    # No published port on purpose. Everything reaches it through the web container, which is
+    # what puts the API and the site on one origin exactly as they are in production.
+    expose:
+      - '8080'
+
+  web:
+    build:
+      context: .
+      target: serve
+    depends_on:
+      - api
+    ports:
+      - '8080:8080'
+    volumes:
+      # The one file that differs from production: it proxies `/v1` to the API, because there is
+      # no Traefik here to do it. See deploy/nginx.local.conf.
+      - ./deploy/nginx.local.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  data:

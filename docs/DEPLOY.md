@@ -187,6 +187,32 @@ and consecutive requests do not necessarily share one: a run that went MIA, CDG,
 `MISS`, `HIT`, which is three caches behaving correctly rather than one behaving strangely. Judge
 it by `age` climbing on repeat requests to the same colo.
 
+## The images, and the two nginx configs
+
+The Dockerfile builds three things from one source tree: `serve` is nginx and the built site,
+`api` is Node and the Hono server, and `build` is the shared stage both come from. The API image
+is assembled with `pnpm deploy`, which resolves the workspace links into a self-contained
+directory of production dependencies; copying the tree wholesale would carry the 35MB of word
+lists and the whole toolchain into an image that needs none of it.
+
+`deploy/nginx.shared.conf` holds everything the two environments have in common and is included
+by both, so they cannot drift. The wrappers differ in exactly one thing:
+
+- **`nginx.conf`**, production, serves files and nothing else. Traefik terminates TLS,
+  compresses, and routes `/v1` to the API before nginx is involved.
+- **`nginx.local.conf`**, used by `docker compose`, proxies `/v1` to the API container, because
+  there is no Traefik there to do it.
+
+Proxying rather than publishing the API on a second port is what puts the whole application on
+one origin locally, as it is in production. The session is meant to be an ordinary same-origin
+cookie, and a local setup split across two ports would need CORS to work at all, which would mean
+developing against a different security model than the one that ships.
+
+**The `/v1` prefix is not stripped.** Traefik forwards the path as it stands, so the app owns the
+prefix and the local proxy does the same. That is why the API answers both `/healthz`, which is
+the kubelet's and is reached on the pod, and `/v1/healthz`, which is reached the way a browser
+reaches everything else and so proves the routing rather than the process.
+
 ## The Helm chart
 
 `deploy/helm/blinkered` is what the plain YAML in `deploy/k8s/` becomes once there is more than

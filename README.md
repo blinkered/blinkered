@@ -23,6 +23,20 @@ lists are committed, so there is no build step before playing; `pnpm dictionary 
 regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
 from and why they are the size they are.
 
+## Run the whole thing
+
+```
+docker compose up          # postgres, migrations, the API, and the site on http://localhost:8080
+docker compose down -v
+```
+
+One origin, exactly as it is deployed: the site at `/` and the API under `/v1`, with nginx doing
+locally what Traefik does in production. This is not the fast edit loop, which is `pnpm dev`
+above; it is for seeing the deployed shape work, which Vite cannot show you because it serves the
+site and not the API.
+
+`docker compose up -d postgres` is the database on its own, which is all the tests need.
+
 ## Play it in a terminal
 
 ```

@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node dist/src/bin/serve.js",
     "migrate": "node dist/src/bin/migrate.js",
-    "db:up": "docker compose up -d --wait",
-    "db:down": "docker compose down -v"
+    "db:up": "docker compose -f ../../compose.yaml up -d --wait postgres",
+    "db:down": "docker compose -f ../../compose.yaml down -v"
   },
   "dependencies": {
     "@blinkered/engine": "workspace:*",

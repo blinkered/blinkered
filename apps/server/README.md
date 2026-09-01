@@ -10,6 +10,15 @@ what has to be configured in Google's and Apple's consoles, and
 
 ## Running it locally
 
+The whole application, built and wired the way it is deployed, is one command at the repo root:
+
+```
+docker compose up          # http://localhost:8080, site at / and this at /v1
+```
+
+That builds images, so it is for checking the deployed shape rather than for editing. To work on
+the server itself, run the database in a container and the process on the machine:
+
 ```
 pnpm --filter @blinkered/server db:up        # Postgres on 55432, waits until it answers
 pnpm build                                   # or `pnpm typecheck`; the server runs from dist
@@ -30,6 +39,22 @@ Getting one of them wrong is not subtle on purpose: the process reports every pr
 refuses to start, rather than reporting the first one per deploy.
 
 `pnpm --filter @blinkered/server db:down` removes the container **and its volume**.
+
+## Two health checks, on purpose
+
+`/healthz` is the kubelet's: reached on the pod directly, never through the ingress, and it says
+nothing about the database. A liveness probe that fails when a dependency is unreachable gets the
+pod restarted, which does not reach the dependency either, so an outage downstream becomes a
+crash loop upstream.
+
+`/v1/healthz` is reached the way a browser reaches everything else. It answering is proof of the
+whole path -- ingress rule, service, port -- which is a different fact from the process being
+alive, and the one that is usually wrong after a deployment change.
+
+The `/v1` prefix is **not** stripped on the way in. Traefik forwards the path as it stands, so the
+app owns the prefix, and the local nginx proxy is configured to behave the same way rather than
+helpfully rewriting it. A development stack that differs from production in its routing is one
+that cannot show you a routing bug.
 
 ## Testing it
 
