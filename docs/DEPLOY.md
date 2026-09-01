@@ -146,6 +146,47 @@ header. Belt and braces, and the belt costs nothing.
 A stale word list is caught by the app rather than being served as gibberish: the file's first
 line has to parse as a Blinkered header, and anything else is refused with a clear message.
 
+## Cloudflare in front, and the one rule it needed
+
+playblinkered.com is proxied by Cloudflare. Two certificates, Cloudflare's at the edge and
+Traefik's ACME one at the origin, which is the ordinary arrangement and needs nothing from the
+manifests. The apex ingress and the www redirect are untouched by it.
+
+**Turning it on cached nothing.** Cloudflare decides what is cacheable from a list of file
+extensions before it looks at what the origin asked for, and `.txt` and `.json` are not on that
+list. Measured at the edge before the rule existed:
+
+| path                     | origin `cache-control`                  | `cf-cache-status` |
+| ------------------------ | --------------------------------------- | ----------------- |
+| `/words/en.txt`          | `public, max-age=3600, must-revalidate` | `DYNAMIC`         |
+| `/words/manifest.json`   | `public, max-age=3600, must-revalidate` | `DYNAMIC`         |
+| `/assets/main-<hash>.js` | `public, max-age=31536000, immutable`   | `MISS`            |
+
+`DYNAMIC` is Cloudflare declining to cache at all, however loudly the origin asks. `MISS` on the
+JS is the opposite: cacheable, merely cold. So the payload the proxy was wanted for, 35MB of word
+lists with Russian at 8.3MB, was still reaching the pod on every request.
+
+One Cache Rule fixes it:
+
+- **If** URI Path _starts with_ `/words/`
+- **Then** cache eligibility: eligible for cache
+- **Edge TTL:** _use cache-control header if present, bypass cache if not_
+
+**That first Edge TTL option, not the second one beside it.** They are identical wherever the
+header is present, which for `/words/` is every successful response. They differ only where it is
+absent, and under `/words/` an absent header means an error. The second option would let
+Cloudflare cache a 404 on its own schedule, which is how a missing word list starts looking like
+a parse failure again. Verified afterwards: `/words/zz.txt` returns 404 with `BYPASS`.
+
+The TTL is left respecting the origin rather than overridden, because these filenames carry no
+hash. An hour at the edge is the whole win; anything longer would serve a stale list worldwide
+after a `pnpm dictionary build` and would want a purge step in `deploy/release.sh` to be honest.
+
+**Reading the result takes two requests at the same edge.** The colo is the suffix on `cf-ray`,
+and consecutive requests do not necessarily share one: a run that went MIA, CDG, CDG read `HIT`,
+`MISS`, `HIT`, which is three caches behaving correctly rather than one behaving strangely. Judge
+it by `age` climbing on repeat requests to the same colo.
+
 ## Checking a deployment
 
 ```
@@ -167,6 +208,13 @@ Then, against `http://localhost:8099`:
 That last one is deliberate. There is no client-side router, so an unknown path is an error and
 should say so. A server that answers every path with `index.html` is what once made a missing
 word list look like a parse failure.
+
+At the edge rather than at the pod, two more, both of which need the same request twice:
+
+| check                               | expect                                 |
+| ----------------------------------- | -------------------------------------- |
+| `/words/en.txt`, same `cf-ray` colo | `cf-cache-status: HIT`, `age` climbing |
+| `/words/zz.txt`                     | `404` and `BYPASS`, never `HIT`        |
 
 ## What is not here yet
 
