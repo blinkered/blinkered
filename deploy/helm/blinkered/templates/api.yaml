@@ -42,8 +42,8 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            # The six keys, from whichever secret is in play. Identical whether the database is
-            # this chart's StatefulSet or a managed one somewhere else.
+            # The seven keys, from whichever secret is in play. Identical whether the database
+            # is this chart's StatefulSet or a managed one somewhere else.
             {{- $secret := include "blinkered.databaseSecret" . }}
             - name: BLINKERED_DB_HOST
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: host } }
@@ -55,6 +55,8 @@ spec:
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: username } }
             - name: BLINKERED_DB_PASSWORD
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: password } }
+            - name: BLINKERED_DB_NAME
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: db } }
             - name: BLINKERED_DB_SCHEMA
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: schema } }
           # Liveness says nothing about the database on purpose. A probe that fails when a

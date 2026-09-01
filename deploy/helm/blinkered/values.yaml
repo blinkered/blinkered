@@ -61,7 +61,11 @@ postgres:
   replicaCount: 1
   auth:
     username: blinkered
-    # The value of the `schema` key. See the note in templates/secret.yaml about what this means.
+    # The database. Created by initdb when the chart owns Postgres, and in the provider's console
+    # when it does not, because a database has to exist before anything can connect at all.
+    db: blinkered
+    # The schema inside that database. Created by the migrations, in both arrangements, so the
+    # two behave identically rather than one of them arriving with a schema already made.
     schema: blinkered
     # Empty generates one on first install and preserves it across upgrades. Set it to adopt an
     # existing password.
@@ -80,7 +84,7 @@ postgres:
   # Point at a secret you made yourself, and the chart creates none. Required when
   # `postgres.enabled` is false. It must carry exactly these keys:
   #
-  #   host  port  tls-enabled  username  password  schema
+  #   host  port  tls-enabled  username  password  db  schema
   #
   existingSecret: ''
 

@@ -52,8 +52,10 @@ spec:
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: username } }
             - name: POSTGRES_PASSWORD
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: password } }
+            # The database, not the schema. initdb creates a database and nothing else; the
+            # schema inside it is the migrations' job, in both arrangements.
             - name: POSTGRES_DB
-              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: schema } }
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: db } }
             # The image initialises into the root of the mount, and a PVC arrives with a
             # lost+found in it, which Postgres refuses to initialise over. A subdirectory is the
             # documented way round it.

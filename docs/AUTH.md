@@ -229,9 +229,12 @@ APPLE_KEY_ID              one per key
 APPLE_SERVICES_ID         the Services ID, shared by both environments
 APPLE_PRIVATE_KEY         the .p8, and never a generated six-month secret
 EMAIL_API_KEY             the transactional provider
-DATABASE_URL              or the discrete host/port/user/password/schema keys
 SESSION_SECRET            for signing the cookie
 ```
+
+The database is a secret of its own with a different shape, seven keys rather than environment
+variable names, so that one secret can be swapped for a managed provider's without touching
+anything here. [DEPLOY.md](DEPLOY.md) has it.
 
 ## The order to do it in
 

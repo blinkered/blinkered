@@ -209,13 +209,20 @@ helm upgrade --install blinkered deploy/helm/blinkered \
 
 `postgres.enabled: true` runs the StatefulSet. `postgres.enabled: false` with
 `postgres.existingSecret` pointed at a secret you made yourself uses a managed database instead,
-and **nothing else in the chart changes**. The secret carries six keys either way:
+and **nothing else in the chart changes**. The secret carries seven keys either way:
 
 ```
-host   port   tls-enabled   username   password   schema
+host   port   tls-enabled   username   password   db   schema
 ```
 
-The API reads those six as environment variables and never learns which arrangement it is in.
+`db` and `schema` are both there because Postgres distinguishes them, and because they are made
+by different things. The **database** has to exist before anything can connect at all, so initdb
+creates it when the chart owns Postgres and the provider's console creates it when it does not.
+The **schema** inside it is created by the migrations, in both arrangements. Letting initdb make
+the schema as well would have been one line, and would have meant the chart's database arriving
+in a state a managed one does not, which is the exact divergence this secret exists to prevent.
+
+The API reads all seven as environment variables and never learns which arrangement it is in.
 That is the point of doing it this way rather than with a `DATABASE_URL` in one case and discrete
 settings in the other: there is one code path, so there is no configuration that only ever runs
 in production.
