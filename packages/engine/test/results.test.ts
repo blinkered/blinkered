@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { compareResults, rankOf, rankedResults } from '../src/index.js'
-import type { GameResult } from '../src/index.js'
+import {
+  DIFFICULTIES,
+  compareResults,
+  configFor,
+  isCanonical,
+  rankOf,
+  rankedResults,
+} from '../src/index.js'
+import type { Difficulty, GameConfig, GameResult } from '../src/index.js'
 
 const result = (over: Partial<GameResult> = {}): GameResult => ({
   score: 100,
@@ -95,5 +102,55 @@ describe('rankOf', () => {
       engineVersion: '0.1.0',
     })
     expect(rankOf(ranked, custom)).toBe(0)
+  })
+})
+
+describe('isCanonical', () => {
+  const NAMES = Object.keys(DIFFICULTIES) as Difficulty[]
+
+  it('accepts every preset, in every language it ships', () => {
+    for (const difficulty of NAMES) {
+      for (const language of ['en', 'hr', 'ru', 'el']) {
+        expect(isCanonical(configFor(difficulty, { language }), difficulty), difficulty).toBe(true)
+      }
+    }
+  })
+
+  it('refuses a ruleset with any rule edited away from its preset', () => {
+    const preset = configFor('medium')
+    expect(isCanonical({ ...preset, minWordLength: 5 }, 'medium')).toBe(false)
+    expect(isCanonical({ ...preset, n: 9 }, 'medium')).toBe(false)
+    expect(isCanonical({ ...preset, flipEconomy: 'perLetter' }, 'medium')).toBe(false)
+    expect(isCanonical({ ...preset, wildChance: 0.5 }, 'medium')).toBe(false)
+  })
+
+  it('asks what the rules are, not how they were reached', () => {
+    // Hand-tuned in nerd mode to exactly the preset's numbers. That is a preset game.
+    const tuned = configFor('hard', { minWordLength: DIFFICULTIES.hard.minWordLength })
+    expect(isCanonical(tuned, 'hard')).toBe(true)
+  })
+
+  it('judges against the difficulty claimed, so hard rules filed as medium are not canonical', () => {
+    // The reason it does not compare against all four presets. A game whose rules happen to
+    // equal hard's is not a canonical *medium* game, and medium is what it would be filed under.
+    const asHard = configFor('hard')
+    expect(isCanonical(asHard, 'hard')).toBe(true)
+    expect(isCanonical(asHard, 'medium')).toBe(false)
+  })
+
+  it('does not count a language as a custom rule', () => {
+    // Language changes `wMin`, since a Greek board admits fewer words than an Italian one, so a
+    // comparison that pinned the language on one side only would call every non-English game
+    // custom.
+    for (const language of ['fr', 'hr', 'ru', 'el', 'fi']) {
+      expect(isCanonical(configFor('insane', { language }), 'insane'), language).toBe(true)
+    }
+  })
+
+  it('refuses a config that is missing a rule rather than reading it as equal', () => {
+    // A server rebuilds a config from columns, and a column nobody wrote is `undefined`.
+    const missing: Record<string, unknown> = { ...configFor('easy') }
+    delete missing.wMin
+    expect(isCanonical(missing as unknown as GameConfig, 'easy')).toBe(false)
   })
 })

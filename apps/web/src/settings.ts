@@ -1,4 +1,4 @@
-import { DIFFICULTIES, configFor } from '@blinkered/engine'
+import { DIFFICULTIES, configFor, isCanonical as isCanonicalRuleset } from '@blinkered/engine'
 import type {
   Difficulty,
   FlipEconomy,
@@ -82,11 +82,6 @@ export const KEY_SCHEMES: readonly KeyScheme[] = ['cycle', 'advance']
 export const CUSTOM_RULES = 'custom'
 export type Ruleset = Difficulty | typeof CUSTOM_RULES
 
-/** Two rulesets that say the same thing. Every field of a GameConfig is a primitive. */
-function sameRules(a: GameConfig, b: GameConfig): boolean {
-  return (Object.keys(a) as (keyof GameConfig)[]).every((key) => a[key] === b[key])
-}
-
 /**
  * Whether the stored ruleset actually forks from a preset.
  *
@@ -95,22 +90,15 @@ function sameRules(a: GameConfig, b: GameConfig): boolean {
  * the moment it is touched, so a player who nudged a number and put it back had a custom
  * ruleset that was custom in name only.
  *
- * Compared against the preset it is built on, and only that one. Comparing against all four was
- * the first version and it lights the wrong chip: hand-tune medium until it happens to equal hard
- * and the ruleset stops counting as custom, so the picker highlights `medium` while the rules in
- * play are hard's. Worse, the finished game is filed under `settings.difficulty`, so it would
- * reach the leaderboard as a medium game played at hard's speed. A coincidence between two
- * presets is not worth a wrong label.
- *
- * Language is pinned on both sides. It reaches the engine through the ruleset, since the word
- * floor depends on how many words the dictionary admits, but it is chosen with the flag picker
- * and is nobody's idea of a difficulty setting.
+ * The comparison itself belongs to the engine now, because a server has to reach the same verdict
+ * about the same game and two implementations would drift. This asks the engine's question about
+ * the stored overrides, resolved whether or not they are currently applied: "does this ruleset
+ * fork" is a fact about what is saved, not about what is switched on.
  */
 export function hasCustomRules(settings: Settings): boolean {
-  if (Object.keys(settings.overrides).length === 0) return false
   const language = settings.gameLanguage
   const rules = configFor(settings.difficulty, { ...settings.overrides, language })
-  return !sameRules(rules, configFor(settings.difficulty, { language }))
+  return !isCanonicalRuleset(rules, settings.difficulty)
 }
 
 /**

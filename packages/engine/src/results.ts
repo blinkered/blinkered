@@ -1,4 +1,5 @@
-import type { Difficulty } from './types.js'
+import { configFor } from './difficulty.js'
+import type { Difficulty, GameConfig } from './types.js'
 
 /**
  * The record of a finished game.
@@ -74,6 +75,41 @@ export function rankedResults(results: readonly GameResult[], group: ResultGroup
         result.engineVersion === group.engineVersion,
     )
     .sort(compareResults)
+}
+
+/** Two rulesets that say the same thing. Every field of a `GameConfig` is a primitive. */
+function sameRules(preset: GameConfig, candidate: GameConfig): boolean {
+  return (Object.keys(preset) as (keyof GameConfig)[]).every(
+    (key) => preset[key] === candidate[key],
+  )
+}
+
+/**
+ * Whether a ruleset is the published preset it claims to be, which is what ranking requires.
+ *
+ * Here rather than in the web app for the reason at the top of this file: the server decides
+ * what reaches a public board, the client decides what to tell the player about their own, and
+ * two implementations of "is this a real medium game" would drift. It was in `apps/web` until
+ * accounts made that a problem.
+ *
+ * Asks what the rules **are**, not how they were reached. A game hand-tuned in nerd mode to
+ * numbers identical to a preset is a game on that preset, and ranks.
+ *
+ * Compared against the difficulty the game claims, and only that one. Comparing against all four
+ * was the first version and it mislabels: tune `medium` until it happens to equal `hard` and the
+ * game would count as canonical while being filed under `medium`, so it would reach a board as a
+ * medium game played at hard's speed. A coincidence between two presets is not worth a wrong
+ * label.
+ *
+ * The preset's own keys are what get compared, so a config that is missing one is not canonical
+ * rather than accidentally equal to one. That matters on a server, where a config is rebuilt from
+ * columns rather than handed over whole.
+ */
+export function isCanonical(config: GameConfig, difficulty: Difficulty): boolean {
+  // Language is pinned on both sides. It reaches the engine through the ruleset, since the word
+  // floor depends on how many words the dictionary admits, but it is nobody's idea of a
+  // difficulty setting and a French game is not a custom one.
+  return sameRules(configFor(difficulty, { language: config.language }), config)
 }
 
 /** Where a game sits in a ranking, counting from one. Zero when it is not in it at all. */

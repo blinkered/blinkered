@@ -1,3 +1,4 @@
+import { alphabetFor } from './languages.js'
 import type { FlipEconomy, GameConfig } from './types.js'
 
 /**
@@ -34,4 +35,21 @@ export function flipReward(length: number, config: GameConfig): number {
     case 'overMinimum':
       return Math.max(0, length - config.minWordLength + 1)
   }
+}
+
+/**
+ * What a list of finished words is worth, which is the only thing a server needs to score a game.
+ *
+ * The whole reason a submitted score can be recomputed rather than replayed: `wordScore` is a
+ * function of length and nothing else, so the words are sufficient. No board, no clock, no order.
+ * `properties.test.ts` asserts that a played game's score is exactly this sum, which is what makes
+ * the server's number the same number rather than a second opinion.
+ *
+ * Length is measured in **tiles**, so the word is segmented by its own alphabet first. Counting
+ * characters is right in English and wrong in Croatian, where LJ, NJ and DŽ are one tile each, and
+ * wrong in the direction that quietly underpays the people least likely to be asked.
+ */
+export function scoreWords(words: readonly string[], language: string): number {
+  const alphabet = alphabetFor(language)
+  return words.reduce((total, word) => total + wordScore(alphabet.segment(word).length), 0)
 }

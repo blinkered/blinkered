@@ -2,7 +2,7 @@ export * from './types.js'
 export { reduce, revealNext, type Reduction } from './reducer.js'
 export { createGame, replay, type NewGame, type Replay } from './game.js'
 export { keyToEvent, type KeyPress, type KeyScheme } from './keymap.js'
-export { wordScore, flipReward } from './score.js'
+export { wordScore, flipReward, scoreWords } from './score.js'
 export { drawLetters } from './letters.js'
 export { letterFaults, type LetterFault } from './letterFaults.js'
 export {
@@ -54,6 +54,7 @@ export {
 } from './selection.js'
 export {
   compareResults,
+  isCanonical,
   rankOf,
   rankedResults,
   type GameResult,

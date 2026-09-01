@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import fc from 'fast-check'
-import { configFor, flipReward, wordScore } from '../src/index.js'
+import { configFor, flipReward, scoreWords, wordScore } from '../src/index.js'
 import type { FlipEconomy } from '../src/index.js'
 
 describe('wordScore', () => {
@@ -50,5 +50,35 @@ describe('flipReward', () => {
   it('tracks the minimum word length under overMinimum', () => {
     const strict = configFor('easy', { flipEconomy: 'overMinimum', minWordLength: 4 })
     expect(flipReward(6, strict)).toBe(3)
+  })
+})
+
+describe('scoreWords', () => {
+  it('is the sum of what each word is worth', () => {
+    // CAT 2, HOUSE 5, PLANTS 8.
+    expect(scoreWords(['CAT', 'HOUSE', 'PLANTS'], 'en')).toBe(15)
+  })
+
+  it('scores nothing for nothing', () => {
+    expect(scoreWords([], 'en')).toBe(0)
+  })
+
+  it('counts tiles, not characters', () => {
+    // Croatian LJ, NJ and DŽ are one tile each. LJUDI is five characters and four tiles, so it
+    // is worth 3 and not 5. Counting characters overpays here; the same mistake underpays
+    // wherever a tile is longer than the word's own letters suggest.
+    expect('LJUDI'.length).toBe(5)
+    expect(scoreWords(['LJUDI'], 'hr')).toBe(wordScore(4))
+    expect(scoreWords(['LJUDI'], 'hr')).not.toBe(wordScore(5))
+  })
+
+  it('agrees with wordScore over every length, in every language', () => {
+    fc.assert(
+      fc.property(fc.array(fc.integer({ min: 2, max: 12 }), { maxLength: 30 }), (lengths) => {
+        const words = lengths.map((length) => 'A'.repeat(length))
+        const expected = lengths.reduce((total, length) => total + wordScore(length), 0)
+        expect(scoreWords(words, 'en')).toBe(expected)
+      }),
+    )
   })
 })
