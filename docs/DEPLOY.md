@@ -187,6 +187,56 @@ and consecutive requests do not necessarily share one: a run that went MIA, CDG,
 `MISS`, `HIT`, which is three caches behaving correctly rather than one behaving strangely. Judge
 it by `age` climbing on repeat requests to the same colo.
 
+## The Helm chart
+
+`deploy/helm/blinkered` is what the plain YAML in `deploy/k8s/` becomes once there is more than
+one thing to deploy. Three components that scale independently, because they are under different
+pressure:
+
+| component | kind        | scaled by               | why separately                                       |
+| --------- | ----------- | ----------------------- | ---------------------------------------------------- |
+| web       | Deployment  | `web.replicaCount`      | nginx serving files, bounded by connections          |
+| api       | Deployment  | `api.replicaCount`      | Node, talks to a database, and is the one under load |
+| postgres  | StatefulSet | `postgres.replicaCount` | mostly should not be scaled at all                   |
+
+```
+helm upgrade --install blinkered deploy/helm/blinkered \
+  -n blinkered-prod --create-namespace \
+  --set image.tag=sha-<short> --set api.image.tag=sha-<short>
+```
+
+### The database is one interface with two implementations
+
+`postgres.enabled: true` runs the StatefulSet. `postgres.enabled: false` with
+`postgres.existingSecret` pointed at a secret you made yourself uses a managed database instead,
+and **nothing else in the chart changes**. The secret carries six keys either way:
+
+```
+host   port   tls-enabled   username   password   schema
+```
+
+The API reads those six as environment variables and never learns which arrangement it is in.
+That is the point of doing it this way rather than with a `DATABASE_URL` in one case and discrete
+settings in the other: there is one code path, so there is no configuration that only ever runs
+in production.
+
+When the chart owns the database it writes that secret itself, pointed at its own StatefulSet.
+The password is generated on first install and **preserved across upgrades** by looking up the
+secret already in the cluster, so an upgrade does not roll the password and lock the API out of
+its own data. One consequence worth knowing: `helm template` and `--dry-run` cannot do that
+lookup, so a rendered manifest shows a different password than the cluster holds. That is the
+mechanism working.
+
+### Migrating off `deploy/k8s/`
+
+Not automatic, because the names change: the live Deployment is `blinkered` and the chart's is
+`blinkered-web`. Helm will not adopt a resource it did not create, so installing the chart brings
+up a second set of pods alongside the current ones rather than taking them over.
+
+The order that does not drop traffic: install the chart with `ingress.enabled=false`, check the
+pods are healthy, then delete the old Ingress, then upgrade with the ingress on, then delete the
+old Deployment and Service. `deploy/k8s/` stays in the repo until that has been done once.
+
 ## Checking a deployment
 
 ```

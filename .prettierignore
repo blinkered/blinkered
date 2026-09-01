@@ -9,3 +9,7 @@ packages/words/data/
 
 # Xcode owns these and rewrites them in its own style; reformatting only starts an argument.
 apps/mobile/ios/
+
+# Helm templates are Go templates wearing a .yaml suffix, so a YAML parser cannot read them.
+# `helm lint` and `helm template` are what check these; see docs/DEPLOY.md.
+deploy/helm/*/templates/

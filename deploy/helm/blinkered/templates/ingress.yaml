@@ -1,0 +1,57 @@
+{{- if .Values.ingress.enabled -}}
+{{- $ns := .Release.Namespace -}}
+{{- $full := include "blinkered.fullname" . -}}
+{{- $middlewares := list -}}
+{{- if .Values.ingress.middlewares.wwwRedirect -}}
+{{- $middlewares = append $middlewares (printf "%s-%s-www-to-apex@kubernetescrd" $ns $full) -}}
+{{- end -}}
+{{- if .Values.ingress.middlewares.compress -}}
+{{- $middlewares = append $middlewares (printf "%s-%s-compress@kubernetescrd" $ns $full) -}}
+{{- end -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $full }}
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+  annotations:
+    # Comma-separated with no space after the comma. Traefik happens to trim a space, and
+    # depending on that is a poor trade when a reference it cannot resolve takes the whole router
+    # out of service rather than failing quietly. Redirect first, so a redirect is not compressed.
+    traefik.ingress.kubernetes.io/router.middlewares: {{ join "," $middlewares | quote }}
+spec:
+  # This cluster has `private` (the default) and `public`, both Traefik. Anything meant to be
+  # reachable from outside needs `public`. There is no nginx controller, so nginx annotations do
+  # nothing at all.
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    {{- /*
+      Both the canonical hosts and the redirected ones need a rule. Traefik only routes hosts it
+      has a rule for, so a host with only a middleware pointed at it 404s before the middleware
+      is ever consulted. This is the opposite of the nginx controller, where the www rule must be
+      left out because the annotation generates that server block itself.
+    */}}
+    {{- range concat .Values.ingress.hosts .Values.ingress.redirectHosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          {{- if $.Values.api.enabled }}
+          # Longest prefix first. The API owns one path; the web pod owns everything else, which
+          # keeps the whole app on one origin and so keeps the session an ordinary cookie.
+          - path: {{ $.Values.api.pathPrefix }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $full }}-api
+                port:
+                  name: http
+          {{- end }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $full }}-web
+                port:
+                  name: http
+    {{- end }}
+{{- end }}

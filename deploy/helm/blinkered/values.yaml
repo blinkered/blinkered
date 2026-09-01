@@ -1,0 +1,104 @@
+# Blinkered.
+#
+# Three things that scale independently, because they are under different pressure: the web pod
+# serves static files and is bounded by connections, the API replays nothing but does talk to a
+# database, and Postgres is a StatefulSet that mostly should not be scaled at all.
+
+nameOverride: ''
+fullnameOverride: ''
+
+image:
+  repository: ghcr.io/blinkered/blinkered
+  pullPolicy: IfNotPresent
+  # Empty means the chart's appVersion. Set a `sha-<short>` tag per deploy rather than `latest`,
+  # which moves under you: a pod restarting two weeks later comes up on different code than its
+  # neighbours. See docs/DEPLOY.md.
+  tag: ''
+
+# nginx serving the built files. No Node at runtime, nothing to configure, no state.
+web:
+  replicaCount: 2
+  # The container listens high because it runs unprivileged and cannot bind a privileged port.
+  containerPort: 8080
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 500m
+      memory: 128Mi
+
+# The Hono API. Its own image, because it is Node and the web image is nginx.
+api:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/blinkered/blinkered-api
+    tag: ''
+  containerPort: 8080
+  # Every route under here goes to the API; everything else goes to the web pod. Same origin, so
+  # the session is an ordinary cookie and there is no CORS anywhere in the app.
+  pathPrefix: /v1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      # No CPU limit on purpose. Node throttled at a limit shows up as latency spikes rather than
+      # as a clean failure, and requests are what the scheduler actually honours.
+      memory: 512Mi
+  # Non-secret configuration. Anything secret comes from the secret below.
+  env:
+    LOG_LEVEL: info
+
+postgres:
+  # false uses an external database instead. Nothing else in the chart changes: the API reads the
+  # same six keys out of a secret either way, so there is one code path rather than two.
+  enabled: true
+  image: postgres:17-alpine
+  # A StatefulSet of one. More replicas need replication configured, which this chart does not
+  # do, so this is here to be explicit rather than to be turned up.
+  replicaCount: 1
+  auth:
+    username: blinkered
+    # The value of the `schema` key. See the note in templates/secret.yaml about what this means.
+    schema: blinkered
+    # Empty generates one on first install and preserves it across upgrades. Set it to adopt an
+    # existing password.
+    password: ''
+  persistence:
+    size: 10Gi
+    # Empty uses the cluster's default StorageClass.
+    storageClass: ''
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+
+  # Point at a secret you made yourself, and the chart creates none. Required when
+  # `postgres.enabled` is false. It must carry exactly these keys:
+  #
+  #   host  port  tls-enabled  username  password  schema
+  #
+  existingSecret: ''
+
+ingress:
+  enabled: true
+  className: public
+  hosts:
+    - playblinkered.com
+  # Redirected to the first host above, so there is one origin. A guest's scores live in
+  # localStorage, which is scoped per origin, so two hostnames means two leaderboards and the
+  # second one looks empty rather than elsewhere.
+  redirectHosts:
+    - www.playblinkered.com
+  # Traefik middleware references, resolved as `<namespace>-<name>@kubernetescrd`.
+  middlewares:
+    wwwRedirect: true
+    compress: true
+
+serviceAccount:
+  create: false
+  name: ''

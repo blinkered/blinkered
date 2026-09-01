@@ -1,0 +1,8 @@
+apiVersion: v2
+name: blinkered
+description: Blinkered -- the web front end, the API, and optionally its Postgres
+type: application
+# The chart's own version. Bumped when the templates change.
+version: 0.1.0
+# The default image tag, overridden per deploy with a `sha-` tag. See docs/DEPLOY.md.
+appVersion: 'latest'

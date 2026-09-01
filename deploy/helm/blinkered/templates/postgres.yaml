@@ -1,0 +1,94 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "blinkered.postgres.fullname" . }}
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  # Headless, which is what gives the StatefulSet a stable per-pod DNS name. The API talks to the
+  # service name and reaches the one pod; adding replicas would need replication set up, which
+  # this chart does not do.
+  clusterIP: None
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+  selector:
+    {{- include "blinkered.postgres.selectorLabels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "blinkered.postgres.fullname" . }}
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  serviceName: {{ include "blinkered.postgres.fullname" . }}
+  replicas: {{ .Values.postgres.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "blinkered.postgres.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "blinkered.postgres.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image | quote }}
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            {{- $secret := include "blinkered.databaseSecret" . }}
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: username } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: password } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: schema } }
+            # The image initialises into the root of the mount, and a PVC arrives with a
+            # lost+found in it, which Postgres refuses to initialise over. A subdirectory is the
+            # documented way round it.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          # `pg_isready` rather than a TCP check: the port is open well before the database will
+          # answer a query, so a TCP probe reports ready and the API's first connection fails.
+          readinessProbe:
+            exec:
+              command: [pg_isready, -U, $(POSTGRES_USER), -d, $(POSTGRES_DB)]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: [pg_isready, -U, $(POSTGRES_USER), -d, $(POSTGRES_DB)]
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  # A volumeClaimTemplate rather than a plain PVC, so the volume is bound to the pod's identity
+  # and survives the pod. Kubernetes will not let this be edited afterwards: growing the disk
+  # means editing the PVC directly, and the StatefulSet has to be deleted with
+  # `--cascade=orphan` first if the template itself has to change.
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        {{- if .Values.postgres.persistence.storageClass }}
+        storageClassName: {{ .Values.postgres.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.postgres.persistence.size | quote }}
+{{- end }}

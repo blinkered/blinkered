@@ -1,0 +1,51 @@
+{{- if and .Values.ingress.enabled .Values.ingress.middlewares.wwwRedirect .Values.ingress.redirectHosts -}}
+{{- $escaped := list -}}
+{{- range .Values.ingress.redirectHosts -}}
+{{- $escaped = append $escaped (regexReplaceAll "\\." . "\\.") -}}
+{{- end -}}
+{{/*
+Every redirected host goes to the first canonical one, so there is one origin.
+
+Not tidiness: a guest's scores live in localStorage, which is scoped per origin, so serving the
+game on two hostnames means somebody who arrives on one and then the other finds an empty
+leaderboard. Their scores are not lost, they are on the other origin, which is worse than lost
+because it looks like a bug.
+*/}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "blinkered.fullname" . }}-www-to-apex
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+spec:
+  redirectRegex:
+    # Traefik matches against the whole URL, so the scheme is part of the pattern. Only the
+    # redirected hosts match, which is what lets one middleware be attached to every router on
+    # the Ingress without touching canonical traffic.
+    regex: {{ printf "^https?://(%s)/(.*)" (join "|" $escaped) | quote }}
+    replacement: {{ printf "https://%s/${2}" (first .Values.ingress.hosts) | quote }}
+    # Traefik's `permanent` is a 301. The nginx controller's equivalent uses a 308; the
+    # difference does not matter for a GET-only site.
+    permanent: true
+{{- end }}
+{{- if and .Values.ingress.enabled .Values.ingress.middlewares.compress }}
+---
+{{/*
+Traefik compresses, not nginx.
+
+Traefik does not forward the client's `Accept-Encoding` to the backend, so nginx never sees a gzip
+request and serves the plain file: measured at the edge, `en.txt` arrived as 1,736,592 bytes with
+the uncompressed file's ETag, while the same request straight to the pod returns 470,459 bytes
+and `Content-Encoding: gzip`. On Russian that is 8.5MB instead of 1.2MB.
+*/}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "blinkered.fullname" . }}-compress
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+spec:
+  compress:
+    # Below this it costs more than it saves. The word lists are four orders of magnitude above.
+    minResponseBodyBytes: 1024
+{{- end }}
