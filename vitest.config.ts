@@ -33,9 +33,9 @@ export default defineConfig({
         '**/index.ts',
         '**/types.ts',
         'packages/i18n/src/locales/**',
-        // The server's entrypoint, which reads a port and listens. Everything worth testing is
-        // in `app.ts`; covering this one would mean binding a socket to prove `serve` was called.
-        'apps/server/src/main.ts',
+        // Entrypoints: they read the environment, start something, and exit. Covering them would
+        // mean binding a socket to prove `serve` was called. What they start is tested.
+        'apps/server/src/bin/**',
         // Opening a pool and running migrations. Both are exercised by `pnpm test:integration`
         // against a real Postgres, which is the only place they mean anything: a mocked pool
         // would prove that the mock was called, not that the schema is right.

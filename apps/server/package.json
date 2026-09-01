@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./dist/src/main.js",
+  "main": "./dist/src/bin/serve.js",
   "scripts": {
-    "start": "node dist/src/main.js"
+    "start": "node dist/src/bin/serve.js",
+    "migrate": "node dist/src/bin/migrate.js",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down -v"
   },
   "dependencies": {
     "@blinkered/engine": "workspace:*",

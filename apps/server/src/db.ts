@@ -27,7 +27,7 @@ function make(sql: postgres.Sql): ReturnType<typeof drizzle<typeof schema>> {
   return drizzle(sql, { schema })
 }
 
-export function client(config: DatabaseConfig): postgres.Sql {
+export function client(config: DatabaseConfig, options: ClientOptions = {}): postgres.Sql {
   return postgres({
     host: config.host,
     port: config.port,
@@ -41,5 +41,24 @@ export function client(config: DatabaseConfig): postgres.Sql {
     // A connection that cannot be had should fail the request rather than hang it. The API is
     // behind a proxy with its own timeouts, and outliving them buys nobody anything.
     connect_timeout: 10,
+    ...(options.quiet === true
+      ? {
+          /*
+           * Idempotent DDL is *designed* to emit notices: `create schema if not exists` and
+           * `create table if not exists` both say "already exists, skipping" every run after the
+           * first. postgres.js prints those as raw objects, so a migration that did nothing
+           * produced eleven lines of stack-trace-shaped output and one line saying it was fine.
+           *
+           * Only where they are expected, which is the migration path. Everywhere else a notice
+           * is unexplained and should be seen.
+           */
+          onnotice: () => undefined,
+        }
+      : {}),
   })
+}
+
+export interface ClientOptions {
+  /** Suppress Postgres notices. For the migration path, where they are the normal result. */
+  readonly quiet?: boolean
 }

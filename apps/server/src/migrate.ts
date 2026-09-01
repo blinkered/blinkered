@@ -54,7 +54,7 @@ export async function runMigrations(config: DatabaseConfig): Promise<void> {
     )
   }
 
-  const connection = client(config)
+  const connection = client(config, { quiet: true })
   try {
     await migrate(drizzle(connection), {
       migrationsFolder: MIGRATIONS,

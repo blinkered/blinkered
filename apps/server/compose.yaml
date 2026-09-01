@@ -1,0 +1,27 @@
+# A Postgres to develop and test against.
+#
+# Port 55432, not 5432, so it cannot collide with a Postgres already running on the machine --
+# and so that pointing the tests at the wrong database is not something that can happen by
+# accident. The credentials are the defaults the integration suite assumes; they are in a file in
+# a public repo, which is the correct amount of secret for a throwaway container on a laptop.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: blinkered
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: blinkered
+    ports:
+      - '55432:5432'
+    volumes:
+      - data:/var/lib/postgresql/data
+    healthcheck:
+      # The port opens well before the database will answer a query, so `--wait` on a TCP check
+      # would return while the first connection still fails.
+      test: ['CMD-SHELL', 'pg_isready -U blinkered -d blinkered']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  data:
