@@ -41,7 +41,7 @@ export const ms: Messages = {
   shareSelect: 'Salin ini:',
 
   lettersSelect: 'huruf memilih',
-  keysWild: 'mengambil kad jika tiada jubin menunjukkan huruf itu, dan cuba menjadi huruf itu',
+  keysWild: 'diambil apabila anda menaip huruf yang tiada pada mana-mana jubin',
   clearsEvery: 'membuang semua {letter} yang dipilih',
   undoLastLetter: 'membatalkan huruf terakhir',
   noWordsYet: 'Belum ada kata.',

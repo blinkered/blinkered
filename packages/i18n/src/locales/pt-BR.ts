@@ -45,7 +45,7 @@ export const ptBR: Messages = {
   shareSelect: 'Copie isto:',
 
   lettersSelect: 'as letras selecionam',
-  keysWild: 'pega uma carta se nenhuma peça mostrar a letra, e tenta ser essa letra',
+  keysWild: 'usado quando você digita uma letra que nenhuma peça mostra',
   clearsEvery: 'remove todos os {letter} selecionados',
   undoLastLetter: 'desfaz a última letra',
   noWordsYet: 'Nenhuma palavra ainda.',

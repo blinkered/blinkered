@@ -44,7 +44,7 @@ export const de: Messages = {
   shareSelect: 'Das hier kopieren:',
 
   lettersSelect: 'Buchstaben wählen',
-  keysWild: 'nimmt eine Karte, wenn kein Plättchen den Buchstaben zeigt, und versucht ihn zu sein',
+  keysWild: 'wird genommen, wenn du einen Buchstaben tippst, den kein Stein zeigt',
   clearsEvery: 'entfernt alle gewählten {letter}',
   undoLastLetter: 'letzten Buchstaben zurück',
   noWordsYet: 'Noch keine Wörter.',

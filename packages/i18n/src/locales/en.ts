@@ -49,7 +49,7 @@ export const en: Messages = {
   shareSelect: 'Copy this:',
 
   lettersSelect: 'letters select',
-  keysWild: 'takes a card when no tile shows it, and tries to be that letter',
+  keysWild: 'taken when you type a letter no tile is showing',
   clearsEvery: 'clears all selected {letter}s',
   undoLastLetter: 'undo last letter',
   noWordsYet: 'No words yet.',

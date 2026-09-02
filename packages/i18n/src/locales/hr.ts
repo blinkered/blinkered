@@ -44,7 +44,7 @@ export const hr: Messages = {
   shareSelect: 'Kopirajte ovo:',
 
   lettersSelect: 'slova označavaju',
-  keysWild: 'uzima kartu ako nijedna pločica ne pokazuje to slovo, i pokušava biti to slovo',
+  keysWild: 'uzima se kad upišete slovo koje nijedna pločica ne pokazuje',
   clearsEvery: 'briše sva označena {letter}',
   undoLastLetter: 'briše zadnje slovo',
   noWordsYet: 'Još nema riječi.',
