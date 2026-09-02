@@ -185,13 +185,13 @@ export const en: Messages = {
     'Sometimes, between rounds, one letter gets replaced with a different one. You will see which letter was removed and which was added.',
   htLevelsTitle: 'The levels',
   htLevelEasy:
-    'The same twelve letters all game, so you can learn them and carry a list of words in your head. Tiles turn slowly, and the full board stays in view long enough to plan one.',
+    'The same twelve letters all game, so you can learn them and carry a list of words in your head. Tiles turn slowly, and the full board stays in view long enough to finish your word selections.',
   htLevelMedium:
-    'A letter changes now and then, so a list you have been keeping goes out of date. Less time to look, and less time to think.',
+    'A letter changes now and then, so it becomes harder to keep track of words you want to play in the future. Less time to look, and less time to think.',
   htLevelHard:
     'Three-letter words stop counting, and a letter changes about every other round. The board is barely showing before it shuffles.',
   htLevelInsane:
-    'Everything at once, at speed. The board is gone almost as soon as it is whole, and there is no time to hold a list of anything.',
+    'Everything at once, at speed. The board shuffles almost immediately after the last flip.',
   htTouchTitle: 'The touchscreen',
   htTouchBody:
     'Tap a tile that is showing to take its letter. Tap any letter you have taken to give it back. Complete and Reset sit under the board.',
