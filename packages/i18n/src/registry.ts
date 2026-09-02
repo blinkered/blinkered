@@ -8,6 +8,7 @@ import { fr } from './locales/fr.js'
 import { hr } from './locales/hr.js'
 import { id } from './locales/id.js'
 import { it } from './locales/it.js'
+import { la } from './locales/la.js'
 import { ms } from './locales/ms.js'
 import { nl } from './locales/nl.js'
 import { no } from './locales/no.js'
@@ -15,6 +16,7 @@ import { pt } from './locales/pt.js'
 import { ptBR } from './locales/pt-BR.js'
 import { ru } from './locales/ru.js'
 import { sv } from './locales/sv.js'
+import { sw } from './locales/sw.js'
 import { tl } from './locales/tl.js'
 import { tr } from './locales/tr.js'
 import type { Messages } from './messages.js'
@@ -51,6 +53,7 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'de', endonym: 'Deutsch', flag: '🇩🇪', messages: de },
   { tag: 'nl', endonym: 'Nederlands', flag: '🇳🇱', messages: nl },
   { tag: 'af', endonym: 'Afrikaans', flag: '🇿🇦', messages: af },
+  { tag: 'sw', endonym: 'Kiswahili', flag: '🇹🇿', messages: sw },
   { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
   { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
@@ -64,6 +67,8 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'fi', endonym: 'Suomi', flag: '🇫🇮', messages: fi },
   { tag: 'el', endonym: 'Ελληνικά', flag: '🇬🇷', messages: el },
   { tag: 'tr', endonym: 'Türkçe', flag: '🇹🇷', messages: tr },
+  // Last, and the one flag here that is a country nobody lives in.
+  { tag: 'la', endonym: 'Latina', flag: '🇻🇦', messages: la },
 ]
 
 export const DEFAULT_LOCALE = 'en'
