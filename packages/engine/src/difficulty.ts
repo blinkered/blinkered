@@ -185,6 +185,7 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   // Hebrew board admits twice what an English one does, and three-consonant roots are why.
   he: 2.06,
   ar: 1.6,
+  arz: 1.17,
   ko: 0.57,
   ja: 0.89,
   tl: 0.41,

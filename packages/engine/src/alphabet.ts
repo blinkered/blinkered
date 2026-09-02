@@ -39,6 +39,22 @@ export interface Alphabet {
   /** Letters a board may not hold twice: too rare to be usable in pairs. */
   readonly rareLetters: readonly string[]
   /**
+   * The first and last letters of the alphabet as the language recites it, where sorting the
+   * tiles does not arrive at the same answer.
+   *
+   * The rules page names an alphabet by its ends — `A … Z`, `А … Я`, `א … ת` — and takes them
+   * by sorting the tiles with the language's own collation, which is right for twenty-four of
+   * the twenty-five. Arabic is the exception, because three of its tiles are letters a board
+   * needs and the alphabet is not recited with: ة and ى are positional forms of ت and ي, and
+   * ء is a mark that became a letter. The collator puts ء first, so the row read ء … ي, which
+   * is not wrong so much as not something anybody says.
+   *
+   * Japanese wants the same thing and does not need this, because Unicode already knows ー is a
+   * modifier letter rather than a letter. There is no equivalent property here, so Arabic says
+   * it out loud.
+   */
+  readonly recited?: readonly [string, string]
+  /**
    * Letters that are dead without a companion. In English a Q with no U can be revealed and
    * never used. Empty for languages where every letter stands alone.
    */

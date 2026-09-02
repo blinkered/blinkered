@@ -37,6 +37,8 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   ko: ['한글', 'ㅎㅏㄴㄱㅡㄹ', 6],
   // Katakana onto hiragana, the long mark kept, and the voicing dropped: ラーメン is four tiles.
   ja: ['ラーメン', 'らーめん', 4],
+  // Egyptian Arabic writes with the same letters and folds the same way. إزاي is "how".
+  arz: ['إزاي', 'ازاي', 4],
 }
 
 describe('the language registry', () => {
@@ -44,6 +46,7 @@ describe('the language registry', () => {
     expect([...ALPHABET_IDS].sort()).toEqual([
       'af',
       'ar',
+      'arz',
       'de',
       'el',
       'en',
@@ -195,6 +198,21 @@ describe('Arabic', () => {
   it('drops the harakat and the tatweel', () => {
     expect(arabic.fold('كِتَاب')).toBe('كتاب')
     expect(arabic.fold('كــتــاب')).toBe('كتاب')
+  })
+
+  it('names its own alphabet, sorting having no way to know', () => {
+    // ء sorts first and is not one of the twenty-eight, so the rules page read ء … ي.
+    expect(arabic.recited).toEqual(['ا', 'ي'])
+    for (const letter of arabic.recited ?? []) {
+      expect(Object.keys(arabic.weights)).toContain(letter)
+    }
+  })
+
+  it('is the only alphabet that has to say so', () => {
+    // Every other language's row comes out right by sorting its tiles with its own collation.
+    // This is the check that a new one has been looked at rather than assumed.
+    const naming = ALPHABET_IDS.filter((id) => alphabetFor(id).recited !== undefined)
+    expect([...naming].sort()).toEqual(['ar', 'arz'])
   })
 })
 

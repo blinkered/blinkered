@@ -1065,6 +1065,9 @@ export const ARABIC: Alphabet = {
   // these three are what a board has to be able to make a syllable out of.
   vowels: ['ا', 'و', 'ي', 'ى'],
   rareLetters: ['ء', 'ث', 'خ', 'ذ', 'ز', 'ش', 'ص', 'ض', 'ط', 'ظ', 'غ'],
+  // Alef to ya, which is the أبجدية. Three of the tiles above are not in it: ة and ى are
+  // positional forms and ء is a mark that became a letter, and the collator sorts ء first.
+  recited: ['ا', 'ي'],
   requires: {},
   fold: folder({ expand: ARABIC_FOLD }),
   segment: byCodePoint,
@@ -1290,6 +1293,56 @@ export const JAPANESE: Alphabet = {
   segment: byCodePoint,
 }
 
+/**
+ * Egyptian Arabic. The same letters, the same normalisation and the same direction as Modern
+ * Standard Arabic, which is what makes it a separate word list rather than a separate alphabet:
+ * the two differ in vocabulary and in which words are common, not in how they are written.
+ *
+ * Weights of its own, because those are measured from its own list and Egyptian writing does
+ * not distribute its letters the way a newspaper does.
+ */
+export const EGYPTIAN_ARABIC: Alphabet = {
+  ...ARABIC,
+  id: 'arz',
+  endonym: 'مصرى',
+  // Its own table, measured from its own list, the way Malay and Indonesian have theirs. Eleven
+  // letters differ from the standard language's: more ا, ل and ه, less ق, ك and ع, which is
+  // Egyptian writing rather than a newspaper's.
+  weights: {
+    ء: 1,
+    ا: 18,
+    ب: 4,
+    ة: 3,
+    ت: 5,
+    ث: 1,
+    ج: 2,
+    ح: 2,
+    خ: 1,
+    د: 3,
+    ذ: 1,
+    ر: 6,
+    ز: 1,
+    س: 3,
+    ش: 1,
+    ص: 1,
+    ض: 1,
+    ط: 1,
+    ظ: 1,
+    ع: 2,
+    غ: 1,
+    ف: 2,
+    ق: 2,
+    ك: 2,
+    ل: 11,
+    م: 6,
+    ن: 5,
+    ه: 3,
+    و: 6,
+    ى: 1,
+    ي: 8,
+  },
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -1317,6 +1370,7 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     ARABIC,
     KOREAN,
     JAPANESE,
+    EGYPTIAN_ARABIC,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 
