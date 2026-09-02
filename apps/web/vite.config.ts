@@ -76,8 +76,36 @@ function wordLists(): Plugin {
   }
 }
 
+/**
+ * Watches the workspace packages, which Vite does not do on its own.
+ *
+ * The aliases below resolve `@blinkered/engine` and its siblings to their sources, so editing one
+ * ought to reload the page. It does not: those files live outside this app's root, and although
+ * the dev server serves them happily it never notices them changing. The failure is silent and
+ * costly -- the page keeps showing the last version compiled, so an edit looks like it did
+ * nothing, and the natural conclusion is that the edit was wrong rather than unseen. Found by
+ * changing a string in `packages/i18n` and watching the dev server serve the old one for ten
+ * seconds.
+ *
+ * `watcher.add` is the documented way to extend it, and is cheaper than turning on polling for
+ * the whole project, which is what the containerised stack has to do for a different reason.
+ */
+function watchWorkspace(): Plugin {
+  return {
+    name: 'blinkered-watch-workspace',
+    apply: 'serve',
+    configureServer(server) {
+      server.watcher.add([
+        source('../../packages/engine/src'),
+        source('../../packages/i18n/src'),
+        source('../../packages/words/src'),
+      ])
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), wordLists()],
+  plugins: [react(), wordLists(), watchWorkspace()],
   // Resolve the workspace packages to their sources rather than their build output, so a
   // fresh clone runs with no build step and editing the engine hot-reloads the game.
   resolve: {
@@ -109,16 +137,24 @@ export default defineConfig({
       },
     },
     /*
-     * Poll for changes when asked to, which is when this runs in a container.
+     * Poll for changes, everywhere, rather than trusting filesystem events.
      *
-     * A bind mount on macOS or Windows does not deliver filesystem events reliably, so the
-     * default watcher sees nothing and hot reload silently stops being hot: the page simply
-     * never updates, with no error anywhere to explain it. Polling costs a little idle CPU and
-     * is the difference between the feature working and appearing to be broken.
+     * This started as a container-only setting, because a bind mount on macOS does not deliver
+     * events reliably. Measuring it on the machine itself found the same fault: an edit to
+     * `packages/i18n` was still not showing twelve seconds later, and a page that had been
+     * reloaded twice since was served a string from an edit two before that. The dev server was
+     * not one version behind, it was stuck.
      *
-     * Off by default, because running on the machine directly needs none of it.
+     * That is the worst shape a bug can take in a tool you use all day. Nothing errors; the page
+     * simply keeps showing what it showed, so the natural reading is that the edit was wrong
+     * rather than unseen, and the time goes into the edit instead of into the watcher.
+     *
+     * Polling costs a little idle CPU on a machine that is already running a compiler. Adding
+     * the workspace directories to the watcher (below) is what makes it cheap: chokidar polls
+     * what it is told to watch, which here is three source directories rather than a tree with
+     * `node_modules` in it.
      */
-    watch: process.env.BLINKERED_POLL === '1' ? { usePolling: true, interval: 300 } : null,
+    watch: { usePolling: true, interval: 300 },
   },
   build: {
     target: 'es2022',
