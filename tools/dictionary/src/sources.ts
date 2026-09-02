@@ -1,6 +1,15 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
+import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import { gunzipSync } from 'node:zlib'
 import { buildValidator } from '@blinkered/words'
 import type { CaseRule } from '@blinkered/words'
@@ -16,8 +25,30 @@ import type { Source } from './manifest.js'
 
 export const CACHE = resolve('.cache/dictionary')
 
-function cachePath(name: string): string {
+export function cachePath(name: string): string {
   return join(CACHE, name)
+}
+
+/**
+ * Downloads to a file and returns its path, rather than returning the bytes.
+ *
+ * For anything too big to want in memory. The largest Wikipedia dump here is 160MB compressed
+ * and is read once, a line at a time, by a decompressor that wants a path.
+ */
+export async function download(name: string, url: string, refresh: boolean): Promise<string> {
+  const path = cachePath(name)
+  if (!refresh && existsSync(path)) return path
+
+  process.stderr.write(`  fetching ${url}\n`)
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`${String(response.status)} from ${url}`)
+  if (response.body === null) throw new Error(`no body from ${url}`)
+  mkdirSync(dirname(path), { recursive: true })
+  const partial = `${path}.partial`
+  await pipeline(Readable.fromWeb(response.body), createWriteStream(partial))
+  // Renamed only once it is whole, so an interrupted download is not mistaken for a cache hit.
+  renameSync(partial, path)
+  return path
 }
 
 /** Downloads once, then reads from disk. `refresh` forces the download. */
@@ -51,9 +82,46 @@ const USER_AGENT = 'blinkered-dictionary/1 (https://playblinkered.com)'
 /** Members per request. 500 is the ceiling for an anonymous caller. */
 const CATEGORY_PAGE = 500
 
+/**
+ * How hard to try when the API says slow down.
+ *
+ * `Category:Latin non-lemma forms` is 800,379 pages, which is 1,600 requests, and somewhere in
+ * the middle of that Wikimedia starts answering 429. Backing off and carrying on is the
+ * difference between a category this size being usable and not.
+ */
+const RETRIES = 6
+const BACKOFF_MS = 2000
+
 interface CategoryResponse {
   readonly query?: { readonly categorymembers?: readonly { readonly title: string }[] }
   readonly continue?: { readonly cmcontinue?: string }
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/** One page of members, retried on a throttle or a stumble rather than losing the whole run. */
+async function categoryPage(url: URL): Promise<CategoryResponse> {
+  let delay = BACKOFF_MS
+  for (let attempt = 1; ; attempt += 1) {
+    const response = await fetch(url, { headers: { 'user-agent': USER_AGENT } })
+    if (response.ok) return (await response.json()) as CategoryResponse
+    // 429 is the throttle and 5xx is a bad minute at their end. A 404 is our mistake and
+    // retrying it would only be slower.
+    const worthRetrying = response.status === 429 || response.status >= 500
+    if (!worthRetrying || attempt > RETRIES) {
+      throw new Error(`${String(response.status)} from ${url.toString()}`)
+    }
+    // Their number if they gave one, ours if they did not.
+    const after = Number(response.headers.get('retry-after'))
+    const pause = Number.isFinite(after) && after > 0 ? after * 1000 : delay
+    process.stderr.write(
+      `  ${String(response.status)}, waiting ${String(Math.round(pause / 1000))}s\n`,
+    )
+    await wait(pause)
+    delay *= 2
+  }
 }
 
 /**
@@ -93,11 +161,14 @@ async function categoryMembers(
     })) {
       url.searchParams.set(key, value)
     }
-    const response = await fetch(url, { headers: { 'user-agent': USER_AGENT } })
-    if (!response.ok) throw new Error(`${String(response.status)} from ${url.toString()}`)
-    const body = (await response.json()) as CategoryResponse
+    const body = await categoryPage(url)
     for (const member of body.query?.categorymembers ?? []) titles.push(member.title)
     cursor = body.continue?.cmcontinue
+    // Progress, because eight hundred thousand members is a quarter of an hour and a silent
+    // terminal for that long looks like a hang.
+    if (titles.length % 50_000 === 0) {
+      process.stderr.write(`    ${String(titles.length)}…\n`)
+    }
   } while (cursor !== undefined)
 
   // A category that answers with nothing has been renamed, and an empty validator would

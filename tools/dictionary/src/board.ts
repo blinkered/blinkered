@@ -1,7 +1,7 @@
 import { alphabetFor } from '@blinkered/engine'
 import type { Alphabet } from '@blinkered/engine'
-import { frequencyUrl, type LanguageSpec } from './manifest.js'
-import { fetchText } from './sources.js'
+import { frequencyLines } from './corpus.js'
+import type { LanguageSpec } from './manifest.js'
 import { readCommonTier } from './weights.js'
 
 /**
@@ -69,10 +69,9 @@ const THREE_OF_SIX = threeOfSix()
  * thing to open a tour with, because nobody has to have met it.
  */
 async function corpusRanks(spec: LanguageSpec, refresh: boolean): Promise<Map<string, number>> {
-  const text = await fetchText(`frequency/${spec.frequency}.txt`, frequencyUrl(spec), refresh)
   const alphabet = alphabetFor(spec.tag)
   const rank = new Map<string, number>()
-  const lines = text.split('\n')
+  const lines = await frequencyLines(spec.corpus, refresh)
   for (const [at, line] of lines.entries()) {
     const word = line.split(' ')[0]
     if (word === undefined || word === '') continue

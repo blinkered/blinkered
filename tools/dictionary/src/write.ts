@@ -3,7 +3,8 @@ import { join } from 'node:path'
 import { alphabetFor } from '@blinkered/engine'
 import type { Built } from './build.js'
 import { LENGTH_RANGE } from './build.js'
-import { FREQUENCY_ATTRIBUTION, FREQUENCY_LICENSE, frequencyUrl, type Source } from './manifest.js'
+import { corpusTerms, corpusUrl } from './corpus.js'
+import type { Source } from './manifest.js'
 
 export const DATA_DIR = 'packages/words/data'
 
@@ -81,8 +82,8 @@ Distributed under ${terms}, which is the most restrictive of the terms below. Se
 PROVENANCE.md for what was relied on and why.
 
 Ordering
-  ${FREQUENCY_ATTRIBUTION}
-  ${FREQUENCY_LICENSE}
+  ${corpusTerms(spec.corpus).attribution}
+  ${corpusTerms(spec.corpus).license}
 
 Validation
 ${spec.groups
@@ -116,8 +117,8 @@ hand; edit the sources in \`tools/dictionary/src/manifest.ts\` and rebuild.
 
 ## Sources
 
-**Ordering.** ${FREQUENCY_ATTRIBUTION}, ${FREQUENCY_LICENSE}.
-\`${frequencyUrl(spec)}\`
+**Ordering.** ${corpusTerms(spec.corpus).attribution}, ${corpusTerms(spec.corpus).license}.
+\`${corpusUrl(spec.corpus)}\`
 
 Contributes which words are candidates and in what order. Contributes no content: a word it
 proposes that no validator accepts does not appear.

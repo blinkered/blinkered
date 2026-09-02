@@ -9,8 +9,9 @@ import {
   splitTiers,
 } from '@blinkered/words'
 import type { Candidate, FrequencyEntry, TierCuts, Tiers } from '@blinkered/words'
-import { acceptedBy, fetchText, lexicon } from './sources.js'
-import { frequencyUrl, type LanguageSpec } from './manifest.js'
+import { acceptedBy, lexicon } from './sources.js'
+import { frequencyLines } from './corpus.js'
+import type { LanguageSpec } from './manifest.js'
 
 /** Nothing shorter is worth a word; nothing longer than the biggest board is reachable. */
 export const LENGTH_RANGE = { minLength: 3, maxLength: 16 } as const
@@ -78,8 +79,7 @@ export async function build(spec: LanguageSpec, refresh: boolean): Promise<Built
  * any other word, and it cannot be one of the words a board is required to be solvable from.
  */
 async function pool(spec: LanguageSpec, refresh: boolean): Promise<FrequencyEntry[]> {
-  const text = await fetchText(`frequency/${spec.frequency}.txt`, frequencyUrl(spec), refresh)
-  const entries = parseFrequencies(text.split('\n'))
+  const entries = parseFrequencies(await frequencyLines(spec.corpus, refresh))
   const seen = new Set(entries.map((entry) => entry.word))
 
   const extra: FrequencyEntry[] = []

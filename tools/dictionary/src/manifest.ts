@@ -73,11 +73,24 @@ export interface CategorySource {
 
 export type Source = HunspellSource | TitlesSource | WordListSource | CategorySource
 
+/**
+ * Where a language's word *ordering* comes from, which is all a corpus decides.
+ *
+ * `openSubtitles` is hermitdave's list for that language, and `id` is its directory there.
+ * `wikipedia` counts the articles of one wiki, and is what the languages with no OpenSubtitles
+ * list at all have instead. See tools/dictionary/src/corpus.ts.
+ */
+export type Corpus =
+  | { readonly kind: 'openSubtitles'; readonly id: string }
+  | { readonly kind: 'wikipedia'; readonly wiki: string }
+
+const subtitles = (id: string): Corpus => ({ kind: 'openSubtitles', id })
+const wikipedia = (wiki: string): Corpus => ({ kind: 'wikipedia', wiki })
+
 export interface LanguageSpec {
   /** Engine language id, and the directory the data is written to. */
   readonly tag: string
-  /** Directory name in hermitdave/FrequencyWords. */
-  readonly frequency: string
+  readonly corpus: Corpus
   /**
    * A candidate must clear every group, and clears a group by satisfying any member. So
    * independent sources go in separate groups and get intersected, while variants of one
@@ -108,13 +121,20 @@ const titles = (wiki: string): TitlesSource => ({
 })
 
 /**
- * The English Wiktionary's own record of a language, which for several languages is the
- * fullest one anywhere. `language` is the name en.wiktionary files it under.
+ * The English Wiktionary's own record of a language, which for several languages is the fullest
+ * one anywhere. `language` is the name en.wiktionary files it under.
+ *
+ * Lemmas and inflected forms by default, because an inflected form is a word a player will
+ * type. `lemmasOnly` is for a category too large to page through politely: Latin's inflected
+ * forms are 800,379 pages, which is 1,600 requests, and the API throttles hard enough that
+ * fetching them takes most of a day. See the `la` entry for what that costs.
  */
-const enCategories = (language: string): CategorySource => ({
+const enCategories = (language: string, lemmasOnly = false): CategorySource => ({
   kind: 'category',
   wiki: 'en',
-  categories: [`Category:${language} lemmas`, `Category:${language} non-lemma forms`],
+  categories: lemmasOnly
+    ? [`Category:${language} lemmas`]
+    : [`Category:${language} lemmas`, `Category:${language} non-lemma forms`],
   license: 'CC-BY-SA-4.0',
   attribution: `en.wiktionary.org contributors, members of Category:${language} lemmas`,
 })
@@ -150,7 +170,7 @@ const creditEverything = (cuts: TierCuts): TierCuts => ({ commonRank: cuts.commo
 export const LANGUAGES: readonly LanguageSpec[] = [
   {
     tag: 'en',
-    frequency: 'en',
+    corpus: subtitles('en'),
     // One group, so any member suffices. Both spellings play, because a word game has no
     // reason to make a player pick between COLOR and COLOR. And ENABLE is in there because
     // SCOWL at this size does not know SWALE: a spell checker aims to catch typos, whereas a
@@ -174,26 +194,26 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'fr',
-    frequency: 'fr',
+    corpus: subtitles('fr'),
     groups: [[wooorm('fr', 'MPL-2.0', 'Dicollecte / Grammalecte, Olivier R.')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'es',
-    frequency: 'es',
+    corpus: subtitles('es'),
     groups: [[wooorm('es', 'MPL-1.1', 'RLA-ES, Santiago Bosio and contributors')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'it',
-    frequency: 'it',
+    corpus: subtitles('it'),
     groups: [[titles('it')]],
     cuts: DEFAULT_CUTS,
     caveat: 'Validated against Wiktionary titles: the hunspell dictionary is GPL-3.0 only.',
   },
   {
     tag: 'de',
-    frequency: 'de',
+    corpus: subtitles('de'),
     groups: [[titles('de')]],
     // Every German noun is capitalized, so the filter that drops proper nouns everywhere
     // else would delete the nouns and leave the verbs. Case stops being evidence.
@@ -205,31 +225,31 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'nl',
-    frequency: 'nl',
+    corpus: subtitles('nl'),
     groups: [[wooorm('nl', 'BSD-3-Clause', 'OpenTaal')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'pt',
-    frequency: 'pt',
+    corpus: subtitles('pt'),
     groups: [[wooorm('pt-PT', 'MPL-1.1', 'Natura project, Universidade do Minho')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'pt-BR',
-    frequency: 'pt_br',
+    corpus: subtitles('pt_br'),
     groups: [[wooorm('pt', 'MPL-2.0', 'VERO project, Raimundo Moura and contributors')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'hr',
-    frequency: 'hr',
+    corpus: subtitles('hr'),
     groups: [[wooorm('hr', 'SISSL', 'Denis Lackovic and contributors')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'ms',
-    frequency: 'ms',
+    corpus: subtitles('ms'),
     groups: [[titles('ms')]],
     cuts: deepCuts(50_000, 200_000),
     caveat:
@@ -239,7 +259,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'id',
-    frequency: 'id',
+    corpus: subtitles('id'),
     groups: [
       [
         {
@@ -256,26 +276,26 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'ru',
-    frequency: 'ru',
+    corpus: subtitles('ru'),
     groups: [[wooorm('ru', 'BSD-3-Clause', 'Alexander Lebedev and contributors')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'sv',
-    frequency: 'sv',
+    corpus: subtitles('sv'),
     groups: [[wooorm('sv', 'LGPL-3.0', 'Den stora svenska ordlistan, Göran Andersson')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'no',
-    frequency: 'no',
+    corpus: subtitles('no'),
     groups: [[titles('no')]],
     cuts: deepCuts(60_000, 150_000),
     caveat: 'Validated against Wiktionary titles: the Bokmål hunspell dictionary is GPL-2.0.',
   },
   {
     tag: 'fi',
-    frequency: 'fi',
+    corpus: subtitles('fi'),
     groups: [[titles('fi')]],
     cuts: deepCuts(50_000, 150_000),
     caveat:
@@ -285,13 +305,13 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'el',
-    frequency: 'el',
+    corpus: subtitles('el'),
     groups: [[wooorm('el', 'MPL-1.1', 'Ελληνικός ορθογράφος, Steve Stavropoulos')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
     tag: 'af',
-    frequency: 'af',
+    corpus: subtitles('af'),
     groups: [
       [
         {
@@ -310,13 +330,59 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'tr',
-    frequency: 'tr',
+    corpus: subtitles('tr'),
     groups: [[wooorm('tr', 'MIT', 'Turkish spelling dictionary, Harun Reşit Zafer')]],
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
+    tag: 'sw',
+    // No OpenSubtitles list at 2016 or 2018; sw.wikipedia has 125,850 articles.
+    corpus: wikipedia('sw'),
+    groups: [
+      [
+        {
+          kind: 'hunspell',
+          id: 'sw_TZ',
+          dic: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/sw_TZ/sw_TZ.dic',
+          aff: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/sw_TZ/sw_TZ.aff',
+          license: 'LGPL-2.1-or-later',
+          attribution:
+            'Jambo Swahili Spellchecker, Alberto Escudero-Pascual and contributors; word ' +
+            'lists from Egerton University, the TUKI English-Swahili Dictionary, the Kamusi ' +
+            'Project and Crúbadán',
+        },
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'la',
+    // A dead language has no subtitle corpus and never will. la.wikipedia has 140,000 articles,
+    // a large share of them bot-written stubs about places, which is why the validator matters
+    // more here than the ordering does.
+    corpus: wikipedia('la'),
+    // Lemmas only. The inflected forms are there — 800,379 of them — and the API throttles
+    // hard enough that paging them would take most of a day and be rude while doing it. So
+    // Latin plays like Finnish: the dictionary knows the lemma and refuses the inflection.
+    // For a language this inflected that is a real limitation and it is the honest one to
+    // have, since the alternative is admitting the corpus unchecked.
+    groups: [[enCategories('Latin', true)]],
+    // A far deeper cut than anything else, and for the reason `deepCuts` exists rather than
+    // in spite of it. The corpus's top ranks are inflected forms the validator refuses, so
+    // the lemmas that survive sit a long way down: at rank 20,000 the common tier is 3,479
+    // words and a board admits 43, which is unplayable. At 150,000 it is 10,765 and 81, which
+    // is where Swahili and Turkish sit. That is not admitting rarer words; it is recovering
+    // ordinary ones a lemma-only validator never saw.
+    cuts: creditEverything({ commonRank: 150_000 }),
+    caveat:
+      'Ordered by a Wikipedia written by enthusiasts rather than by a corpus of Latin as it ' +
+      'was used, so "commonest" here means commonest on that wiki. Validated against ' +
+      'en.wiktionary lemmas only, so an inflected form is refused: AMARE plays and AMAVERUNT ' +
+      'does not. The weakest thing about this list, and the same weakness Finnish has.',
+  },
+  {
     tag: 'tl',
-    frequency: 'tl',
+    corpus: subtitles('tl'),
     // Its own wiki and the English one, unioned, because they are the same project and
     // neither is a check on the other. tl.wiktionary contributes the words en.wiktionary has
     // not got to; en.wiktionary contributes almost everything else.
@@ -339,13 +405,3 @@ export function specFor(tag: string): LanguageSpec {
   if (spec === undefined) throw new RangeError(`no dictionary sources for ${tag}`)
   return spec
 }
-
-/** Frequency lists all come from one place, so the URL is built rather than repeated. */
-export function frequencyUrl(spec: LanguageSpec): string {
-  const base = 'https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018'
-  return `${base}/${spec.frequency}/${spec.frequency}_full.txt`
-}
-
-export const FREQUENCY_LICENSE = 'MIT'
-export const FREQUENCY_ATTRIBUTION =
-  'hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS'
