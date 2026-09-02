@@ -954,21 +954,28 @@ kbd {
   color: var(--dim);
 }
 /*
- * The card, drawn bigger without moving anything.
+ * The card, at a size that reads as a card.
  *
- * It sits in a baseline-aligned grid among key caps, and it is an emoji, which renders small
- * next to text of the same size: at 1rem it reads as a smudge rather than as the card the board
- * deals. Raising `font-size` would fix that and shift the row's baseline with it, pushing this
- * row's description out of line with the five above and below it.
+ * An emoji renders small beside text of the same size, so at 1rem this was a mark on the page
+ * rather than the thing the board deals. A transform got it to 1.8x without disturbing the
+ * layout, and 1.8x was still too small: past that it would have started painting over the rows
+ * either side, because a transform does not ask for any more room than the glyph had.
  *
- * A transform scales what is painted and not the box it occupies, so the row is laid out exactly
- * as before. `transform-origin` is the left edge, so it grows rightwards into the column's own
- * spare width and stays flush with the key caps it is listed beside.
+ * So it takes real room instead. The list aligns its rows on the baseline, which is right for
+ * key caps and wrong for a glyph three times their height -- the description would sit level
+ * with the bottom of the card and clear of everything else. This row centres instead, both
+ * cells, so the card and the words it explains are level with each other and the row is simply
+ * as tall as the card needs.
  */
+.rules-keys .wild-row {
+  align-self: center;
+}
 .rules-keys .wild-key {
-  display: inline-block;
-  transform: scale(1.8);
-  transform-origin: left center;
+  display: block;
+  font-size: 2.5rem;
+  line-height: 1;
+  /* The key caps carry their own left margin, so flush with the cell is not flush with them. */
+  margin-left: 0.4rem;
 }
 /* The level names are words rather than key caps, so they carry the emphasis the `kbd` boxes
    give the keyboard list, and the rows need room to breathe between them. */
