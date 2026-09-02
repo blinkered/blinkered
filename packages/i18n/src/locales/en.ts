@@ -148,7 +148,7 @@ export const en: Messages = {
   tutorialHideAgain: "Don't show this again",
   tutorialProgress: '{n} of {total}',
   tutorialSkipTitle: 'Skip the tour?',
-  tutPickLetters: 'Tap the letters you want. They join the word in the order you tap them.',
+  tutPickLetters: 'Tap the letters you want, in order, to form a word.',
   tutMoreTurn: 'Tiles keep turning while you think, so a better letter may still be coming.',
   tutTapBack:
     'Tapped one you did not want? Tap it again to give it back. Any of them, not just the last.',
