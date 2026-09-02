@@ -1,4 +1,4 @@
-import { WILD_GLYPH } from '@blinkered/engine'
+import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { InterfacePicker } from './LanguagePicker.js'
@@ -13,6 +13,30 @@ import { InterfacePicker } from './LanguagePicker.js'
  * The language arrives in the URL rather than from storage, so the tab is shareable and shows
  * the language the game was in at the moment the link was clicked.
  */
+/**
+ * The first and last letters of a language's own alphabet, for the "letters select" row.
+ *
+ * It used to say `A … Z` everywhere, which is a sentence about the Latin alphabet rather than
+ * about the keyboard: a Greek reader was shown two letters their board never deals, and a
+ * Russian reader two that are not letters at all.
+ *
+ * The page's own language, the one picked at the top of it. The settings can hold a different
+ * interface and game language, but only through nerd mode, and this page has no business
+ * knowing about that: it is one document and it is in one language throughout.
+ *
+ * Sorted with the language's own collation rather than taken in source order, which matters in
+ * more than the obvious places. Swedish and Finnish both hold Z in the middle and end on Ö;
+ * Norwegian ends on Å. Source order would have said Z for all three and been wrong three times
+ * while looking right.
+ */
+function alphabetEnds(language: string): { first: string; last: string } {
+  // The collator in an arrow rather than passed by reference: `compare` is bound per spec, but
+  // handing a method around unbound is a habit worth not having, and the lint says so.
+  const collator = new Intl.Collator(language)
+  const letters = Object.keys(alphabetFor(language).weights).sort((a, b) => collator.compare(a, b))
+  return { first: letters[0] ?? 'A', last: letters[letters.length - 1] ?? 'Z' }
+}
+
 export function HowToPlay({
   messages,
   language,
@@ -25,6 +49,7 @@ export function HowToPlay({
   /** Shown only where the page cannot be closed by closing a tab: the native shell. */
   onBack?: () => void
 }): React.JSX.Element {
+  const ends = alphabetEnds(language)
   const sections = [
     { title: messages.htBoardTitle, body: messages.htBoardBody },
     { title: messages.htWordsTitle, body: messages.htWordsBody },
@@ -104,7 +129,7 @@ export function HowToPlay({
         <h2>{messages.htKeysTitle}</h2>
         <dl className="rules-keys">
           <dt>
-            <kbd>A</kbd> … <kbd>Z</kbd>
+            <kbd>{ends.first}</kbd> … <kbd>{ends.last}</kbd>
           </dt>
           <dd>{messages.lettersSelect}</dd>
           {/* The same A-Z keys, so no new key cap: the card is what they reach for when the board

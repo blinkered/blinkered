@@ -974,8 +974,10 @@ kbd {
   display: block;
   font-size: 2.5rem;
   line-height: 1;
-  /* The key caps carry their own left margin, so flush with the cell is not flush with them. */
-  margin-left: 0.4rem;
+  /* Centred in the column rather than flush with its left edge, so it sits under the middle of
+     the key caps above it instead of hanging off one side of them. */
+  margin: 0 auto;
+  width: fit-content;
 }
 /* The level names are words rather than key caps, so they carry the emphasis the `kbd` boxes
    give the keyboard list, and the rows need room to breathe between them. */
