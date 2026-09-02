@@ -144,8 +144,7 @@ export const fr: Messages = {
   tutorialHideAgain: 'Ne plus afficher',
   tutorialProgress: '{n} sur {total}',
   tutorialSkipTitle: 'Passer la visite ?',
-  tutPickLetters:
-    "Touchez les lettres voulues. Elles rejoignent le mot dans l'ordre où vous les touchez.",
+  tutPickLetters: 'Touchez les lettres voulues, dans l’ordre, pour former un mot.',
   tutMoreTurn:
     'Les tuiles continuent de se retourner pendant que vous réfléchissez : une meilleure lettre peut encore arriver.',
   tutTapBack:
@@ -163,35 +162,35 @@ export const fr: Messages = {
     'Choisissez un niveau et jouez. Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
-    'Les tuiles se retournent une à une, dans le sens de la lecture. Une lettre reste invisible jusqu’à ce que sa tuile se retourne.',
+    'Les tuiles se retournent une à une, dans le sens de la lecture. Les tuiles visibles servent à former des mots.',
   htWordsTitle: 'Les mots',
   htWordsBody:
-    'Composez un mot avec les tuiles visibles. Tapez-le, ou cliquez dessus. Chaque tuile ne sert qu’une fois, et seulement après s’être retournée.',
+    'Composez un mot avec les tuiles visibles, en tapant ou en cliquant les lettres dans l’ordre.',
   htFlipsTitle: 'Les coups',
   htFlipsBody:
-    'Chaque tuile retournée coûte un coup. Un mot en rend, et les mots longs rendent davantage. Quand les coups sont épuisés, la partie est terminée.',
+    'Chaque tuile retournée coûte un coup. Un mot terminé rend des coups à votre total, et les mots longs en rendent davantage. Quand les coups sont épuisés, la partie est terminée.',
   htRoundTitle: 'La manche',
   htRoundBody:
-    'Quand la dernière tuile d’une manche se retourne, tout le plateau est visible. Il le reste un instant. Puis il est mélangé et redistribué.',
+    'Quand la dernière tuile d’une manche se retourne, tout le plateau reste visible un instant. Puis les tuiles sont retournées face cachée et mélangées, et une nouvelle manche commence.',
   htLanguagesTitle: 'Les langues',
   htLanguagesBody:
     'Seize langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
   htKeysTitle: 'Le clavier',
   htWildTitle: 'Les jokers',
   htWildBody:
-    'Certaines tuiles se retournent sur un joker au lieu d’une lettre. Un joker vaut la lettre qui forme un mot, choisie parmi celles qui conviennent, et vous découvrez laquelle quand le mot apparaît dans votre liste. Un mot déjà trouvé ne compte pas.',
+    'Parfois un joker apparaît à la place d’une lettre. Un joker vaut n’importe quelle lettre qui forme un mot valide. Un mot déjà terminé ne compte pas.',
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
-    'Parfois, entre deux manches, une tuile change de lettre. Vous voyez laquelle part et laquelle arrive, mais pas où elle se trouve. Les lettres dont vous vous souvenez ne sont peut-être plus là.',
+    'Parfois, entre deux manches, une lettre est remplacée par une autre. Vous verrez quelle lettre est partie et laquelle est arrivée.',
   htLevelsTitle: 'Les niveaux',
   htLevelEasy:
-    'Les mêmes douze lettres pendant toute la partie : vous pouvez les apprendre et garder une liste de mots en tête. Les tuiles se retournent lentement et le plateau complet reste visible assez longtemps pour en préparer un.',
+    'Les mêmes douze lettres pendant toute la partie : vous pouvez les apprendre et garder une liste de mots en tête. Les tuiles se retournent lentement et le plateau complet reste visible assez longtemps pour finir de choisir vos lettres.',
   htLevelMedium:
-    "Une lettre change de temps en temps, et la liste que vous gardiez n'est plus à jour. Moins de temps pour regarder, moins pour réfléchir.",
+    'Une lettre change de temps en temps, ce qui rend plus difficile de retenir les mots que vous comptiez jouer plus tard. Moins de temps pour regarder, et moins pour réfléchir.',
   htLevelHard:
     "Les mots de trois lettres ne comptent plus, et une lettre change environ une manche sur deux. Le plateau est à peine visible qu'il se remélange déjà.",
   htLevelInsane:
-    "Tout à la fois, à toute vitesse. Le plateau disparaît presque aussitôt qu'il est complet, et il n'y a le temps de retenir aucune liste.",
+    'Tout à la fois, à toute vitesse. Le plateau est mélangé presque aussitôt après le dernier retournement.',
   htTouchTitle: 'L’écran tactile',
   htTouchBody:
     'Touchez une tuile retournée pour prendre sa lettre. Touchez une lettre déjà prise pour la rendre. Valider et Effacer sont sous le plateau.',

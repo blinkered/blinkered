@@ -140,7 +140,7 @@ export const sv: Messages = {
   tutorialHideAgain: 'Visa inte igen',
   tutorialProgress: '{n} av {total}',
   tutorialSkipTitle: 'Hoppa över introduktionen?',
-  tutPickLetters: 'Tryck på de bokstäver du vill ha. De hamnar i ordet i den ordning du trycker.',
+  tutPickLetters: 'Tryck på de bokstäver du vill ha, i ordning, för att bilda ett ord.',
   tutMoreTurn: 'Brickorna fortsätter vändas medan du tänker, så en bättre bokstav kan vara på väg.',
   tutTapBack:
     'Tog du fel? Tryck på den igen för att lämna tillbaka den. Vilken som helst, inte bara den sista.',
@@ -155,35 +155,35 @@ export const sv: Messages = {
   tutDoneBody: 'Välj en nivå och spela. Så spelar du finns alltid i titelraden.',
   htBoardTitle: 'Brädet',
   htBoardBody:
-    'Brickorna vänds upp en i taget, i läsordning. En bokstav syns inte förrän dess bricka vänds.',
+    'Brickorna vänds upp en i taget, i läsordning. Av de uppvända brickorna bildar du ord.',
   htWordsTitle: 'Orden',
   htWordsBody:
-    'Bilda ett ord av de uppvända brickorna. Skriv det, eller klicka på dem. Varje bricka räcker en gång, och först efter att den vänts.',
+    'Bilda ett ord av de uppvända brickorna genom att skriva eller klicka på bokstäverna i ordning.',
   htFlipsTitle: 'Dragen',
   htFlipsBody:
-    'Varje bricka som vänds kostar ett drag. Ett ord ger drag tillbaka, och långa ord ger mer. När dragen tar slut är spelet över.',
+    'Varje bricka som vänds kostar ett drag. Ett färdigt ord lägger tillbaka drag till ditt saldo, och långa ord ger mer. När dragen tar slut är spelet över.',
   htRoundTitle: 'Omgången',
   htRoundBody:
-    'När omgångens sista bricka vänds ligger hela brädet uppe. Det ligger så ett ögonblick. Sedan blandas det och delas ut igen.',
+    'När omgångens sista bricka vänds ligger hela brädet uppe ett ögonblick. Sedan vänds brickorna ned och blandas, och en ny omgång börjar.',
   htLanguagesTitle: 'Språken',
   htLanguagesBody:
     'Sexton. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
   htKeysTitle: 'Tangentbordet',
   htWildTitle: 'Jokrar',
   htWildBody:
-    'Vissa brickor vänds upp som en joker i stället för en bokstav. En joker gäller som den bokstav som bildar ett ord, vald bland dem som fungerar, och vilken det blev ser du när ordet dyker upp i din lista. Ett ord du redan hittat räknas inte.',
+    'Ibland dyker det upp en joker i stället för en bokstav. En joker gäller som vilken bokstav som helst som bildar ett giltigt ord. Ett ord du redan gjort räknas inte.',
   htSwapTitle: 'Bokstäver som byts',
   htSwapBody:
-    'Ibland byter en bricka bokstav mellan omgångarna. Du ser vilken som går och vilken som kommer, men inte var den ligger. Bokstäverna du minns finns kanske inte kvar.',
+    'Ibland byts en bokstav ut mot en annan mellan omgångarna. Du ser vilken bokstav som togs bort och vilken som lades till.',
   htLevelsTitle: 'Nivåerna',
   htLevelEasy:
-    'Samma tolv bokstäver hela partiet, så du hinner lära dig dem och hålla en ordlista i huvudet. Brickorna vänds långsamt och hela brädet syns tillräckligt länge för att planera ett ord.',
+    'Samma tolv bokstäver hela partiet, så du hinner lära dig dem och hålla en ordlista i huvudet. Brickorna vänds långsamt och hela brädet syns tillräckligt länge för att du ska hinna välja klart dina bokstäver.',
   htLevelMedium:
-    'Då och då byts en bokstav, och listan du hållit reda på stämmer inte längre. Mindre tid att titta och mindre att tänka.',
+    'Då och då byts en bokstav, och då blir det svårare att hålla reda på ord du tänkt lägga senare. Mindre tid att titta och mindre att tänka.',
   htLevelHard:
     'Ord på tre bokstäver räknas inte längre, och en bokstav byts ungefär varannan omgång. Brädet hinner knappt synas innan det blandas om.',
   htLevelInsane:
-    'Allt på en gång, i full fart. Brädet är borta nästan så fort det är helt, och det finns ingen tid att hålla reda på något.',
+    'Allt på en gång, i full fart. Brädet blandas nästan direkt efter det sista draget.',
   htTouchTitle: 'Pekskärmen',
   htTouchBody:
     'Tryck på en uppvänd bricka för att ta dess bokstav. Tryck på en bokstav du redan tagit för att lämna tillbaka den. Lämna in och Rensa ligger under brädet.',

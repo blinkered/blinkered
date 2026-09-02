@@ -140,7 +140,7 @@ export const pt: Messages = {
   tutorialHideAgain: 'Não mostrar novamente',
   tutorialProgress: '{n} de {total}',
   tutorialSkipTitle: 'Ignorar a apresentação?',
-  tutPickLetters: 'Toque nas letras que quiser. Entram na palavra pela ordem por que lhes tocar.',
+  tutPickLetters: 'Toque nas letras que quiser, pela ordem, para formar uma palavra.',
   tutMoreTurn:
     'As peças continuam a virar enquanto pensa, por isso ainda pode aparecer uma letra melhor.',
   tutTapBack:
@@ -156,35 +156,35 @@ export const pt: Messages = {
   tutDoneBody: 'Escolha um nível e jogue. Como jogar está sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
-    'As peças viram-se uma a uma, na ordem de leitura. Não se vê uma letra até a sua peça virar.',
+    'As peças viram-se uma a uma, na ordem de leitura. As peças à vista servem para formar palavras.',
   htWordsTitle: 'As palavras',
   htWordsBody:
-    'Forme uma palavra com as peças à vista. Escreva-a, ou clique nelas. Cada peça serve uma vez, e só depois de virar.',
+    'Forme uma palavra com as peças à vista, escrevendo ou clicando nas letras pela ordem.',
   htFlipsTitle: 'As viradas',
   htFlipsBody:
-    'Cada peça que vira custa uma virada. Uma palavra devolve viradas, e as palavras longas devolvem mais. Quando as viradas acabam, o jogo termina.',
+    'Cada peça que vira custa uma virada. Uma palavra completa devolve viradas ao seu total, e as palavras longas devolvem mais. Quando as viradas acabam, o jogo termina.',
   htRoundTitle: 'A ronda',
   htRoundBody:
-    'Quando vira a última peça de uma ronda, o tabuleiro está todo à vista. Fica assim por um momento. Depois é baralhado e distribuído de novo.',
+    'Quando vira a última peça de uma ronda, o tabuleiro fica todo à vista por um momento. Depois as peças são viradas ao contrário e baralhadas, e começa uma ronda nova.',
   htLanguagesTitle: 'Os idiomas',
   htLanguagesBody:
     'Dezasseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra invulgar também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
   htWildTitle: 'Os coringas',
   htWildBody:
-    'Algumas peças viram como coringa em vez de letra. Um coringa vale a letra que forma uma palavra, escolhida entre as que servem, e descobre qual quando a palavra aparece na sua lista. Uma palavra que já tem não conta.',
+    'Às vezes aparece um coringa em vez de uma letra. Um coringa vale qualquer letra que forme uma palavra válida. Uma palavra já completada não conta.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
-    'Às vezes, entre rondas, uma peça troca de letra. Vê qual sai e qual entra, mas não onde fica. As letras de que se lembra podem já não estar lá.',
+    'Às vezes, entre rondas, uma letra é substituída por outra. Vai ver qual foi retirada e qual foi acrescentada.',
   htLevelsTitle: 'Os níveis',
   htLevelEasy:
-    'As mesmas doze letras durante toda a partida: pode aprendê-las e guardar uma lista de palavras de cabeça. As peças viram devagar e o tabuleiro completo fica à vista tempo suficiente para preparar uma.',
+    'As mesmas doze letras durante toda a partida: pode aprendê-las e guardar uma lista de palavras de cabeça. As peças viram devagar e o tabuleiro completo fica à vista tempo suficiente para acabar de escolher as letras.',
   htLevelMedium:
-    'De vez em quando uma letra muda e a lista que andava a guardar deixa de servir. Menos tempo para olhar e menos para pensar.',
+    'De vez em quando uma letra muda, por isso torna-se mais difícil guardar as palavras que queria jogar mais à frente. Menos tempo para olhar e menos para pensar.',
   htLevelHard:
     'As palavras de três letras deixam de contar e uma letra muda mais ou menos de duas em duas rondas. O tabuleiro mal aparece e já baralha.',
   htLevelInsane:
-    'Tudo ao mesmo tempo, a toda a velocidade. O tabuleiro desaparece quase assim que fica completo e não há tempo para guardar lista nenhuma.',
+    'Tudo ao mesmo tempo, a toda a velocidade. O tabuleiro é baralhado quase logo a seguir à última virada.',
   htTouchTitle: 'O ecrã tátil',
   htTouchBody:
     'Toque numa peça virada para tomar a sua letra. Toque numa letra já tomada para a devolver. Completar e Limpar ficam sob o tabuleiro.',

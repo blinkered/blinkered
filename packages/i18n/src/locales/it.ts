@@ -142,7 +142,7 @@ export const it: Messages = {
   tutorialHideAgain: 'Non mostrare più',
   tutorialProgress: '{n} di {total}',
   tutorialSkipTitle: 'Saltare la presentazione?',
-  tutPickLetters: "Tocca le lettere che vuoi. Entrano nella parola nell'ordine in cui le tocchi.",
+  tutPickLetters: 'Tocca le lettere che vuoi, in ordine, per comporre una parola.',
   tutMoreTurn:
     'Le tessere continuano a girarsi mentre pensi, quindi può ancora arrivare una lettera migliore.',
   tutTapBack:
@@ -157,35 +157,35 @@ export const it: Messages = {
   tutDoneBody: 'Scegli un livello e gioca. Come si gioca resta sempre nella barra del titolo.',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
-    'Le tessere si girano una alla volta, in ordine di lettura. Una lettera non si vede finché la sua tessera non si gira.',
+    'Le tessere si girano una alla volta, in ordine di lettura. Le tessere scoperte servono a comporre parole.',
   htWordsTitle: 'Le parole',
   htWordsBody:
-    'Componi una parola con le tessere scoperte. Scrivila, oppure cliccale. Ogni tessera si usa una volta sola, e solo dopo essersi girata.',
+    'Componi una parola con le tessere scoperte, scrivendo o cliccando le lettere in ordine.',
   htFlipsTitle: 'I giri',
   htFlipsBody:
-    'Ogni tessera che si gira costa un giro. Una parola ne restituisce, e le parole lunghe rendono di più. Quando i giri finiscono, la partita è chiusa.',
+    'Ogni tessera che si gira costa un giro. Una parola completata aggiunge giri al tuo totale, e le parole lunghe ne rendono di più. Quando i giri finiscono, la partita è chiusa.',
   htRoundTitle: 'Il turno',
   htRoundBody:
-    'Quando si gira l’ultima tessera del turno, il tabellone è tutto scoperto. Resta così per un momento. Poi viene mescolato e distribuito di nuovo.',
+    'Quando si gira l’ultima tessera del turno, il tabellone resta tutto scoperto per un momento. Poi le tessere vengono girate a faccia in giù e mescolate, e comincia un turno nuovo.',
   htLanguagesTitle: 'Le lingue',
   htLanguagesBody:
     'Sedici. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
   htKeysTitle: 'La tastiera',
   htWildTitle: 'I jolly',
   htWildBody:
-    'Alcune tessere si scoprono come jolly invece che come lettera. Un jolly vale la lettera che forma una parola, scelta fra quelle possibili, e scopri quale quando la parola compare nella tua lista. Una parola già trovata non conta.',
+    'A volte compare un jolly al posto di una lettera. Un jolly vale qualsiasi lettera che formi una parola valida. Una parola già completata non conta.',
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
-    "A volte, tra un turno e l'altro, una tessera cambia lettera. Vedi quale se ne va e quale arriva, ma non dove si trova. Le lettere che ricordi potrebbero non esserci più.",
+    'A volte, tra un turno e l’altro, una lettera viene sostituita da un’altra. Vedrai quale lettera è stata tolta e quale è stata aggiunta.',
   htLevelsTitle: 'I livelli',
   htLevelEasy:
-    'Le stesse dodici lettere per tutta la partita: puoi impararle e tenere a mente un elenco di parole. Le tessere si girano piano e il tabellone completo resta in vista abbastanza a lungo per prepararne una.',
+    'Le stesse dodici lettere per tutta la partita: puoi impararle e tenere a mente un elenco di parole. Le tessere si girano piano e il tabellone completo resta in vista abbastanza a lungo per finire di scegliere le lettere.',
   htLevelMedium:
-    "Ogni tanto una lettera cambia, e l'elenco che stavi tenendo non è più valido. Meno tempo per guardare e meno per pensare.",
+    'Ogni tanto una lettera cambia, quindi diventa più difficile tenere a mente le parole che volevi giocare più avanti. Meno tempo per guardare e meno per pensare.',
   htLevelHard:
     'Le parole di tre lettere non contano più e una lettera cambia circa un turno sì e uno no. Il tabellone si vede appena prima di rimescolarsi.',
   htLevelInsane:
-    "Tutto insieme, alla massima velocità. Il tabellone sparisce quasi appena è completo e non c'è tempo per tenere a mente niente.",
+    'Tutto insieme, alla massima velocità. Il tabellone si rimescola quasi subito dopo l’ultimo giro.',
   htTouchTitle: 'Lo schermo a sfioramento',
   htTouchBody:
     'Tocca una tessera scoperta per prendere la sua lettera. Tocca una lettera già presa per restituirla. Completa e Cancella stanno sotto il tavoliere.',

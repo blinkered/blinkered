@@ -143,8 +143,7 @@ export const de: Messages = {
   tutorialHideAgain: 'Nicht mehr anzeigen',
   tutorialProgress: '{n} von {total}',
   tutorialSkipTitle: 'Einführung überspringen?',
-  tutPickLetters:
-    'Tippen Sie die Buchstaben an, die Sie wollen. Sie kommen in der Reihenfolge ins Wort, in der Sie sie antippen.',
+  tutPickLetters: 'Tippe die Buchstaben, die du willst, der Reihe nach an, um ein Wort zu bilden.',
   tutMoreTurn:
     'Während Sie überlegen, drehen sich weitere Plättchen um: ein besserer Buchstabe kann noch kommen.',
   tutTapBack:
@@ -161,35 +160,35 @@ export const de: Messages = {
     'Wählen Sie eine Stufe und spielen Sie. Die Anleitung bleibt oben in der Titelleiste.',
   htBoardTitle: 'Das Feld',
   htBoardBody:
-    'Die Steine werden einzeln umgedreht, in Leserichtung. Einen Buchstaben sieht man erst, wenn sein Stein sich dreht.',
+    'Die Steine werden einzeln umgedreht, in Leserichtung. Aus den offenen Steinen bildest du Wörter.',
   htWordsTitle: 'Die Wörter',
   htWordsBody:
-    'Bilde ein Wort aus den offenen Steinen. Tippe es, oder klicke sie an. Jeder Stein zählt einmal, und erst nachdem er sich gedreht hat.',
+    'Bilde ein Wort aus den offenen Steinen, indem du die Buchstaben der Reihe nach tippst oder anklickst.',
   htFlipsTitle: 'Die Züge',
   htFlipsBody:
-    'Jeder Stein, der sich dreht, kostet einen Zug. Ein Wort gibt Züge zurück, und lange Wörter geben mehr. Sind die Züge aufgebraucht, ist das Spiel vorbei.',
+    'Jeder Stein, der sich dreht, kostet einen Zug. Ein fertiges Wort schreibt Züge wieder gut, und lange Wörter geben mehr. Sind die Züge aufgebraucht, ist das Spiel vorbei.',
   htRoundTitle: 'Die Runde',
   htRoundBody:
-    'Dreht sich der letzte Stein einer Runde, liegt das ganze Feld offen. Es bleibt einen Moment so. Dann wird gemischt und neu ausgelegt.',
+    'Dreht sich der letzte Stein einer Runde, liegt das ganze Feld einen Moment offen. Dann werden die Steine umgedreht und gemischt, und eine neue Runde beginnt.',
   htLanguagesTitle: 'Die Sprachen',
   htLanguagesBody:
     'Sechzehn. Jedes Feld lässt sich mit gebräuchlichen Wörtern lösen. Ein seltenes Wort zählt trotzdem, wenn das Wörterbuch es kennt.',
   htKeysTitle: 'Die Tastatur',
   htWildTitle: 'Joker',
   htWildBody:
-    'Manche Plättchen zeigen beim Umdrehen einen Joker statt eines Buchstabens. Ein Joker gilt als der Buchstabe, der ein Wort ergibt, ausgewählt aus denen, die passen, und welcher es war siehst du, wenn das Wort in deiner Liste erscheint. Ein bereits gefundenes Wort zählt nicht.',
+    'Manchmal erscheint ein Joker statt eines Buchstabens. Ein Joker gilt als jeder Buchstabe, der ein gültiges Wort ergibt. Ein bereits gefundenes Wort zählt nicht.',
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
-    'Manchmal tauscht zwischen den Runden ein Plättchen seinen Buchstaben. Sie sehen, welcher geht und welcher kommt, aber nicht wo er liegt. Die Buchstaben, die Sie im Kopf haben, sind vielleicht nicht mehr da.',
+    'Manchmal wird zwischen den Runden ein Buchstabe durch einen anderen ersetzt. Du siehst, welcher Buchstabe weg ist und welcher dazugekommen ist.',
   htLevelsTitle: 'Die Stufen',
   htLevelEasy:
-    'Dieselben zwölf Buchstaben die ganze Partie über: Sie können sie sich einprägen und eine Wortliste im Kopf behalten. Die Plättchen drehen sich langsam, und das volle Feld bleibt lange genug sichtbar, um ein Wort zu planen.',
+    'Dieselben zwölf Buchstaben die ganze Partie über: du kannst sie dir einprägen und eine Wortliste im Kopf behalten. Die Steine drehen sich langsam, und das volle Feld bleibt lange genug sichtbar, um deine Buchstaben in Ruhe auszuwählen.',
   htLevelMedium:
-    'Ab und zu wechselt ein Buchstabe, und die Liste, die Sie sich gemerkt haben, stimmt nicht mehr. Weniger Zeit zum Schauen und weniger zum Nachdenken.',
+    'Ab und zu wechselt ein Buchstabe, und dann wird es schwerer, sich Wörter zu merken, die du später spielen wolltest. Weniger Zeit zum Schauen und weniger zum Nachdenken.',
   htLevelHard:
     'Wörter mit drei Buchstaben zählen nicht mehr, und etwa jede zweite Runde wechselt ein Buchstabe. Das Feld ist kaum zu sehen, bevor neu gemischt wird.',
   htLevelInsane:
-    'Alles auf einmal, in vollem Tempo. Das Feld ist fast schon wieder weg, sobald es vollständig ist, und für eine Liste bleibt keine Zeit.',
+    'Alles auf einmal, in vollem Tempo. Das Feld wird fast unmittelbar nach dem letzten Zug gemischt.',
   htTouchTitle: 'Der Berührungsbildschirm',
   htTouchBody:
     'Tippe ein aufgedecktes Plättchen an, um seinen Buchstaben zu nehmen. Tippe einen genommenen Buchstaben an, um ihn zurückzugeben. Abgeben und Löschen liegen unter dem Brett.',

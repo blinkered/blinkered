@@ -140,8 +140,7 @@ export const ms: Messages = {
   tutorialHideAgain: 'Jangan tunjuk lagi',
   tutorialProgress: '{n} daripada {total}',
   tutorialSkipTitle: 'Langkau pengenalan?',
-  tutPickLetters:
-    'Ketik huruf yang anda mahu. Huruf masuk ke dalam perkataan mengikut urutan ketikan anda.',
+  tutPickLetters: 'Ketik huruf yang anda mahu mengikut urutan untuk membina perkataan.',
   tutMoreTurn:
     'Jubin terus terbalik semasa anda berfikir, jadi huruf yang lebih baik mungkin masih akan datang.',
   tutTapBack:
@@ -157,35 +156,35 @@ export const ms: Messages = {
   tutDoneBody: 'Pilih satu tahap dan bermain. Cara bermain sentiasa ada pada bar tajuk.',
   htBoardTitle: 'Papan',
   htBoardBody:
-    'Jubin dibuka satu demi satu, mengikut arah bacaan. Huruf tidak kelihatan sehingga jubinnya terbalik.',
+    'Jubin dibuka satu demi satu, mengikut arah bacaan. Daripada jubin yang terbuka anda membina perkataan.',
   htWordsTitle: 'Perkataan',
   htWordsBody:
-    'Bina perkataan daripada jubin yang terbuka. Taipkan perkataan itu, atau klik padanya. Setiap jubin digunakan sekali, dan hanya selepas ia terbalik.',
+    'Bina perkataan daripada jubin yang terbuka dengan menaip atau mengklik hurufnya mengikut urutan.',
   htFlipsTitle: 'Balikan',
   htFlipsBody:
-    'Setiap jubin yang terbalik memakan satu balikan. Satu perkataan memulangkannya, dan perkataan panjang memulangkan lebih. Apabila balikan habis, permainan tamat.',
+    'Setiap jubin yang terbalik memakan satu balikan. Perkataan yang siap menambah balikan kepada jumlah anda, dan perkataan panjang memberi lebih. Apabila balikan habis, permainan tamat.',
   htRoundTitle: 'Pusingan',
   htRoundBody:
-    'Apabila jubin terakhir sesuatu pusingan terbalik, seluruh papan terbuka. Ia kekal begitu seketika. Kemudian papan dikocak dan dibahagikan semula.',
+    'Apabila jubin terakhir sesuatu pusingan terbalik, seluruh papan terbuka seketika. Kemudian jubin dibalikkan tertutup dan dikocak, dan pusingan baharu bermula.',
   htLanguagesTitle: 'Bahasa',
   htLanguagesBody:
     'Enam belas. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
   htKeysTitle: 'Papan kekunci',
   htWildTitle: 'Kad liar',
   htWildBody:
-    'Sesetengah jubin terbuka sebagai kad dan bukan huruf. Kad itu berfungsi sebagai huruf yang membentuk kata, dipilih daripada yang sesuai, dan anda tahu yang mana apabila kata itu muncul dalam senarai anda. Kata yang sudah ada tidak dikira.',
+    'Kadangkala kad liar muncul menggantikan huruf. Kad liar berfungsi sebagai apa-apa huruf yang membentuk perkataan yang sah. Perkataan yang sudah siap tidak dikira.',
   htSwapTitle: 'Huruf yang bertukar',
   htSwapBody:
-    'Kadangkala, antara pusingan, satu jubin bertukar hurufnya. Anda nampak huruf mana yang pergi dan mana yang datang, tetapi bukan di mana. Huruf yang anda ingat mungkin sudah tiada.',
+    'Kadangkala, antara pusingan, satu huruf diganti dengan huruf lain. Anda akan nampak huruf mana yang dibuang dan mana yang ditambah.',
   htLevelsTitle: 'Tahap kesukaran',
   htLevelEasy:
-    'Dua belas huruf yang sama sepanjang permainan, jadi anda boleh menghafalnya dan menyimpan senarai perkataan dalam kepala. Jubin terbalik perlahan dan papan penuh kekal kelihatan cukup lama untuk merancang satu.',
+    'Dua belas huruf yang sama sepanjang permainan, jadi anda boleh menghafalnya dan menyimpan senarai perkataan dalam kepala. Jubin terbalik perlahan dan papan penuh kekal kelihatan cukup lama untuk anda selesai memilih huruf.',
   htLevelMedium:
-    'Sekali-sekala satu huruf bertukar, jadi senarai yang anda simpan sudah tidak tepat. Kurang masa untuk melihat dan kurang untuk berfikir.',
+    'Sekali-sekala satu huruf bertukar, jadi lebih sukar mengingati perkataan yang anda ingin mainkan kemudian. Kurang masa untuk melihat dan kurang untuk berfikir.',
   htLevelHard:
     'Perkataan tiga huruf tidak lagi dikira, dan satu huruf bertukar kira-kira setiap dua pusingan. Papan baru sahaja kelihatan sebelum ia dikocak semula.',
   htLevelInsane:
-    'Semuanya serentak, pada kelajuan penuh. Papan hilang hampir sebaik sahaja ia penuh, dan tiada masa untuk mengingat apa-apa senarai.',
+    'Semuanya serentak, pada kelajuan penuh. Papan dikocak hampir sebaik sahaja balikan terakhir selesai.',
   htTouchTitle: 'Skrin sentuh',
   htTouchBody:
     'Sentuh jubin yang terbuka untuk mengambil hurufnya. Sentuh mana-mana huruf yang diambil untuk memulangkannya. Hantar dan Kosongkan ada di bawah papan.',

@@ -140,8 +140,7 @@ export const nl: Messages = {
   tutorialHideAgain: 'Dit niet meer tonen',
   tutorialProgress: '{n} van {total}',
   tutorialSkipTitle: 'Rondleiding overslaan?',
-  tutPickLetters:
-    'Tik de letters aan die je wilt. Ze komen in het woord in de volgorde waarin je ze aantikt.',
+  tutPickLetters: 'Tik de letters die je wilt op volgorde aan om een woord te vormen.',
   tutMoreTurn:
     'Er blijven tegels omdraaien terwijl je nadenkt, dus er kan nog een betere letter komen.',
   tutTapBack:
@@ -157,35 +156,35 @@ export const nl: Messages = {
   tutDoneBody: 'Kies een niveau en speel. Spelregels staan altijd in de titelbalk.',
   htBoardTitle: 'Het bord',
   htBoardBody:
-    'De stenen draaien één voor één om, in leesrichting. Een letter is niet te zien tot zijn steen draait.',
+    'De stenen draaien één voor één om, in leesrichting. Met de open stenen vorm je woorden.',
   htWordsTitle: 'De woorden',
   htWordsBody:
-    'Vorm een woord uit de open stenen. Typ het, of klik erop. Elke steen gaat één keer mee, en pas nadat hij is gedraaid.',
+    'Vorm een woord uit de open stenen door de letters op volgorde te typen of aan te klikken.',
   htFlipsTitle: 'De zetten',
   htFlipsBody:
-    'Elke steen die draait kost een zet. Een woord geeft zetten terug, en lange woorden geven meer. Zijn de zetten op, dan is het spel voorbij.',
+    'Elke steen die draait kost een zet. Een afgemaakt woord schrijft zetten bij je totaal, en lange woorden geven meer. Zijn de zetten op, dan is het spel voorbij.',
   htRoundTitle: 'De ronde',
   htRoundBody:
-    'Draait de laatste steen van een ronde, dan ligt het hele bord open. Zo blijft het even. Daarna wordt het geschud en opnieuw gelegd.',
+    'Draait de laatste steen van een ronde, dan ligt het hele bord even open. Daarna worden de stenen omgedraaid en geschud, en begint een nieuwe ronde.',
   htLanguagesTitle: 'De talen',
   htLanguagesBody:
     'Zestien. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
   htKeysTitle: 'Het toetsenbord',
   htWildTitle: 'Jokers',
   htWildBody:
-    'Sommige stenen komen als joker boven in plaats van als letter. Een joker geldt als de letter die een woord maakt, gekozen uit de letters die passen, en je ziet welke wanneer het woord in je lijst verschijnt. Een woord dat je al hebt telt niet.',
+    'Soms verschijnt er een joker in plaats van een letter. Een joker geldt als elke letter die een geldig woord maakt. Een woord dat je al af hebt telt niet.',
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
-    'Soms wisselt tussen de rondes één tegel van letter. Je ziet welke weggaat en welke komt, maar niet waar hij ligt. De letters die je onthouden hebt, liggen er misschien niet meer.',
+    'Soms wordt tussen de rondes één letter door een andere vervangen. Je ziet welke letter weg is en welke erbij is gekomen.',
   htLevelsTitle: 'De niveaus',
   htLevelEasy:
-    'Dezelfde twaalf letters de hele partij, dus je kunt ze leren en een lijstje met woorden in je hoofd houden. Tegels draaien langzaam en het volle bord blijft lang genoeg staan om er een te bedenken.',
+    'Dezelfde twaalf letters de hele partij, dus je kunt ze leren en een lijstje met woorden in je hoofd houden. Stenen draaien langzaam en het volle bord blijft lang genoeg staan om je letters rustig te kiezen.',
   htLevelMedium:
-    'Af en toe verandert er een letter, waardoor het lijstje dat je bijhield niet meer klopt. Minder tijd om te kijken en minder om na te denken.',
+    'Af en toe verandert er een letter, waardoor het lastiger wordt om woorden te onthouden die je later wilde spelen. Minder tijd om te kijken en minder om na te denken.',
   htLevelHard:
     'Woorden van drie letters tellen niet meer en ongeveer om de ronde verandert er een letter. Het bord staat er amper of het schudt alweer.',
   htLevelInsane:
-    'Alles tegelijk, op volle snelheid. Het bord is bijna weg zodra het compleet is, en er is geen tijd om iets te onthouden.',
+    'Alles tegelijk, op volle snelheid. Het bord wordt bijna meteen na de laatste zet geschud.',
   htTouchTitle: 'Het aanraakscherm',
   htTouchBody:
     'Tik op een omgedraaide steen om zijn letter te nemen. Tik op een genomen letter om hem terug te geven. Inleveren en Wissen staan onder het bord.',

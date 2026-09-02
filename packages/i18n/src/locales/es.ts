@@ -141,7 +141,7 @@ export const es: Messages = {
   tutorialHideAgain: 'No volver a mostrar',
   tutorialProgress: '{n} de {total}',
   tutorialSkipTitle: '¿Saltar la introducción?',
-  tutPickLetters: 'Toca las letras que quieras. Se unen a la palabra en el orden en que las tocas.',
+  tutPickLetters: 'Toca las letras que quieras, en orden, para formar una palabra.',
   tutMoreTurn:
     'Las fichas siguen girándose mientras piensas, así que aún puede llegar una letra mejor.',
   tutTapBack:
@@ -157,35 +157,35 @@ export const es: Messages = {
   tutDoneBody: 'Elige un nivel y juega. Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
-    'Las fichas se descubren una a una, en orden de lectura. No se ve una letra hasta que gira su ficha.',
+    'Las fichas se descubren una a una, en orden de lectura. Las fichas descubiertas sirven para formar palabras.',
   htWordsTitle: 'Las palabras',
   htWordsBody:
-    'Forma una palabra con las fichas descubiertas. Escríbela, o púlsalas. Cada ficha sirve una vez, y solo después de girar.',
+    'Forma una palabra con las fichas descubiertas, escribiendo o pulsando las letras en orden.',
   htFlipsTitle: 'Los giros',
   htFlipsBody:
-    'Cada ficha que gira cuesta un giro. Una palabra devuelve giros, y las palabras largas devuelven más. Cuando se acaban los giros, la partida termina.',
+    'Cada ficha que gira cuesta un giro. Una palabra completada suma giros a tu total, y las palabras largas dan más. Cuando se acaban los giros, la partida termina.',
   htRoundTitle: 'La ronda',
   htRoundBody:
-    'Cuando gira la última ficha de una ronda, el tablero está entero a la vista. Se queda así un momento. Después se mezcla y se reparte de nuevo.',
+    'Cuando gira la última ficha de una ronda, el tablero entero se queda a la vista un momento. Después las fichas se giran boca abajo y se mezclan, y empieza una ronda nueva.',
   htLanguagesTitle: 'Los idiomas',
   htLanguagesBody:
     'Dieciséis. Cada tablero se puede resolver con palabras de uso real. Una palabra poco común también puntúa, si el diccionario la conoce.',
   htKeysTitle: 'El teclado',
   htWildTitle: 'Los comodines',
   htWildBody:
-    'Algunas fichas se destapan como comodín en vez de letra. Un comodín vale la letra que forme una palabra, elegida entre las que sirven, y descubres cuál cuando la palabra aparece en tu lista. Una palabra que ya tienes no cuenta.',
+    'A veces aparece un comodín en lugar de una letra. Un comodín vale cualquier letra que forme una palabra válida. Una palabra ya completada no cuenta.',
   htSwapTitle: 'Las letras cambian',
   htSwapBody:
-    'A veces, entre rondas, una ficha cambia de letra. Ves cuál se va y cuál llega, pero no dónde está. Puede que las letras que recuerdas ya no estén.',
+    'A veces, entre rondas, una letra se sustituye por otra. Verás qué letra se ha quitado y cuál se ha añadido.',
   htLevelsTitle: 'Los niveles',
   htLevelEasy:
-    'Las mismas doce letras durante toda la partida: puedes aprendértelas y llevar una lista de palabras en la cabeza. Las fichas se giran despacio y el tablero completo se queda a la vista el tiempo suficiente para preparar una.',
+    'Las mismas doce letras durante toda la partida: puedes aprendértelas y llevar una lista de palabras en la cabeza. Las fichas se giran despacio y el tablero completo se queda a la vista el tiempo suficiente para terminar de elegir tus letras.',
   htLevelMedium:
-    'Una letra cambia de vez en cuando, así que la lista que llevabas se queda anticuada. Menos tiempo para mirar y menos para pensar.',
+    'Una letra cambia de vez en cuando, así que cuesta más recordar las palabras que querías jugar más adelante. Menos tiempo para mirar y menos para pensar.',
   htLevelHard:
     'Las palabras de tres letras dejan de contar y una letra cambia más o menos cada dos rondas. El tablero apenas se ve antes de barajarse.',
   htLevelInsane:
-    'Todo a la vez y a toda velocidad. El tablero desaparece casi en cuanto está completo, y no da tiempo a retener ninguna lista.',
+    'Todo a la vez y a toda velocidad. El tablero se mezcla casi justo después del último giro.',
   htTouchTitle: 'La pantalla táctil',
   htTouchBody:
     'Toca una ficha destapada para tomar su letra. Toca cualquier letra ya tomada para soltarla. Completar y Borrar están debajo del tablero.',

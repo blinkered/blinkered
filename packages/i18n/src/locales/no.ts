@@ -140,7 +140,7 @@ export const no: Messages = {
   tutorialHideAgain: 'Ikke vis igjen',
   tutorialProgress: '{n} av {total}',
   tutorialSkipTitle: 'Hoppe over introduksjonen?',
-  tutPickLetters: 'Trykk på bokstavene du vil ha. De havner i ordet i den rekkefølgen du trykker.',
+  tutPickLetters: 'Trykk på bokstavene du vil ha, i rekkefølge, for å lage et ord.',
   tutMoreTurn: 'Brikkene fortsetter å snus mens du tenker, så en bedre bokstav kan være på vei.',
   tutTapBack:
     'Tok du feil? Trykk på den igjen for å levere den tilbake. Hvilken som helst, ikke bare den siste.',
@@ -155,35 +155,35 @@ export const no: Messages = {
   tutDoneBody: 'Velg et nivå og spill. Slik spiller du ligger alltid i tittellinjen.',
   htBoardTitle: 'Brettet',
   htBoardBody:
-    'Brikkene snus opp én om gangen, i leseretningen. En bokstav er ikke synlig før brikken snus.',
+    'Brikkene snus opp én om gangen, i leseretningen. Av brikkene som ligger åpne lager du ord.',
   htWordsTitle: 'Ordene',
   htWordsBody:
-    'Lag et ord av brikkene som ligger åpne. Skriv det, eller klikk på dem. Hver brikke gjelder én gang, og først etter at den er snudd.',
+    'Lag et ord av brikkene som ligger åpne ved å skrive eller klikke på bokstavene i rekkefølge.',
   htFlipsTitle: 'Trekkene',
   htFlipsBody:
-    'Hver brikke som snus koster ett trekk. Et ord gir trekk tilbake, og lange ord gir mer. Når trekkene er brukt opp, er spillet over.',
+    'Hver brikke som snus koster ett trekk. Et fullført ord legger trekk tilbake på beholdningen din, og lange ord gir mer. Når trekkene er brukt opp, er spillet over.',
   htRoundTitle: 'Runden',
   htRoundBody:
-    'Når rundens siste brikke snus, ligger hele brettet åpent. Det ligger slik et øyeblikk. Så stokkes det og deles ut på nytt.',
+    'Når rundens siste brikke snus, ligger hele brettet åpent et øyeblikk. Så snus brikkene ned og stokkes, og en ny runde begynner.',
   htLanguagesTitle: 'Språkene',
   htLanguagesBody:
     'Seksten. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
   htKeysTitle: 'Tastaturet',
   htWildTitle: 'Jokere',
   htWildBody:
-    'Noen brikker snus som en joker i stedet for en bokstav. En joker teller som bokstaven som lager et ord, valgt blant dem som passer, og hvilken det ble ser du når ordet dukker opp i lista di. Et ord du allerede har funnet teller ikke.',
+    'Av og til dukker det opp en joker i stedet for en bokstav. En joker teller som hvilken som helst bokstav som lager et gyldig ord. Et ord du allerede har laget teller ikke.',
   htSwapTitle: 'Bokstaver som byttes',
   htSwapBody:
-    'Av og til bytter en brikke bokstav mellom rundene. Du ser hvilken som går og hvilken som kommer, men ikke hvor den ligger. Bokstavene du husker, er kanskje ikke der lenger.',
+    'Av og til blir én bokstav byttet ut med en annen mellom rundene. Du ser hvilken bokstav som ble fjernet og hvilken som kom til.',
   htLevelsTitle: 'Nivåene',
   htLevelEasy:
-    'De samme tolv bokstavene hele partiet, så du rekker å lære dem og holde en ordliste i hodet. Brikkene snus sakte, og hele brettet blir stående lenge nok til å planlegge et ord.',
+    'De samme tolv bokstavene hele partiet, så du rekker å lære dem og holde en ordliste i hodet. Brikkene snus sakte, og hele brettet blir stående lenge nok til at du rekker å velge ferdig bokstavene dine.',
   htLevelMedium:
-    'Nå og da byttes en bokstav, og listen du har holdt styr på stemmer ikke lenger. Mindre tid til å se og mindre til å tenke.',
+    'Nå og da byttes en bokstav, og da blir det vanskeligere å holde styr på ord du hadde tenkt å legge senere. Mindre tid til å se og mindre til å tenke.',
   htLevelHard:
     'Ord på tre bokstaver teller ikke lenger, og en bokstav byttes omtrent annenhver runde. Brettet rekker knapt å vises før det stokkes om.',
   htLevelInsane:
-    'Alt på én gang, i full fart. Brettet er borte nesten så snart det er helt, og det er ingen tid til å huske noe som helst.',
+    'Alt på én gang, i full fart. Brettet stokkes nesten med det samme etter det siste trekket.',
   htTouchTitle: 'Berøringsskjermen',
   htTouchBody:
     'Trykk på en brikke som ligger med forsiden opp for å ta bokstaven. Trykk på en bokstav du har tatt for å gi den tilbake. Lever og Tøm ligger under brettet.',

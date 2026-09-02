@@ -143,7 +143,7 @@ export const hr: Messages = {
   tutorialHideAgain: 'Ne prikazuj više',
   tutorialProgress: '{n} od {total}',
   tutorialSkipTitle: 'Preskočiti uvod?',
-  tutPickLetters: 'Dodirnite slova koja želite. U riječ ulaze onim redom kojim ih dodirujete.',
+  tutPickLetters: 'Dodirnite slova koja želite, redom, da složite riječ.',
   tutMoreTurn: 'Pločice se okreću i dok razmišljate, pa još može stići bolje slovo.',
   tutTapBack: 'Uzeli ste krivo? Dodirnite ga ponovno da ga vratite. Bilo koje, ne samo zadnje.',
   tutComplete: 'Pritisnite Gotovo kad je riječ spremna.',
@@ -156,35 +156,34 @@ export const hr: Messages = {
   tutDoneBody: 'Odaberite razinu i igrajte. Upute su uvijek u naslovnoj traci.',
   htBoardTitle: 'Ploča',
   htBoardBody:
-    'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Slovo se ne vidi dok se njegova pločica ne okrene.',
+    'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Od otkrivenih pločica slažete riječi.',
   htWordsTitle: 'Riječi',
-  htWordsBody:
-    'Sastavi riječ od otkrivenih pločica. Upiši je, ili klikni po njima. Svaka pločica vrijedi jednom, i to samo nakon što se okrenula.',
+  htWordsBody: 'Složite riječ od otkrivenih pločica upisivanjem ili klikanjem slova redom.',
   htFlipsTitle: 'Okreti',
   htFlipsBody:
-    'Svaka pločica koja se okrene troši jedan okret. Riječ ih vraća, a duge riječi vraćaju više. Kad okreti nestanu, igra je gotova.',
+    'Svaka pločica koja se okrene troši jedan okret. Dovršena riječ vraća okrete na vaš zbroj, a duge riječi vraćaju više. Kad okreti nestanu, igra je gotova.',
   htRoundTitle: 'Runda',
   htRoundBody:
-    'Kad se okrene zadnja pločica runde, cijela je ploča otkrivena. Tako ostaje na trenutak. Zatim se promiješa i podijeli iznova.',
+    'Kad se okrene zadnja pločica runde, cijela ploča ostaje otkrivena na trenutak. Zatim se pločice okrenu naopako i promiješaju, i počinje nova runda.',
   htLanguagesTitle: 'Jezici',
   htLanguagesBody:
     'Šesnaest. Svaka se ploča može riješiti riječima koje se stvarno koriste. Neobična riječ ipak vrijedi, ako je rječnik zna.',
   htKeysTitle: 'Tipkovnica',
   htWildTitle: 'Džokeri',
   htWildBody:
-    'Neke se pločice okrenu kao džoker umjesto kao slovo. Džoker vrijedi kao slovo koje tvori riječ, izabrano između onih koja odgovaraju, a koje je bilo vidite kad se riječ pojavi na vašem popisu. Riječ koju već imate ne vrijedi.',
+    'Ponekad se umjesto slova pojavi džoker. Džoker vrijedi kao bilo koje slovo koje tvori valjanu riječ. Već dovršena riječ ne vrijedi.',
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
-    'Ponekad između rundi jedna pločica promijeni slovo. Vidite koje odlazi i koje dolazi, ali ne i gdje je. Slova kojih se sjećate možda više nisu ondje.',
+    'Ponekad se između rundi jedno slovo zamijeni drugim. Vidjet ćete koje je slovo maknuto i koje je dodano.',
   htLevelsTitle: 'Razine',
   htLevelEasy:
-    'Istih dvanaest slova cijelu igru, pa ih možete naučiti i držati popis riječi u glavi. Pločice se okreću polako, a puna ploča ostaje na vidiku dovoljno dugo da smislite riječ.',
+    'Istih dvanaest slova cijelu igru, pa ih možete naučiti i držati popis riječi u glavi. Pločice se okreću polako, a puna ploča ostaje na vidiku dovoljno dugo da na miru odaberete slova.',
   htLevelMedium:
-    'Slovo se povremeno promijeni, pa popis koji ste držali u glavi više ne vrijedi. Manje vremena za gledanje i manje za razmišljanje.',
+    'Slovo se povremeno promijeni, pa je teže zapamtiti riječi koje ste kanili odigrati poslije. Manje vremena za gledanje i manje za razmišljanje.',
   htLevelHard:
     'Riječi od tri slova više se ne broje, a slovo se mijenja otprilike svake druge runde. Ploča se jedva vidi prije nego što se promiješa.',
   htLevelInsane:
-    'Sve odjednom i punom brzinom. Ploča nestane gotovo čim se popuni i nema vremena da išta zapamtite.',
+    'Sve odjednom i punom brzinom. Ploča se promiješa gotovo odmah nakon zadnjeg okreta.',
   htTouchTitle: 'Zaslon na dodir',
   htTouchBody:
     'Dotaknite otkrivenu ploču da uzmete njezino slovo. Dotaknite bilo koje uzeto slovo da ga vratite. Potvrdi i Očisti su ispod ploče.',

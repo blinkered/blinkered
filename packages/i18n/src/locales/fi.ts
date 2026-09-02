@@ -143,8 +143,7 @@ export const fi: Messages = {
   tutorialHideAgain: 'Älä näytä uudelleen',
   tutorialProgress: '{n} / {total}',
   tutorialSkipTitle: 'Ohitetaanko esittely?',
-  tutPickLetters:
-    'Napauta haluamiasi kirjaimia. Ne liittyvät sanaan siinä järjestyksessä kuin napautat.',
+  tutPickLetters: 'Napauta haluamiasi kirjaimia järjestyksessä muodostaaksesi sanan.',
   tutMoreTurn:
     'Laatat kääntyvät edelleen sillä aikaa kun mietit, joten parempi kirjain voi olla vielä tulossa.',
   tutTapBack:
@@ -160,35 +159,35 @@ export const fi: Messages = {
   tutDoneBody: 'Valitse taso ja pelaa. Pelin ohjeet löytyvät aina otsikkopalkista.',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
-    'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Kirjainta ei näe ennen kuin sen laatta kääntyy.',
+    'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Näkyvistä laatoista muodostat sanoja.',
   htWordsTitle: 'Sanat',
   htWordsBody:
-    'Muodosta sana näkyvistä laatoista. Kirjoita se, tai napsauta niitä. Jokainen laatta kelpaa kertaalleen, ja vasta kun se on kääntynyt.',
+    'Muodosta sana näkyvistä laatoista kirjoittamalla tai napsauttamalla kirjaimet järjestyksessä.',
   htFlipsTitle: 'Siirrot',
   htFlipsBody:
-    'Jokainen kääntyvä laatta kuluttaa yhden siirron. Sana palauttaa siirtoja, ja pitkät sanat palauttavat enemmän. Kun siirrot loppuvat, peli päättyy.',
+    'Jokainen kääntyvä laatta kuluttaa yhden siirron. Valmis sana palauttaa siirtoja saldoosi, ja pitkät sanat palauttavat enemmän. Kun siirrot loppuvat, peli päättyy.',
   htRoundTitle: 'Kierros',
   htRoundBody:
-    'Kun kierroksen viimeinen laatta kääntyy, koko lauta on näkyvissä. Se pysyy niin hetken. Sitten se sekoitetaan ja jaetaan uudelleen.',
+    'Kun kierroksen viimeinen laatta kääntyy, koko lauta on hetken näkyvissä. Sitten laatat käännetään nurin ja sekoitetaan, ja uusi kierros alkaa.',
   htLanguagesTitle: 'Kielet',
   htLanguagesBody:
     'Kuusitoista. Jokainen lauta ratkeaa arkisilla sanoilla. Harvinainen sana kelpaa silti, jos sanakirja tuntee sen.',
   htKeysTitle: 'Näppäimistö',
   htWildTitle: 'Jokerit',
   htWildBody:
-    'Osa laatoista kääntyy jokeriksi kirjaimen sijaan. Jokeri käy siitä kirjaimesta, joka muodostaa sanan, valittuna niistä jotka sopivat, ja kumpi se oli näkyy kun sana ilmestyy listaasi. Jo löytämäsi sana ei kelpaa.',
+    'Joskus kirjaimen tilalle ilmestyy jokeri. Jokeri käy mistä tahansa kirjaimesta, joka muodostaa kelvollisen sanan. Jo tehty sana ei kelpaa.',
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
-    'Joskus kierrosten välissä yksi laatta vaihtaa kirjaintaan. Näet kumpi lähtee ja kumpi tulee, mutta et sitä missä se on. Muistamiasi kirjaimia ei ehkä enää ole.',
+    'Joskus kierrosten välissä yksi kirjain korvataan toisella. Näet, mikä kirjain poistui ja mikä tuli tilalle.',
   htLevelsTitle: 'Vaikeustasot',
   htLevelEasy:
-    'Samat kaksitoista kirjainta koko pelin ajan, joten ehdit opetella ne ja pitää sanalistaa mielessäsi. Laatat kääntyvät hitaasti ja koko lauta näkyy tarpeeksi kauan, että ehdit suunnitella sanan.',
+    'Samat kaksitoista kirjainta koko pelin ajan, joten ehdit opetella ne ja pitää sanalistaa mielessäsi. Laatat kääntyvät hitaasti ja koko lauta näkyy tarpeeksi kauan, että ehdit valita kirjaimesi rauhassa.',
   htLevelMedium:
-    'Silloin tällöin yksi kirjain vaihtuu, eikä mielessä pitämäsi lista enää pidä paikkaansa. Vähemmän aikaa katsoa ja vähemmän aikaa ajatella.',
+    'Silloin tällöin yksi kirjain vaihtuu, jolloin on vaikeampi pitää mielessä sanoja, jotka aioit pelata myöhemmin. Vähemmän aikaa katsoa ja vähemmän aikaa ajatella.',
   htLevelHard:
     'Kolmen kirjaimen sanat eivät enää kelpaa, ja kirjain vaihtuu suunnilleen joka toinen kierros. Lauta ehtii tuskin näkyä ennen kuin se sekoitetaan.',
   htLevelInsane:
-    'Kaikki yhtä aikaa ja täydellä vauhdilla. Lauta katoaa lähes heti kun se on kokonainen, eikä mitään ehdi painaa mieleen.',
+    'Kaikki yhtä aikaa ja täydellä vauhdilla. Lauta sekoitetaan lähes heti viimeisen siirron jälkeen.',
   htTouchTitle: 'Kosketusnäyttö',
   htTouchBody:
     'Kosketa käännettyä laattaa ottaaksesi sen kirjaimen. Kosketa mitä tahansa ottamaasi kirjainta palauttaaksesi sen. Hyväksy ja Tyhjennä ovat laudan alla.',

@@ -145,7 +145,7 @@ export const id: Messages = {
   tutorialHideAgain: 'Jangan tampilkan lagi',
   tutorialProgress: '{n} dari {total}',
   tutorialSkipTitle: 'Lewati pengenalan?',
-  tutPickLetters: 'Ketuk huruf yang Anda inginkan. Huruf masuk ke kata sesuai urutan ketukan Anda.',
+  tutPickLetters: 'Ketuk huruf yang Anda inginkan secara berurutan untuk menyusun kata.',
   tutMoreTurn:
     'Ubin terus terbuka selagi Anda berpikir, jadi huruf yang lebih baik mungkin masih datang.',
   tutTapBack:
@@ -161,35 +161,35 @@ export const id: Messages = {
   tutDoneBody: 'Pilih tingkat lalu bermain. Cara bermain selalu ada di bilah judul.',
   htBoardTitle: 'Papan',
   htBoardBody:
-    'Kartu dibuka satu per satu, mengikuti arah baca. Huruf tidak terlihat sampai kartunya berbalik.',
+    'Kartu dibuka satu per satu, mengikuti arah baca. Dari kartu yang terbuka Anda menyusun kata.',
   htWordsTitle: 'Kata',
   htWordsBody:
-    'Susun kata dari kartu yang terbuka. Ketik kata itu, atau klik kartunya. Setiap kartu dipakai sekali, dan hanya setelah berbalik.',
+    'Susun kata dari kartu yang terbuka dengan mengetik atau mengeklik hurufnya secara berurutan.',
   htFlipsTitle: 'Balikan',
   htFlipsBody:
-    'Setiap kartu yang berbalik memakan satu balikan. Sebuah kata mengembalikannya, dan kata panjang mengembalikan lebih banyak. Ketika balikan habis, permainan berakhir.',
+    'Setiap kartu yang berbalik memakan satu balikan. Kata yang selesai menambahkan balikan ke jumlah Anda, dan kata yang panjang memberi lebih banyak. Ketika balikan habis, permainan berakhir.',
   htRoundTitle: 'Putaran',
   htRoundBody:
-    'Ketika kartu terakhir suatu putaran berbalik, seluruh papan terbuka. Papan bertahan begitu sesaat. Lalu diacak dan dibagikan lagi.',
+    'Ketika kartu terakhir suatu putaran berbalik, seluruh papan terbuka sesaat. Lalu kartu dibalik tertutup dan diacak, dan putaran baru dimulai.',
   htLanguagesTitle: 'Bahasa',
   htLanguagesBody:
     'Enam belas. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
   htKeysTitle: 'Papan tik',
   htWildTitle: 'Kartu liar',
   htWildBody:
-    'Beberapa kartu terbuka sebagai kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf yang membentuk kata, dipilih dari yang cocok, dan kamu tahu yang mana saat kata itu muncul di daftarmu. Kata yang sudah ada tidak dihitung.',
+    'Kadang muncul kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf apa pun yang membentuk kata yang sah. Kata yang sudah selesai tidak dihitung.',
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
-    'Kadang, di antara ronde, satu ubin berganti huruf. Anda melihat huruf mana yang pergi dan mana yang datang, tetapi bukan di mana letaknya. Huruf yang Anda ingat mungkin sudah tidak ada.',
+    'Kadang, di antara putaran, satu huruf diganti dengan huruf lain. Anda akan melihat huruf mana yang dihapus dan mana yang ditambahkan.',
   htLevelsTitle: 'Tingkat kesulitan',
   htLevelEasy:
-    'Dua belas huruf yang sama sepanjang permainan, jadi Anda bisa menghafalnya dan menyimpan daftar kata di kepala. Ubin terbuka perlahan dan papan penuh tetap terlihat cukup lama untuk menyusun satu kata.',
+    'Dua belas huruf yang sama sepanjang permainan, jadi Anda bisa menghafalnya dan menyimpan daftar kata di kepala. Kartu terbuka perlahan dan papan penuh tetap terlihat cukup lama untuk selesai memilih huruf Anda.',
   htLevelMedium:
-    'Sesekali satu huruf berubah, sehingga daftar yang Anda simpan tidak lagi tepat. Lebih sedikit waktu untuk melihat dan berpikir.',
+    'Sesekali satu huruf berubah, sehingga lebih sulit mengingat kata yang ingin Anda mainkan nanti. Lebih sedikit waktu untuk melihat dan berpikir.',
   htLevelHard:
     'Kata tiga huruf tidak lagi dihitung, dan satu huruf berubah kira-kira setiap dua ronde. Papan baru saja terlihat sebelum diacak lagi.',
   htLevelInsane:
-    'Semuanya sekaligus, dengan kecepatan penuh. Papan lenyap hampir begitu lengkap, dan tidak ada waktu untuk mengingat daftar apa pun.',
+    'Semuanya sekaligus, dengan kecepatan penuh. Papan diacak hampir segera setelah balikan terakhir.',
   htTouchTitle: 'Layar sentuh',
   htTouchBody:
     'Sentuh kartu yang terbuka untuk mengambil hurufnya. Sentuh huruf mana pun yang sudah diambil untuk mengembalikannya. Kirim dan Hapus ada di bawah papan.',
