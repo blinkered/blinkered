@@ -1840,6 +1840,35 @@ kbd {
   --tile-max: 3.1rem;
   --board-height: 11rem;
 }
+/*
+ * What a completed word paid, in the same animation the HUD plays during a game.
+ *
+ * A fixed line whether or not there is anything to say, and a non-breaking space when there is
+ * not, for the reason the message line in the game is fixed too: this sits directly above the
+ * board, and a row that appears and disappears makes the board jump every time the tour
+ * completes a word. That is the same fault the game's own message line was built to avoid.
+ */
+.tut-gain {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  height: 1.25rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+/* The picker, on its own row under the heading. Left where the eye lands after the title. */
+.tut-language {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.tut-language .field {
+  width: min(16rem, 100%);
+}
+
 /* The word being built, in the game's own shape but smaller: the tour's board is smaller too. */
 .tut-word {
   margin: 0;

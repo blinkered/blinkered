@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { WILD_GLYPH, configFor } from '@blinkered/engine'
+import { configFor } from '@blinkered/engine'
 import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { Board } from './Board.js'
 import { Icon } from './Icon.js'
+import { LanguagePicker } from './LanguagePicker.js'
 import { LetterSwap } from './LetterSwap.js'
+import { boardFor, stepsFor, wordOf } from './tutorialScript.js'
+import type { Frame, Step } from './tutorialScript.js'
+import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
 
 /**
@@ -23,27 +27,6 @@ import { withoutStealingFocus } from './focus.js'
  * would be more machinery than the frames it produces, and it would put tutorial-shaped holes in
  * `reduce`. Frames are a list; a list is easy to be sure about.
  */
-
-/** Six tiles, three by two. Enough to make a word from and small enough to read in a modal. */
-const LETTERS = [...'SAGTRE']
-
-/**
- * One beat: which tiles are showing, what is selected, and what to say about it.
- *
- * `up` is one character per tile -- `.` face down, `*` a wild, anything else the letter showing.
- * `sel` is tile indices in tap order, so `'013'` is the first, second and fourth tiles taken in
- * that order. Terse on purpose: a beat has to be readable as one line or the choreography below
- * cannot be checked by eye, which is the only way this gets checked at all.
- */
-interface Frame {
-  readonly up: string
-  readonly sel?: string
-  readonly caption: string
-  /** The word line, when it should say something other than the plain selected letters. */
-  readonly word?: string
-  /** Index into `word` of the letter a wild turned out to be, marked the way the rail marks it. */
-  readonly wildAt?: number
-}
 
 /**
  * How long a frame stays up, from what it has to say rather than from a number per step.
@@ -64,14 +47,27 @@ const READ_PER_CHAR_MS = 30
 /** Long enough for the longest caption, short enough that a loop still feels like a loop. */
 const READ_MAX_MS = 6000
 
+/**
+ * A tile turning over is quicker than a sentence, because it is not being read.
+ *
+ * Every screen opens by dealing its board a tile at a time, so at the full beat the tour would
+ * spend five and a half seconds on the preamble before the screen said anything. This is the
+ * pace the game itself deals at on `easy`, which is the point: the reveal is the mechanic.
+ */
+const DEAL_MS = 520
+
 function holdFor(frame: Frame, previous: Frame): number {
-  if (frame.caption === previous.caption) return BEAT_MS
-  return Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
+  if (frame.caption !== previous.caption) {
+    return Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
+  }
+  // A frame that only turns a tile over, with nothing taken and nothing said.
+  if (frame.sel.length === 0 && frame.up !== previous.up) return DEAL_MS
+  return BEAT_MS
 }
 
-function stateOf(frame: Frame): GameState {
-  const config = configFor('easy', { n: LETTERS.length })
-  const tiles: Tile[] = LETTERS.map((letter, id) => {
+function stateOf(frame: Frame, tiles: readonly string[]): GameState {
+  const config = configFor('easy', { n: tiles.length })
+  const board: Tile[] = tiles.map((letter, id) => {
     const face = frame.up[id] ?? '.'
     return {
       id,
@@ -85,8 +81,8 @@ function stateOf(frame: Frame): GameState {
   return {
     config,
     rng: { seed: 1 },
-    tiles,
-    selection: [...(frame.sel ?? '')].map(Number),
+    tiles: board,
+    selection: [...frame.sel],
     wildIntent: {},
     roundIndex: 0,
     ticksRemaining: config.n,
@@ -97,97 +93,6 @@ function stateOf(frame: Frame): GameState {
     tick: 0,
     status: 'playing',
   }
-}
-
-/** What the word line shows for a frame: the glyph for a wild, the letter otherwise. */
-function wordOf(frame: Frame): string {
-  if (frame.word !== undefined) return frame.word
-  return [...(frame.sel ?? '')]
-    .map((at) => (frame.up[Number(at)] === '*' ? WILD_GLYPH : (LETTERS[Number(at)] ?? '')))
-    .join('')
-}
-
-interface Step {
-  readonly title: string
-  readonly frames: readonly Frame[]
-  /** Drawn alongside or instead of the board, on the two screens that need something else. */
-  readonly panel?: 'controls' | 'swap'
-}
-
-function stepsFor(messages: Messages): readonly Step[] {
-  return [
-    {
-      title: messages.htBoardTitle,
-      // One tile at a time, in reading order, which is the one rule the whole game rests on.
-      frames: [
-        { up: '......', caption: messages.htBoardBody },
-        { up: 'S.....', caption: messages.htBoardBody },
-        { up: 'SA....', caption: messages.htBoardBody },
-        { up: 'SAG...', caption: messages.htBoardBody },
-      ],
-    },
-    {
-      title: messages.htWordsTitle,
-      /*
-       * The choreography the tour exists for: take three letters, watch a fourth turn up, give
-       * one back, take the better one, complete. Giving a letter back is the beat that earns the
-       * screen -- it is the one thing about the interface nobody guesses, and the tap prompt above
-       * the board can only assert it.
-       */
-      frames: [
-        { up: 'SAG...', caption: messages.tutPickLetters },
-        { up: 'SAG...', sel: '0', caption: messages.tutPickLetters },
-        { up: 'SAG...', sel: '01', caption: messages.tutPickLetters },
-        { up: 'SAG...', sel: '012', caption: messages.tutPickLetters },
-        { up: 'SAGT..', sel: '012', caption: messages.tutMoreTurn },
-        { up: 'SAGT..', sel: '01', caption: messages.tutTapBack },
-        { up: 'SAGT..', sel: '013', caption: messages.tutComplete },
-        { up: 'SAGT..', sel: '013', caption: messages.tutComplete },
-      ],
-    },
-    {
-      title: messages.tutControlsTitle,
-      panel: 'controls',
-      frames: [
-        { up: 'SAGT..', caption: messages.tutReset },
-        { up: 'SAGT..', caption: messages.tutPause },
-        { up: 'SAGT..', caption: messages.tutRestart },
-        { up: 'SAGT..', caption: messages.tutQuit },
-      ],
-    },
-    {
-      title: messages.htWildTitle,
-      /*
-       * The card becomes E, and E is the point: it is not one of the letters showing.
-       *
-       * It resolved to A first, which teaches the wrong lesson, because there is an A face up two
-       * tiles along. A demo where the card hands you a letter you could have tapped yourself makes
-       * the mechanic look like a long way round; one where it hands you a letter the board is not
-       * offering shows what it is for.
-       *
-       * `wildAt` marks the E gold and underlined, which is exactly how the found-word rail marks
-       * a letter the board gave rather than one the player chose. Same mark, same meaning, so the
-       * first time it appears in a real game it is already familiar.
-       */
-      frames: [
-        { up: 'SA*T..', caption: messages.htWildBody },
-        { up: 'SA*T..', sel: '0', caption: messages.htWildBody },
-        { up: 'SA*T..', sel: '02', caption: messages.htWildBody },
-        { up: 'SA*T..', sel: '023', caption: messages.htWildBody },
-        { up: 'SA*T..', sel: '023', caption: messages.htWildBody, word: 'SET', wildAt: 1 },
-      ],
-    },
-    {
-      title: messages.htSwapTitle,
-      panel: 'swap',
-      frames: [{ up: 'SAGT..', caption: messages.htSwapBody }],
-    },
-    {
-      title: messages.tutDoneTitle,
-      // The whole board face up, which is the one thing the game itself only shows for a moment.
-      frames: [{ up: 'SAGTRE', caption: messages.tutDoneBody }],
-    },
-  ]
 }
 
 /** The control row, drawn but inert, with the one being described lit. */
@@ -221,6 +126,11 @@ function ControlsPanel({ at, messages }: { at: number; messages: Messages }): Re
 
 interface TutorialProps {
   readonly messages: Messages
+  /** The language the tour is read and played in. Changing it changes the board as well. */
+  readonly language: string
+  /** Only the languages this build has a word list for, for the picker. */
+  readonly catalogue: readonly CatalogueEntry[]
+  readonly onLanguage: (language: string) => void
   /** Called once, with whether the player asked not to see this again. */
   readonly onDone: (hideAgain: boolean) => void
 }
@@ -233,10 +143,20 @@ interface TutorialProps {
  * show me this" would hide the tour from a player who wanted it. So skipping asks, with the box
  * clear, and finishing assumes, with the box ticked.
  */
-export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element {
+export function Tutorial({
+  messages,
+  language,
+  catalogue,
+  onLanguage,
+  onDone,
+}: TutorialProps): React.JSX.Element {
   // Memoised because the frame timer depends on the current step: rebuilt every render, the
   // timeout below would be canceled and restarted by every render and never fire.
-  const steps = useMemo(() => stepsFor(messages), [messages])
+  const config = useMemo(
+    () => configFor('easy', { n: boardFor(language).tiles.length, language }),
+    [language],
+  )
+  const steps = useMemo(() => stepsFor(messages, language, config), [messages, language, config])
   const [step, setStep] = useState(0)
   const [frame, setFrame] = useState(0)
   const [skipping, setSkipping] = useState(false)
@@ -275,7 +195,7 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
   }
 
   const beat = (current.frames[frame] ?? current.frames[0]) as Frame
-  const word = wordOf(beat)
+  const word = wordOf(beat, current.tiles)
 
   if (skipping) {
     return (
@@ -337,6 +257,25 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
           </p>
         </header>
 
+        {/*
+         * The language, here rather than only on the setup screen behind this.
+         *
+         * The tour is the first thing a player sees, and a tour in a language they do not read
+         * teaches nothing at all -- so the control that fixes that has to be reachable from
+         * inside it. It changes the board as well as the words, because the board is a word:
+         * every language plays the tour on six tiles of its own, spelling its own three words.
+         */}
+        {catalogue.length > 0 ? (
+          <div className="tut-language">
+            <LanguagePicker
+              catalogue={catalogue}
+              value={language}
+              label={messages.gameLanguage}
+              onChange={onLanguage}
+            />
+          </div>
+        ) : null}
+
         <h3 className="tut-step-title">{current.title}</h3>
 
         <div className="tut-stage">
@@ -344,7 +283,7 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
             // The real component, replayed on the tour's own clock: a key that changes every
             // frame is what makes it start over rather than sit finished.
             <div className="tut-swap">
-              <LetterSwap swap={{ from: 'G', to: 'N', epoch: frame }} messages={messages} />
+              <LetterSwap swap={{ ...boardFor(language).swap, epoch: frame }} messages={messages} />
             </div>
           ) : (
             <>
@@ -360,9 +299,31 @@ export function Tutorial({ messages, onDone }: TutorialProps): React.JSX.Element
                       </span>
                     ))}
               </p>
+              {/*
+               * What the word just paid, in the same animation the HUD plays during a game.
+               *
+               * Both figures, because both halves of the bargain matter and the tour is where
+               * that is explained: the points are the reward and the flips are the turns that
+               * reward buys. The numbers come from the engine rather than being written down,
+               * so a change to the economy shows up here rather than making this a lie.
+               */}
+              <p className="tut-gain" aria-hidden="true">
+                {beat.gain === undefined ? (
+                  '\u00a0'
+                ) : (
+                  <>
+                    <span key={`f${String(step)}-${String(frame)}`} className="stat-gain">
+                      +{beat.gain.flips} {messages.flips}
+                    </span>
+                    <span key={`p${String(step)}-${String(frame)}`} className="stat-gain is-late">
+                      +{beat.gain.points} {messages.score}
+                    </span>
+                  </>
+                )}
+              </p>
               <div className="board-wrap">
                 <Board
-                  state={stateOf(beat)}
+                  state={stateOf(beat, current.tiles)}
                   portrait
                   concealed={false}
                   messages={messages}

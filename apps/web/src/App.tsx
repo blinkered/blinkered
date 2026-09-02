@@ -273,6 +273,13 @@ function Session({
       {!settings.tutorialSeen && !tourDone && phase === 'setup' ? (
         <Tutorial
           messages={messages}
+          language={language}
+          catalogue={catalogue}
+          onLanguage={(tag) => {
+            // Both, the same way the setup screen's picker sets both: the tour is read and
+            // played at once, so its board and its words are the same choice.
+            onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
+          }}
           onDone={(hideAgain) => {
             onChange({ ...settings, tutorialSeen: hideAgain })
             setTourDone(true)
