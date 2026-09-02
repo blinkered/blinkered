@@ -55,7 +55,11 @@ export function keyToEvent(press: KeyPress, scheme: KeyScheme): GameEvent | null
       break
   }
   if (!LETTER.test(press.key)) return null
-  const letter = press.key.toUpperCase()
+  // The key as pressed, not upper-cased here. Case is a fact about a language: the default
+  // mapping sends Turkish ı and i to the same plain I, so upper-casing at this level would take
+  // the dotless tile for a dotted key. Every consumer folds through the game's alphabet, which
+  // is the thing that knows, so there is nothing for this to add.
+  const letter = press.key
 
   if (press.modified === true) return { type: 'CLEAR_LETTER', letter }
   return scheme === 'cycle' ? { type: 'CYCLE_LETTER', letter } : { type: 'SELECT_LETTER', letter }

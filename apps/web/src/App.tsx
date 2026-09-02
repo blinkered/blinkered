@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ENGINE_VERSION } from '@blinkered/engine'
+import { ENGINE_VERSION, alphabetFor } from '@blinkered/engine'
 import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine'
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -86,7 +86,7 @@ export function App(): React.JSX.Element {
   if (error !== null) {
     return (
       <main className="shell centered">
-        <h1>Blinkered</h1>
+        <h1 lang="en">Blinkered</h1>
         <p className="error">{error}</p>
       </main>
     )
@@ -94,7 +94,7 @@ export function App(): React.JSX.Element {
   if (catalogue === null) {
     return (
       <main className="shell centered">
-        <h1>Blinkered</h1>
+        <h1 lang="en">Blinkered</h1>
         <p className="dim">{messages.readingDictionary}</p>
       </main>
     )
@@ -449,7 +449,7 @@ function Playing({
   // being asked rather than a flag per button.
   const [confirming, setConfirming] = useState<'quit' | 'restart' | null>(null)
   const game = useGame(dictionary, spec, settings.keyScheme)
-  const feedback = useFeedback(game.effects, game.cause, game.epoch, messages)
+  const feedback = useFeedback(game.effects, game.cause, game.epoch, messages, spec.config.language)
   const gain = useWordGain(game.effects, game.epoch)
   const swap = useSwap(game.effects, game.epoch)
 
@@ -779,9 +779,14 @@ function useFeedback(
   cause: GameEvent | null,
   epoch: number,
   messages: Messages,
+  language: string,
 ): Feedback | null {
   return useMemo(() => {
-    const letter = cause !== null && 'letter' in cause ? cause.letter.toUpperCase() : null
+    // Folded through the alphabet rather than upper-cased, so the letter named is the one on the
+    // tile the player was refused. `toUpperCase` would call a Turkish i an I, which is a
+    // different letter and a different tile.
+    const alphabet = alphabetFor(language)
+    const letter = cause !== null && 'letter' in cause ? alphabet.fold(cause.letter) : null
     for (const effect of [...effects].reverse()) {
       switch (effect.type) {
         case 'WORD_ACCEPTED':
@@ -856,7 +861,7 @@ function useFeedback(
       }
     }
     return null
-  }, [effects, cause, epoch, messages])
+  }, [effects, cause, epoch, messages, language])
 }
 
 function usePortrait(): boolean {

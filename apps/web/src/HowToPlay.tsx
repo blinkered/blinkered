@@ -63,7 +63,10 @@ export function HowToPlay({
     <main className="rules">
       <div className="rules-head">
         <div>
-          <h1>Blinkered</h1>
+          {/* Tagged English because the wordmark is a name, not a word in the page's language.
+              `text-transform: uppercase` follows the element's language, so under `lang="tr"`
+              the browser upper-cases the i to İ and the game is called BLİNKERED. */}
+          <h1 lang="en">Blinkered</h1>
           <p className="rules-lead">{messages.howToPlay}</p>
         </div>
         {/* Every locale, whether or not a word list exists for it: reading the rules needs no

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { clearLetter, letter, open, play, resetWord, tap, tick, undo } from './helpers.js'
-import { letterAvailability, selectedLetters } from '../src/index.js'
-import type { GameState } from '../src/index.js'
+import { keyToEvent, letterAvailability, selectedLetters } from '../src/index.js'
+import type { GameEvent, GameState } from '../src/index.js'
 
 /** BANANA gives three A's and two N's, which is where the keyboard rules earn their keep. */
 const banana = (): GameState =>
@@ -256,5 +256,41 @@ describe('tapping a tile that is already in the word', () => {
     expect(selectedLetters(off)).toBe('L')
     // At the end rather than back where it was: the second tap is a fresh choice.
     expect(selectedLetters(play(off, [tap(ids[0])]).state)).toBe('LA')
+  })
+})
+
+describe('a Turkish board holding both i tiles', () => {
+  /*
+   * The bug this exists to stop: the keymap used to upper-case a key before handing it on, and
+   * `toUpperCase` sends both Turkish i's to a plain I. A player typing IYI on a board holding
+   * one of each got the dotless tile every time, which is a different letter and a different
+   * word. Case is a fact about a language, so only the alphabet decides it.
+   */
+  const board = (): GameState =>
+    play(
+      open('IİLK', { language: 'tr' }).state,
+      Array.from({ length: 3 }, () => tick),
+    ).state
+
+  it('takes the dotted tile for a dotted key', () => {
+    const { state } = play(board(), [keyToEvent({ key: 'i' }, 'advance') as GameEvent])
+    expect(selectedLetters(state)).toBe('İ')
+  })
+
+  it('takes the dotless tile for a dotless key', () => {
+    const { state } = play(board(), [keyToEvent({ key: 'ı' }, 'advance') as GameEvent])
+    expect(selectedLetters(state)).toBe('I')
+  })
+
+  it('answers a key for a letter no tile is showing by naming that letter', () => {
+    const { effects } = play(open('ILK', { language: 'tr' }).state, [
+      tick,
+      tick,
+      tick,
+      keyToEvent({ key: 'i' }, 'advance') as GameEvent,
+    ])
+    // The reducer reports the event's raw key; what the player is told is the folded letter,
+    // which is İ rather than the I they do have.
+    expect(effects.at(-1)).toEqual({ type: 'INPUT_IGNORED', reason: 'no-such-letter' })
   })
 })
