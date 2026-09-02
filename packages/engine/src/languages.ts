@@ -25,6 +25,7 @@ const QU = { Q: ['U'] } as const
 export const ENGLISH: Alphabet = {
   id: 'en',
   endonym: 'English',
+  direction: 'ltr',
   // Derived from the word list by tools/derive rather than copied from Scrabble: Scrabble's
   // distribution follows letters in running text, and a board has to spell dictionary words,
   // where C, L, S and P are far commoner and D, W and F rather less so.
@@ -66,6 +67,7 @@ export const ENGLISH: Alphabet = {
 export const FRENCH: Alphabet = {
   id: 'fr',
   endonym: 'Français',
+  direction: 'ltr',
   weights: {
     A: 8,
     B: 1,
@@ -106,6 +108,7 @@ export const FRENCH: Alphabet = {
 export const SPANISH: Alphabet = {
   id: 'es',
   endonym: 'Español',
+  direction: 'ltr',
   weights: {
     A: 13,
     B: 2,
@@ -147,6 +150,7 @@ export const SPANISH: Alphabet = {
 export const ITALIAN: Alphabet = {
   id: 'it',
   endonym: 'Italiano',
+  direction: 'ltr',
   // Twenty-one letters. J, K, W, X and Y appear only in loanwords and are not dealt.
   weights: {
     A: 12,
@@ -181,6 +185,7 @@ export const ITALIAN: Alphabet = {
 export const GERMAN: Alphabet = {
   id: 'de',
   endonym: 'Deutsch',
+  direction: 'ltr',
   weights: {
     A: 6,
     Ä: 1,
@@ -224,6 +229,7 @@ export const GERMAN: Alphabet = {
 export const DUTCH: Alphabet = {
   id: 'nl',
   endonym: 'Nederlands',
+  direction: 'ltr',
   weights: {
     A: 7,
     B: 2,
@@ -263,6 +269,7 @@ export const DUTCH: Alphabet = {
 export const PORTUGUESE: Alphabet = {
   id: 'pt',
   endonym: 'Português',
+  direction: 'ltr',
   weights: {
     A: 14,
     B: 1,
@@ -308,6 +315,7 @@ export const PORTUGUESE_BR: Alphabet = {
   ...PORTUGUESE,
   id: 'pt-BR',
   endonym: 'Português (Brasil)',
+  direction: 'ltr',
 }
 
 /** Croatian letters, longest first so LJ beats L and DŽ beats D at the same position. */
@@ -347,6 +355,7 @@ const CROATIAN_LETTERS = [
 export const CROATIAN: Alphabet = {
   id: 'hr',
   endonym: 'Hrvatski',
+  direction: 'ltr',
   // Thirty letters, three of them digraphs, and no Q, W, X or Y at all. This is the
   // alphabet that proves a tile holds a string rather than a character.
   weights: {
@@ -461,6 +470,7 @@ const INDONESIAN_WEIGHTS = {
 export const MALAY: Alphabet = {
   id: 'ms',
   endonym: 'Bahasa Melayu',
+  direction: 'ltr',
   weights: MALAY_WEIGHTS,
   vowels: ['A', 'E', 'I', 'O', 'U'],
   rareLetters: ['Q', 'V', 'X', 'Z'],
@@ -473,12 +483,14 @@ export const INDONESIAN: Alphabet = {
   ...MALAY,
   id: 'id',
   endonym: 'Bahasa Indonesia',
+  direction: 'ltr',
   weights: INDONESIAN_WEIGHTS,
 }
 
 export const RUSSIAN: Alphabet = {
   id: 'ru',
   endonym: 'Русский',
+  direction: 'ltr',
   // Thirty-two tiles: Ё is folded onto Е, as Russian word games do.
   weights: {
     А: 9,
@@ -524,6 +536,7 @@ export const RUSSIAN: Alphabet = {
 export const SWEDISH: Alphabet = {
   id: 'sv',
   endonym: 'Svenska',
+  direction: 'ltr',
   weights: {
     A: 10,
     Å: 1,
@@ -565,6 +578,7 @@ export const SWEDISH: Alphabet = {
 export const NORWEGIAN: Alphabet = {
   id: 'no',
   endonym: 'Norsk',
+  direction: 'ltr',
   weights: {
     A: 7,
     Å: 1,
@@ -606,6 +620,7 @@ export const NORWEGIAN: Alphabet = {
 export const FINNISH: Alphabet = {
   id: 'fi',
   endonym: 'Suomi',
+  direction: 'ltr',
   // B, C, F, Q, W, X, Z and Å are all effectively foreign to Finnish, hence weight one and
   // no doubling. Ä and Ö are ordinary letters and common.
   weights: {
@@ -650,6 +665,7 @@ export const FINNISH: Alphabet = {
 export const GREEK: Alphabet = {
   id: 'el',
   endonym: 'Ελληνικά',
+  direction: 'ltr',
   // Twenty-four letters. The tonos is decoration and folds away, exactly as Greek word
   // games treat it, and final sigma upper-cases onto Σ without needing a rule.
   weights: {
@@ -688,6 +704,7 @@ export const GREEK: Alphabet = {
 export const AFRIKAANS: Alphabet = {
   id: 'af',
   endonym: 'Afrikaans',
+  direction: 'ltr',
   // Twenty-six letters and nothing exotic. Afrikaans writes several diacritics — ê ë ô û î ï
   // and the acute on é — and every one of them is decoration: SÊ and SE are the same letters
   // wearing a different hat, so they fold together the way French accents do.
@@ -731,6 +748,7 @@ export const AFRIKAANS: Alphabet = {
 export const TURKISH: Alphabet = {
   id: 'tr',
   endonym: 'Türkçe',
+  direction: 'ltr',
   // Twenty-nine letters: no Q, W or X, and I and İ are two of them rather than one letter
   // twice. Ç Ğ Ö Ş Ü are letters in their own right and keep their marks; the circumflex in
   // KÂĞIT is decoration and does not.
@@ -779,6 +797,7 @@ export const TURKISH: Alphabet = {
 export const TAGALOG: Alphabet = {
   id: 'tl',
   endonym: 'Tagalog',
+  direction: 'ltr',
   // Twenty-six letters, and two deliberate omissions from the twenty-eight the modern
   // Filipino alphabet lists.
   //
@@ -829,6 +848,7 @@ export const TAGALOG: Alphabet = {
 export const SWAHILI: Alphabet = {
   id: 'sw',
   endonym: 'Kiswahili',
+  direction: 'ltr',
   // Twenty-four letters: no Q and no X, which Swahili has never had. The digraphs CH, DH, GH,
   // KH, NY, SH and TH are two tiles each, for the reason Tagalog NG is: a multi-character tile
   // can only be taken with the mouse, and these are far too common for that.
@@ -872,6 +892,7 @@ export const SWAHILI: Alphabet = {
 export const LATIN: Alphabet = {
   id: 'la',
   endonym: 'Latina',
+  direction: 'ltr',
   // Twenty-four letters. No W, which Latin never had, and no J, because the dictionary spells
   // consonantal i as I: IUSTITIA, not JUSTITIA. U and V *are* kept apart, which is the other
   // half of the same convention and the one every modern Latin text follows.
@@ -911,6 +932,143 @@ export const LATIN: Alphabet = {
   segment: byCodePoint,
 }
 
+/** The five letters Hebrew writes differently at the end of a word, and their ordinary forms. */
+const HEBREW_FINALS: Readonly<Record<string, string>> = {
+  ך: 'כ',
+  ם: 'מ',
+  ן: 'נ',
+  ף: 'פ',
+  ץ: 'צ',
+}
+
+const HEBREW_ORDINARY: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries(HEBREW_FINALS).map(([final, ordinary]) => [ordinary, final]),
+)
+
+export const HEBREW: Alphabet = {
+  id: 'he',
+  endonym: 'עברית',
+  direction: 'rtl',
+  // Twenty-two letters and no case at all, which is why its word list ignores case rather than
+  // using it as evidence: the proper-noun filter every Latin language relies on has nothing to
+  // look at here.
+  weights: {
+    א: 4,
+    ב: 4,
+    ג: 2,
+    ד: 3,
+    ה: 7,
+    ו: 11,
+    ז: 1,
+    ח: 3,
+    ט: 3,
+    י: 12,
+    כ: 2,
+    ל: 5,
+    מ: 7,
+    נ: 6,
+    ס: 3,
+    ע: 2,
+    פ: 4,
+    צ: 2,
+    ק: 4,
+    ר: 7,
+    ש: 3,
+    ת: 5,
+  },
+  // The mothers of reading, which are the nearest thing Hebrew writes to vowels. Niqqud are
+  // marks rather than letters and are stripped, as unpointed Hebrew has been written for
+  // centuries and as every Hebrew word game does.
+  vowels: ['א', 'ה', 'ו', 'י'],
+  rareLetters: ['ז'],
+  requires: {},
+  // Final forms fold onto their ordinary ones, the way Hebrew Scrabble does it: a tile cannot
+  // be two shapes, so it carries the one that appears everywhere but the end of a word.
+  fold: folder({ expand: HEBREW_FINALS }),
+  segment: byCodePoint,
+  // And this puts the shape back, for a word that is finished. שלומ is not a spelling.
+  display: (word) => {
+    const last = word.slice(-1)
+    const final = HEBREW_ORDINARY[last]
+    return final === undefined ? word : word.slice(0, -1) + final
+  },
+}
+
+/**
+ * Arabic's normalisation, which is where all the decisions are.
+ *
+ * The hamza carriers fold onto the letter carrying them, and the alef forms onto plain alef.
+ * That is what an Arabic search index does and what people type, and it is forced here anyway:
+ * أ decomposes to alef plus a combining hamza that Unicode does not class as a diacritic, so
+ * without a rule the mark would survive the fold and want a tile of its own.
+ *
+ * The three combining marks are listed too, so a word that arrives already decomposed lands in
+ * the same place as one that does not. Tatweel is a stretch, not a letter.
+ *
+ * Standalone hamza keeps its tile, and that is the one asymmetry: ء is folded away nowhere,
+ * because شيء without it is شي, which is a different word.
+ */
+const ARABIC_FOLD: Readonly<Record<string, string>> = {
+  أ: 'ا',
+  إ: 'ا',
+  آ: 'ا',
+  ٱ: 'ا',
+  ؤ: 'و',
+  ئ: 'ي',
+  '\u0640': '',
+  '\u0653': '',
+  '\u0654': '',
+  '\u0655': '',
+}
+
+export const ARABIC: Alphabet = {
+  id: 'ar',
+  endonym: 'العربية',
+  direction: 'rtl',
+  // Twenty-eight letters, plus taa marbuta and alef maksura, which are letters in their own
+  // right and end a great many words, plus standalone hamza. No case, like Hebrew.
+  weights: {
+    ء: 1,
+    ا: 17,
+    ب: 4,
+    ة: 3,
+    ت: 6,
+    ث: 1,
+    ج: 2,
+    ح: 2,
+    خ: 1,
+    د: 3,
+    ذ: 1,
+    ر: 5,
+    ز: 1,
+    س: 3,
+    ش: 1,
+    ص: 1,
+    ض: 1,
+    ط: 1,
+    ظ: 1,
+    ع: 3,
+    غ: 1,
+    ف: 2,
+    ق: 3,
+    ك: 3,
+    ل: 10,
+    م: 6,
+    ن: 5,
+    ه: 2,
+    و: 4,
+    ى: 1,
+    ي: 8,
+  },
+  // The long vowels. Arabic writes the short ones as marks, and the marks are stripped, so
+  // these three are what a board has to be able to make a syllable out of.
+  vowels: ['ا', 'و', 'ي', 'ى'],
+  rareLetters: ['ء', 'ث', 'خ', 'ذ', 'ز', 'ش', 'ص', 'ض', 'ط', 'ظ', 'غ'],
+  requires: {},
+  fold: folder({ expand: ARABIC_FOLD }),
+  segment: byCodePoint,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -934,6 +1092,8 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     TAGALOG,
     SWAHILI,
     LATIN,
+    HEBREW,
+    ARABIC,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 

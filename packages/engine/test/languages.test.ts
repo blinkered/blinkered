@@ -29,18 +29,24 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   sw: ["ng'ombe", 'NGOMBE', 6],
   // A macron is a teaching aid, not a spelling.
   la: ['amāre', 'AMARE', 5],
+  // Niqqud are marks, and the final mem is the same tile as the ordinary one.
+  he: ['שָׁלוֹם', 'שלומ', 4],
+  // Alef with maddah is alef, and the harakat are not tiles.
+  ar: ['الآن', 'الان', 4],
 }
 
 describe('the language registry', () => {
   it('covers every language asked for', () => {
     expect([...ALPHABET_IDS].sort()).toEqual([
       'af',
+      'ar',
       'de',
       'el',
       'en',
       'es',
       'fi',
       'fr',
+      'he',
       'hr',
       'id',
       'it',
@@ -124,5 +130,64 @@ describe('Turkish', () => {
 
   it('treats the circumflex as decoration', () => {
     expect(turkish.fold('kâğıt')).toBe('KAĞIT')
+  })
+})
+
+describe('Hebrew', () => {
+  const hebrew = alphabetFor('he')
+
+  it('runs right to left', () => {
+    expect(hebrew.direction).toBe('rtl')
+  })
+
+  it('tiles a final letter as its ordinary form', () => {
+    // A tile cannot be two shapes, so the five finals fold, exactly as Hebrew Scrabble does it.
+    expect(hebrew.fold('שלום')).toBe('שלומ')
+    expect(hebrew.fold('מים')).toBe('מימ')
+    // And so a board holding one mem can spell a word that ends in one.
+    expect(hebrew.segment(hebrew.fold('מים'))).toEqual(['מ', 'י', 'מ'])
+  })
+
+  it('writes the final form back when the word is finished', () => {
+    // Called through the alphabet rather than lifted off it, which is the habit the lint asks
+    // for and the right one: `display` is a method and only ever called as one.
+    expect(hebrew.display?.('שלומ')).toBe('שלום')
+    expect(hebrew.display?.('מימ')).toBe('מים')
+    // Only at the end. The mem in the middle of מימ stays ordinary.
+    expect(hebrew.display?.('ילד')).toBe('ילד')
+  })
+})
+
+describe('Arabic', () => {
+  const arabic = alphabetFor('ar')
+
+  it('runs right to left', () => {
+    expect(arabic.direction).toBe('rtl')
+  })
+
+  it('folds every alef and every hamza carrier onto its letter', () => {
+    expect(arabic.fold('أحمد')).toBe('احمد')
+    expect(arabic.fold('إلى')).toBe('الى')
+    expect(arabic.fold('الآن')).toBe('الان')
+    expect(arabic.fold('مسؤول')).toBe('مسوول')
+    expect(arabic.fold('قائمة')).toBe('قايمة')
+  })
+
+  it('folds a decomposed hamza the same way as a composed one', () => {
+    // The combining hamza is not a Unicode diacritic, so it survives `stripDiacritics` and
+    // would have wanted a tile of its own. Listing it is what stops that.
+    expect(arabic.fold('أ'.normalize('NFD'))).toBe('ا')
+    expect(arabic.fold('أ')).toBe(arabic.fold('أ'.normalize('NFD')))
+  })
+
+  it('keeps a standalone hamza, which is a letter rather than a mark', () => {
+    // شي is a word, so folding the hamza away would merge two of them.
+    expect(arabic.fold('شيء')).toBe('شيء')
+    expect(arabic.segment('شيء')).toHaveLength(3)
+  })
+
+  it('drops the harakat and the tatweel', () => {
+    expect(arabic.fold('كِتَاب')).toBe('كتاب')
+    expect(arabic.fold('كــتــاب')).toBe('كتاب')
   })
 })

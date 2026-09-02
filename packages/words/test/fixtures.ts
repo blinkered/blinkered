@@ -5,6 +5,7 @@ import type { Alphabet } from '@blinkered/engine'
 export const DIGRAPHS: Alphabet = {
   id: 'test-digraph',
   endonym: 'Digraphish',
+  direction: 'ltr',
   weights: { A: 4, I: 3, J: 2, IJ: 2, N: 3, S: 2 },
   vowels: ['A', 'I', 'IJ'],
   rareLetters: ['S'],
@@ -56,6 +57,7 @@ export { ENGLISH }
 export const MINI: Alphabet = {
   id: 'test-mini',
   endonym: 'Miniature',
+  direction: 'ltr',
   weights: { A: 8, E: 9, O: 5, N: 6, R: 6, S: 6, T: 7 },
   vowels: ['A', 'E', 'O'],
   rareLetters: ['R'],

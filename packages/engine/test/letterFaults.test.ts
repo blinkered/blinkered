@@ -48,6 +48,7 @@ describe('letterFaults', () => {
     const invented: Alphabet = {
       id: 'test',
       endonym: 'Test',
+      direction: 'ltr',
       weights: { A: 1, X: 1, Y: 1, Z: 1 },
       vowels: ['A'],
       rareLetters: [],

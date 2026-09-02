@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { WILD_GLYPH } from '@blinkered/engine'
+import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -95,6 +95,10 @@ export function Board({
   return (
     <div
       className="board"
+      // Reading order is the whole game, so the grid runs the way the language does. CSS grid
+      // does the rest: `direction` decides which corner auto-placement starts from, so tile
+      // one is top-left in English and top-right in Hebrew with nothing else to say.
+      dir={alphabetFor(state.config.language).direction}
       style={{
         ['--cols' as string]: String(columns),
         ['--rows' as string]: String(rowsFor(state.config.n, columns)),

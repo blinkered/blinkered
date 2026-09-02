@@ -1,6 +1,6 @@
 import { WILD_GLYPH, alphabetFor, flipReward, wordScore } from '@blinkered/engine'
 import { TUTORIAL_BOARDS, tilesWithCard } from '@blinkered/words'
-import type { GameConfig } from '@blinkered/engine'
+import type { Alphabet, GameConfig } from '@blinkered/engine'
 import type { TutorialBoard } from '@blinkered/words'
 import type { Messages } from '@blinkered/i18n'
 
@@ -206,9 +206,15 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   ]
 }
 
-/** What the word line shows for a frame: the glyph for a card, the tile's letter otherwise. */
-export function wordOf(frame: Frame, tiles: readonly string[]): string {
-  if (frame.word !== undefined) return frame.word
+/**
+ * What the word line shows for a frame: the glyph for a card, the tile's letter otherwise.
+ *
+ * A completed word is spelled the way the language writes it, which for Hebrew means putting
+ * the final form back: the tour would otherwise open on אומרימ, which is not a word. A word
+ * still being built is left alone, because the last letter is not final yet.
+ */
+export function wordOf(frame: Frame, tiles: readonly string[], alphabet: Alphabet): string {
+  if (frame.word !== undefined) return alphabet.display?.(frame.word) ?? frame.word
   return frame.sel.map((at) => (frame.up[at] === CARD ? WILD_GLYPH : (tiles[at] ?? ''))).join('')
 }
 

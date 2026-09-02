@@ -1,4 +1,4 @@
-import { WILD_GLYPH, selectedLetters } from '@blinkered/engine'
+import { WILD_GLYPH, alphabetFor, selectedLetters } from '@blinkered/engine'
 import type { GameState } from '@blinkered/engine'
 import type { Messages } from '@blinkered/i18n'
 import { format, plural } from '@blinkered/i18n'
@@ -101,7 +101,13 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
        * width and the overflow is hidden; nothing in here is allowed to grow it.
        */}
       <div className={`word-line${wildUp ? ' has-key' : ''}`}>
-        <output className="word" aria-live="polite">
+        {/* The word runs the game language's way; the rest of the line runs the page's. They
+            are different questions and in nerd mode they have different answers. */}
+        <output
+          className="word"
+          dir={alphabetFor(state.config.language).direction}
+          aria-live="polite"
+        >
           {word !== '' ? (
             word
           ) : feedback === null ? (

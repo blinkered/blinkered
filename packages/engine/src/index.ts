@@ -16,6 +16,7 @@ export {
 export {
   AFRIKAANS,
   ALPHABET_IDS,
+  ARABIC,
   CROATIAN,
   DEFAULT_LANGUAGE,
   DUTCH,
@@ -24,6 +25,7 @@ export {
   FRENCH,
   GERMAN,
   GREEK,
+  HEBREW,
   INDONESIAN,
   ITALIAN,
   LATIN,

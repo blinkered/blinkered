@@ -180,6 +180,11 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   tr: 0.47,
   sw: 0.52,
   la: 0.54,
+  // The two abjads, and the only entries above English. A script that writes the vowels as
+  // marks and strips them puts far more of the dictionary within reach of twelve tiles: a
+  // Hebrew board admits twice what an English one does, and three-consonant roots are why.
+  he: 2.06,
+  ar: 1.6,
   tl: 0.41,
 }
 

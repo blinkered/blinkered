@@ -265,6 +265,19 @@ h2 {
   letter-spacing: 0.22em;
   font-weight: 600;
 }
+/*
+ * No tracking in a right-to-left word, and Arabic is the reason.
+ *
+ * Arabic letters join, and `letter-spacing` pulls the joins apart: the word stops looking like
+ * a word and starts looking like a row of tiles, which is the one thing this line exists to
+ * stop being. Hebrew does not join and would survive the tracking, but it does not need it
+ * either, so the rule is by direction rather than by language.
+ */
+.word[dir='rtl'],
+.found-word[dir='rtl'],
+.tut-word[dir='rtl'] {
+  letter-spacing: normal;
+}
 .word-empty {
   font-size: 0.9rem;
   letter-spacing: normal;
@@ -425,7 +438,7 @@ h2 {
 .tile-order {
   position: absolute;
   top: 0.25rem;
-  right: 0.35rem;
+  inset-inline-end: 0.35rem;
   font-size: 0.62rem;
   font-weight: 600;
   opacity: 0.85;
@@ -570,7 +583,7 @@ h2 {
   font-weight: 600;
 }
 kbd {
-  margin-left: 0.4rem;
+  margin-inline-start: 0.4rem;
   padding: 0.05rem 0.3rem;
   border: 1px solid currentColor;
   border-radius: 4px;
@@ -707,13 +720,13 @@ kbd {
   font-variant-numeric: tabular-nums;
 }
 .nerd-table th {
-  text-align: right;
+  text-align: end;
   font-weight: 500;
   color: var(--dim);
   font-size: 0.75rem;
 }
 .nerd-table td {
-  text-align: right;
+  text-align: end;
   padding: 0.1rem 0;
 }
 .nerd-table .is-good {
@@ -1119,7 +1132,7 @@ kbd {
   opacity: 0.55;
 }
 .drop-caret {
-  margin-left: auto;
+  margin-inline-start: auto;
   color: var(--dim);
 }
 .drop-badge {
@@ -1134,7 +1147,7 @@ kbd {
   position: absolute;
   z-index: 20;
   top: calc(100% + 0.25rem);
-  left: 0;
+  inset-inline-start: 0;
   /* Tall enough for the list, short enough to stay on the page, and it scrolls if neither. */
   max-height: min(60dvh, 22rem);
   min-width: 100%;
@@ -1244,11 +1257,16 @@ kbd {
   .nerd-row select {
     appearance: none;
     -webkit-appearance: none;
-    padding-right: 1.6rem;
+    padding-inline-end: 1.6rem;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238b949e' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.55rem center;
     background-size: 0.6rem;
+  }
+  /* The one arrow that cannot be expressed logically: `background-position` has no
+     inline-start. Two lines here beat re-drawing the caret as an element. */
+  [dir='rtl'] .nerd-row select {
+    background-position: left 0.55rem center;
   }
 
   /* The keys the buttons advertise, which do not exist here. */
@@ -1693,7 +1711,7 @@ kbd {
 .stat-gain {
   position: absolute;
   bottom: 100%;
-  left: 0;
+  inset-inline-start: 0;
   pointer-events: none;
   color: var(--good);
   font-size: 1rem;

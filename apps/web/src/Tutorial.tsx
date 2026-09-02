@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { configFor } from '@blinkered/engine'
+import { alphabetFor, configFor } from '@blinkered/engine'
 import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
@@ -76,8 +76,10 @@ function holdFor(frame: Frame, previous: Frame): number {
   return BEAT_MS
 }
 
-function stateOf(frame: Frame, tiles: readonly string[]): GameState {
-  const config = configFor('easy', { n: tiles.length })
+function stateOf(frame: Frame, tiles: readonly string[], language: string): GameState {
+  // The language matters here now: the board reads it to decide which way the grid runs, and a
+  // Hebrew tour dealt left to right would be teaching the wrong thing on the first screen.
+  const config = configFor('easy', { n: tiles.length, language })
   const board: Tile[] = tiles.map((letter, id) => {
     const face = frame.up[id] ?? '.'
     return {
@@ -206,7 +208,7 @@ export function Tutorial({
   }
 
   const beat = (current.frames[frame] ?? current.frames[0]) as Frame
-  const word = wordOf(beat, current.tiles)
+  const word = wordOf(beat, current.tiles, alphabetFor(language))
 
   if (skipping) {
     return (
@@ -298,7 +300,7 @@ export function Tutorial({
             </div>
           ) : (
             <>
-              <p className="tut-word">
+              <p className="tut-word" dir={alphabetFor(language).direction}>
                 {word === ''
                   ? '\u00a0'
                   : [...word].map((letter, at) => (
@@ -334,7 +336,7 @@ export function Tutorial({
               </p>
               <div className="board-wrap">
                 <Board
-                  state={stateOf(beat, current.tiles)}
+                  state={stateOf(beat, current.tiles, language)}
                   portrait
                   concealed={false}
                   messages={messages}

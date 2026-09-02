@@ -65,9 +65,12 @@ export function App(): React.JSX.Element {
   }, [settings])
 
   // The interface language belongs on the document too, or a screen reader announces Greek in
-  // an English voice and the browser hyphenates Finnish by English rules.
+  // an English voice and the browser hyphenates Finnish by English rules. With it goes the
+  // direction, which flips the whole layout: every physical offset in the stylesheet is written
+  // as a logical one, so the page mirrors from this line alone.
   useEffect(() => {
     document.documentElement.lang = settings.uiLanguage
+    document.documentElement.dir = alphabetFor(settings.uiLanguage).direction
   }, [settings.uiLanguage])
 
   useEffect(() => {
@@ -376,7 +379,11 @@ function Session({
                   current={finished.result}
                   messages={messages}
                 />
-                <FoundWords words={finished.words} messages={messages} />
+                <FoundWords
+                  words={finished.words}
+                  messages={messages}
+                  language={finished.result.language}
+                />
                 <Share
                   result={finished.result}
                   personalBest={isPersonalBest(finished.standing)}
@@ -626,7 +633,11 @@ function Playing({
         </li>
       </ul>
 
-      <FoundWords words={game.state.wordsFound} messages={messages} />
+      <FoundWords
+        words={game.state.wordsFound}
+        messages={messages}
+        language={spec.config.language}
+      />
     </>
   )
 }
@@ -672,13 +683,20 @@ function IconButton({
 function FoundWords({
   words,
   messages,
+  language,
 }: {
   words: readonly { word: string; points: number; wilds?: readonly number[] }[]
   messages: Messages
+  /** The game's language, not the interface's: these are its words, spelled its way. */
+  language: string
 }): React.JSX.Element {
   if (words.length === 0) {
     return <p className="found dim">{messages.noWordsYet}</p>
   }
+  const alphabet = alphabetFor(language)
+  // Hebrew's five final forms live here rather than on the tiles, because a tile cannot be two
+  // shapes. Everywhere else this is the identity and costs nothing.
+  const spell = (word: string): string => alphabet.display?.(word) ?? word
   return (
     <ul className="found">
       {[...words].reverse().map((found) => (
@@ -689,14 +707,14 @@ function FoundWords({
         // for the rare word too long even at the smallest size.
         <li
           key={found.word}
-          title={`${found.word} +${String(found.points)}`}
+          title={`${spell(found.word)} +${String(found.points)}`}
           style={{ ['--len' as string]: String([...found.word].length) }}
         >
-          <span className="found-word">
+          <span className="found-word" dir={alphabet.direction}>
             {/* Letters the wild was given are marked, so the player can see what the board
                 handed them rather than what they chose. Marked per character rather than
                 highlighting the whole word, because usually only one of them was a gift. */}
-            {[...found.word].map((letter, at) => (
+            {[...spell(found.word)].map((letter, at) => (
               <span
                 key={`${String(at)}-${letter}`}
                 className={found.wilds?.includes(at) === true ? 'from-wild' : undefined}

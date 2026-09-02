@@ -11,6 +11,14 @@ export interface Alphabet {
   readonly id: string
   /** The language's own name for itself, for a menu that a speaker can read. */
   readonly endonym: string
+  /**
+   * Which way the script runs, which is what "reading order" means everywhere else.
+   *
+   * The reducer never looks at it: tiles have positions and nothing more. What it settles is
+   * how those positions are laid out, which way a word line grows, and which corner an order
+   * badge sits in. Required rather than defaulted, so a new language has to answer it.
+   */
+  readonly direction: 'ltr' | 'rtl'
   /** Draw weight per letter. Relative, so any scale works. */
   readonly weights: Readonly<Record<string, number>>
   /** Which of those letters count as vowels, for the vowel floor in a draw. */
@@ -36,6 +44,18 @@ export interface Alphabet {
    * digraph letters needs greedy longest-match, which `segmentBy` builds.
    */
   segment(word: string): string[]
+  /**
+   * How a finished word is written, where that differs from how it is tiled.
+   *
+   * Only Hebrew needs it. Five of its letters take a different shape at the end of a word, and
+   * a tile cannot be two shapes, so the tiles carry the ordinary form and the spelling is put
+   * back here. Without it every Hebrew word in the rail would end a letter short of correct:
+   * שלומ rather than שלום, which to a Hebrew reader is not a spelling at all.
+   *
+   * Absent everywhere else, and the caller treats absent as identity. It is display only: the
+   * dictionary, the scoring and the tiles all use the folded form.
+   */
+  display?(word: string): string
 }
 
 /**

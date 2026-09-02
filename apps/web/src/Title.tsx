@@ -159,7 +159,15 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
   }, [layout])
 
   return (
-    <h1 className="title" aria-label={TITLE.charAt(0) + TITLE.slice(1).toLowerCase()}>
+    // Left to right whatever the page is doing. The wordmark is a name spelled out in tiles, and
+    // a flex row under `dir="rtl"` deals them from the other end: the game was called DEREKNILB
+    // in Hebrew and Arabic until this line.
+    <h1
+      className="title"
+      dir="ltr"
+      lang="en"
+      aria-label={TITLE.charAt(0) + TITLE.slice(1).toLowerCase()}
+    >
       {order.map((index, position) => {
         const up = position < revealed
         const classes = ['title-tile']

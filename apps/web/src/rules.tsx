@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import { alphabetFor } from '@blinkered/engine'
 import { messagesFor } from '@blinkered/i18n'
 import { HowToPlay, howToPlayUrl, languageFromUrl } from './HowToPlay.js'
 import './styles.css'
@@ -16,6 +17,7 @@ function Rules(): React.JSX.Element {
 
   useEffect(() => {
     document.documentElement.lang = language
+    document.documentElement.dir = alphabetFor(language).direction
     document.title = `${messages.howToPlay} — Blinkered`
     globalThis.history.replaceState(null, '', howToPlayUrl(language))
   }, [language, messages])
