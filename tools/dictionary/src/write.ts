@@ -26,6 +26,8 @@ function describe(source: Source): string {
       return `${source.wiki}.wiktionary.org page titles (${source.license}) — ${source.attribution}`
     case 'wordList':
       return `word list \`${source.id}\` (${source.license}) — ${source.attribution}`
+    case 'jmdict':
+      return `JMdict kana readings (${source.license}) — ${source.attribution}`
     case 'category':
       return (
         `${source.wiki}.wiktionary.org ${source.categories.join(', ')} ` +

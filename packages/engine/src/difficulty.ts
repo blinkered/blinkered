@@ -186,6 +186,7 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   he: 2.06,
   ar: 1.6,
   ko: 0.57,
+  ja: 0.89,
   tl: 0.41,
 }
 

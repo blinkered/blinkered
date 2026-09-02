@@ -13,6 +13,7 @@ import { pipeline } from 'node:stream/promises'
 import { gunzipSync } from 'node:zlib'
 import { buildValidator } from '@blinkered/words'
 import type { CaseRule } from '@blinkered/words'
+import { jmdictReadings } from './jmdict.js'
 import type { Source } from './manifest.js'
 
 /**
@@ -214,6 +215,12 @@ export async function acceptedBy(
     }
     return buildValidator(members, { caseRule })
   }
+  if (source.kind === 'jmdict') {
+    return buildValidator(
+      (await jmdictReadings(refresh)).map((reading) => reading.kana),
+      { caseRule },
+    )
+  }
   return askHunspell(source.id, source.dic, source.aff, candidates, refresh)
 }
 
@@ -236,6 +243,9 @@ export async function acceptedBy(
  * it, which is the trap documented in docs/DICTIONARIES.md.
  */
 export async function lexicon(source: Source, refresh: boolean): Promise<readonly string[]> {
+  if (source.kind === 'jmdict') {
+    return (await jmdictReadings(refresh)).map((reading) => reading.kana)
+  }
   if (source.kind === 'category') {
     const words: string[] = []
     for (const category of source.categories) {

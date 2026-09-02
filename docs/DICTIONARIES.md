@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Twenty-four playable languages. The credit tier is much the larger of the two, and its size is
+Twenty-five playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -55,6 +55,7 @@ driven by how productive the language's morphology is rather than by any choice 
 | he    | 12,992 | 15,924  | 9% / 4%   | 57%      | 344         | 93%     | 45 KB   |
 | ar    | 18,686 | 656,979 | 93% / 53% | 95%      | 268         | 96%     | 1715 KB |
 | ko    | 19,257 | 38,467  | 4% / 6%   | 34%      | 95          | 89%     | 155 KB  |
+| ja    | 17,000 | 191,188 | 100%/100% | 100%     | 149         | 50%     | 767 KB  |
 
 Board words is the median a 12-tile board admits from the **common** tier at minimum length 3,
 over 300 sound draws, and it is the number the cut is calibrated against because it is the one a
@@ -318,8 +319,8 @@ from a 32-letter one. So the floor is scaled per language:
 
 ```
 he 2.06   ar 1.60   it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92   id 0.89
-pt-BR 0.86   nl 0.85   de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72   af 0.64
-hr 0.59   el 0.58   ko 0.57   la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
+ja 0.89   pt-BR 0.86   nl 0.85   de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72
+af 0.64   hr 0.59   el 0.58   ko 0.57   la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
 ```
 
 The two abjads sit above English and nothing else does. A script that writes its vowels as
@@ -357,12 +358,25 @@ M, N, K and U and less A and R. They had been sharing one table.
 
 ## Sources
 
-**Frequency**, for nineteen of the twenty-four:
+**Frequency**, for nineteen of the twenty-five:
 [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), OpenSubtitles 2018.
-Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-four playable
+Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-five playable
 options come from twenty languages.
 
-**Frequency, for the two it does not cover**: a word count over one Wikipedia's articles,
+**Frequency, for Japanese**: JMdict's own `nf` priority bands, CC BY-SA 4.0, which rank about a
+tenth of its readings in blocks of five hundred. Japanese is the one language whose ordering and
+membership are the same file, and it has no choice: the game is played in kana and a corpus is
+written in kanji, so ranking readings by corpus frequency would need a morphological analyser
+before it needed anything else. The OpenSubtitles list would not help even then — Japanese has no
+spaces, so a tokeniser has already had a go at it, and what comes back is 分か, 言, 知, 聞.
+
+Japanese also has the one lossy fold in the set. Voicing and kana size are not distinctions the
+board makes, following MegaHouse's もじぴったん (濁音や半濁音を付けた形で読むことができ) and
+crossword convention (小さい文字は大きい文字と同一視される), so ビール and ヒール are one
+sequence of tiles and eighty-four kana become forty-seven. Without it a twelve-tile board reached
+a six-tile word 17% of the time; with it, and with a measured vowel share, 50%.
+
+**Frequency, for the two languages OpenSubtitles does not cover**: a word count over one Wikipedia's articles,
 CC BY-SA. Swahili and Latin have no OpenSubtitles list at 2016 or 2018 — nor do Yoruba, Hausa,
 Igbo or Nigerian Pidgin, which is what this exists for — and a dead language never will. The
 dump is the ordinary `pages-articles` one and the stripper is not a wikitext parser, which it

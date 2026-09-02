@@ -4,7 +4,7 @@ import { at } from './invariant.js'
 import { nextInt, shuffle } from './rng.js'
 import type { RngState } from './types.js'
 
-/** Fraction of tiles drawn from the vowel bag, before rounding. */
+/** Fraction of tiles drawn from the vowel bag, before rounding, unless the alphabet says. */
 const VOWEL_SHARE = 0.35
 
 interface Bags {
@@ -45,7 +45,8 @@ export function drawLetters(
 ): [string[], RngState] {
   if (n < 2) throw new RangeError('a board needs at least two tiles')
   const { vowels, consonants } = bagsFor(alphabet)
-  const vowelCount = Math.min(Math.max(2, Math.round(n * VOWEL_SHARE)), n - 1)
+  const share = alphabet.vowelShare ?? VOWEL_SHARE
+  const vowelCount = Math.min(Math.max(2, Math.round(n * share)), n - 1)
   const letters: string[] = []
   let rng = state
   for (let i = 0; i < n; i++) {

@@ -34,6 +34,8 @@ export interface BoardPlan {
   readonly swap: { readonly from: string; readonly to: string }
   /** Corpus rank of the worst of the three words. Lower is better; this is the sort key. */
   readonly worstRank: number
+  /** Whether all three words are spelled the way the language writes them. See `Corpus.plain`. */
+  readonly plainlySpelled: boolean
 }
 
 /** A multiset key, so two spellings of the same letters land in the same bucket. */
@@ -68,17 +70,35 @@ const THREE_OF_SIX = threeOfSix()
  * tier alone, and deliberately: a lexicon-supplied word is a real word and still the wrong
  * thing to open a tour with, because nobody has to have met it.
  */
-async function corpusRanks(spec: LanguageSpec, refresh: boolean): Promise<Map<string, number>> {
+async function corpusRanks(spec: LanguageSpec, refresh: boolean): Promise<Corpus> {
   const alphabet = alphabetFor(spec.tag)
   const rank = new Map<string, number>()
+  const plain = new Set<string>()
   const lines = await frequencyLines(spec.corpus, refresh)
   for (const [at, line] of lines.entries()) {
     const word = line.split(' ')[0]
     if (word === undefined || word === '') continue
     const folded = alphabet.fold(word)
     if (!rank.has(folded)) rank.set(folded, at)
+    if (folded === word) plain.add(folded)
   }
-  return rank
+  return { rank, plain }
+}
+
+interface Corpus {
+  readonly rank: ReadonlyMap<string, number>
+  /**
+   * Words the fold left alone, which is to say words the tiles spell the way the language
+   * writes them.
+   *
+   * Empty for every language whose corpus is lower case, since folding upper-cases; those
+   * languages sort by rank alone and this changes nothing for them. It exists for Japanese,
+   * where the fold is lossy on purpose — voicing and kana size are not distinctions the board
+   * makes — so half the vocabulary is tiled as something a reader would not write. がっこう is
+   * かつこう on the tiles, which is the game working as intended and a poor thing to open a
+   * tour with. Half the common tier needs no folding at all, so the tour uses those.
+   */
+  readonly plain: ReadonlySet<string>
 }
 
 /** Words of exactly `size` tiles the corpus knows, bucketed by their letters. */
@@ -156,7 +176,7 @@ function dealOrder(three: readonly string[], six: readonly string[]): string[] {
 /** Ranked candidates, best first. */
 export async function findBoards(spec: LanguageSpec, refresh: boolean): Promise<BoardPlan[]> {
   const alphabet = alphabetFor(spec.tag)
-  const rank = await corpusRanks(spec, refresh)
+  const { rank, plain } = await corpusRanks(spec, refresh)
   const common = readCommonTier(spec.tag)
   const threes = bucket(common, alphabet, rank, 3)
   const sixes = bucket(common, alphabet, rank, 6)
@@ -204,10 +224,15 @@ export async function findBoards(spec: LanguageSpec, refresh: boolean): Promise<
         card,
         swap: { from, to },
         worstRank: Math.max(rank.get(three) ?? 0, rank.get(six) ?? 0, rank.get(card.word) ?? 0),
+        plainlySpelled: [three, six, card.word].every((word) => plain.has(word)),
       })
     }
   }
-  return found.sort((a, b) => a.worstRank - b.worstRank)
+  // Plainly spelled first, then by rank. For every language but Japanese the first key is
+  // constant and this is the rank sort it has always been.
+  return found.sort(
+    (a, b) => Number(b.plainlySpelled) - Number(a.plainlySpelled) || a.worstRank - b.worstRank,
+  )
 }
 
 /** The entry as it goes into `packages/words/src/tutorialBoards.ts`. */

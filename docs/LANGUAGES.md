@@ -3,8 +3,9 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
-**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic and
-Korean ship; both missing pipeline capabilities are built; and the app reads right to left.** What that turned up is at [What building the first
+**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic, Korean
+and Japanese ship; both missing pipeline capabilities are built; and the app reads right to
+left.** What that turned up is at [What building the first
 five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
@@ -79,12 +80,11 @@ blocked rows above are actually blocked on.
   Hebrew and Arabic together. Hebrew is the easier of the two to render, having no cursive
   joining, so a tile's glyph looks the same as it does inside a word; its final forms
   (ך ם ן ף ץ) are a `fold` decision, which is what `fold` exists for.
-- **Japanese is a hiragana game**, and everything in this note is still true except the part
-  that mattered. Tiles are kana, words are readings rather than orthography, `byCodePoint`
-  handles が because it is one precomposed code point, small kana must not fold because きって
-  and きて are different words, and JMdict has the readings under CC BY-SA 4.0. What the note
-  got wrong is "the engine needs no change at all". See
-  [Japanese needs a decision that is not mine to take](#japanese-needs-a-decision-that-is-not-mine-to-take).
+- **Japanese is a hiragana game.** Tiles are kana, words are readings rather than orthography,
+  and JMdict has the readings under CC BY-SA 4.0. Two other things this note said were wrong and
+  cost a day between them: "the engine needs no change at all", and "do not fold small kana:
+  きって and きて are different words". Both are answered in
+  [Japanese, and the answer that was in the room the whole time](#japanese-and-the-answer-that-was-in-the-room-the-whole-time).
 - ~~**Korean is a jamo game.**~~ It is, and it was right that this would be the easiest of the
   non-Latin group. What the note did not anticipate is that Unicode gives a compound final like
   ㄵ or ㅄ its own code point, which makes tiling them tempting and wrong: eleven extra tiles
@@ -147,7 +147,8 @@ Worth doing anyway, for the reason above, as long as the file admits what it is.
    missing is a decision per language about diacritics, which is the one thing that cannot be
    measured — see below.
 5. ~~**RTL, then Hebrew and Arabic.**~~ Done.
-6. ~~**Korean**~~ done. **Japanese** is measured and waiting on a rules decision.
+6. ~~**Korean**, then Japanese.~~ Both done, and Japanese only after the first answer was
+   wrong. See below.
 7. **Abugidas**, when somebody wants to answer the tile question.
 
 ## What building the first five changed
@@ -286,70 +287,79 @@ built files are GPL-3.0, and LibreOffice's is too. So it validates against Wikti
 most conjugated forms, and reaches 34% corpus coverage — which is why it needed the second
 deepest cut in the set, for Latin's reason.
 
-## Japanese needs a decision that is not mine to take
+## Japanese, and the answer that was in the room the whole time
 
-Everything about the sourcing works. What does not work is the board.
+This section replaces one that said Japanese could not be made to work without changing the
+rules. That was wrong, and the way it was wrong is the useful part: **every number in it was
+correct and the tile set it measured was not the one a Japanese word game uses.**
 
-**The dictionary is there.** JMdict is CC BY-SA 4.0, a licence five shipped languages already
-use. It holds 225,425 distinct kana readings, and 20,461 of them carry an `nf` frequency band —
-a real ranking, in blocks of 500, from a newspaper corpus. So Japanese is the one language where
-ordering and membership come from the same file, which is worth saying out loud but is not a
-problem: the alternative was the OpenSubtitles list, and that is unusable here for a different
-reason. Japanese has no spaces, so somebody's tokeniser has already had a go at it, and what
-comes out is 分か, 言, 知, 聞 — stems with the inflection sheared off, and 34,504 of them.
+The first attempt tiled the kana faithfully. Eighty-four of them, because がっこう has a voiced
+か and a small つ and those are different sounds, and because [the note above](#decisions-already-taken)
+said in as many words: do not fold small kana, きって and きて are different words. On that
+inventory a twelve-tile board admitted 62 words and **17% of boards held a six-tile word**,
+against 89% to 100% everywhere else. All true, and the conclusion drawn from it — that
+`PROFITABLE_LENGTH = 6` cannot be cleared by a script whose tiles are syllables — did not
+survive asking how the problem had already been solved.
 
-**The board is the problem, and it is the ceiling rather than the density.** A twelve-kana board
-admits a median of 62 words, which sits comfortably between Tagalog and Korean. But only **17%
-of boards hold a six-kana word**, where every shipped language is between 89% and 100%.
+**It has been solved, and the same way twice.** MegaHouse's もじぴったん card deck is forty-six
+kana and says so on the box: 濁音や半濁音を付けた形で読むことができ、「つ・い・ゆ・よ」などは
+小文字として使うことも出来る. The は card is played as ば, and ちよこ is read ちょこ. Japanese
+crossword convention is identical — 濁音や半濁音は清音と区別されず、小さい文字は大きい文字と
+同一視される — and for the same reason: a puzzle whose alphabet has eighty-four letters is not a
+harder puzzle, it is a worse one.
 
-That is not a fixable accident. It is what `PROFITABLE_LENGTH = 6` means in a script where one
-tile is a whole syllable. Six tiles of English is an ordinary word; six morae of Japanese is a
-long one. The common vocabulary says so:
+So voicing and kana size are not distinctions the board makes. The dictionary still holds both
+words; ビール and ヒール are simply one sequence of tiles, exactly as は and ば are one card.
 
-```
-kana per word   3     4     5     6     7     8
-ranked          23%   42%   21%    8%    3%    2%
-```
+And the worry that stopped the first attempt was misplaced anyway. **Folding the size of a kana
+does not merge きって with きて**, because it does not remove the mora: one is three tiles and
+the other is two.
 
-Three quarters of the words a Japanese speaker uses are three to five kana. A rule that only
-pays above six is a rule that Japanese cannot clear, and board acceptance _requires_ one such
-word, so the generator would reject four draws in five and play the best of what it could not
-find.
+Two changes, and what each was worth:
 
-**Three levers, all of them rules.** Measured, so the choice can be made on numbers:
+|                             | tiles | median words | holds a six-tile word |
+| --------------------------- | ----- | ------------ | --------------------- |
+| faithful kana               | 84    | 62           | 17%                   |
+| the もじぴったん fold       | 47    | 127          | 42%                   |
+| …and a measured vowel share | 47    | 149          | 50%                   |
 
-| board size | median words | holds a six-kana word |
-| ---------- | ------------ | --------------------- |
-| 12         | 62           | 17%                   |
-| 14         | 106          | 36%                   |
-| 16         | 170          | 54%                   |
-| 18         | 240          | 73%                   |
-| 20         | 310          | 83%                   |
-| 24         | 536          | 96%                   |
+The second change is the other thing the first attempt got wrong. `VOWEL_SHARE` is a flat 0.35
+in the engine, and it exists so a draw cannot come out unspeakable — which is a problem no kana
+script has, every tile being a syllable already. Japanese runs a 17% vowel share, so the default
+was spending a third of every board on あ, え and お, the three rarest tiles it has.
+`Alphabet.vowelShare` is that number, optional, and Japanese is the only language that sets one:
+Greek at 49% and Arabic at 29% both play well on the default and changing it for them would
+change every board they have ever dealt.
 
-- **A bigger board for Japanese.** Twenty tiles reaches 83% and twenty-four reaches 96%, at the
-  cost of a board that admits five times as many words, which is a different game.
-- **A different flip economy for Japanese**, so a four-kana word turns a profit. `ResultGroup`
-  already keys on language, so scores are never compared across languages and nothing about
-  ranking breaks. But "the canonical rules" would stop meaning one thing.
-- **Accept the tail.** Taking all 203,643 readings as the common tier gets six-kana reach to
-  70% — still below the floor, and it buys that by making boards solvable only through words
-  nobody has met, which is the one thing DICTIONARIES.md exists to prevent.
+**Measured against the real generator, Japanese accepts 100% of boards in a mean of 2.7 draws.**
+The shipped range is 1.4 to 1.8, so it is the least efficient in the set and it never falls back
+to playing the best of a bad lot. No rules change, no bigger board, no new economy.
 
-Two notes on the numbers. They are **optimistic**: the sampler ignores the draw's vowel floor,
-and `VOWEL_SHARE` is a flat 0.35 that would spend a third of a Japanese board on bare あいうえお,
-because every kana is already a syllable and the floor has nothing to do. And the tile inventory
-is **84**, twice Korean's, which is the other half of why twelve tiles reach so little.
+Two things that stayed true from the first attempt, and are worth keeping:
+
+- **JMdict is both halves.** Ordering and membership come from one file, which no other language
+  does. There is no alternative: the game is played in kana and a corpus is written in kanji, and
+  the OpenSubtitles list is pre-tokenised into stems — 分か, 言, 知, 聞 — rather than words.
+  JMdict's `nf` priority bands rank about a tenth of its readings, in blocks of five hundred, and
+  that is the common tier.
+- **The fold is lossy, so Japanese has no `display`.** Hebrew and Korean put their spelling back;
+  Japanese cannot, because かつこう could be がっこう or かつこう. Neither can もじぴったん, whose
+  tiles are plain kana that players read voiced. What it needs instead is a sentence saying so,
+  and `htBoardBody` carries one in Japanese and in no other locale.
+
+The board search learned something too. Half the common tier folds to itself, so it now prefers
+a board whose three words are spelled the way the language writes them; for every other language
+the corpus is lower case, nothing folds to itself, and the preference finds nothing to prefer.
+Without it the tour opened on きよう → きよくちよう. With it, いたい corrects to たいへいよう and
+the card turns the Pacific into the Atlantic.
 
 ## Still open
 
-- Which of the three Japanese levers to pull, or none of them. The general form of the question
-  is whether `PROFITABLE_LENGTH` should be counted in tiles: it is six because six tiles of the
-  fibonacci economy turn a profit, which is arithmetic and language-blind, and a tile means
-  something different in every script.
-- Whether `VOWEL_SHARE` should be a fact about the alphabet rather than a constant. Greek runs a
-  49% vowel share and Arabic 29%, and both live with 0.35; a kana script has no consonants to
-  balance at all.
+- Whether the other twenty-four languages want their own measured `vowelShare` too. Japanese has
+  one because the default was actively wrong there; nobody has reported a fault anywhere else,
+  and changing it would change every board those languages have ever dealt.
+- Whether Arabic's letters row should read ا … ي rather than ء … ي. The collator puts hamza
+  first and hamza is a tile, so it is not wrong; it is just not how the alphabet is recited.
 - Whether `igboapi.com` is usable as a source, by licence and by size.
 - What Egyptian Arabic would be, given no corpus and no wiki of its own, and whether it is a
   separate game from Arabic at all.

@@ -23,6 +23,19 @@ export interface Alphabet {
   readonly weights: Readonly<Record<string, number>>
   /** Which of those letters count as vowels, for the vowel floor in a draw. */
   readonly vowels: readonly string[]
+  /**
+   * How much of a board should come from the vowel bag, where the default is wrong.
+   *
+   * The floor exists so a draw cannot come out unspeakable, and 0.35 is right for an alphabet
+   * whose consonants cannot be said on their own. A kana script has no such consonants: every
+   * tile is already a syllable, so the floor has nothing to do and spending a third of the
+   * board on bare あいうえお only makes a worse board. Japanese sets its own measured share.
+   *
+   * Absent everywhere else, and deliberately so. Greek runs a 49% vowel share and Arabic 29%,
+   * and both play well on 0.35; changing it for them would change every board they have ever
+   * dealt, for no fault anyone has reported.
+   */
+  readonly vowelShare?: number
   /** Letters a board may not hold twice: too rare to be usable in pairs. */
   readonly rareLetters: readonly string[]
   /**

@@ -71,7 +71,17 @@ export interface CategorySource {
   readonly attribution: string
 }
 
-export type Source = HunspellSource | TitlesSource | WordListSource | CategorySource
+/**
+ * JMdict's kana readings, which are both the lexicon and, through their priority bands, the
+ * ordering. Japanese is the only language where those are the same file; jmdict.ts says why.
+ */
+export interface JmdictSource {
+  readonly kind: 'jmdict'
+  readonly license: string
+  readonly attribution: string
+}
+
+export type Source = HunspellSource | TitlesSource | WordListSource | CategorySource | JmdictSource
 
 /**
  * Where a language's word *ordering* comes from, which is all a corpus decides.
@@ -83,6 +93,7 @@ export type Source = HunspellSource | TitlesSource | WordListSource | CategorySo
 export type Corpus =
   | { readonly kind: 'openSubtitles'; readonly id: string }
   | { readonly kind: 'wikipedia'; readonly wiki: string }
+  | { readonly kind: 'jmdict' }
 
 const subtitles = (id: string): Corpus => ({ kind: 'openSubtitles', id })
 const wikipedia = (wiki: string): Corpus => ({ kind: 'wikipedia', wiki })
@@ -441,6 +452,35 @@ export const LANGUAGES: readonly LanguageSpec[] = [
       'Validated against Wiktionary rather than a morphological dictionary, the only Korean ' +
       'hunspell being GPL-3.0. Korean inflects heavily and Wiktionary titles are mostly ' +
       'dictionary forms, so a conjugated verb is usually refused.',
+  },
+  {
+    tag: 'ja',
+    // The one language whose ordering and membership are the same file. jmdict.ts says why:
+    // the game is played in kana and a corpus is written in kanji, and the OpenSubtitles list
+    // is pre-tokenised into stems (分か, 言, 知) rather than words.
+    corpus: { kind: 'jmdict' },
+    groups: [
+      [
+        {
+          kind: 'jmdict',
+          license: 'CC-BY-SA-4.0',
+          attribution:
+            'JMdict, the Electronic Dictionary Research and Development Group, James William ' +
+            'Breen and contributors',
+        },
+      ],
+    ],
+    // Kana have no case, so the lower-case rule would reject the language. As Hebrew, Arabic
+    // and Korean.
+    caseRule: 'ignoreCase',
+    // The corpus is only the banded readings, so this takes all of them; everything else comes
+    // in through the lexicon with a count of zero and earns credit without ordering anything.
+    cuts: creditEverything({ commonRank: 17_000 }),
+    caveat:
+      "Ordered by JMdict's own nf priority bands rather than by an independent corpus, there " +
+      'being no usable Japanese corpus in kana. Voicing and kana size are not distinctions on ' +
+      'the board, following もじぴったん and crossword convention, so ビール and ヒール are one ' +
+      'sequence of tiles; the dictionary still holds both words.',
   },
   {
     tag: 'tl',

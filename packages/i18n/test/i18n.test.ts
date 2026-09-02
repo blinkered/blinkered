@@ -85,11 +85,11 @@ describe('preferredLocale', () => {
   })
 
   it('takes the first preference it can serve', () => {
-    expect(preferredLocale(['kl', 'ja', 'sv', 'fr'])).toBe('sv')
+    expect(preferredLocale(['kl', 'mi', 'sv', 'fr'])).toBe('sv')
   })
 
   it('falls back to the default when it can serve none', () => {
-    expect(preferredLocale(['kl', 'ja'])).toBe(DEFAULT_LOCALE)
+    expect(preferredLocale(['kl', 'mi'])).toBe(DEFAULT_LOCALE)
     expect(preferredLocale([])).toBe(DEFAULT_LOCALE)
   })
 })
@@ -106,8 +106,8 @@ describe('every locale', () => {
     (key) => typeof en[key] === 'string' && placeholdersOf(en[key]).length > 0,
   )
 
-  it('has twenty-four of them, and the engine has an alphabet for each', () => {
-    expect(LOCALES).toHaveLength(24)
+  it('has twenty-five of them, and the engine has an alphabet for each', () => {
+    expect(LOCALES).toHaveLength(25)
     for (const locale of LOCALES) expect(ALPHABET_IDS).toContain(locale.tag)
   })
 

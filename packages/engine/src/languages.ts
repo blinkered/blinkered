@@ -1152,6 +1152,144 @@ export const KOREAN: Alphabet = {
   display: composeHangul,
 }
 
+/**
+ * The kana that are not tiles, and what they are read as instead.
+ *
+ * Voicing and size are not distinctions a Japanese word game makes on the board, and this is
+ * not a shortcut: it is how the Japanese word games that exist are played. MegaHouse's もじぴったん
+ * card deck is forty-six kana and says so outright — 濁音や半濁音を付けた形で読むことができ、
+ * つ・い・ゆ・よ などは小文字として使うことも出来る, so the は card is played as ば and ちよこ
+ * is read ちょこ. Crossword convention is the same: 濁音や半濁音は清音と区別されず、小さい文字は
+ * 大きい文字と同一視される.
+ *
+ * It is also what makes the game possible. Eighty-four tiles reach a twelfth of what
+ * forty-seven do, and a board that cannot spell anything is not a harder game, it is a worse one.
+ */
+const KANA_FOLD: Readonly<Record<string, string>> = {
+  ぁ: 'あ',
+  ぃ: 'い',
+  ぅ: 'う',
+  ぇ: 'え',
+  ぉ: 'お',
+  っ: 'つ',
+  ゃ: 'や',
+  ゅ: 'ゆ',
+  ょ: 'よ',
+  ゎ: 'わ',
+  ゕ: 'か',
+  ゖ: 'け',
+  ゐ: 'い',
+  ゑ: 'え',
+}
+
+/** Katakana onto hiragana, so a borrowed word is tiled with the same letters as a native one. */
+const KATAKANA_TO_HIRAGANA: Readonly<Record<string, string>> = Object.fromEntries(
+  Array.from({ length: 0x30f6 - 0x30a1 + 1 }, (_, at) => [
+    String.fromCodePoint(0x30a1 + at),
+    String.fromCodePoint(0x3041 + at),
+  ]),
+)
+
+export const JAPANESE: Alphabet = {
+  id: 'ja',
+  endonym: '日本語',
+  direction: 'ltr',
+  // Forty-seven: the gojūon, plus the long-vowel mark, which もじぴったん also deals as a card.
+  // Every tile is a whole mora, which is why the numbers here read differently from an
+  // alphabet's: a three-tile word is an ordinary one and a six-tile word is a long one.
+  weights: {
+    ー: 1,
+    あ: 1,
+    い: 7,
+    う: 8,
+    え: 1,
+    お: 1,
+    か: 5,
+    き: 4,
+    く: 5,
+    け: 2,
+    こ: 3,
+    さ: 2,
+    し: 7,
+    す: 2,
+    せ: 2,
+    そ: 1,
+    た: 3,
+    ち: 2,
+    つ: 4,
+    て: 2,
+    と: 2,
+    な: 1,
+    に: 1,
+    ぬ: 1,
+    ね: 1,
+    の: 1,
+    は: 2,
+    ひ: 1,
+    ふ: 2,
+    へ: 1,
+    ほ: 1,
+    ま: 1,
+    み: 1,
+    む: 1,
+    め: 1,
+    も: 1,
+    や: 1,
+    ゆ: 2,
+    よ: 4,
+    ら: 1,
+    り: 2,
+    る: 2,
+    れ: 1,
+    ろ: 1,
+    わ: 1,
+    を: 1,
+    ん: 8,
+  },
+  // The five that stand alone. Every other tile is already a syllable, so the draw's vowel floor
+  // has far less to do here than in a language whose consonants cannot be spoken by themselves.
+  vowels: ['あ', 'い', 'う', 'え', 'お'],
+  // Measured rather than inherited. Bare vowels are 17% of the letters in the common tier, and
+  // the default 35% would spend a third of every board on あ, え and お, which are the three
+  // rarest tiles Japanese has. See `vowelShare`.
+  vowelShare: 0.17,
+  rareLetters: [
+    'あ',
+    'え',
+    'お',
+    'そ',
+    'な',
+    'に',
+    'ぬ',
+    'ね',
+    'の',
+    'ひ',
+    'へ',
+    'ほ',
+    'ま',
+    'み',
+    'む',
+    'め',
+    'も',
+    'や',
+    'ら',
+    'れ',
+    'ろ',
+    'わ',
+    'を',
+    'ー',
+  ],
+  requires: {},
+  fold: (key) => {
+    const hiragana = [...key.normalize('NFD')]
+      .filter((character) => character !== '\u3099' && character !== '\u309a')
+      .map((character) => KATAKANA_TO_HIRAGANA[character] ?? character)
+      .join('')
+    return [...hiragana].map((character) => KANA_FOLD[character] ?? character).join('')
+  },
+  segment: byCodePoint,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -1178,6 +1316,7 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     HEBREW,
     ARABIC,
     KOREAN,
+    JAPANESE,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 

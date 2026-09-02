@@ -33,7 +33,13 @@ function alphabetEnds(language: string): { first: string; last: string } {
   // The collator in an arrow rather than passed by reference: `compare` is bound per spec, but
   // handing a method around unbound is a habit worth not having, and the lint says so.
   const collator = new Intl.Collator(language)
-  const letters = Object.keys(alphabetFor(language).weights).sort((a, b) => collator.compare(a, b))
+  const letters = Object.keys(alphabetFor(language).weights)
+    // A modifier letter is a tile and not a letter of the alphabet, and Unicode is the one
+    // saying so rather than a list here. Japanese ー is the only one in any alphabet: it is a
+    // key you press and it lengthens the vowel before it, so the row read ー … ん, which is not
+    // how anybody describes the kana.
+    .filter((letter) => !/^\p{Lm}+$/u.test(letter))
+    .sort((a, b) => collator.compare(a, b))
   return { first: letters[0] ?? 'A', last: letters[letters.length - 1] ?? 'Z' }
 }
 

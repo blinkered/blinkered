@@ -35,6 +35,8 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   ar: ['الآن', 'الان', 4],
   // A syllable is its letters: 한 is ㅎ + ㅏ + ㄴ, and the compound final in 없 is two tiles.
   ko: ['한글', 'ㅎㅏㄴㄱㅡㄹ', 6],
+  // Katakana onto hiragana, the long mark kept, and the voicing dropped: ラーメン is four tiles.
+  ja: ['ラーメン', 'らーめん', 4],
 }
 
 describe('the language registry', () => {
@@ -52,6 +54,7 @@ describe('the language registry', () => {
       'hr',
       'id',
       'it',
+      'ja',
       'ko',
       'la',
       'ms',
@@ -240,5 +243,47 @@ describe('a Korean word part way through being built', () => {
     // A lone vowel is not a syllable: Korean puts a silent ㅇ in front of one.
     expect(korean.display?.('ㅏ')).toBe('ㅏ')
     expect(korean.display?.('ㅏㅎㅏㄴ')).toBe('ㅏ한')
+  })
+})
+
+describe('Japanese', () => {
+  const japanese = alphabetFor('ja')
+
+  it('deals the gojūon and the long mark, and nothing else', () => {
+    // Forty-seven, which is what a もじぴったん deck holds. Eighty-four kana would be the
+    // faithful inventory and an unplayable one.
+    expect(Object.keys(japanese.weights)).toHaveLength(47)
+  })
+
+  it('plays a plain kana as its voiced one, the way a Japanese word game does', () => {
+    // 濁音や半濁音を付けた形で読むことができ: the は card is played as ば.
+    expect(japanese.fold('がっこう')).toBe('かつこう')
+    expect(japanese.fold('ばば')).toBe(japanese.fold('はは'))
+    expect(japanese.fold('ぱん')).toBe(japanese.fold('はん'))
+  })
+
+  it('plays a large kana as its small one', () => {
+    // ちよこ is read ちょこ, and つ stands in for っ.
+    expect(japanese.fold('ちょこ')).toBe('ちよこ')
+    expect(japanese.fold('しゃしん')).toBe('しやしん')
+  })
+
+  it('does not merge きって and きて, which the mora count keeps apart', () => {
+    // The worry that made the first plan refuse to fold small kana. It was misplaced: folding
+    // the size does not remove the mora, so one word is three tiles and the other is two.
+    expect(japanese.fold('きって')).toBe('きつて')
+    expect(japanese.fold('きて')).toBe('きて')
+    expect(japanese.fold('きって')).not.toBe(japanese.fold('きて'))
+  })
+
+  it('tiles a borrowed word with the same letters as a native one', () => {
+    expect(japanese.fold('ラーメン')).toBe('らーめん')
+    expect(japanese.segment(japanese.fold('とうきょう'))).toEqual([...'とうきよう'])
+  })
+
+  it('draws to its own vowel share rather than the default', () => {
+    // Every kana is already a syllable, so the floor that keeps other alphabets speakable has
+    // nothing to do here and 35% would spend a third of the board on the three rarest tiles.
+    expect(japanese.vowelShare).toBe(0.17)
   })
 })

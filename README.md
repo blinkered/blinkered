@@ -18,7 +18,7 @@ shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the
 right, shows every rule and the arithmetic behind it: how long the whole board stays up, what
 a round costs in flips, and what each word length pays against what its letters cost.
 
-Twenty-four languages, picked from the flag menu, which sets the interface language too. The word
+Twenty-five languages, picked from the flag menu, which sets the interface language too. The word
 lists are committed, so there is no build step before playing; `pnpm dictionary build`
 regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
 from and why they are the size they are.
@@ -160,7 +160,15 @@ about first.
   a fixed list of digraph letters, which is what Croatian LJ and DŽ need. Neither describes an
   abugida: in Devanagari or Bengali a written syllable is a consonant plus a vowel sign, and
   splitting by code point puts a mark that cannot stand alone on a tile of its own. Those scripts
-  need a decision about what a tile **is** before they need a word list.
+  need a decision about what a tile **is** before they need a word list. Hangul looked like one
+  of these and is not: NFD takes 한 apart into ㅎ ㅏ ㄴ, so Korean is an ordinary alphabet with a
+  module that puts the syllables back.
+- **A tile is not always a letter, and the fold is not always faithful.** Two things a new script
+  can want that the first twenty-one did not. `Alphabet.display` spells a finished word the way
+  the language writes it, for Hebrew's final forms and Korean's syllables; `Alphabet.vowelShare`
+  overrides the draw's vowel floor, for Japanese, where every tile is already a syllable and the
+  default spends a third of the board on the rarest three. Both are optional, both have exactly
+  the languages that need them, and the rule for adding a third is the same: measure first.
 - ~~**Left to right.**~~ Done, for Hebrew and Arabic. `Alphabet.direction` is the one source of
   truth: the page takes its `dir` from the interface language and the board, the word line and
   the found rail take theirs from the game's. Every physical offset in the stylesheet is written

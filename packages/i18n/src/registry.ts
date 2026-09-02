@@ -10,6 +10,7 @@ import { he } from './locales/he.js'
 import { hr } from './locales/hr.js'
 import { id } from './locales/id.js'
 import { it } from './locales/it.js'
+import { ja } from './locales/ja.js'
 import { ko } from './locales/ko.js'
 import { la } from './locales/la.js'
 import { ms } from './locales/ms.js'
@@ -66,6 +67,7 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
   { tag: 'ms', endonym: 'Bahasa Melayu', flag: '🇲🇾', messages: ms },
   { tag: 'id', endonym: 'Bahasa Indonesia', flag: '🇮🇩', messages: id },
+  { tag: 'ja', endonym: '日本語', flag: '🇯🇵', messages: ja },
   { tag: 'ko', endonym: '한국어', flag: '🇰🇷', messages: ko },
   // Filipino by law and Tagalog by name: the flag is the country, the endonym the language.
   { tag: 'tl', endonym: 'Tagalog', flag: '🇵🇭', messages: tl },

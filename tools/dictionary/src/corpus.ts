@@ -3,6 +3,7 @@ import { createInterface } from 'node:readline'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { CACHE, cachePath, fetchText, download } from './sources.js'
+import { JMDICT, JMDICT_ATTRIBUTION, JMDICT_LICENSE, jmdictReadings } from './jmdict.js'
 import type { Corpus } from './manifest.js'
 
 /**
@@ -33,6 +34,7 @@ export function corpusUrl(corpus: Corpus): string {
   if (corpus.kind === 'openSubtitles') {
     return `${OPEN_SUBTITLES}/${corpus.id}/${corpus.id}_full.txt`
   }
+  if (corpus.kind === 'jmdict') return JMDICT
   return `${DUMPS}/${corpus.wiki}wiki/latest/${corpus.wiki}wiki-latest-pages-articles.xml.bz2`
 }
 
@@ -41,6 +43,13 @@ export async function frequencyLines(corpus: Corpus, refresh: boolean): Promise<
   if (corpus.kind === 'openSubtitles') {
     const text = await fetchText(`frequency/${corpus.id}.txt`, corpusUrl(corpus), refresh)
     return text.split('\n')
+  }
+  if (corpus.kind === 'jmdict') {
+    // Only the banded readings order anything. The rest arrive as a lexicon, with a count of
+    // zero, ranking below every cut and earning credit without being words a board must hold.
+    return (await jmdictReadings(refresh))
+      .filter((reading) => reading.count > 0)
+      .map((reading) => `${reading.kana} ${String(reading.count)}`)
   }
   return (await wikipediaCounts(corpus.wiki, refresh)).split('\n')
 }
@@ -239,6 +248,9 @@ export function corpusTerms(corpus: Corpus): CorpusTerms {
       attribution: 'hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS',
       license: 'MIT',
     }
+  }
+  if (corpus.kind === 'jmdict') {
+    return { attribution: `${JMDICT_ATTRIBUTION}, nf priority bands`, license: JMDICT_LICENSE }
   }
   return {
     attribution:

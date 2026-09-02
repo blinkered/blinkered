@@ -29,6 +29,7 @@ export {
   HEBREW,
   INDONESIAN,
   ITALIAN,
+  JAPANESE,
   KOREAN,
   LATIN,
   MALAY,

@@ -176,6 +176,7 @@ async function doBoard(): Promise<void> {
 function sourceLabel(source: Source): string {
   if (source.kind === 'titles') return `${source.wiki}.wiktionary`
   if (source.kind === 'category') return `${source.wiki}.wiktionary categories`
+  if (source.kind === 'jmdict') return 'JMdict readings'
   return source.id
 }
 

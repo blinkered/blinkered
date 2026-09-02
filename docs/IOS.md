@@ -216,7 +216,7 @@ a file served as the wrong type is a thing waiting to break.
 
 The obvious next PWA box to tick, and it is not ticked. Offline is not something the game does
 on the web either, so adding it here would be new behavior rather than parity, and the payload
-is twenty-four word lists of which Russian, Turkish and Arabic are 8.5 to 9MB each — caching that is a decision about a
+is twenty-five word lists of which Russian, Turkish and Arabic are 8.5 to 9MB each — caching that is a decision about a
 player's storage, not a detail. A stale service worker is also the classic way to serve last
 week's bundle to somebody who has cleared everything else.
 
