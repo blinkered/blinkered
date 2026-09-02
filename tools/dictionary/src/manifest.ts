@@ -381,6 +381,48 @@ export const LANGUAGES: readonly LanguageSpec[] = [
       'does not. The weakest thing about this list, and the same weakness Finnish has.',
   },
   {
+    tag: 'he',
+    corpus: subtitles('he'),
+    // Its own Wiktionary and the English one, unioned. Hspell, the only morphological Hebrew
+    // dictionary there is, is AGPL-3.0, which is further out of reach than the GPL ones.
+    groups: [[titles('he'), enCategories('Hebrew')]],
+    // Hebrew has no case at all, so the lower-case rule that catches proper nouns everywhere
+    // else would reject every word instead. German ignores case because case stopped being
+    // evidence; Hebrew ignores it because there is none.
+    caseRule: 'ignoreCase',
+    // Deep for the usual reason and then some: the validator accepts 16% of what it is asked,
+    // so the cut is nowhere near the binding constraint. The shallower cut left only 85% of
+    // draws holding a six-letter word, the worst in the set, which costs the generator attempts
+    // and the player the words that actually pay.
+    cuts: deepCuts(150_000, 400_000),
+    caveat:
+      'Validated against Wiktionary rather than a morphological dictionary, because Hspell is ' +
+      'AGPL-3.0. Hebrew inflects heavily and Wiktionary titles are mostly lemmas, so an ' +
+      'inflected form is often refused. Case is ignored, there being none, so proper nouns are ' +
+      'admitted where a Wiktionary lists them.',
+  },
+  {
+    tag: 'ar',
+    corpus: subtitles('ar'),
+    groups: [
+      [
+        {
+          kind: 'hunspell',
+          id: 'ar',
+          dic: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/ar/ar.dic',
+          aff: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/ar/ar.aff',
+          // Tri-licensed GPL-2.0 / LGPL-2.1 / MPL-1.1, and MPL-1.1 is the branch relied on,
+          // exactly as for Spanish, Portuguese and Greek. Read carelessly this looks like GPL.
+          license: 'MPL-1.1',
+          attribution: 'Ayaspell / Arabic hunspell dictionary, Taha Zerrouki and contributors',
+        },
+      ],
+    ],
+    // No case, same as Hebrew.
+    caseRule: 'ignoreCase',
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
     tag: 'tl',
     corpus: subtitles('tl'),
     // Its own wiki and the English one, unioned, because they are the same project and

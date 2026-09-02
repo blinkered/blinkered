@@ -12,6 +12,16 @@
       "density": 107
     },
     {
+      "tag": "ar",
+      "endonym": "العربية",
+      "common": 18686,
+      "full": 656979,
+      "bytes": 9044564,
+      "license": "MPL-1.1",
+      "shareAlike": false,
+      "density": 268
+    },
+    {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 18389,
@@ -70,6 +80,16 @@
       "licence": "MPL-2.0",
       "shareAlike": false,
       "density": 153
+    },
+    {
+      "tag": "he",
+      "endonym": "עברית",
+      "common": 12992,
+      "full": 15924,
+      "bytes": 172528,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 344
     },
     {
       "tag": "hr",

@@ -31,6 +31,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 5, becomes: 'M', word: 'IEMAND' },
     swap: { from: 'D', to: 'R' },
   },
+  ar: {
+    tiles: ['ك', 'ا', 'ن', 'ي', 'م', 'ن'],
+    three: 'كان',
+    six: 'يمكننا',
+    card: { at: 1, becomes: 'ي', word: 'يمكنني' },
+    swap: { from: 'ك', to: 'ل' },
+  },
   de: {
     tiles: ['D', 'E', 'R', 'W', 'E', 'N'],
     three: 'DER',
@@ -72,6 +79,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     six: 'MAISON',
     card: { at: 0, becomes: 'R', word: 'RAISON' },
     swap: { from: 'M', to: 'E' },
+  },
+  he: {
+    tiles: ['י', 'ו', 'מ', 'א', 'מ', 'ר'],
+    three: 'יומ',
+    six: 'אומרימ',
+    card: { at: 2, becomes: 'ח', word: 'מאחורי' },
+    swap: { from: 'א', to: 'ה' },
   },
   hr: {
     tiles: ['I', 'L', 'I', 'M', 'S', 'M'],
