@@ -29,3 +29,5 @@ export type {
   Tiers,
   ValidatorOptions,
 } from './pipeline.js'
+export { TUTORIAL_BOARDS } from './tutorialBoards.js'
+export { spellableFrom, tilesWithCard, type TutorialBoard } from './tutorialBoard.js'
