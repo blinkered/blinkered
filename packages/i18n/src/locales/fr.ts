@@ -174,7 +174,7 @@ export const fr: Messages = {
     'Quand la dernière tuile d’une manche se retourne, tout le plateau reste visible un instant. Puis les tuiles sont retournées face cachée et mélangées, et une nouvelle manche commence.',
   htLanguagesTitle: 'Les langues',
   htLanguagesBody:
-    'Seize langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
+    '{n} langues. Chaque plateau peut être résolu avec des mots réellement employés. Un mot rare compte quand même, si le dictionnaire le connaît.',
   htKeysTitle: 'Le clavier',
   htWildTitle: 'Les jokers',
   htWildBody:

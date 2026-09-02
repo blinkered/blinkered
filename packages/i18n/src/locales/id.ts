@@ -172,7 +172,7 @@ export const id: Messages = {
     'Ketika kartu terakhir suatu putaran berbalik, seluruh papan terbuka sesaat. Lalu kartu dibalik tertutup dan diacak, dan putaran baru dimulai.',
   htLanguagesTitle: 'Bahasa',
   htLanguagesBody:
-    'Enam belas. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
+    '{n}. Setiap papan bisa diselesaikan dengan kata yang benar-benar dipakai. Kata yang tidak umum tetap dihitung, jika kamus mengenalnya.',
   htKeysTitle: 'Papan tik',
   htWildTitle: 'Kartu liar',
   htWildBody:

@@ -168,7 +168,7 @@ export const pt: Messages = {
     'Quando vira a última peça de uma ronda, o tabuleiro fica todo à vista por um momento. Depois as peças são viradas ao contrário e baralhadas, e começa uma ronda nova.',
   htLanguagesTitle: 'Os idiomas',
   htLanguagesBody:
-    'Dezasseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra invulgar também pontua, se o dicionário a conhecer.',
+    '{n}. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra invulgar também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
   htWildTitle: 'Os coringas',
   htWildBody:

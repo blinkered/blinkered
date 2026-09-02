@@ -171,7 +171,7 @@ export const ptBR: Messages = {
     'Quando vira a última peça de uma rodada, o tabuleiro fica todo à vista por um instante. Depois as peças são viradas para baixo e embaralhadas, e começa uma rodada nova.',
   htLanguagesTitle: 'Os idiomas',
   htLanguagesBody:
-    'Dezesseis. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra incomum também pontua, se o dicionário a conhecer.',
+    '{n}. Cada tabuleiro pode ser resolvido com palavras de uso corrente. Uma palavra incomum também pontua, se o dicionário a conhecer.',
   htKeysTitle: 'O teclado',
   htWildTitle: 'Os curingas',
   htWildBody:

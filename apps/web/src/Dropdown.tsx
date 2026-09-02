@@ -6,7 +6,7 @@ import { withoutStealingFocus } from './focus.js'
  *
  * A native `select` would be the right answer, and was the first one. Chrome on macOS draws its
  * popup as an operating-system menu: system font size whatever the CSS says, sized to the
- * longest option, and in a window that is not clipped to the browser, so sixteen languages
+ * longest option, and in a window that is not clipped to the browser, so the language list
  * opened as an enormous list hanging off the side of the window and over the desktop. None of
  * that is reachable from a stylesheet.
  *

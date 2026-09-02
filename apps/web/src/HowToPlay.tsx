@@ -1,5 +1,5 @@
 import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
-import { format, messagesFor } from '@blinkered/i18n'
+import { LOCALES, format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { InterfacePicker } from './LanguagePicker.js'
 
@@ -114,7 +114,9 @@ export function HowToPlay({
           and it was sitting between the mechanics and the choice they describe. */}
       <section>
         <h2>{messages.htLanguagesTitle}</h2>
-        <p>{messages.htLanguagesBody}</p>
+        {/* Counted rather than written out. It said "Sixteen" in sixteen files, which was a
+            number that goes stale in fifteen places the moment a language is added. */}
+        <p>{format(messages.htLanguagesBody, { n: LOCALES.length })}</p>
       </section>
 
       {/* Both, always, in this order. The page opens in its own tab and is shareable, so it

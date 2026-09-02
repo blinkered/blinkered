@@ -35,7 +35,7 @@ interface LanguagePickerProps {
 /**
  * Picks the language the board is dealt in.
  *
- * Offers what the deployment has rather than what the engine knows: sixteen alphabets exist,
+ * Offers what the deployment has rather than what the engine knows: more alphabets exist,
  * and a language is only playable once a word list has been built for it. The language's own
  * name for itself, because a Greek speaker looking for Greek is looking for Ελληνικά.
  */

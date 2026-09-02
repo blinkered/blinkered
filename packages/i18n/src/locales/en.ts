@@ -175,7 +175,7 @@ export const en: Messages = {
     'When the last tile of a round turns, the whole board holds for a moment. Then the tiles are turned over and shuffled, and a new round begins.',
   htLanguagesTitle: 'The languages',
   htLanguagesBody:
-    'Sixteen of them. Every board can be solved from words people actually use. An unusual word still scores, if the dictionary knows it.',
+    '{n} of them. Every board can be solved from words people actually use. An unusual word still scores, if the dictionary knows it.',
   htKeysTitle: 'The keyboard',
   htWildTitle: 'Wild cards',
   htWildBody:

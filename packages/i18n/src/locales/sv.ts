@@ -167,7 +167,7 @@ export const sv: Messages = {
     'När omgångens sista bricka vänds ligger hela brädet uppe ett ögonblick. Sedan vänds brickorna ned och blandas, och en ny omgång börjar.',
   htLanguagesTitle: 'Språken',
   htLanguagesBody:
-    'Sexton. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
+    '{n}. Varje bräde går att lösa med ord folk faktiskt använder. Ett ovanligt ord räknas ändå, om ordlistan kan det.',
   htKeysTitle: 'Tangentbordet',
   htWildTitle: 'Jokrar',
   htWildBody:

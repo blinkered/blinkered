@@ -285,7 +285,7 @@ export function format(template: string, values: Replacements = {}): string {
  *
  * `Intl.PluralRules` decides which form applies, which is the only sane way to do this: the
  * rule for Russian is a three-branch test on the last two digits, and nobody should be
- * writing that by hand in sixteen files.
+ * writing that by hand in one file per locale.
  */
 export function plural(tag: string, forms: PluralForms, count: number): string {
   const rule = new Intl.PluralRules(tag).select(count)

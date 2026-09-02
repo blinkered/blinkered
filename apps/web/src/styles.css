@@ -1087,7 +1087,7 @@ kbd {
  *
  * Chrome on macOS renders a native `select` popup as an operating-system menu: system font size
  * regardless of the CSS, sized to the longest option, in a window that is not clipped to the
- * browser. Sixteen languages came out as an enormous list hanging off the side of the window.
+ * browser. The language list came out as an enormous menu hanging off the side of the window.
  * Nothing in a stylesheet can reach that, so the menu is ours now.
  */
 .drop {
@@ -1135,7 +1135,7 @@ kbd {
   z-index: 20;
   top: calc(100% + 0.25rem);
   left: 0;
-  /* Tall enough for sixteen, short enough to stay on the page, and it scrolls if neither. */
+  /* Tall enough for the list, short enough to stay on the page, and it scrolls if neither. */
   max-height: min(60dvh, 22rem);
   min-width: 100%;
   overflow-y: auto;
@@ -1553,9 +1553,9 @@ kbd {
     padding: 1.25rem 1rem;
   }
   /*
-   * 320px, five controls, sixteen languages. Four drawings hold 44pt each, which is the floor a
+   * 320px, five controls, every language. Four drawings hold 44pt each, which is the floor a
    * finger needs, so everything else gives: the gaps and the primary's padding. Measured against
-   * the longest label of the sixteen, which is Spanish "Completar" and was being ellipsised to
+   * the longest label there is, which is Spanish "Completar" and was being ellipsised to
    * "Complet…" before this.
    */
   .controls {

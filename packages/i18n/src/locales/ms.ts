@@ -168,7 +168,7 @@ export const ms: Messages = {
     'Apabila jubin terakhir sesuatu pusingan terbalik, seluruh papan terbuka seketika. Kemudian jubin dibalikkan tertutup dan dikocak, dan pusingan baharu bermula.',
   htLanguagesTitle: 'Bahasa',
   htLanguagesBody:
-    'Enam belas. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
+    '{n}. Setiap papan boleh diselesaikan dengan perkataan yang benar-benar digunakan. Perkataan luar biasa tetap dikira, jika kamus mengetahuinya.',
   htKeysTitle: 'Papan kekunci',
   htWildTitle: 'Kad liar',
   htWildBody:

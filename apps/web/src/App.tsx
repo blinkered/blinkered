@@ -811,7 +811,7 @@ function useFeedback(
            * "shuffled" line rather than adding a row to a bar that has none to give. It is also
            * the more useful of the two: every round shuffles, and this one did something else.
            *
-           * An arrow rather than a sentence. It is the same in all sixteen languages, and it is
+           * An arrow rather than a sentence. It is the same in every language, and it is
            * short enough not to wrap, which matters because this bar is fixed-height and a line
            * that wrapped would push the board.
            */

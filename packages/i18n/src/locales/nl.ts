@@ -168,7 +168,7 @@ export const nl: Messages = {
     'Draait de laatste steen van een ronde, dan ligt het hele bord even open. Daarna worden de stenen omgedraaid en geschud, en begint een nieuwe ronde.',
   htLanguagesTitle: 'De talen',
   htLanguagesBody:
-    'Zestien. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
+    '{n}. Elk bord is op te lossen met alledaagse woorden. Een ongewoon woord telt ook mee, als het woordenboek het kent.',
   htKeysTitle: 'Het toetsenbord',
   htWildTitle: 'Jokers',
   htWildBody:

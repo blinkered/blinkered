@@ -169,7 +169,7 @@ export const es: Messages = {
     'Cuando gira la última ficha de una ronda, el tablero entero se queda a la vista un momento. Después las fichas se giran boca abajo y se mezclan, y empieza una ronda nueva.',
   htLanguagesTitle: 'Los idiomas',
   htLanguagesBody:
-    'Dieciséis. Cada tablero se puede resolver con palabras de uso real. Una palabra poco común también puntúa, si el diccionario la conoce.',
+    '{n}. Cada tablero se puede resolver con palabras de uso real. Una palabra poco común también puntúa, si el diccionario la conoce.',
   htKeysTitle: 'El teclado',
   htWildTitle: 'Los comodines',
   htWildBody:

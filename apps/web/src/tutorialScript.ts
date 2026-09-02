@@ -10,7 +10,7 @@ import type { Messages } from '@blinkered/i18n'
  * It used to be a literal list of frames against six hard-coded English letters, which was
  * readable and could only ever be English. The boards are per language now, so the beats have to
  * be derived: which tile to tap for which letter of a word is a different answer in every one of
- * the sixteen, and in Croatian a tile can be two characters.
+ * them, and in Croatian a tile can be two characters.
  */
 
 /** What a tile is doing in a frame. */

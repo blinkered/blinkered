@@ -167,7 +167,7 @@ export const no: Messages = {
     'Når rundens siste brikke snus, ligger hele brettet åpent et øyeblikk. Så snus brikkene ned og stokkes, og en ny runde begynner.',
   htLanguagesTitle: 'Språkene',
   htLanguagesBody:
-    'Seksten. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
+    '{n}. Hvert brett kan løses med ord folk faktisk bruker. Et uvanlig ord teller likevel, hvis ordlisten kjenner det.',
   htKeysTitle: 'Tastaturet',
   htWildTitle: 'Jokere',
   htWildBody:

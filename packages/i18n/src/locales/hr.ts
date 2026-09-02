@@ -167,7 +167,7 @@ export const hr: Messages = {
     'Kad se okrene zadnja pločica runde, cijela ploča ostaje otkrivena na trenutak. Zatim se pločice okrenu naopako i promiješaju, i počinje nova runda.',
   htLanguagesTitle: 'Jezici',
   htLanguagesBody:
-    'Šesnaest. Svaka se ploča može riješiti riječima koje se stvarno koriste. Neobična riječ ipak vrijedi, ako je rječnik zna.',
+    '{n}. Svaka se ploča može riješiti riječima koje se stvarno koriste. Neobična riječ ipak vrijedi, ako je rječnik zna.',
   htKeysTitle: 'Tipkovnica',
   htWildTitle: 'Džokeri',
   htWildBody:

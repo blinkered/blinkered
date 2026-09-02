@@ -106,8 +106,8 @@ describe('every locale', () => {
     (key) => typeof en[key] === 'string' && placeholdersOf(en[key]).length > 0,
   )
 
-  it('has sixteen of them, and the engine has an alphabet for each', () => {
-    expect(LOCALES).toHaveLength(16)
+  it('has nineteen of them, and the engine has an alphabet for each', () => {
+    expect(LOCALES).toHaveLength(19)
     for (const locale of LOCALES) expect(ALPHABET_IDS).toContain(locale.tag)
   })
 
@@ -238,7 +238,7 @@ describe('shareText', () => {
     }
   })
 
-  it('carries no dash as a separator, in any of the sixteen', () => {
+  it('carries no dash as a separator, in any of them', () => {
     // House style, and it survives a paste into anything.
     for (const locale of LOCALES) {
       const text = shareText(locale.messages, result, { personalBest: true, url })

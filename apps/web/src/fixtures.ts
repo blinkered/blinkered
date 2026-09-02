@@ -8,7 +8,7 @@ import type { Standing } from './scores.js'
  *
  * The game-over panel is several minutes of play away: the flips have to run out, and a player who
  * submits words keeps the game alive, so reaching it deliberately means playing badly for a while.
- * That is a poor loop for working on the panel, and worse for checking sixteen translations of it.
+ * That is a poor loop for working on the panel, and worse for checking every translation of it.
  *
  * `?fixture=over` puts the panel on screen immediately, with the real components and the real
  * leaderboard logic. Nothing here is a mock of the view; only the game that preceded it is

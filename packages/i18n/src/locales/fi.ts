@@ -171,7 +171,7 @@ export const fi: Messages = {
     'Kun kierroksen viimeinen laatta kääntyy, koko lauta on hetken näkyvissä. Sitten laatat käännetään nurin ja sekoitetaan, ja uusi kierros alkaa.',
   htLanguagesTitle: 'Kielet',
   htLanguagesBody:
-    'Kuusitoista. Jokainen lauta ratkeaa arkisilla sanoilla. Harvinainen sana kelpaa silti, jos sanakirja tuntee sen.',
+    '{n}. Jokainen lauta ratkeaa arkisilla sanoilla. Harvinainen sana kelpaa silti, jos sanakirja tuntee sen.',
   htKeysTitle: 'Näppäimistö',
   htWildTitle: 'Jokerit',
   htWildBody:

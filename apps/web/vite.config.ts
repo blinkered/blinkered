@@ -160,7 +160,7 @@ export default defineConfig({
     target: 'es2022',
     sourcemap: true,
     // Two pages, because the rules open in their own tab. Sharing the build means they share
-    // the message catalogue, so the rules are translated by the same sixteen locales the game
+    // the message catalogue, so the rules are translated by the same locales the game
     // is rather than by a second copy of them that drifts.
     rollupOptions: {
       input: {

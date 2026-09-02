@@ -172,7 +172,7 @@ export const de: Messages = {
     'Dreht sich der letzte Stein einer Runde, liegt das ganze Feld einen Moment offen. Dann werden die Steine umgedreht und gemischt, und eine neue Runde beginnt.',
   htLanguagesTitle: 'Die Sprachen',
   htLanguagesBody:
-    'Sechzehn. Jedes Feld lässt sich mit gebräuchlichen Wörtern lösen. Ein seltenes Wort zählt trotzdem, wenn das Wörterbuch es kennt.',
+    '{n}. Jedes Feld lässt sich mit gebräuchlichen Wörtern lösen. Ein seltenes Wort zählt trotzdem, wenn das Wörterbuch es kennt.',
   htKeysTitle: 'Die Tastatur',
   htWildTitle: 'Joker',
   htWildBody:

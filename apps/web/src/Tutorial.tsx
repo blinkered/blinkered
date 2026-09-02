@@ -36,7 +36,7 @@ import { withoutStealingFocus } from './focus.js'
  * it goes, and the first version held every frame for 1.4s regardless, which on the controls
  * screen meant four different sentences in under six seconds. You could watch it or read it.
  *
- * Reading time is derived from the caption's length because it has to hold in sixteen languages.
+ * Reading time is derived from the caption's length because it has to hold in every language.
  * German runs about 40% longer than English for the same sentence, so any hand-tuned number would
  * be right in one language and wrong in the rest; a rate per character is right everywhere and
  * needs nobody to remember it when a string changes.

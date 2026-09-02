@@ -1,3 +1,4 @@
+import { af } from './locales/af.js'
 import { de } from './locales/de.js'
 import { el } from './locales/el.js'
 import { en } from './locales/en.js'
@@ -14,6 +15,8 @@ import { pt } from './locales/pt.js'
 import { ptBR } from './locales/pt-BR.js'
 import { ru } from './locales/ru.js'
 import { sv } from './locales/sv.js'
+import { tl } from './locales/tl.js'
+import { tr } from './locales/tr.js'
 import type { Messages } from './messages.js'
 
 export interface Locale {
@@ -24,8 +27,8 @@ export interface Locale {
   /**
    * A flag, which is a compromise and worth naming as one. A flag is a country and these are
    * languages, so the pairing is arbitrary wherever a language has more than one home. It is
-   * here because it makes a picker scannable at a glance in a way sixteen names in sixteen
-   * scripts are not, and the endonym next to it carries the actual meaning.
+   * here because it makes a picker scannable at a glance in a way a column of names in as many
+   * scripts is not, and the endonym next to it carries the actual meaning.
    */
   readonly flag: string
   readonly messages: Messages
@@ -47,16 +50,20 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'it', endonym: 'Italiano', flag: '🇮🇹', messages: it },
   { tag: 'de', endonym: 'Deutsch', flag: '🇩🇪', messages: de },
   { tag: 'nl', endonym: 'Nederlands', flag: '🇳🇱', messages: nl },
+  { tag: 'af', endonym: 'Afrikaans', flag: '🇿🇦', messages: af },
   { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
   { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
   { tag: 'ms', endonym: 'Bahasa Melayu', flag: '🇲🇾', messages: ms },
   { tag: 'id', endonym: 'Bahasa Indonesia', flag: '🇮🇩', messages: id },
+  // Filipino by law and Tagalog by name: the flag is the country, the endonym the language.
+  { tag: 'tl', endonym: 'Tagalog', flag: '🇵🇭', messages: tl },
   { tag: 'ru', endonym: 'Русский', flag: '🇷🇺', messages: ru },
   { tag: 'sv', endonym: 'Svenska', flag: '🇸🇪', messages: sv },
   { tag: 'no', endonym: 'Norsk', flag: '🇳🇴', messages: no },
   { tag: 'fi', endonym: 'Suomi', flag: '🇫🇮', messages: fi },
   { tag: 'el', endonym: 'Ελληνικά', flag: '🇬🇷', messages: el },
+  { tag: 'tr', endonym: 'Türkçe', flag: '🇹🇷', messages: tr },
 ]
 
 export const DEFAULT_LOCALE = 'en'

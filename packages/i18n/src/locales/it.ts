@@ -169,7 +169,7 @@ export const it: Messages = {
     'Quando si gira l’ultima tessera del turno, il tabellone resta tutto scoperto per un momento. Poi le tessere vengono girate a faccia in giù e mescolate, e comincia un turno nuovo.',
   htLanguagesTitle: 'Le lingue',
   htLanguagesBody:
-    'Sedici. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
+    '{n}. Ogni tabellone si può risolvere con parole di uso reale. Una parola insolita vale comunque, se il dizionario la conosce.',
   htKeysTitle: 'La tastiera',
   htWildTitle: 'I jolly',
   htWildBody:

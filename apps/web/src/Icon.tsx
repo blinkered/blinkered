@@ -1,7 +1,7 @@
 /**
  * The four secondary controls, as drawings rather than words.
  *
- * Five buttons have to fit one row on a 320px screen in sixteen languages, and words cannot do
+ * Five buttons have to fit one row on a 320px screen in every language, and words cannot do
  * that: "Wort abgeben" and "Lämna in ordet" are not going to share a line with three more labels.
  * So the one button whose label has to be read keeps its words, and these four lose theirs. Each
  * still carries the full localised name as its accessible label, so nothing is lost to a screen
