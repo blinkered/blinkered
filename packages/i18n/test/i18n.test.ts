@@ -106,8 +106,8 @@ describe('every locale', () => {
     (key) => typeof en[key] === 'string' && placeholdersOf(en[key]).length > 0,
   )
 
-  it('has twenty-one of them, and the engine has an alphabet for each', () => {
-    expect(LOCALES).toHaveLength(21)
+  it('has twenty-three of them, and the engine has an alphabet for each', () => {
+    expect(LOCALES).toHaveLength(23)
     for (const locale of LOCALES) expect(ALPHABET_IDS).toContain(locale.tag)
   })
 

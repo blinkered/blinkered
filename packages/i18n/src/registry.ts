@@ -1,10 +1,12 @@
 import { af } from './locales/af.js'
+import { ar } from './locales/ar.js'
 import { de } from './locales/de.js'
 import { el } from './locales/el.js'
 import { en } from './locales/en.js'
 import { es } from './locales/es.js'
 import { fi } from './locales/fi.js'
 import { fr } from './locales/fr.js'
+import { he } from './locales/he.js'
 import { hr } from './locales/hr.js'
 import { id } from './locales/id.js'
 import { it } from './locales/it.js'
@@ -54,6 +56,10 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'nl', endonym: 'Nederlands', flag: '🇳🇱', messages: nl },
   { tag: 'af', endonym: 'Afrikaans', flag: '🇿🇦', messages: af },
   { tag: 'sw', endonym: 'Kiswahili', flag: '🇹🇿', messages: sw },
+  // The two that read the other way. Israel for Hebrew; Saudi Arabia for Arabic, which is a
+  // flag for a language spoken across twenty-odd countries and the usual compromise.
+  { tag: 'he', endonym: 'עברית', flag: '🇮🇱', messages: he },
+  { tag: 'ar', endonym: 'العربية', flag: '🇸🇦', messages: ar },
   { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
   { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
