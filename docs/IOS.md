@@ -182,8 +182,8 @@ has no thumb equivalent to advertise, but tapping the last letter again is one, 
 worked — `TAP_TILE` on the last-selected tile deselects it, which is `UNDO_LETTER` by another
 route.
 
-So there is one more legend line on touch, and a matching section on the rules page. Sixteen
-languages, because everything the game says is in sixteen languages.
+So there is one more legend line on touch, and a matching section on the rules page. In every
+language, because everything the game says is in every language.
 
 The rules page shows the touch section and the keyboard section **both, always**. It opens in
 its own tab and is shareable, so it cannot assume the device reading it is the device playing on
@@ -216,7 +216,7 @@ a file served as the wrong type is a thing waiting to break.
 
 The obvious next PWA box to tick, and it is not ticked. Offline is not something the game does
 on the web either, so adding it here would be new behavior rather than parity, and the payload
-is sixteen word lists of which Russian alone is 8.3MB — caching that is a decision about a
+is nineteen word lists of which Russian and Turkish are 8.5MB each — caching that is a decision about a
 player's storage, not a detail. A stale service worker is also the classic way to serve last
 week's bundle to somebody who has cleared everything else.
 
@@ -236,13 +236,13 @@ same code inside a WebView. What is left is not code.
   absence presents as `iOS 26.5 is not installed` and no build destination, which reads like a
   broken project.
 - **The CC BY-SA decision**, and this is the one that actually blocks a store. Five languages
-  ship under it: Italian, German, Norwegian, Finnish, Malay. The app bundles all sixteen word
+  ship under it: Italian, German, Norwegian, Finnish, Malay. The app bundles every word
   lists, so a store build wraps DRM around a share-alike data file. On the web attribution is the
   whole obligation and we meet it; a binary is a different question. See the end of
   DICTIONARIES.md.
 - **Sign in with Apple**, which App Store guideline 4.8 makes non-optional once any other
   third-party SSO exists. Not yet relevant: there are no accounts until PLAN.md phase 4.
-- **A decision about the 42MB of word lists** in the bundle. Fine for a development install, and
+- **A decision about the 43MB of word lists** in the bundle. Fine for a development install, and
   worth revisiting before distribution against downloading them on demand.
 
 ## How this was checked, and what that cannot tell us

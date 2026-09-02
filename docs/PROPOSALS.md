@@ -24,8 +24,8 @@ https://playblinkered.com
 ```
 
 Mechanically this is small. `navigator.share` where it exists, which is every phone and the
-native shell, falling back to the clipboard on a desktop. One new message per line, so sixteen
-locales, with the URL left alone.
+native shell, falling back to the clipboard on a desktop. One new message per line, in every
+locale, with the URL left alone.
 
 ### What needs deciding
 
@@ -287,12 +287,12 @@ which leaves the phone layout, where the ask was made, untouched.
 
 ## The help page was part of the feature
 
-Every string the game says exists in sixteen languages, and the rules page is a string like any
+Every string the game says exists in every language, and the rules page is a string like any
 other. Wild cards and letter replacement both changed what a player has to understand, so each
-shipped with its own section across all sixteen locales, in the same commit as the mechanic. Share
+shipped with its own section across every locale, in the same commit as the mechanic. Share
 needed nothing there: a button that shares a result explains itself.
 
-This was easy to forget because the feature works without it, and the sixteenth translation is
+This was easy to forget because the feature works without it, and the last translation is
 never the interesting part of the day.
 
 ## What the order turned out to be

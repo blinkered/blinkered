@@ -1,7 +1,12 @@
 # Languages: what is next, and what each one costs
 
 A survey, written before building any of it, so the decisions are made once and the numbers are
-not re-gathered. [README.md](../README.md) has the checklist for adding a language and which
+not re-gathered.
+
+**Done since it was written: Afrikaans, Turkish and Tagalog ship, and the en.wiktionary category
+validator is built.** What that turned up is at [What building the first three
+changed](#what-building-the-first-three-changed), which is the part to read before doing the
+next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
 stands in the way of each.
 
@@ -49,15 +54,16 @@ lists, which is what the pipeline uses today.
 | Telugu          | `te`  |                  | 107,743        | 2016      |           | Telugu       |
 | Marathi         | `mr`  |                  | 2,707          | none      |           | Devanagari   |
 
-## Two things the pipeline cannot do yet
+## Two things the pipeline could not do
+
+One of them it can now.
 
 Both live in `tools/dictionary`. Neither touches the engine. Together they are what most of the
 blocked rows above are actually blocked on.
 
-1. **A validator that reads en.wiktionary categories.** Today `titles` reads the page titles of a
-   language's own Wiktionary. For Swahili, Yoruba, Hausa, Igbo and Naija that wiki is empty or
-   absent while en.wiktionary holds thousands of properly tagged lemmas. Category members are a
-   different query from page titles and a different `SourceKind`.
+1. ~~**A validator that reads en.wiktionary categories.**~~ **Built.** `SourceKind` `category`,
+   read through the MediaWiki API because no dump is per-language-on-another-wiki. It also
+   enumerates, which `titles` cannot, so it doubles as a lexicon.
 2. **A frequency source that is not OpenSubtitles.** The common tier is a size band intersected
    with corpus frequency, and the tutorial board is ranked by it. A Wikipedia dump gives a word
    count for every language with a wiki, which is every candidate here. STATUS.md already lists
@@ -98,11 +104,12 @@ enough" means: **a small dictionary is acceptable here in a way it would not be 
 It does not change the mechanical floor. A board still has to admit enough words to be worth
 playing, and that is measured rather than hoped.
 
-- **Swahili** clears Malay twice over and is not really in this group at all. It is a normal
-  addition waiting on the en.wiktionary validator.
+- **Swahili** clears Malay twice over and is not really in this group at all, and it does not
+  even need the category validator: LibreOffice's `sw_TZ` is a hunspell dictionary under the
+  LGPL. It is a normal addition waiting on a corpus.
 - **Yoruba**, at 4,873 lemmas, is about half of Malay's full tier. Plausible at the weak end.
-- **Hausa**, at 1,987, is a quarter of Malay. The validator is the bottleneck, not the corpus:
-  ha.wikipedia has 109,427 articles.
+- **Hausa**, at 1,987, is a quarter of Malay. ha.wikipedia has 109,427 articles, so the corpus
+  is there for the taking once something can count words in a dump.
 - **Igbo**, at 272, is not a lexicon. Worth checking `igboapi.com`, an open Igbo dictionary
   project, before calling it.
 - **Naija** (Nigerian Pidgin, `pcm`) has 188 lemmas and a 1,655-article Wikipedia.
@@ -117,22 +124,65 @@ against.
 That trap was about **rejecting** real words: a frequency cut threw out WEAL and SWALE. Accepting
 by frequency fails the other way, letting in typos and English intrusions, and Naija's
 orthography overlaps English heavily, so the intrusions would be invisible. A word list built this
-way is a different kind of object from the other sixteen and should say so in its PROVENANCE.
+way is a different kind of object from every other list here and should say so in its
+PROVENANCE.
 
 Worth doing anyway, for the reason above, as long as the file admits what it is.
 
 ## The order
 
-1. **Afrikaans, Turkish, Tagalog.** The same work as the existing sixteen: Latin, left to right,
-   both sources already available. Turkish carries one specific trap, the dotless ı and dotted İ,
-   which matters because the lists are uppercased and `toUpperCase` is locale-dependent there.
-2. **The two pipeline capabilities.** Which brings Swahili, Latin and Yoruba into range, and
-   improves Urdu, Hebrew and Telugu.
-3. **RTL, then Hebrew and Arabic.**
-4. **Korean**, then Japanese if the JMdict readings work out.
-5. **Hausa, Igbo, Naija**, measured with `pnpm dictionary floor` and accepted or not on what it
+1. ~~**Afrikaans, Turkish, Tagalog.**~~ Done. Turkish's trap was real and is now a `locale`
+   option on `folder`; Tagalog's was not the one expected. See below.
+2. ~~**An en.wiktionary category validator.**~~ Done, and it turned out to be a lexicon as well
+   as a validator, which is a bigger win than expected.
+3. **A frequency source that is not OpenSubtitles.** Now the only thing standing between the
+   pipeline and Swahili, Latin, Yoruba, Hausa, Igbo and Naija, all six of which have neither a
+   2016 nor a 2018 list. Measured, not assumed: every one of those tags 404s at hermitdave.
+4. **RTL, then Hebrew and Arabic.**
+5. **Korean**, then Japanese if the JMdict readings work out.
+6. **Hausa, Igbo, Naija**, measured with `pnpm dictionary floor` and accepted or not on what it
    says.
-6. **Abugidas**, when somebody wants to answer the tile question.
+7. **Abugidas**, when somebody wants to answer the tile question.
+
+## What building the first three changed
+
+Three things, and two of them are corrections to what is written above.
+
+**Tagalog was blocked on its corpus, not its dictionary.** The survey called it a validator
+problem, and half of that was right: tl.wiktionary yields 1,175 words and a cut four times
+deeper recovers not one more, because the validator runs out long before the cut does. Reading
+`Category:Tagalog lemmas` on en.wiktionary instead — 33,079 lemmas, each tagged with the language
+it belongs to — took the common tier to 3,540 and the credit tier to 23,306. But the common tier
+stopped there, and the reason is that **the Tagalog subtitle corpus is 10,665 words long**, a
+tenth of Malay's. No validator moves that. It is the clearest argument yet for the Wikipedia
+frequency source, and it applies to every language in the bottom half of the table.
+
+**A category is a lexicon, and a titles dump is not.** This is the difference that makes the new
+source worth more than a like-for-like replacement. A titles list is every language at once, so
+it can only ever answer yes or no; a category names one language, so its members can join the
+candidate pool the way ENABLE does for English — count zero, ranking below every cut, earning
+credit without ever being a word a board has to be solvable from. That is where two thirds of
+Tagalog's credit tier comes from.
+
+**Swahili is not blocked on the validator at all.** LibreOffice ships `sw_TZ`, a hunspell
+dictionary under the LGPL, which is a licence this project already relies on for Indonesian,
+Swedish and now Afrikaans. So Swahili wants morphology, not category members, and the only thing
+it is short of is a corpus. Same for Latin, Yoruba, Hausa, Igbo and Naija: **one capability now,
+not two.**
+
+Two smaller notes worth keeping:
+
+- **Tagalog's NG is two tiles, and not for the reason the alphabet suggests.** It is a letter of
+  the abakada and it is genuinely unambiguous in Tagalog spelling, so the Croatian machinery
+  would have handled it. The problem is the keyboard: nothing turns two keystrokes into one
+  tile, so a multi-character tile can only be taken with the mouse. Croatian DŽ is rare enough
+  for that to be a curiosity. NG is in a large share of Tagalog words, and a board whose
+  commonest letter cannot be typed is a worse game than one whose alphabet is a letter short.
+- **The English floor curve had drifted.** Re-running `pnpm dictionary floor` moved
+  `MEDIAN_WORDS` up about 8% and every language's `DENSITY_SCALE` down by the same, so the
+  product is unchanged everywhere except English, which gets a slightly stricter floor. The
+  scales in `difficulty.ts` had been measured against an older English list than the one shipped;
+  the manifest's own density numbers were right all along.
 
 ## Still open
 

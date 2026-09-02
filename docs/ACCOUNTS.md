@@ -101,7 +101,7 @@ for it.
 
 **Every sign-in sends mail, so mail becomes a product surface.** SPF, DKIM and DMARC on
 playblinkered.com, a sending service, and a bounce path. And the mail is in the player's
-language, because we know it: sixteen locales, two templates.
+language, because we know it: one per locale, two templates.
 
 ### Avatars are generated, not uploaded
 
@@ -120,13 +120,13 @@ Bigger than avatars ever was, and much cheaper to forget.
 - Unique case-insensitively, and on an NFKC-normalized form, so `nick` and the one with a
   fullwidth `i` are not two accounts.
 - A reserved list: `admin`, `blinkered`, `support`, `moderator`, and the obvious neighbors.
-- Length bounds, and a character set decided on purpose. Sixteen interface languages argues for
+- Length bounds, and a character set decided on purpose. Nineteen interface languages argues for
   letting people write their own name in their own script; homoglyph impersonation argues the
   other way. Ship permissive with a confusable check against existing names, which catches the
   attack without telling a Greek player their name is invalid.
 - **Renameable.** A name that cannot be changed is a name that has to be moderated perfectly the
   first time. A rename changes nothing about history, since games belong to a user id.
-- A blocklist is not going to work in sixteen languages and pretending otherwise is worse than
+- A blocklist is not going to work across this many languages and pretending otherwise is worse than
   not having one. What works is a report button and the power to rename an account and tell its
   owner why.
 
@@ -155,7 +155,7 @@ same control.
 Two implementation notes, because both are free and both are easy to do the hard way.
 
 - **`Intl.DisplayNames`** gives localized country names from ICU, so nobody hand-translates 250
-  names into sixteen languages, and **`Intl.Collator`** sorts them in the reader's own language,
+  names per locale, and **`Intl.Collator`** sorts them in the reader's own language,
   which is the difference between an alphabetized list and an English one. Alphabetical by the
   English name in a Greek interface is not a list, it is a shuffle.
 - **Emoji flags do not render on Windows.** No flag glyphs ship with the OS, so Chrome and Edge
@@ -174,7 +174,7 @@ would drift from it. Same plugin shape, emitting `dist/flags/xx.svg`. Payload is
 and does not need to be; the audit is.
 
 **Which settles the phone for free.** `capacitor.config.ts` sets `webDir: '../web/dist'`, so
-everything Vite emits is inside the binary, exactly as the sixteen word lists already are. The web
+everything Vite emits is inside the binary, exactly as the word lists already are. The web
 fetches `/flags/hr.svg`, the phone reads the same path out of the bundle, and there is one code
 path. It also has to be that way: the shell sets `limitsNavigationsToAppBoundDomains: true`, so a
 flag on a CDN would not render on a phone at all.
@@ -210,7 +210,7 @@ a consequence worth accepting.
 
 ### Age gate, privacy policy, export
 
-Sixteen languages means European players whatever the company's address is. That means a privacy
+This many languages means European players whatever the company's address is. That means a privacy
 policy, a lawful basis, an export path and a deletion path, all of which are small if they are
 designed in and expensive if they are retrofitted. A word game will also attract children, and
 collecting an email address from an under-13 is regulated on both sides of the Atlantic. A
@@ -456,7 +456,7 @@ logged. One sentence at import time, and it never has to be explained again.
 
 ## The leaderboard is 128 boards, and most of them are empty
 
-Four difficulties, sixteen languages, two periods, per engine version. That is the grouping
+Four difficulties, nineteen languages, two periods, per engine version. That is the grouping
 `rankedResults` already enforces and it is correct: a Greek board admits well under half what an
 Italian one does, so a single table would be a table about languages.
 
@@ -470,13 +470,13 @@ and the board stops being a leaderboard and starts being a profile.
 
 ## The part that is easy to forget
 
-Every string in this feature exists sixteen times. Sign-up, sign-in, the code screen, the profile,
+Every string in this feature exists once per locale. Sign-up, sign-in, the code screen, the profile,
 history, the boards, every error, every moderation message, and two email templates. That is
 roughly 85 to 100 new messages against the 166 the game has now, so it grows i18n by more than
 half.
 
 PROPOSALS.md makes this point about the help page and it is the same point: the feature works
-without it, and the sixteenth translation is never the interesting part of the day.
+without it, and the last translation is never the interesting part of the day.
 
 The rules page needs nothing. Accounts do not change what a word is worth.
 

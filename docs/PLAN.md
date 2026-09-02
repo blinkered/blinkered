@@ -453,7 +453,7 @@ Non-Latin scripts are a different project rather than another language. Arabic h
 
 ### 5.4 Where the word lists come from
 
-Sixteen playable languages, built and committed. The sourcing design, the license audit and
+Nineteen playable languages, built and committed. The sourcing design, the license audit and
 every measurement behind the sizing live in [DICTIONARIES.md](DICTIONARIES.md). The short
 version: a frequency list selects candidates, a dictionary validates them, and we ship the
 intersection, which is smaller, better and a thinner derivative of either input than a copy of
@@ -473,7 +473,7 @@ The order is load-bearing: board density depends on the draw weights, and the wo
 
 The remaining work is a judgment pass on the suggested rare letters, a note of which letters are dead alone, and a `Messages` set in `packages/i18n/src/locales/`.
 
-So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a license that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens: of the sixteen, a third had no usable morphological dictionary at all.
+So the engineering is minutes. The only genuine gate is **a word list with a defensible common tier and a license that permits shipping it**, which varies enormously by language and is the one thing no amount of tooling shortens: a third of them have no usable morphological dictionary at all.
 
 Because language is part of the recorded ruleset, ranked play groups by it, exactly as it does for board size.
 

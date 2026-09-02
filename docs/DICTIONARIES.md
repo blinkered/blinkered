@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Sixteen playable languages. The credit tier is much the larger of the two, and its size is
+Nineteen playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -47,6 +47,9 @@ driven by how productive the language's morphology is rather than by any choice 
 | no    | 9,994  | 13,891  | 17% / 9%  | 79%      | 164         | 93%     | 42 KB   |
 | fi    | 17,511 | 35,648  | 35% / 24% | 71%      | 136         | 96%     | 111 KB  |
 | el    | 17,421 | 257,014 | 87% / 33% | 95%      | 97          | 96%     | 743 KB  |
+| af    | 12,354 | 12,354  | 72% / 72% | 94%      | 107         | 97%     | 37 KB   |
+| tr    | 17,867 | 638,282 | 89% / 38% | 93%      | 79          | 91%     | 1608 KB |
+| tl    | 3,540  | 23,306  | 35% / 69% | 70%      | 68          | 95%     | 69 KB   |
 
 Board words is the median a 12-tile board admits from the **common** tier at minimum length 3,
 over 300 sound draws, and it is the number the cut is calibrated against because it is the one a
@@ -157,7 +160,7 @@ hunspell accepted neither everything nor nothing, which catches an aff file that
 frequency list, and hunspell is case-aware: it accepts `hiss` and rejects `james`, because the
 dictionary lists the latter only as `James`. The spell check and the name filter are one pass.
 
-## Licenses: nine clean, three GPL-only, four gaps
+## Licenses: eleven clean, three GPL-only, five gaps
 
 Per [wooorm/dictionaries](https://github.com/wooorm/dictionaries), verified by reading each
 license file rather than trusting the summary:
@@ -169,12 +172,14 @@ license file rather than trusting the summary:
 | Spanish                          | MPL-1.1      | Norwegian Bokmål: GPL-2.0  |
 | Portuguese (`pt-PT`)             | MPL-1.1      |                            |
 | Brazilian Portuguese (`pt`)      | MPL-2.0      | Absent entirely:           |
-| Dutch                            | BSD-3-Clause | Finnish, Malay             |
+| Dutch                            | BSD-3-Clause | Finnish, Malay, Tagalog    |
 | Russian                          | BSD-3-Clause |                            |
 | Croatian                         | SISSL        |                            |
 | Swedish                          | LGPL-3.0     |                            |
 | Greek                            | MPL-1.1      |                            |
 | Indonesian (LibreOffice `id_ID`) | LGPL-3.0     |                            |
+| Turkish                          | MIT          |                            |
+| Afrikaans (LibreOffice `af_ZA`)  | LGPL-2.1+    |                            |
 
 Checked and rejected: `de_DE_frami` and LibreOffice `it_IT` are GPL too, so there is no
 non-GPL morphological dictionary for German or Italian anywhere obvious. GPL is the hard
@@ -188,7 +193,7 @@ are unioned. The third member is ENABLE, and the reason it is needed is that a s
 a word-game lexicon are built for different jobs — one aims to catch typos, the other to settle
 arguments, and the second is what a word game needs.
 
-### The six without a clean hunspell use Wiktionary titles
+### The languages without a clean hunspell use Wiktionary
 
 `https://dumps.wikimedia.org/<wiki>wiktionary/latest/<wiki>wiktionary-latest-all-titles-in-ns0.gz`
 is small (150KB to 5MB gzipped), CC BY-SA, one headword per line with case preserved, and
@@ -203,6 +208,27 @@ corpus.
 proper nouns everywhere else would have deleted the nouns and left the verbs. German therefore
 ignores case on both sides, which is why its yield is the highest in the table (92%) and why it
 is the one language that admits some proper nouns. Recorded in its PROVENANCE.
+
+### Tagalog needed the English Wiktionary rather than its own
+
+Two things go wrong for a language whose own wiki is small. tl.wiktionary has 17,092 pages of
+which 1,175 survive as Tagalog words, and a deeper cut recovers nothing at all: the validator is
+exhausted long before the cut is. Meanwhile en.wiktionary holds **33,079 Tagalog lemmas**, filed
+under `Category:Tagalog lemmas`, every one of them tagged with the language it belongs to.
+
+So there is a third `SourceKind`, `category`, which reads the members of a category through the
+MediaWiki API rather than a titles dump. There is no dump for this: the `all-titles` dump is per
+wiki, and what is wanted is per language on somebody else's wiki. Thirty thousand lemmas is
+sixty-seven paged requests, once, and then it is a file in the cache like everything else.
+
+**A category is a lexicon as well as a validator, and that is the real difference.** A titles
+list is every language at once, so it cannot say which words are Tagalog and cannot stand in for
+its lexicon; a category says exactly that. So the category's members join the candidate pool the
+way ENABLE does for English, with a count of zero, ranking below every cut the common tier
+applies. They earn credit and are never words a board is required to be solvable from — which is
+right, because the thing keeping Tagalog's common tier small is not the validator at all. **The
+Tagalog subtitle corpus is 10,665 words long**, a tenth of Malay's. That is the ceiling, and only
+a different corpus moves it.
 
 ## Sizing the cut
 
@@ -282,11 +308,12 @@ board admits 183 words and a Russian one 69, because a 21-letter alphabet combin
 from a 32-letter one. So the floor is scaled per language:
 
 ```
-it 1.18   ms 1.06   no 1.06   en 1.00   fr 0.99   id 0.96   nl 0.92   pt-BR 0.92
-de 0.90   pt 0.90   fi 0.88   sv 0.79   es 0.77   hr 0.64   el 0.63   ru 0.45
+it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92   id 0.89   pt-BR 0.86   nl 0.85
+de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72   af 0.64   hr 0.59   el 0.58
+tr 0.47   ru 0.41   tl 0.41
 ```
 
-With these in place all sixteen languages accept a board in a mean of 1.3 to 1.8 draws.
+With these in place every language accepts a board in a mean of 1.3 to 1.8 draws.
 
 Draw weights come first, because density depends on them: `pnpm dictionary weights`, paste,
 then `pnpm dictionary floor`, paste. Getting that order backwards calibrates against a guess.
@@ -304,6 +331,11 @@ M, N, K and U and less A and R. They had been sharing one table.
 - **validated on the raw spelling, played on the folded one.** ÉPÉE is checked as `épée` and
   played as EPEE. Several raw spellings can fold onto one playable word, and any one of them
   validating is enough, so a corpus that spells `acción` correctly rescues ACCION.
+- **upper-cased by the language's own rules, not the default ones.** Only Turkish needs this and
+  it needs it badly: `toUpperCase` sends both the dotless ı and the dotted i to a plain I, which
+  merges ILIK (lukewarm) with İLİK (marrow) and, in the folded list, with every other pair the
+  dot distinguishes. `folder({ locale: 'tr' })` keeps them apart. The board search runs through
+  the same fold, so a Turkish tutorial board cannot be found by looking up the wrong word.
 - **lower case only**, except German. The frequency list is lower-cased throughout, so the case
   in the _dictionary_ is the only case evidence available, and it is worth a lot.
 - **validation yield falls with depth**, which is what makes a deeper cut a real trade rather
@@ -313,8 +345,8 @@ M, N, K and U and less A and R. They had been sharing one table.
 ## Sources
 
 **Frequency**: [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords),
-OpenSubtitles 2018, and it covers all sixteen. Of our set only Portuguese has a regional
-variant (`pt` and `pt_br`), so sixteen playable options come from fifteen languages.
+OpenSubtitles 2018, and it covers all but three. Of our set only Portuguese has a regional
+variant (`pt` and `pt_br`), so nineteen playable options come from eighteen languages.
 
 **Open provenance question, still open.** That repo is MIT, but the data derives from
 OpenSubtitles via OPUS: user-uploaded subtitles of copyrighted films, distributed for research.

@@ -7,15 +7,16 @@ next.
 
 - **`packages/engine`** — the whole game as one pure reducer. No clock, no I/O, no DOM.
   Deterministic from `(seed, difficulty, event log)`, which is what will let a server verify
-  a score rather than believe one. Sixteen alphabets, with draw weights derived from each
+  a score rather than believe one. Nineteen alphabets, with draw weights derived from each
   language's own shipped vocabulary.
 - **`packages/words`** — word list normalization, anagram solver, board generation, weight
   derivation, and the dictionary pipeline's pure half. Node-only filesystem access sits behind
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
-- **`packages/i18n`** — every string the game says, in sixteen languages. Plurals go through
+- **`packages/i18n`** — every string the game says, in nineteen languages. Plurals go through
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three.
-- **`packages/words/data`** — sixteen playable languages, generated and committed, each with
-  its own `LICENSE` and `PROVENANCE.md`. 5.4MB, about 100KB gzipped per language.
+- **`packages/words/data`** — nineteen playable languages, generated and committed, each with
+  its own `LICENSE` and `PROVENANCE.md`. 43MB, about 100KB gzipped per language, though
+  Russian and Turkish are 1.6MB each.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
@@ -23,7 +24,7 @@ next.
   `tl-prod`. One container, nginx serving the built files, built and pushed by CI, fronted by
   Traefik with the www redirect and response compression as middlewares. See
   [DEPLOY.md](DEPLOY.md).
-- **`apps/web`** — playable React front end. Keyboard and pointer, sixteen languages with a
+- **`apps/web`** — playable React front end. Keyboard and pointer, nineteen languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.
 - **iOS**, meaning the same build made genuinely playable on a phone and installable to the
@@ -32,7 +33,7 @@ next.
   turned off, landscape gets its own layout, and there is a manifest and an icon set.
   [IOS.md](IOS.md) has the measurements.
 - **`apps/mobile`** — the Capacitor iOS shell, which runs `apps/web`'s build in a WebView and
-  owns no game code. All sixteen word lists are inside the app, so it plays with the phone in
+  owns no game code. Every word list is inside the app, so it plays with the phone in
   aeroplane mode. The one thing the shell had to change is the rules, which cannot be a second
   tab where there are no tabs. Installing it needs an Apple ID typed into Xcode and Xcode's iOS
   platform download, neither of which can be scripted; steps are in
@@ -45,7 +46,7 @@ next.
   that does the wrong thing. Skipping asks before it hides the tour for good; finishing assumes.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
-  is, so each ships with its own section in the rules page in all sixteen languages.
+  is, so each ships with its own section in the rules page in every language.
 - **`apps/server`** — started, and honest about how far. A Hono app answering `/healthz`, and
   `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
   believed. No database yet, so no other route exists: one that answered from nothing would be a
@@ -124,8 +125,8 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns
   up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
 - **No service worker**, so no offline play. Offline is not something the game does on the web
-  either, so it would be new behavior rather than parity, and the payload is sixteen word lists
-  of which Russian alone is 8.3MB. A stale service worker is also the classic way to serve last
+  either, so it would be new behavior rather than parity, and the payload is every word list
+  of which Russian and Turkish are 8.5MB each. A stale service worker is also the classic way to serve last
   week's bundle. Worth adding when somebody asks for offline; cache the shell and the one
   language in play.
 - **Four iOS facts are reasoned rather than measured.** WebKit under Playwright gives real touch

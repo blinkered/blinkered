@@ -213,8 +213,8 @@ Send as `noreply@playblinkered.com`, and publish on the domain:
 - **DMARC**, starting at `p=none` while the reports are read, then tightening. Going straight to
   `p=reject` before checking alignment is how a domain stops delivering its own mail.
 
-The codes are localized, because the account already knows which of the sixteen languages the
-player reads. Two templates, sixteen languages, and they are the first strings in this project
+The codes are localized, because the account already knows which of the game's languages the
+player reads. Two templates, one per locale, and they are the first strings in this project
 that live outside the app.
 
 ## What goes where
