@@ -1,0 +1,19 @@
+Blinkered word list for Kiswahili (sw)
+SPDX-License-Identifier: LGPL-2.1-or-later
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of sw AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=sw`.
+
+Distributed under LGPL-2.1-or-later, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  sw.wikipedia.org contributors, word counts over the article text of the pages-articles dump
+  CC-BY-SA-4.0
+
+Validation
+  hunspell `sw_TZ` (LGPL-2.1-or-later) — Jambo Swahili Spellchecker, Alberto Escudero-Pascual and contributors; word lists from Egerton University, the TUKI English-Swahili Dictionary, the Kamusi Project and Crúbadán
+
+The full text of each license is in ../licenses/.

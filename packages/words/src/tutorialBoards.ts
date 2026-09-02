@@ -94,6 +94,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 2, becomes: 'O', word: 'QUESTO' },
     swap: { from: 'Q', to: 'I' },
   },
+  la: {
+    tiles: ['U', 'N', 'A', 'I', 'S', 'L'],
+    three: 'UNA',
+    six: 'INSULA',
+    card: { at: 4, becomes: 'G', word: 'LINGUA' },
+    swap: { from: 'L', to: 'E' },
+  },
   ms: {
     tiles: ['D', 'A', 'N', 'A', 'T', 'G'],
     three: 'DAN',
@@ -142,6 +149,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     six: 'KÄNNER',
     card: { at: 4, becomes: 'T', word: 'TÄNKER' },
     swap: { from: 'Ä', to: 'A' },
+  },
+  sw: {
+    tiles: ['K', 'W', 'A', 'A', 'T', 'I'],
+    three: 'KWA',
+    six: 'WAKATI',
+    card: { at: 1, becomes: 'K', word: 'KATIKA' },
+    swap: { from: 'T', to: 'U' },
   },
   tl: {
     tiles: ['A', 'N', 'G', 'G', 'L', 'I'],

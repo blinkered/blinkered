@@ -102,6 +102,16 @@
       "density": 183
     },
     {
+      "tag": "la",
+      "endonym": "Latina",
+      "common": 10765,
+      "full": 32765,
+      "bytes": 309628,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 91
+    },
+    {
       "tag": "ms",
       "endonym": "Bahasa Melayu",
       "common": 7372,
@@ -170,6 +180,16 @@
       "licence": "LGPL-3.0",
       "shareAlike": false,
       "density": 122
+    },
+    {
+      "tag": "sw",
+      "endonym": "Kiswahili",
+      "common": 9215,
+      "full": 29038,
+      "bytes": 256693,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 87
     },
     {
       "tag": "tl",

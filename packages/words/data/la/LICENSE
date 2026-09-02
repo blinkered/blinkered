@@ -1,0 +1,19 @@
+Blinkered word list for Latina (la)
+SPDX-License-Identifier: CC-BY-SA-4.0
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of la AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=la`.
+
+Distributed under CC-BY-SA-4.0, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  la.wikipedia.org contributors, word counts over the article text of the pages-articles dump
+  CC-BY-SA-4.0
+
+Validation
+  en.wiktionary.org Category:Latin lemmas (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Latin lemmas
+
+The full text of each license is in ../licenses/.
