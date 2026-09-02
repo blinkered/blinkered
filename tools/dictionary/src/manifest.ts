@@ -483,6 +483,32 @@ export const LANGUAGES: readonly LanguageSpec[] = [
       'sequence of tiles; the dictionary still holds both words.',
   },
   {
+    tag: 'arz',
+    // arz.wikipedia is 1.6 million articles, which is the only Egyptian corpus there is: there
+    // is no OpenSubtitles list and no arz.wiktionary at all.
+    corpus: wikipedia('arz'),
+    // One group, two members, so either accepts. Egyptian Arabic shares most of its vocabulary
+    // with the standard language, and the 1,181 lemmas en.wiktionary files as Egyptian are the
+    // words that are only Egyptian — مش, ازاي, كده. Validating against the standard dictionary
+    // alone would refuse exactly those; validating against the Egyptian list alone would refuse
+    // almost everything else.
+    groups: [
+      [
+        {
+          kind: 'hunspell',
+          id: 'ar',
+          dic: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/ar/ar.dic',
+          aff: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/ar/ar.aff',
+          license: 'MPL-1.1',
+          attribution: 'Ayaspell / Arabic hunspell dictionary, Taha Zerrouki and contributors',
+        },
+        enCategories('Egyptian Arabic'),
+      ],
+    ],
+    caseRule: 'ignoreCase',
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
     tag: 'tl',
     corpus: subtitles('tl'),
     // Its own wiki and the English one, unioned, because they are the same project and

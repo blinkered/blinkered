@@ -283,6 +283,7 @@ export function Tutorial({
             <LanguagePicker
               catalogue={catalogue}
               value={language}
+              readIn={language}
               label={messages.gameLanguage}
               onChange={onLanguage}
             />

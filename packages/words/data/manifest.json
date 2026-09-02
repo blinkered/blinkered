@@ -22,6 +22,16 @@
       "density": 268
     },
     {
+      "tag": "arz",
+      "endonym": "مصرى",
+      "common": 11570,
+      "full": 154576,
+      "bytes": 1989012,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 195
+    },
+    {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 18389,
@@ -144,7 +154,7 @@
     {
       "tag": "la",
       "endonym": "Latina",
-      "common": 10765,
+      "common": 10745,
       "full": 32765,
       "bytes": 309628,
       "license": "CC-BY-SA-4.0",
@@ -224,9 +234,9 @@
     {
       "tag": "sw",
       "endonym": "Kiswahili",
-      "common": 9215,
-      "full": 29038,
-      "bytes": 256693,
+      "common": 9200,
+      "full": 29002,
+      "bytes": 256395,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 87

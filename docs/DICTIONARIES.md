@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Twenty-five playable languages. The credit tier is much the larger of the two, and its size is
+Twenty-six playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -56,6 +56,7 @@ driven by how productive the language's morphology is rather than by any choice 
 | ar    | 18,686 | 656,979 | 93% / 53% | 95%      | 268         | 96%     | 1715 KB |
 | ko    | 19,257 | 38,467  | 4% / 6%   | 34%      | 95          | 89%     | 155 KB  |
 | ja    | 17,000 | 191,188 | 100%/100% | 100%     | 149         | 50%     | 767 KB  |
+| arz   | 11,570 | 154,576 | 58% / 27% | 70%      | 195         | 92%     | 429 KB  |
 
 Board words is the median a 12-tile board admits from the **common** tier at minimum length 3,
 over 300 sound draws, and it is the number the cut is calibrated against because it is the one a
@@ -318,9 +319,10 @@ board admits 183 words and a Russian one 69, because a 21-letter alphabet combin
 from a 32-letter one. So the floor is scaled per language:
 
 ```
-he 2.06   ar 1.60   it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92   id 0.89
-ja 0.89   pt-BR 0.86   nl 0.85   de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72
-af 0.64   hr 0.59   el 0.58   ko 0.57   la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
+he 2.06   ar 1.60   arz 1.17   it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92
+id 0.89   ja 0.89   pt-BR 0.86   nl 0.85   de 0.84   pt 0.84   fi 0.81   sv 0.73
+es 0.72   af 0.64   hr 0.59   el 0.58   ko 0.57   la 0.54   sw 0.52   tr 0.47
+ru 0.41   tl 0.41
 ```
 
 The two abjads sit above English and nothing else does. A script that writes its vowels as
@@ -358,9 +360,9 @@ M, N, K and U and less A and R. They had been sharing one table.
 
 ## Sources
 
-**Frequency**, for nineteen of the twenty-five:
+**Frequency**, for nineteen of the twenty-six:
 [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), OpenSubtitles 2018.
-Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-five playable
+Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-six playable
 options come from twenty languages.
 
 **Frequency, for Japanese**: JMdict's own `nf` priority bands, CC BY-SA 4.0, which rank about a
@@ -384,8 +386,11 @@ does not need to be: the corpus decides ordering and nothing else, so imperfect 
 a few template parameter names a place in the ranking, and every one of them still has to get
 past a dictionary of the language. What the stripper does have to get right is the two things
 that would skew the ordering: markup that repeats on every page, and pages that are not
-articles. Tokens seen once in a whole encyclopaedia are dropped, being typos and surnames far
-more often than words.
+articles. Section headings are the markup that repeats most, since every article on a wiki ends
+with the same two or three, so they are dropped whole: on arz.wikipedia, which is 1.6 million
+bot-written stubs, that had put مصادر and لينكات برانيه — "sources" and "external links" — at
+ranks four to six in the entire language. Tokens seen once in a whole encyclopaedia are dropped
+too, being typos and surnames far more often than words.
 
 **Open provenance question, half answered.** hermitdave's repo is MIT, but the data derives from
 OpenSubtitles via OPUS: user-uploaded subtitles of copyrighted films, distributed for research.

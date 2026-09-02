@@ -337,6 +337,7 @@ function Session({
           <LanguagePicker
             catalogue={catalogue}
             value={language}
+            readIn={settings.uiLanguage}
             label={messages.gameLanguage}
             disabled={playing}
             onChange={(tag) => {

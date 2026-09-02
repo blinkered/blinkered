@@ -1,0 +1,20 @@
+Blinkered word list for مصرى (arz)
+SPDX-License-Identifier: CC-BY-SA-4.0
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of arz AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=arz`.
+
+Distributed under CC-BY-SA-4.0, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  arz.wikipedia.org contributors, word counts over the article text of the pages-articles dump
+  CC-BY-SA-4.0
+
+Validation
+  hunspell `ar` (MPL-1.1) — Ayaspell / Arabic hunspell dictionary, Taha Zerrouki and contributors
+  en.wiktionary.org Category:Egyptian Arabic lemmas, Category:Egyptian Arabic non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Egyptian Arabic lemmas
+
+The full text of each license is in ../licenses/.

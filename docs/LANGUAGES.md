@@ -3,9 +3,9 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
-**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic, Korean
-and Japanese ship; both missing pipeline capabilities are built; and the app reads right to
-left.** What that turned up is at [What building the first
+**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic, Korean,
+Japanese and Egyptian Arabic ship; both missing pipeline capabilities are built; and the app
+reads right to left.** What that turned up is at [What building the first
 five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
@@ -353,16 +353,59 @@ the corpus is lower case, nothing folds to itself, and the preference finds noth
 Without it the tour opened on きよう → きよくちよう. With it, いたい corrects to たいへいよう and
 the card turns the Pacific into the Atlantic.
 
+## Egyptian Arabic, and the order the picker was in
+
+**What it is.** The survey's open question was whether Egyptian Arabic is a separate game from
+Arabic at all. It is, and the separation is exactly the one Malay and Indonesian have: same
+letters, same folding, same direction, different vocabulary and different frequencies. Eleven
+letters differ in the draw weights — more ا, ل and ه, less ق, ك and ع — which is Egyptian
+writing rather than a newspaper's.
+
+**Where it comes from.** There is no arz.wiktionary and no OpenSubtitles list, so the corpus is
+arz.wikipedia, which is 1.6 million articles. Validation is the standard Arabic hunspell unioned
+with en.wiktionary's 1,181 Egyptian lemmas, and the union is the point rather than a compromise:
+Egyptian shares most of its vocabulary with the standard language, and the words that are _only_
+Egyptian — مش, ازاي, كده — are the 1,181. The standard dictionary alone would refuse precisely
+those; the Egyptian list alone would refuse almost everything else. It ships at 11,570 common,
+195 board words and 92% reaching six, third densest in the set.
+
+**What the corpus taught.** arz.wikipedia is famously bot-written, and it showed: مصادر and
+لينكات برانيه, the "sources" and "external links" headings, ranked fourth to sixth _in the whole
+language_, because they appear on every one of 1.6 million stubs. Section headings are dropped
+whole now, which was always the intent — the stripper's own comment says its job is to catch
+"markup that repeats on every page" — and it improves Swahili and Latin as well.
+
+The astronomy is still there and is not a bug: 668,000 stubs about stars put السماوى and المجره
+higher than they deserve. It cost nothing measurable, because draw weights count each word once
+however often it appears, and the tour's board search was still handed كان → السكان → المكان.
+
+**And it made the picker's ordering indefensible**, which was already true and had gone
+unnoticed. Both pickers sorted the endonyms with a hardcoded English collator. Collating across
+scripts does not interleave them, it ranks them, so Ελληνικά, Русский, עברית, العربية, 日本語 and
+한국어 all sorted after every Latin name, in the order their Unicode blocks happen to fall — a
+tail of six that looked like the order they were added in.
+
+They sort by `Intl.DisplayNames` now: the reader's own name for each language, in the language
+the interface is in, compared with the reader's own collation. An English reader gets Japanese
+between Italian and Korean; a Japanese reader gets a list ordered by 語. The label stays the
+endonym, because a Greek speaker looking for Greek is looking for Ελληνικά, and the flag is what
+makes the row scannable either way.
+
+One thing that needed saying out loud: **ICU does not name every language.** A browser knows no
+name for `arz` in any locale, nor for `pcm`, so both would fall back to their endonym and sink to
+the bottom of a Latin list, which is the thing the sort exists to prevent. `Locale.sortsWith`
+names the language to file such a one under, and Egyptian Arabic files under Arabic, where
+somebody looking for it would look.
+
 ## Still open
 
 - Whether the other twenty-four languages want their own measured `vowelShare` too. Japanese has
   one because the default was actively wrong there; nobody has reported a fault anywhere else,
   and changing it would change every board those languages have ever dealt.
-- Whether Arabic's letters row should read ا … ي rather than ء … ي. The collator puts hamza
-  first and hamza is a tile, so it is not wrong; it is just not how the alphabet is recited.
+- Whether `pcm` wants `sortsWith: 'en'` when Naija lands. Nigerian Pidgin is English-lexified and
+  a reader would look for it near English, but nobody has been asked.
 - Whether `igboapi.com` is usable as a source, by licence and by size.
-- What Egyptian Arabic would be, given no corpus and no wiki of its own, and whether it is a
-  separate game from Arabic at all.
+- ~~What Egyptian Arabic would be~~ — answered by building it. See below.
 - Whether Vietnamese tones ride on the tile or on the word. Tiles carrying them explodes the
   inventory; folding them away merges words that differ only by tone.
 - Urdu needs Nastaliq to look right, which is a font decision on top of RTL.

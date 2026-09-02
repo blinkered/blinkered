@@ -1,5 +1,6 @@
 import { af } from './locales/af.js'
 import { ar } from './locales/ar.js'
+import { arz } from './locales/arz.js'
 import { de } from './locales/de.js'
 import { el } from './locales/el.js'
 import { en } from './locales/en.js'
@@ -37,6 +38,20 @@ export interface Locale {
    * scripts is not, and the endonym next to it carries the actual meaning.
    */
   readonly flag: string
+  /**
+   * The language whose name to file this one under, where a browser has no name of its own
+   * for it.
+   *
+   * The picker sorts by what the *reader* calls each language, through `Intl.DisplayNames`, so
+   * that the list is alphabetical to whoever is reading it rather than ranked by Unicode block.
+   * ICU does not name every language: a browser knows no name for `arz` in any locale, and none
+   * for `pcm` either, so both would fall back to their endonym and sink to the bottom of a Latin
+   * list — which is the thing the sort exists to stop.
+   *
+   * Filing Egyptian Arabic under Arabic puts it next to Arabic, which is where somebody looking
+   * for it would look. Absent for every language ICU can name, which is all but one of these.
+   */
+  readonly sortsWith?: string
   readonly messages: Messages
 }
 
@@ -62,6 +77,7 @@ export const LOCALES: readonly Locale[] = [
   // flag for a language spoken across twenty-odd countries and the usual compromise.
   { tag: 'he', endonym: 'עברית', flag: '🇮🇱', messages: he },
   { tag: 'ar', endonym: 'العربية', flag: '🇸🇦', messages: ar },
+  { tag: 'arz', endonym: 'مصرى', flag: '🇪🇬', sortsWith: 'ar', messages: arz },
   { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
   { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },

@@ -106,13 +106,24 @@ describe('every locale', () => {
     (key) => typeof en[key] === 'string' && placeholdersOf(en[key]).length > 0,
   )
 
-  it('has twenty-five of them, and the engine has an alphabet for each', () => {
-    expect(LOCALES).toHaveLength(25)
+  it('has twenty-six of them, and the engine has an alphabet for each', () => {
+    expect(LOCALES).toHaveLength(26)
     for (const locale of LOCALES) expect(ALPHABET_IDS).toContain(locale.tag)
   })
 
   it('agrees with itself about its own tag', () => {
     for (const locale of LOCALES) expect(locale.messages.tag).toBe(locale.tag)
+  })
+
+  it('files an unnameable language under one that can be named', () => {
+    // `sortsWith` is how the picker keeps a language ICU has no name for out of the tail. It has
+    // to point at a locale that is actually here, or the fallback falls through to the endonym
+    // and the language sinks anyway.
+    for (const locale of LOCALES) {
+      if (locale.sortsWith === undefined) continue
+      expect(localeFor(locale.sortsWith), locale.tag).toBeDefined()
+      expect(locale.sortsWith).not.toBe(locale.tag)
+    }
   })
 
   it('has a flag and an endonym', () => {

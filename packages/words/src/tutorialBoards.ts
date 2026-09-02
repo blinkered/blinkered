@@ -38,6 +38,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 1, becomes: 'ي', word: 'يمكنني' },
     swap: { from: 'ك', to: 'ل' },
   },
+  arz: {
+    tiles: ['ك', 'ا', 'ن', 'ا', 'ل', 'س'],
+    three: 'كان',
+    six: 'السكان',
+    card: { at: 5, becomes: 'م', word: 'المكان' },
+    swap: { from: 'س', to: 'ي' },
+  },
   de: {
     tiles: ['D', 'E', 'R', 'W', 'E', 'N'],
     three: 'DER',

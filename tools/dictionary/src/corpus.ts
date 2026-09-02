@@ -168,6 +168,11 @@ class Reader {
 
   private strip(line: string): string {
     let text = unescapeXml(line)
+    // A section heading is structure rather than prose, and it is the markup that repeats most:
+    // every article on a wiki ends with the same two or three of them. On arz.wikipedia, which
+    // is 1.6 million bot-written stubs, that put مصادر and لينكات برانيه — "sources" and
+    // "external links" — at ranks four to six in the whole language.
+    if (/^\s*=+.*=+\s*$/.test(text)) return ''
     // Whole-element markup first, because what is inside it is markup too.
     text = text.replace(/<!--[\s\S]*?-->/g, ' ')
     text = text.replace(/<ref[^>]*\/>/gi, ' ')
