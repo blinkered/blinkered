@@ -108,12 +108,28 @@ docs/ACCOUNTS.md    accounts, history and leaderboards: the design, not yet buil
 
 ## Adding a language
 
-Three pieces, and none of them is the engine. An `Alphabet` in
-`packages/engine/src/languages.ts` holds everything language-specific: draw weights, vowels,
-which letters are too rare to appear twice, which need a companion (English Q needs a U), how
-a typed key folds onto a tile, and how a word splits into tiles. A `Messages` set in
-`packages/i18n/src/locales/` holds every string. And a source entry in
-`tools/dictionary/src/manifest.ts` says where the words come from and under what licence.
+Six pieces, and none of them is the engine. Four of the six are enforced rather than remembered,
+which is noted against each: a language that is half-added should not build.
+
+1. **An `Alphabet`** in `packages/engine/src/languages.ts`: draw weights, vowels, which letters
+   are too rare to appear twice, which need a companion (English Q needs a U), how a typed key
+   folds onto a tile, and how a word splits into tiles.
+2. **A `Messages` set** in `packages/i18n/src/locales/`, holding every string the game says, in
+   the spirit of the English one rather than translated word for word. _Enforced:_ `Messages` is
+   a type, so a missing string is a compile error.
+3. **A `Locale` entry** in `packages/i18n/src/registry.ts`: tag, the language's own name for
+   itself, and a flag. _Enforced:_ the type requires all three, and a test asserts every locale
+   has an alphabet and that the count is what it should be, so adding one is a deliberate act.
+4. **A source entry** in `tools/dictionary/src/manifest.ts`, saying where the words come from and
+   under what licence. That file is the licence audit; read the end of DICTIONARIES.md first.
+5. **A tutorial board** in `packages/words/src/tutorialBoards.ts`: six tiles whose first three
+   spell a word, a six-tile word that uses all of them, and a card that becomes a letter making a
+   third word from the other five. _Enforced:_ `tutorialBoard.test.ts` asserts a board exists for
+   every language in the manifest and checks every one of those properties against the shipped
+   word list, including that the board **cannot** spell the card's word without it.
+6. **Nothing for the keyboard.** The `A … Z` row derives its two letters from the alphabet,
+   sorted by that language's own collation, so Greek reads `Α … Ω` and Norwegian `A … Å` without
+   anybody deciding.
 
 Then, in this order, because each step depends on the one before:
 
@@ -126,6 +142,23 @@ pnpm dictionary floor                    # the word floor, from the new weights
 Getting the last two backwards calibrates the board against a guess, and getting them wrong
 is silent rather than loud. [docs/DICTIONARIES.md](docs/DICTIONARIES.md) has the details;
 PLAN.md section 5 covers why accents and diacritics are different problems.
+
+### What a new script may cost, before any of the above
+
+The sixteen shipped languages are all alphabetic and all left to right, and three assumptions
+rest on that. None is hard to find; all three are cheaper to know about first.
+
+- **One code point per tile.** `byCodePoint` splits a word by code point, and `segmentBy` handles
+  a fixed list of digraph letters, which is what Croatian LJ and DŽ need. Neither describes an
+  abugida: in Devanagari or Bengali a written syllable is a consonant plus a vowel sign, and
+  splitting by code point puts a mark that cannot stand alone on a tile of its own. Those scripts
+  need a decision about what a tile **is** before they need a word list.
+- **Left to right.** Reveal order, tile positions and the word line all mean "reading order" and
+  all assume one direction. Nothing in the app or the CSS knows about `direction: rtl` yet, so
+  Arabic and Hebrew want that work doing once, and both would then benefit.
+- **A frequency list.** The common tier is a size band intersected with corpus frequency, and the
+  tutorial board is ranked by it too. A language with a lexicon but no corpus can be validated
+  and cannot be calibrated, which is a different and harder gap than a missing dictionary.
 
 ## Deploying it
 
