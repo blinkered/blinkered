@@ -3,8 +3,8 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
-**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili and Latin ship, and both
-missing pipeline capabilities are built.** What that turned up is at [What building the first
+**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew and Arabic
+ship; both missing pipeline capabilities are built; and the app reads right to left.** What that turned up is at [What building the first
 five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
@@ -72,6 +72,8 @@ blocked rows above are actually blocked on.
 
 ## Decisions already taken
 
+- ~~**RTL is one piece of work, done once.**~~ It was, and it was smaller than expected. See
+  [What right to left actually cost](#what-right-to-left-actually-cost).
 - **RTL is one piece of work, done once.** Nothing in the app or the CSS knows `direction: rtl`;
   reveal order, tile positions and the word line all assume one direction. Doing it unlocks
   Hebrew and Arabic together. Hebrew is the easier of the two to render, having no cursive
@@ -141,7 +143,7 @@ Worth doing anyway, for the reason above, as long as the file admits what it is.
 4. **Yoruba, Hausa, Igbo, Naija.** Nothing in the pipeline is missing for these now. What is
    missing is a decision per language about diacritics, which is the one thing that cannot be
    measured — see below.
-5. **RTL, then Hebrew and Arabic.**
+5. ~~**RTL, then Hebrew and Arabic.**~~ Done.
 6. **Korean**, then Japanese if the JMdict readings work out.
 7. **Abugidas**, when somebody wants to answer the tile question.
 
@@ -209,6 +211,44 @@ Three smaller notes worth keeping:
   scales in `difficulty.ts` had been measured against an older English list than the one shipped;
   the manifest's own density numbers were right all along.
 
+## What right to left actually cost
+
+Less than the survey feared, and the surprises were not where it looked.
+
+**The stylesheet was almost already logical.** Sixteen physical offsets in two and a half
+thousand lines, of which most were `text-align: center`. Eight became `inset-inline-*`,
+`margin-inline-start` and `text-align: end`, and one — a select's background arrow, which CSS
+cannot express logically — got a two-line `[dir='rtl']` override. The whole page mirrors from
+`document.documentElement.dir`.
+
+**Direction is a fact about the script, so it lives on the `Alphabet`**, required rather than
+defaulted, which is what made the compiler point at all twenty-one existing languages and three
+test fixtures. The page takes its direction from the interface language and the board, the word
+line and the found rail take theirs from the game's, because in nerd mode those differ.
+
+**CSS grid did the board for free.** `direction: rtl` decides which corner auto-placement starts
+from, so tile one is top-left in English and top-right in Hebrew with nothing else said.
+
+Three things that were not free:
+
+- **The wordmark spelled DEREKNILB.** It is nine tiles in a flex row, and a flex row under `rtl`
+  deals from the other end. It is a name rather than a word, so it is pinned `dir="ltr"` and
+  `lang="en"` — the second because `text-transform: uppercase` follows the element's language,
+  which is the same trap Turkish sprang.
+- **`letter-spacing` pulls Arabic apart.** The word line tracks its letters at 0.22em, which is
+  right for Latin and wrong for a script that joins: the word stops looking like a word. Turned
+  off for `dir="rtl"`.
+- **Hebrew needed a way to spell a finished word differently from how it is tiled.** Five letters
+  take a different shape at the end of a word and a tile cannot be two shapes, so the tiles carry
+  the ordinary form, as Hebrew Scrabble does. Without putting the shape back, every word in the
+  rail was a letter short of correct: שלומ rather than שלום. `Alphabet.display` is that, it is
+  optional, and Hebrew is the only language that has one.
+
+And one thing that was feared and measured away. **Splitting an Arabic word into one span per
+letter does not break the joining**, because CSS Text shapes across inline boundaries: مدرسة
+rendered as one text node and as five spans comes out the same width to the pixel. The found
+rail marks the letters a card gave you, and it can go on doing it per character.
+
 ## Still open
 
 - Whether `igboapi.com` is usable as a source, by licence and by size.
@@ -220,6 +260,6 @@ Three smaller notes worth keeping:
 - Whether Latin's 800,379 inflected forms are worth having, and how to get them without spending
   a day being throttled. A `categorylinks` dump would do it in one download, at the cost of
   parsing a SQL dump of every category on en.wiktionary.
-- Whether the other nineteen languages should move to the Wikipedia corpus now that it exists.
+- Whether the other twenty-one languages should move to the Wikipedia corpus now that it exists.
   It is the clean provenance and OpenSubtitles is not, but it means rebuilding and recalibrating
   every one, and the cuts are calibrated against the corpus they were measured on.

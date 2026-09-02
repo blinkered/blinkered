@@ -7,16 +7,16 @@ next.
 
 - **`packages/engine`** — the whole game as one pure reducer. No clock, no I/O, no DOM.
   Deterministic from `(seed, difficulty, event log)`, which is what will let a server verify
-  a score rather than believe one. Twenty-one alphabets, with draw weights derived from each
+  a score rather than believe one. Twenty-three alphabets, with draw weights derived from each
   language's own shipped vocabulary.
 - **`packages/words`** — word list normalization, anagram solver, board generation, weight
   derivation, and the dictionary pipeline's pure half. Node-only filesystem access sits behind
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
-- **`packages/i18n`** — every string the game says, in twenty-one languages. Plurals go through
+- **`packages/i18n`** — every string the game says, in twenty-three languages. Plurals go through
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three.
-- **`packages/words/data`** — twenty-one playable languages, generated and committed, each with
-  its own `LICENSE` and `PROVENANCE.md`. 43MB, about 100KB gzipped per language, though
-  Russian and Turkish are 1.6MB each.
+- **`packages/words/data`** — twenty-three playable languages, generated and committed, each with
+  its own `LICENSE` and `PROVENANCE.md`. 53MB, about 100KB gzipped per language, though
+  Russian, Turkish and Arabic are 1.6 to 1.8MB each.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
@@ -24,7 +24,7 @@ next.
   `tl-prod`. One container, nginx serving the built files, built and pushed by CI, fronted by
   Traefik with the www redirect and response compression as middlewares. See
   [DEPLOY.md](DEPLOY.md).
-- **`apps/web`** — playable React front end. Keyboard and pointer, twenty-one languages with a
+- **`apps/web`** — playable React front end. Keyboard and pointer, twenty-three languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.
 - **iOS**, meaning the same build made genuinely playable on a phone and installable to the
@@ -126,7 +126,7 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
 - **No service worker**, so no offline play. Offline is not something the game does on the web
   either, so it would be new behavior rather than parity, and the payload is every word list
-  of which Russian and Turkish are 8.5MB each. A stale service worker is also the classic way to serve last
+  of which Russian, Turkish and Arabic are 8.5 to 9MB each. A stale service worker is also the classic way to serve last
   week's bundle. Worth adding when somebody asks for offline; cache the shell and the one
   language in play.
 - **Four iOS facts are reasoned rather than measured.** WebKit under Playwright gives real touch

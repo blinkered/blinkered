@@ -109,7 +109,7 @@ router out of service rather than failing quietly, so it is not a thing to be re
 
 ## The word lists, and who compresses them
 
-They are the payload: 43MB of text across twenty-one languages, and Russian and Turkish are 8.5MB each. Only
+They are the payload: 53MB of text across twenty-three languages, and Russian, Turkish and Arabic are 8.5 to 9MB each. Only
 the chosen language is ever fetched, when it is chosen, so nobody downloads all of it. The
 manifest at `/words/manifest.json` is 3KB and is all the app needs to know what exists.
 
@@ -163,7 +163,7 @@ list. Measured at the edge before the rule existed:
 | `/assets/main-<hash>.js` | `public, max-age=31536000, immutable`   | `MISS`            |
 
 `DYNAMIC` is Cloudflare declining to cache at all, however loudly the origin asks. `MISS` on the
-JS is the opposite: cacheable, merely cold. So the payload the proxy was wanted for, 43MB of word
+JS is the opposite: cacheable, merely cold. So the payload the proxy was wanted for, 53MB of word
 lists with Russian at 8.1MB, was still reaching the pod on every request.
 
 One Cache Rule fixes it:
@@ -192,7 +192,7 @@ it by `age` climbing on repeat requests to the same colo.
 The Dockerfile builds three things from one source tree: `serve` is nginx and the built site,
 `api` is Node and the Hono server, and `build` is the shared stage both come from. The API image
 is assembled with `pnpm deploy`, which resolves the workspace links into a self-contained
-directory of production dependencies; copying the tree wholesale would carry the 43MB of word
+directory of production dependencies; copying the tree wholesale would carry the 53MB of word
 lists and the whole toolchain into an image that needs none of it.
 
 `deploy/nginx.shared.conf` holds everything the two environments have in common and is included

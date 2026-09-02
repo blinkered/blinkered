@@ -216,7 +216,7 @@ a file served as the wrong type is a thing waiting to break.
 
 The obvious next PWA box to tick, and it is not ticked. Offline is not something the game does
 on the web either, so adding it here would be new behavior rather than parity, and the payload
-is twenty-one word lists of which Russian and Turkish are 8.5MB each — caching that is a decision about a
+is twenty-three word lists of which Russian, Turkish and Arabic are 8.5 to 9MB each — caching that is a decision about a
 player's storage, not a detail. A stale service worker is also the classic way to serve last
 week's bundle to somebody who has cleared everything else.
 
@@ -242,7 +242,7 @@ same code inside a WebView. What is left is not code.
   DICTIONARIES.md.
 - **Sign in with Apple**, which App Store guideline 4.8 makes non-optional once any other
   third-party SSO exists. Not yet relevant: there are no accounts until PLAN.md phase 4.
-- **A decision about the 43MB of word lists** in the bundle. Fine for a development install, and
+- **A decision about the 53MB of word lists** in the bundle. Fine for a development install, and
   worth revisiting before distribution against downloading them on demand.
 
 ## How this was checked, and what that cannot tell us

@@ -18,7 +18,7 @@ shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the
 right, shows every rule and the arithmetic behind it: how long the whole board stays up, what
 a round costs in flips, and what each word length pays against what its letters cost.
 
-Twenty-one languages, picked from the flag menu, which sets the interface language too. The word
+Twenty-three languages, picked from the flag menu, which sets the interface language too. The word
 lists are committed, so there is no build step before playing; `pnpm dictionary build`
 regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
 from and why they are the size they are.
@@ -152,17 +152,22 @@ PLAN.md section 5 covers why accents and diacritics are different problems.
 
 ### What a new script may cost, before any of the above
 
-Every shipped language is alphabetic and left to right, and three assumptions
-rest on that. None is hard to find; all three are cheaper to know about first.
+Every shipped language is alphabetic, and all but two run left to right. Three assumptions used
+to rest on that; one of them has been paid off. None is hard to find; all are cheaper to know
+about first.
 
 - **One code point per tile.** `byCodePoint` splits a word by code point, and `segmentBy` handles
   a fixed list of digraph letters, which is what Croatian LJ and DŽ need. Neither describes an
   abugida: in Devanagari or Bengali a written syllable is a consonant plus a vowel sign, and
   splitting by code point puts a mark that cannot stand alone on a tile of its own. Those scripts
   need a decision about what a tile **is** before they need a word list.
-- **Left to right.** Reveal order, tile positions and the word line all mean "reading order" and
-  all assume one direction. Nothing in the app or the CSS knows about `direction: rtl` yet, so
-  Arabic and Hebrew want that work doing once, and both would then benefit.
+- ~~**Left to right.**~~ Done, for Hebrew and Arabic. `Alphabet.direction` is the one source of
+  truth: the page takes its `dir` from the interface language and the board, the word line and
+  the found rail take theirs from the game's. Every physical offset in the stylesheet is written
+  as a logical one, so the layout mirrors from that. Two things a new right-to-left language
+  still has to think about: a script that joins, where a word must not be given
+  `letter-spacing`, and anything that is a _name_ rather than a word — the wordmark is tagged
+  `dir="ltr"` because a flex row of tiles under `rtl` spelled it DEREKNILB.
 - **A frequency list.** The common tier is a size band intersected with corpus frequency, and the
   tutorial board is ranked by it too. A language with a lexicon but no corpus can be validated
   and cannot be calibrated, which is a different and harder gap than a missing dictionary.
