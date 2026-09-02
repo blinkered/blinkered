@@ -45,6 +45,69 @@ export async function fetchGunzipped(name: string, url: string, refresh: boolean
 const WIKTIONARY = (wiki: string): string =>
   `https://dumps.wikimedia.org/${wiki}wiktionary/latest/${wiki}wiktionary-latest-all-titles-in-ns0.gz`
 
+/** Wikimedia asks for a real one and throttles requests without it. */
+const USER_AGENT = 'blinkered-dictionary/1 (https://playblinkered.com)'
+
+/** Members per request. 500 is the ceiling for an anonymous caller. */
+const CATEGORY_PAGE = 500
+
+interface CategoryResponse {
+  readonly query?: { readonly categorymembers?: readonly { readonly title: string }[] }
+  readonly continue?: { readonly cmcontinue?: string }
+}
+
+/**
+ * Every page filed directly under one category, paged through the API and cached as a list.
+ *
+ * There is no dump for this. The `all-titles` dump `titles` uses is per wiki, and what a
+ * category needs is per language on one wiki, which only the API answers. Thirty thousand
+ * Tagalog lemmas is sixty-seven requests, once, and then it is a file on disk like the rest.
+ */
+async function categoryMembers(
+  wiki: string,
+  category: string,
+  refresh: boolean,
+): Promise<string[]> {
+  const slug = category.replace(/[^\p{L}\p{N}]+/gu, '-')
+  const path = cachePath(`categories/${wiki}-${slug}.txt`)
+  if (!refresh && existsSync(path)) {
+    return readFileSync(path, 'utf8')
+      .split('\n')
+      .filter((title) => title !== '')
+  }
+
+  process.stderr.write(`  fetching ${wiki}.wiktionary ${category}\n`)
+  const titles: string[] = []
+  let cursor: string | undefined
+  do {
+    const url = new URL(`https://${wiki}.wiktionary.org/w/api.php`)
+    for (const [key, value] of Object.entries({
+      action: 'query',
+      format: 'json',
+      list: 'categorymembers',
+      cmtitle: category,
+      cmnamespace: '0',
+      cmtype: 'page',
+      cmlimit: String(CATEGORY_PAGE),
+      ...(cursor === undefined ? {} : { cmcontinue: cursor }),
+    })) {
+      url.searchParams.set(key, value)
+    }
+    const response = await fetch(url, { headers: { 'user-agent': USER_AGENT } })
+    if (!response.ok) throw new Error(`${String(response.status)} from ${url.toString()}`)
+    const body = (await response.json()) as CategoryResponse
+    for (const member of body.query?.categorymembers ?? []) titles.push(member.title)
+    cursor = body.continue?.cmcontinue
+  } while (cursor !== undefined)
+
+  // A category that answers with nothing has been renamed, and an empty validator would
+  // quietly reject the whole language rather than fail.
+  if (titles.length === 0) throw new Error(`${wiki}.wiktionary has no pages in ${category}`)
+  mkdirSync(dirname(path), { recursive: true })
+  writeFileSync(path, `${titles.join('\n')}\n`)
+  return titles
+}
+
 /**
  * Turns one source into the question "does this source accept this spelling?".
  *
@@ -73,6 +136,13 @@ export async function acceptedBy(
     const text = await fetchText(`lists/${source.id}.txt`, source.url, refresh)
     return buildValidator(text.split('\n'), { caseRule })
   }
+  if (source.kind === 'category') {
+    const members: string[] = []
+    for (const category of source.categories) {
+      members.push(...(await categoryMembers(source.wiki, category, refresh)))
+    }
+    return buildValidator(members, { caseRule })
+  }
   return askHunspell(source.id, source.dic, source.aff, candidates, refresh)
 }
 
@@ -86,11 +156,22 @@ export async function acceptedBy(
  * ever seen it or not. Corpus frequency then decides only which words the board must be
  * solvable from.
  *
+ * A category is a lexicon too, and this is the difference between the two Wiktionary kinds.
+ * A title list is every language at once, so it cannot say which words are Tagalog; a
+ * category says exactly that, and enumerating it turns thirty thousand lemmas the subtitle
+ * corpus never saw into words that earn credit.
+ *
  * Empty for the other two kinds. A hunspell dictionary cannot be enumerated without expanding
- * it, which is the trap documented in docs/DICTIONARIES.md, and a Wiktionary title list is
- * every language at once so it cannot stand in for one language's lexicon.
+ * it, which is the trap documented in docs/DICTIONARIES.md.
  */
 export async function lexicon(source: Source, refresh: boolean): Promise<readonly string[]> {
+  if (source.kind === 'category') {
+    const words: string[] = []
+    for (const category of source.categories) {
+      words.push(...(await categoryMembers(source.wiki, category, refresh)))
+    }
+    return words
+  }
   if (source.kind !== 'wordList') return []
   const text = await fetchText(`lists/${source.id}.txt`, source.url, refresh)
   return text

@@ -7,7 +7,7 @@ import type { CaseRule, TierCuts } from '@blinkered/words'
  * tri-licensed hunspell dictionary read carelessly looks like GPL, and GPL data in a mobile
  * binary is the one outcome that would stop the game shipping. Nothing here is GPL.
  *
- * Two kinds of validator, for one reason: a third of the hunspell dictionaries are GPL-only.
+ * Three kinds of validator, for one reason: a third of the hunspell dictionaries are GPL-only.
  *
  * - `hunspell`, where a clean-licensed dictionary exists. Best case by a distance: it knows
  *   the language's morphology, so an inflected form validates without anyone enumerating it.
@@ -16,6 +16,11 @@ import type { CaseRule, TierCuts } from '@blinkered/words'
  *   titles are mostly lemmas, so inflected forms are refused, and a Wiktionary documents
  *   foreign words too, so a little cross-language noise gets through. Both are bounded by
  *   the frequency list, which is that language's own corpus.
+ * - `category`, the members of `Category:<Language> lemmas` on the **English** Wiktionary.
+ *   For a language whose own wiki is small or absent while en.wiktionary documents it
+ *   thoroughly: Tagalog has 1,132 usable titles on tl.wiktionary and 33,079 lemmas here.
+ *   Better than `titles` on the count that matters, because a category says which language a
+ *   word belongs to, so none of the cross-language noise gets in.
  *
  * The validator is a build-time filter and is never shipped. What ships is the intersection
  * of a corpus ordering with a yes/no answer, which is a far thinner derivative of either
@@ -50,7 +55,23 @@ export interface WordListSource {
   readonly attribution: string
 }
 
-export type Source = HunspellSource | TitlesSource | WordListSource
+/**
+ * Members of one wiki's categories, which is how a language is found on somebody else's wiki.
+ *
+ * Only the direct members are read. On en.wiktionary the lemma category holds every lemma
+ * page itself and keeps the parts of speech as subcategories alongside them, so recursing
+ * would fetch the same pages again under another name.
+ */
+export interface CategorySource {
+  readonly kind: 'category'
+  /** Wiki prefix: `en` means en.wiktionary.org. */
+  readonly wiki: string
+  readonly categories: readonly string[]
+  readonly license: string
+  readonly attribution: string
+}
+
+export type Source = HunspellSource | TitlesSource | WordListSource | CategorySource
 
 export interface LanguageSpec {
   /** Engine language id, and the directory the data is written to. */
@@ -84,6 +105,18 @@ const titles = (wiki: string): TitlesSource => ({
   wiki,
   license: 'CC-BY-SA-4.0',
   attribution: `${wiki}.wiktionary.org contributors, page titles in namespace 0`,
+})
+
+/**
+ * The English Wiktionary's own record of a language, which for several languages is the
+ * fullest one anywhere. `language` is the name en.wiktionary files it under.
+ */
+const enCategories = (language: string): CategorySource => ({
+  kind: 'category',
+  wiki: 'en',
+  categories: [`Category:${language} lemmas`, `Category:${language} non-lemma forms`],
+  license: 'CC-BY-SA-4.0',
+  attribution: `en.wiktionary.org contributors, members of Category:${language} lemmas`,
 })
 
 /**
@@ -255,6 +288,49 @@ export const LANGUAGES: readonly LanguageSpec[] = [
     frequency: 'el',
     groups: [[wooorm('el', 'MPL-1.1', 'Ελληνικός ορθογράφος, Steve Stavropoulos')]],
     cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'af',
+    frequency: 'af',
+    groups: [
+      [
+        {
+          kind: 'hunspell',
+          id: 'af_ZA',
+          dic: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/af_ZA/af_ZA.dic',
+          aff: 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master/af_ZA/af_ZA.aff',
+          license: 'LGPL-2.1-or-later',
+          attribution:
+            'MySpell Afrikaans, Translate.org.za; word lists by Bernard A Nieuwoudt and ' +
+            'Danie Viljoen, affix file by Dwayne Bailey, all relicensed under the LGPL',
+        },
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'tr',
+    frequency: 'tr',
+    groups: [[wooorm('tr', 'MIT', 'Turkish spelling dictionary, Harun Reşit Zafer')]],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'tl',
+    frequency: 'tl',
+    // Its own wiki and the English one, unioned, because they are the same project and
+    // neither is a check on the other. tl.wiktionary contributes the words en.wiktionary has
+    // not got to; en.wiktionary contributes almost everything else.
+    groups: [[titles('tl'), enCategories('Tagalog')]],
+    // The subtitle corpus is 10,665 words long, which is a tenth of Malay's and the real
+    // ceiling on the common tier. The credit tier is not bounded by it, because the category
+    // is a lexicon as well as a validator: every Tagalog lemma en.wiktionary knows is a
+    // candidate, and the ones the corpus never saw rank below every cut and earn credit
+    // without ever being a word a board is required to be solvable from.
+    cuts: creditEverything({ commonRank: 10_000 }),
+    caveat:
+      'No Tagalog hunspell dictionary exists at any licence, so there is no morphology here ' +
+      'and an affixed form validates only if somebody wrote it down. The common tier is ' +
+      'small because the corpus is: 10,665 words, the shortest of the set.',
   },
 ]
 

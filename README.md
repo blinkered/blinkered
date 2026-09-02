@@ -18,7 +18,7 @@ shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the
 right, shows every rule and the arithmetic behind it: how long the whole board stays up, what
 a round costs in flips, and what each word length pays against what its letters cost.
 
-Sixteen languages, picked from the flag menu, which sets the interface language too. The word
+Nineteen languages, picked from the flag menu, which sets the interface language too. The word
 lists are committed, so there is no build step before playing; `pnpm dictionary build`
 regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
 from and why they are the size they are.
@@ -125,9 +125,12 @@ which is noted against each: a language that is half-added should not build.
    under what licence. That file is the licence audit; read the end of DICTIONARIES.md first.
 5. **A tutorial board** in `packages/words/src/tutorialBoards.ts`: six tiles whose first three
    spell a word, a six-tile word that uses all of them, and a card that becomes a letter making a
-   third word from the other five. _Enforced:_ `tutorialBoard.test.ts` asserts a board exists for
-   every language in the manifest and checks every one of those properties against the shipped
-   word list, including that the board **cannot** spell the card's word without it.
+   third word from the other five. Searched for rather than chosen, by `pnpm dictionary board`,
+   which ranks candidates by the **worst** of their three words in the corpus so that a board
+   only scores well when all three are words a speaker uses. _Enforced:_ `tutorialBoard.test.ts`
+   asserts a board exists for every language in the manifest and checks every one of those
+   properties against the shipped word list, including that the board **cannot** spell the card's
+   word without it.
 6. **Nothing for the keyboard.** The `A … Z` row derives its two letters from the alphabet,
    sorted by that language's own collation, so Greek reads `Α … Ω` and Norwegian `A … Å` without
    anybody deciding.
@@ -137,16 +140,19 @@ Then, in this order, because each step depends on the one before:
 ```
 pnpm dictionary build --language=<tag>   # fetch, validate, write the list
 pnpm dictionary weights --language=<tag> # draw weights, from its own vocabulary
+pnpm dictionary build --language=<tag>   # again: density depends on the weights
+pnpm dictionary board --language=<tag>   # the tour's six tiles and three words
 pnpm dictionary floor                    # the word floor, from the new weights
 ```
 
-Getting the last two backwards calibrates the board against a guess, and getting them wrong
-is silent rather than loud. [docs/DICTIONARIES.md](docs/DICTIONARIES.md) has the details;
+Order matters and is silent when it is wrong. Weights come from the list, board density comes
+from the weights, and the floor curve comes from both, so deriving the weights against a
+guessed table and then not rebuilding calibrates everything after it against the guess. [docs/DICTIONARIES.md](docs/DICTIONARIES.md) has the details;
 PLAN.md section 5 covers why accents and diacritics are different problems.
 
 ### What a new script may cost, before any of the above
 
-The sixteen shipped languages are all alphabetic and all left to right, and three assumptions
+Every shipped language is alphabetic and left to right, and three assumptions
 rest on that. None is hard to find; all three are cheaper to know about first.
 
 - **One code point per tile.** `byCodePoint` splits a word by code point, and `segmentBy` handles

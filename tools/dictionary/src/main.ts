@@ -1,8 +1,9 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { asEntry, findBoards } from './board.js'
 import { build, sweep } from './build.js'
 import { LANGUAGES, specFor } from './manifest.js'
-import type { LanguageSpec } from './manifest.js'
+import type { LanguageSpec, Source } from './manifest.js'
 import { requireHunspell } from './sources.js'
 import { densityScale, derive, floor } from './weights.js'
 import { DATA_DIR, writeLanguage, writeManifest } from './write.js'
@@ -18,12 +19,14 @@ const USAGE = `
   pnpm dictionary build     [--language=<tag>] [--refresh]
   pnpm dictionary calibrate  --language=<tag>  [--cuts=10000,20000,30000]
   pnpm dictionary weights   [--language=<tag>]
+  pnpm dictionary board     [--language=<tag>] [--top=4]
   pnpm dictionary floor
   pnpm dictionary list
 
   build      fetch, validate and write packages/words/data/<tag>/
   calibrate  sweep the candidate cut and report what each does to board density
   weights    re-derive draw weights from a built list, to paste into the alphabet
+  board      search a built list for the first-run tour's six tiles and three words
   floor      re-measure the board word floor in packages/engine/src/difficulty.ts
   list       the languages this tool knows how to build
 
@@ -151,11 +154,36 @@ function doFloor(): void {
   process.stdout.write('}\n')
 }
 
+/** Boards to print per language. Enough to choose between; the first is usually the one. */
+const DEFAULT_BOARD_CHOICES = 4
+
+async function doBoard(): Promise<void> {
+  const top = Number(arg('top') ?? DEFAULT_BOARD_CHOICES)
+  const refresh = process.argv.includes('--refresh')
+  for (const spec of chosen()) {
+    const plans = await findBoards(spec, refresh)
+    process.stdout.write(`\n// ${spec.tag}: ${String(plans.length)} viable boards\n`)
+    for (const plan of plans.slice(0, top)) {
+      process.stdout.write(
+        `// ${plan.tiles.join('')}  worst rank ${String(plan.worstRank)}  ` +
+          `${plan.three} -> ${plan.six}, card ${plan.card.masked}->${plan.card.becomes} ` +
+          `= ${plan.card.word}\n${asEntry(spec.tag, plan)}\n`,
+      )
+    }
+  }
+}
+
+function sourceLabel(source: Source): string {
+  if (source.kind === 'titles') return `${source.wiki}.wiktionary`
+  if (source.kind === 'category') return `${source.wiki}.wiktionary categories`
+  return source.id
+}
+
 function doList(): void {
   for (const spec of LANGUAGES) {
     const sources = spec.groups
       .flat()
-      .map((source) => (source.kind === 'titles' ? `${source.wiki}.wiktionary` : source.id))
+      .map((source) => sourceLabel(source))
       .join(', ')
     process.stdout.write(`${spec.tag.padEnd(6)} ${sources}\n`)
   }
@@ -172,6 +200,9 @@ async function main(): Promise<void> {
       return
     case 'weights':
       doWeights()
+      return
+    case 'board':
+      await doBoard()
       return
     case 'floor':
       doFloor()

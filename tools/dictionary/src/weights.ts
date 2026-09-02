@@ -113,7 +113,7 @@ export function floor(tag: string): FloorReport {
  *
  * A Greek board admits well under half what an Italian one does, at the same board size and
  * the same cut, because a 24-letter alphabet with a 49% vowel share combines differently from
- * a 21-letter one. One floor for all sixteen would be too high for some and free for others,
+ * a 21-letter one. One floor for all of them would be too high for some and free for others,
  * so the floor is scaled by this.
  */
 export function densityScale(tags: readonly string[], reference: string): Record<string, number> {
