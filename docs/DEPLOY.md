@@ -109,7 +109,7 @@ router out of service rather than failing quietly, so it is not a thing to be re
 
 ## The word lists, and who compresses them
 
-They are the payload: 53MB of text across twenty-three languages, and Russian, Turkish and Arabic are 8.5 to 9MB each. Only
+They are the payload: 53MB of text across twenty-four languages, and Russian, Turkish and Arabic are 8.5 to 9MB each. Only
 the chosen language is ever fetched, when it is chosen, so nobody downloads all of it. The
 manifest at `/words/manifest.json` is 3KB and is all the app needs to know what exists.
 

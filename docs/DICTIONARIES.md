@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Twenty-three playable languages. The credit tier is much the larger of the two, and its size is
+Twenty-four playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -54,6 +54,7 @@ driven by how productive the language's morphology is rather than by any choice 
 | la    | 10,765 | 32,765  | 7% / 8%   | 27%      | 91          | 97%     | 104 KB  |
 | he    | 12,992 | 15,924  | 9% / 4%   | 57%      | 344         | 93%     | 45 KB   |
 | ar    | 18,686 | 656,979 | 93% / 53% | 95%      | 268         | 96%     | 1715 KB |
+| ko    | 19,257 | 38,467  | 4% / 6%   | 34%      | 95          | 89%     | 155 KB  |
 
 Board words is the median a 12-tile board admits from the **common** tier at minimum length 3,
 over 300 sound draws, and it is the number the cut is calibrated against because it is the one a
@@ -184,10 +185,13 @@ license file rather than trusting the summary:
 | Indonesian (LibreOffice `id_ID`) | LGPL-3.0     |                            |
 | Turkish                          | MIT          |                            |
 | Afrikaans (LibreOffice `af_ZA`)  | LGPL-2.1+    | Hebrew: Hspell is AGPL-3.0 |
-| Arabic (LibreOffice `ar`)        | MPL-1.1      |                            |
+| Arabic (LibreOffice `ar`)        | MPL-1.1      | Korean: GPL-3.0            |
 
 Checked and rejected: `de_DE_frami` and LibreOffice `it_IT` are GPL too, so there is no
-non-GPL morphological dictionary for German or Italian anywhere obvious. GPL is the hard
+non-GPL morphological dictionary for German or Italian anywhere obvious. Nor for **Korean**,
+where hunspell-dict-ko says it outright — "the built files (ko.aff and ko.dic) are licensed
+under the GPL version 3" — and LibreOffice's `ko_KR` is GPL-3.0 as well; nor for **Hebrew**,
+whose only one is Hspell, under the AGPL, which is further out of reach than the GPL is. GPL is the hard
 blocker, because a GPL word list bundled into a mobile binary argues the binary is a GPL work,
 and the FSF's position is that the GPL conflicts with the App Store's terms.
 
@@ -315,7 +319,7 @@ from a 32-letter one. So the floor is scaled per language:
 ```
 he 2.06   ar 1.60   it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92   id 0.89
 pt-BR 0.86   nl 0.85   de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72   af 0.64
-hr 0.59   el 0.58   la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
+hr 0.59   el 0.58   ko 0.57   la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
 ```
 
 The two abjads sit above English and nothing else does. A script that writes its vowels as
@@ -353,9 +357,9 @@ M, N, K and U and less A and R. They had been sharing one table.
 
 ## Sources
 
-**Frequency**, for nineteen of the twenty-three:
+**Frequency**, for nineteen of the twenty-four:
 [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), OpenSubtitles 2018.
-Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-three playable
+Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-four playable
 options come from twenty languages.
 
 **Frequency, for the two it does not cover**: a word count over one Wikipedia's articles,

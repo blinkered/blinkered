@@ -52,7 +52,11 @@ function gainBadge(gain: WordGain, amount: number, late: boolean): React.ReactNo
 
 export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.Element {
   const total = state.config.n + state.config.holdTicks
-  const word = selectedLetters(state)
+  const alphabet = alphabetFor(state.config.language)
+  // Spelled the way the language writes it while it is still being built, not only when it is
+  // finished. Korean is why: its tiles are letters, and ㄱㅏㄱ is not something anyone reads.
+  const letters = selectedLetters(state)
+  const word = alphabet.display?.(letters) ?? letters
   const low = state.flipsRemaining <= state.config.n
   const wildUp = state.tiles.some((tile) => tile.wild && tile.revealed && !tile.spent)
 

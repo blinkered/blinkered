@@ -108,6 +108,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 2, becomes: 'O', word: 'QUESTO' },
     swap: { from: 'Q', to: 'I' },
   },
+  ko: {
+    tiles: ['ㅇ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㄱ', 'ㅡ'],
+    three: 'ㅇㅏㄴ',
+    six: 'ㅈㅏㄱㅇㅡㄴ',
+    card: { at: 3, becomes: 'ㅌ', word: 'ㄱㅏㅌㅇㅡㄴ' },
+    swap: { from: 'ㅡ', to: 'ㄹ' },
+  },
   la: {
     tiles: ['U', 'N', 'A', 'I', 'S', 'L'],
     three: 'UNA',

@@ -120,7 +120,7 @@ Bigger than avatars ever was, and much cheaper to forget.
 - Unique case-insensitively, and on an NFKC-normalized form, so `nick` and the one with a
   fullwidth `i` are not two accounts.
 - A reserved list: `admin`, `blinkered`, `support`, `moderator`, and the obvious neighbors.
-- Length bounds, and a character set decided on purpose. Twenty-three interface languages argues for
+- Length bounds, and a character set decided on purpose. Twenty-four interface languages argues for
   letting people write their own name in their own script; homoglyph impersonation argues the
   other way. Ship permissive with a confusable check against existing names, which catches the
   attack without telling a Greek player their name is invalid.
@@ -456,7 +456,7 @@ logged. One sentence at import time, and it never has to be explained again.
 
 ## The leaderboard is 128 boards, and most of them are empty
 
-Four difficulties, twenty-three languages, two periods, per engine version. That is the grouping
+Four difficulties, twenty-four languages, two periods, per engine version. That is the grouping
 `rankedResults` already enforces and it is correct: a Greek board admits well under half what an
 Italian one does, so a single table would be a table about languages.
 

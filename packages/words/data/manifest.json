@@ -122,6 +122,16 @@
       "density": 183
     },
     {
+      "tag": "ko",
+      "endonym": "한국어",
+      "common": 19257,
+      "full": 38467,
+      "bytes": 852398,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 95
+    },
+    {
       "tag": "la",
       "endonym": "Latina",
       "common": 10765,

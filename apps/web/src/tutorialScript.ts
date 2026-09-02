@@ -209,13 +209,16 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
 /**
  * What the word line shows for a frame: the glyph for a card, the tile's letter otherwise.
  *
- * A completed word is spelled the way the language writes it, which for Hebrew means putting
- * the final form back: the tour would otherwise open on אומרימ, which is not a word. A word
- * still being built is left alone, because the last letter is not final yet.
+ * Spelled the way the language writes it, all the way through rather than only at the end.
+ * Korean is why: its tiles are letters and nobody reads a string of them, so a word part way
+ * through has to show as far as it composes — ㄱ, then 가, then 각. Hebrew gets the same
+ * treatment and it costs nothing, the final form simply appearing as soon as the letter is last.
  */
 export function wordOf(frame: Frame, tiles: readonly string[], alphabet: Alphabet): string {
-  if (frame.word !== undefined) return alphabet.display?.(frame.word) ?? frame.word
-  return frame.sel.map((at) => (frame.up[at] === CARD ? WILD_GLYPH : (tiles[at] ?? ''))).join('')
+  const letters =
+    frame.word ??
+    frame.sel.map((at) => (frame.up[at] === CARD ? WILD_GLYPH : (tiles[at] ?? ''))).join('')
+  return alphabet.display?.(letters) ?? letters
 }
 
 export const FACE_CARD = CARD

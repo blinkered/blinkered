@@ -423,6 +423,26 @@ export const LANGUAGES: readonly LanguageSpec[] = [
     cuts: creditEverything(DEFAULT_CUTS),
   },
   {
+    tag: 'ko',
+    corpus: subtitles('ko'),
+    // hunspell-dict-ko says it plainly: "the built files (ko.aff and ko.dic) are licensed under
+    // the GPL version 3". LibreOffice's ko_KR is GPL-3.0 too. So Korean goes the way Hebrew
+    // does, against its own Wiktionary unioned with en.wiktionary's Korean lemmas.
+    groups: [[titles('ko'), enCategories('Korean')]],
+    // Hangul has no case, so the lower-case rule would reject the language rather than its
+    // proper nouns. Same reason as Hebrew and Arabic.
+    caseRule: 'ignoreCase',
+    // The deepest cut in the set, and Latin's reason: the corpus head is conjugated forms the
+    // validator refuses, so the dictionary forms it does accept sit a long way down. At 60,000
+    // a board admitted 39 words and two thirds of draws held a word worth playing; at 500,000
+    // it is 62 and four fifths.
+    cuts: deepCuts(500_000, 1_200_000),
+    caveat:
+      'Validated against Wiktionary rather than a morphological dictionary, the only Korean ' +
+      'hunspell being GPL-3.0. Korean inflects heavily and Wiktionary titles are mostly ' +
+      'dictionary forms, so a conjugated verb is usually refused.',
+  },
+  {
     tag: 'tl',
     corpus: subtitles('tl'),
     // Its own wiki and the English one, unioned, because they are the same project and

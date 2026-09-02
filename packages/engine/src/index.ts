@@ -13,6 +13,7 @@ export {
   type Alphabet,
   type FoldOptions,
 } from './alphabet.js'
+export { composeHangul, foldHangul } from './hangul.js'
 export {
   AFRIKAANS,
   ALPHABET_IDS,
@@ -28,6 +29,7 @@ export {
   HEBREW,
   INDONESIAN,
   ITALIAN,
+  KOREAN,
   LATIN,
   MALAY,
   NORWEGIAN,

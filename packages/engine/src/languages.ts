@@ -1,4 +1,5 @@
 import { byCodePoint, folder, segmentBy } from './alphabet.js'
+import { composeHangul, foldHangul } from './hangul.js'
 import type { Alphabet } from './alphabet.js'
 
 /**
@@ -1069,6 +1070,88 @@ export const ARABIC: Alphabet = {
   segment: byCodePoint,
 }
 
+export const KOREAN: Alphabet = {
+  id: 'ko',
+  endonym: '한국어',
+  direction: 'ltr',
+  // Forty letters, which is what Hangul is underneath and also exactly what a Korean keyboard
+  // has: 한 is ㅎ + ㅏ + ㄴ, and NFD says so. The compound *finals* are two tiles each, the way
+  // they are two keystrokes; the compound vowels ㅘ ㅙ ㅢ are one, being a fifth of Korean vowel
+  // use rather than a rounding error. hangul.ts has the whole argument.
+  weights: {
+    ㄱ: 8,
+    ㄲ: 1,
+    ㄴ: 6,
+    ㄷ: 3,
+    ㄸ: 1,
+    ㄹ: 6,
+    ㅁ: 4,
+    ㅂ: 4,
+    ㅃ: 1,
+    ㅅ: 6,
+    ㅆ: 1,
+    ㅇ: 11,
+    ㅈ: 4,
+    ㅉ: 1,
+    ㅊ: 1,
+    ㅋ: 1,
+    ㅌ: 1,
+    ㅍ: 1,
+    ㅎ: 2,
+    ㅏ: 9,
+    ㅐ: 2,
+    ㅑ: 1,
+    ㅒ: 1,
+    ㅓ: 4,
+    ㅔ: 1,
+    ㅕ: 2,
+    ㅖ: 1,
+    ㅗ: 5,
+    ㅘ: 1,
+    ㅙ: 1,
+    ㅚ: 1,
+    ㅛ: 1,
+    ㅜ: 4,
+    ㅝ: 1,
+    ㅞ: 1,
+    ㅟ: 1,
+    ㅠ: 1,
+    ㅡ: 3,
+    ㅢ: 1,
+    ㅣ: 6,
+  },
+  vowels: [
+    'ㅏ',
+    'ㅐ',
+    'ㅑ',
+    'ㅒ',
+    'ㅓ',
+    'ㅔ',
+    'ㅕ',
+    'ㅖ',
+    'ㅗ',
+    'ㅘ',
+    'ㅙ',
+    'ㅚ',
+    'ㅛ',
+    'ㅜ',
+    'ㅝ',
+    'ㅞ',
+    'ㅟ',
+    'ㅠ',
+    'ㅡ',
+    'ㅢ',
+    'ㅣ',
+  ],
+  rareLetters: ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ'],
+  requires: {},
+  fold: foldHangul,
+  segment: byCodePoint,
+  // The board deals letters and a Korean reader does not read letters. ㅎㅏㄴㄱㅡㄹ is the right
+  // set of tiles; 한글 is the word.
+  display: composeHangul,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -1094,6 +1177,7 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     LATIN,
     HEBREW,
     ARABIC,
+    KOREAN,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 

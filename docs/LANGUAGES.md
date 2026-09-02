@@ -3,8 +3,8 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
-**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew and Arabic
-ship; both missing pipeline capabilities are built; and the app reads right to left.** What that turned up is at [What building the first
+**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic and
+Korean ship; both missing pipeline capabilities are built; and the app reads right to left.** What that turned up is at [What building the first
 five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
@@ -85,9 +85,12 @@ blocked rows above are actually blocked on.
   under CC BY-SA 4.0, which is a licence this project already ships five languages under and
   which carries the same unresolved store-build question. Do not fold small kana: きって and きて
   are different words. It is shiritori-shaped, which is the point.
-- **Korean is a jamo game.** Hangul is alphabetic underneath: NFD decomposes 한 into ᄒ ᅡ ᄂ, so
-  tiles are the jamo and `fold` recomposes. Of everything in the non-Latin group this is the one
-  expected to work best.
+- ~~**Korean is a jamo game.**~~ It is, and it was right that this would be the easiest of the
+  non-Latin group. What the note did not anticipate is that Unicode gives a compound final like
+  ㄵ or ㅄ its own code point, which makes tiling them tempting and wrong: eleven extra tiles
+  reaching 0.7% of the vocabulary, three of them reaching none of it. Dropping them took board
+  density from 62 to 95 and cost no words at all, because they became two tiles each rather than
+  being thrown away. The tile set is now exactly the forty keys of a Korean keyboard.
 - **Abugidas are deferred.** Hindi, Bengali, Marathi and Telugu each need a decision about what a
   tile **is** before they need a word list: splitting by code point puts a vowel sign that cannot
   stand alone on a tile of its own. Agreed as a hard problem, not a build step.
@@ -144,7 +147,7 @@ Worth doing anyway, for the reason above, as long as the file admits what it is.
    missing is a decision per language about diacritics, which is the one thing that cannot be
    measured — see below.
 5. ~~**RTL, then Hebrew and Arabic.**~~ Done.
-6. **Korean**, then Japanese if the JMdict readings work out.
+6. ~~**Korean**~~ done, then Japanese if the JMdict readings work out.
 7. **Abugidas**, when somebody wants to answer the tile question.
 
 ## What building the first five changed
@@ -248,6 +251,40 @@ And one thing that was feared and measured away. **Splitting an Arabic word into
 letter does not break the joining**, because CSS Text shapes across inline boundaries: مدرسة
 rendered as one text node and as five spans comes out the same width to the pixel. The found
 rail marks the letters a card gave you, and it can go on doing it per character.
+
+## What Korean needed
+
+**A module of its own**, `packages/engine/src/hangul.ts`, and one rule.
+
+Hangul looks syllabic and is not: 한 is ㅎ + ㅏ + ㄴ, and NFD says so, so Korean is an alphabet
+game like every other language here. The work is all in choosing which code point stands for a
+letter and putting the letters back together afterwards.
+
+**The tiles are compatibility jamo**, the ones on a keyboard. Unicode has three code points for
+ㄱ — initial, final, and the letter itself — and a player seeing two of them on a board sees one
+letter twice. Folding all three onto the letter is what lets a board holding ㄱ spell a word that
+ends in one.
+
+**The compound finals are two tiles each**, which was the one real decision and the one that was
+initially got wrong. Tiling them is easier and it costs eleven of fifty-one tiles to reach 139
+words out of 19,242, three of the eleven appearing in no word at all, and it makes the alphabet
+recite as ㄱ … ㄿ. As two tiles they cost nothing: the words stay, the keyboard row reads ㄱ … ㅣ
+without anybody deciding it should, and the board admits 95 words rather than 62.
+
+**One rule does the composing.** A consonant closes the syllable before it unless a vowel follows
+and claims it; where two consonants could close it together, they do if what follows still starts
+a syllable. That is the whole difference between 국어 and 구거, between 없다 and 업소, and between
+읽다 and 일가.
+
+**And the word line composes as you build it**, rather than only when the word is done. `display`
+existed for Hebrew's final forms, where "only at the end" was the right reading. Korean wants it
+on every keystroke — ㅇ, 아, 안 — because nobody reads a string of jamo, and applying it always
+turns out to be right for Hebrew too.
+
+What Korean did not get is a morphological validator: hunspell-dict-ko says outright that its
+built files are GPL-3.0, and LibreOffice's is too. So it validates against Wiktionary, refuses
+most conjugated forms, and reaches 34% corpus coverage — which is why it needed the second
+deepest cut in the set, for Latin's reason.
 
 ## Still open
 

@@ -33,6 +33,8 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   he: ['שָׁלוֹם', 'שלומ', 4],
   // Alef with maddah is alef, and the harakat are not tiles.
   ar: ['الآن', 'الان', 4],
+  // A syllable is its letters: 한 is ㅎ + ㅏ + ㄴ, and the compound final in 없 is two tiles.
+  ko: ['한글', 'ㅎㅏㄴㄱㅡㄹ', 6],
 }
 
 describe('the language registry', () => {
@@ -50,6 +52,7 @@ describe('the language registry', () => {
       'hr',
       'id',
       'it',
+      'ko',
       'la',
       'ms',
       'nl',
@@ -189,5 +192,53 @@ describe('Arabic', () => {
   it('drops the harakat and the tatweel', () => {
     expect(arabic.fold('كِتَاب')).toBe('كتاب')
     expect(arabic.fold('كــتــاب')).toBe('كتاب')
+  })
+})
+
+describe('Korean', () => {
+  const korean = alphabetFor('ko')
+
+  it('deals exactly the keys of a Korean keyboard', () => {
+    // Forty. Unicode gives a compound final its own code point and tiling those would have been
+    // easier, but they reach 0.7% of the vocabulary and three of them reach none of it.
+    expect(Object.keys(korean.weights)).toHaveLength(40)
+    for (const compound of [...'ㄳㄵㄶㄺㄻㄼㄽㄾㄿㅀㅄ']) {
+      expect(Object.keys(korean.weights)).not.toContain(compound)
+    }
+  })
+
+  it('takes a syllable apart into its letters and puts it back', () => {
+    const round = (word: string): string => korean.display?.(korean.fold(word)) ?? ''
+    for (const word of ['한글', '앉다', '없다', '읽다', '많다', '괜찮다', '왜', '값', '의사']) {
+      expect(round(word), word).toBe(word)
+    }
+  })
+
+  it('tells a final consonant from the next syllable by what follows it', () => {
+    // The entire rule, and the only thing separating these pairs.
+    expect(korean.display?.(korean.fold('국어'))).toBe('국어')
+    expect(korean.display?.(korean.fold('구거'))).toBe('구거')
+    expect(korean.display?.(korean.fold('없다'))).toBe('없다')
+    expect(korean.display?.(korean.fold('업소'))).toBe('업소')
+    expect(korean.display?.(korean.fold('읽다'))).toBe('읽다')
+    expect(korean.display?.(korean.fold('일가'))).toBe('일가')
+  })
+})
+
+describe('a Korean word part way through being built', () => {
+  const korean = alphabetFor('ko')
+
+  it('shows as far as it composes and leaves the rest as letters', () => {
+    // The word line asks for this on every keystroke, because it spells the word as it goes.
+    // ㅎㅏㄴㄱ is 한 and then a ㄱ waiting for a vowel, and that is what a reader should see.
+    expect(korean.display?.('ㅎㅏㄴㄱ')).toBe('한ㄱ')
+    expect(korean.display?.('ㅎ')).toBe('ㅎ')
+    expect(korean.display?.('')).toBe('')
+  })
+
+  it('leaves a letter that cannot start a syllable alone', () => {
+    // A lone vowel is not a syllable: Korean puts a silent ㅇ in front of one.
+    expect(korean.display?.('ㅏ')).toBe('ㅏ')
+    expect(korean.display?.('ㅏㅎㅏㄴ')).toBe('ㅏ한')
   })
 })
