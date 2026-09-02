@@ -137,7 +137,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
  * these, having been measured against a 78,000-word placeholder list, and left the floor so
  * far above any real board that the generator rejected every draw it made.
  */
-const MEDIAN_WORDS = [2, 6, 12, 21, 35, 56, 79, 116, 152] as const
+const MEDIAN_WORDS = [3, 7, 13, 22, 38, 60, 86, 127, 163] as const
 const SMALLEST_MEASURED = 4
 const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 
@@ -145,9 +145,9 @@ const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 const SHARE_BY_MINIMUM: Readonly<Record<number, number>> = {
   2: 1,
   3: 1,
-  4: 0.59,
+  4: 0.58,
   5: 0.18,
-  6: 0.04,
+  6: 0.05,
 }
 const SHARE_BEYOND_TABLE = 0.03
 
@@ -161,21 +161,24 @@ const SHARE_BEYOND_TABLE = 0.03
  */
 const DENSITY_SCALE: Readonly<Record<string, number>> = {
   en: 1,
-  fr: 0.99,
-  es: 0.77,
-  it: 1.18,
-  de: 0.9,
-  nl: 0.92,
-  pt: 0.9,
-  'pt-BR': 0.92,
-  hr: 0.64,
-  ms: 1.06,
-  id: 0.96,
-  ru: 0.45,
-  sv: 0.79,
-  no: 1.06,
-  fi: 0.88,
-  el: 0.63,
+  fr: 0.92,
+  es: 0.72,
+  it: 1.1,
+  de: 0.84,
+  nl: 0.85,
+  pt: 0.84,
+  'pt-BR': 0.86,
+  hr: 0.59,
+  ms: 0.98,
+  id: 0.89,
+  ru: 0.41,
+  sv: 0.73,
+  no: 0.98,
+  fi: 0.81,
+  el: 0.58,
+  af: 0.64,
+  tr: 0.47,
+  tl: 0.41,
 }
 
 /** A language with no measurement yet is assumed to behave like the one that was measured. */

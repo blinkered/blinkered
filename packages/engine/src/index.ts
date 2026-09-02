@@ -14,6 +14,7 @@ export {
   type FoldOptions,
 } from './alphabet.js'
 export {
+  AFRIKAANS,
   ALPHABET_IDS,
   CROATIAN,
   DEFAULT_LANGUAGE,
@@ -32,6 +33,8 @@ export {
   RUSSIAN,
   SPANISH,
   SWEDISH,
+  TAGALOG,
+  TURKISH,
   alphabetFor,
 } from './languages.js'
 export {

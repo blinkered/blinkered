@@ -20,11 +20,17 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   no: ['blåbær', 'BLÅBÆR', 6],
   fi: ['hyvää', 'HYVÄÄ', 5],
   el: ['καλημέρα', 'ΚΑΛΗΜΕΡΑ', 8],
+  af: ['wêreld', 'WERELD', 6],
+  // The dotted i, which is the whole Turkish case trap; the dotless one has its own test.
+  tr: ['iğne', 'İĞNE', 4],
+  // NG is two tiles, so six letters are six tiles, and the stress acute is decoration.
+  tl: ['ngayón', 'NGAYON', 6],
 }
 
 describe('the language registry', () => {
   it('covers every language asked for', () => {
     expect([...ALPHABET_IDS].sort()).toEqual([
+      'af',
       'de',
       'el',
       'en',
@@ -41,6 +47,8 @@ describe('the language registry', () => {
       'pt-BR',
       'ru',
       'sv',
+      'tl',
+      'tr',
     ])
   })
 
@@ -89,5 +97,26 @@ describe.each(ALPHABET_IDS)('%s', (id) => {
     expect(segments).toHaveLength(tiles)
     const playable = new Set(Object.keys(alphabet.weights))
     for (const tile of segments) expect(playable.has(tile)).toBe(true)
+  })
+})
+
+describe('Turkish', () => {
+  const turkish = alphabetFor('tr')
+
+  it('keeps the dotless and the dotted i apart', () => {
+    // The default `toUpperCase` sends both to a plain I, which would make these one word.
+    expect(turkish.fold('ılık')).toBe('ILIK')
+    expect(turkish.fold('ilik')).toBe('İLİK')
+    expect(turkish.fold('ılık')).not.toBe(turkish.fold('ilik'))
+  })
+
+  it('deals both of them as separate tiles', () => {
+    const letters = Object.keys(turkish.weights)
+    expect(letters).toContain('I')
+    expect(letters).toContain('İ')
+  })
+
+  it('treats the circumflex as decoration', () => {
+    expect(turkish.fold('kâğıt')).toBe('KAĞIT')
   })
 })

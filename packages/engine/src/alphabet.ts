@@ -51,6 +51,14 @@ export interface FoldOptions {
   readonly keep?: readonly string[]
   /** Characters standing in for several letters: French Œ becomes OE. */
   readonly expand?: Readonly<Record<string, string>>
+  /**
+   * Whose rules to upper-case by, for the one language where the default is wrong.
+   *
+   * `toUpperCase` sends both Turkish i's to a plain I, which would merge ILIK and İLİK into
+   * one word. Under `tr` the dotless one keeps its I and the dotted one becomes İ, which is
+   * what Turkish spelling means by them.
+   */
+  readonly locale?: string
 }
 
 /**
@@ -63,11 +71,12 @@ export interface FoldOptions {
 export function folder(options: FoldOptions = {}): (key: string) => string {
   const kept = options.keep ?? []
   const expand = Object.entries(options.expand ?? {})
+  const locale = options.locale
   // Guard the protected letters behind characters no alphabet contains, strip, put them back.
   const guards = kept.map((letter, index) => [letter, `\u0001${String(index)}\u0001`] as const)
 
   return (key) => {
-    let text = key.toUpperCase()
+    let text = locale === undefined ? key.toUpperCase() : key.toLocaleUpperCase(locale)
     for (const [from, to] of expand) text = text.split(from).join(to)
     if (guards.length === 0) return stripDiacritics(text)
     for (const [letter, guard] of guards) text = text.split(letter).join(guard)

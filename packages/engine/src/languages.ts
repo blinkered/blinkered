@@ -685,6 +685,147 @@ export const GREEK: Alphabet = {
   segment: byCodePoint,
 }
 
+export const AFRIKAANS: Alphabet = {
+  id: 'af',
+  endonym: 'Afrikaans',
+  // Twenty-six letters and nothing exotic. Afrikaans writes several diacritics — ê ë ô û î ï
+  // and the acute on é — and every one of them is decoration: SÊ and SE are the same letters
+  // wearing a different hat, so they fold together the way French accents do.
+  weights: {
+    A: 7,
+    B: 2,
+    C: 1,
+    D: 4,
+    E: 17,
+    F: 1,
+    G: 5,
+    H: 1,
+    I: 7,
+    J: 1,
+    K: 5,
+    L: 5,
+    M: 2,
+    N: 6,
+    O: 7,
+    P: 2,
+    Q: 1,
+    R: 8,
+    S: 7,
+    T: 5,
+    U: 3,
+    V: 2,
+    W: 2,
+    X: 1,
+    Y: 1,
+    Z: 1,
+  },
+  // Y is a vowel here rather than the half-vowel it is in English: it spells the diphthong in
+  // BYT and WYN and never stands in for a consonant, so the draw's vowel floor should count it.
+  vowels: ['A', 'E', 'I', 'O', 'U', 'Y'],
+  rareLetters: ['C', 'F', 'H', 'J', 'Q', 'X', 'Z'],
+  requires: QU,
+  fold: folder(),
+  segment: byCodePoint,
+}
+
+export const TURKISH: Alphabet = {
+  id: 'tr',
+  endonym: 'Türkçe',
+  // Twenty-nine letters: no Q, W or X, and I and İ are two of them rather than one letter
+  // twice. Ç Ğ Ö Ş Ü are letters in their own right and keep their marks; the circumflex in
+  // KÂĞIT is decoration and does not.
+  weights: {
+    A: 12,
+    B: 2,
+    C: 1,
+    Ç: 1,
+    D: 4,
+    E: 8,
+    F: 1,
+    G: 1,
+    Ğ: 1,
+    H: 1,
+    I: 6,
+    İ: 8,
+    J: 1,
+    K: 5,
+    L: 6,
+    M: 5,
+    N: 7,
+    O: 3,
+    Ö: 1,
+    P: 1,
+    R: 7,
+    S: 3,
+    Ş: 2,
+    T: 4,
+    U: 3,
+    Ü: 2,
+    V: 1,
+    Y: 4,
+    Z: 2,
+  },
+  vowels: ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'],
+  rareLetters: ['C', 'Ç', 'F', 'G', 'Ğ', 'H', 'J', 'P', 'V'],
+  // No native Q at all, so there is no lone-Q problem to rule out.
+  requires: {},
+  // The one language whose case mapping the default gets wrong. `toUpperCase` sends the
+  // dotless ı and the dotted i to the same plain I, which would merge ILIK (lukewarm) with
+  // İLİK (marrow); under `tr` each keeps its own letter. See `folder`.
+  fold: folder({ keep: ['Ç', 'Ğ', 'İ', 'Ö', 'Ş', 'Ü'], locale: 'tr' }),
+  segment: byCodePoint,
+}
+
+export const TAGALOG: Alphabet = {
+  id: 'tl',
+  endonym: 'Tagalog',
+  // Twenty-six letters, and two deliberate omissions from the twenty-eight the modern
+  // Filipino alphabet lists.
+  //
+  // Ñ is Spanish and stayed Spanish: Tagalog spells that sound NY, as in PINYA and BANYO, so
+  // the tilde survives only in borrowed names and folds onto N.
+  //
+  // NG is the harder call, because it genuinely is a letter — it has its own place in the
+  // abakada and its own name. It is two tiles here anyway, because a multi-character tile can
+  // only be taken with the mouse: nothing turns two keystrokes into one tile, so Croatian DŽ
+  // is click-only and nobody minds, DŽ being a curiosity. NG is in a large share of Tagalog
+  // words, and a board whose commonest letter cannot be typed is a worse game than one whose
+  // alphabet is a letter short.
+  weights: {
+    A: 22,
+    B: 4,
+    C: 1,
+    D: 2,
+    E: 3,
+    F: 1,
+    G: 5,
+    H: 2,
+    I: 8,
+    J: 1,
+    K: 4,
+    L: 5,
+    M: 4,
+    N: 9,
+    O: 5,
+    P: 4,
+    Q: 1,
+    R: 3,
+    S: 5,
+    T: 5,
+    U: 4,
+    V: 1,
+    W: 1,
+    X: 1,
+    Y: 3,
+    Z: 1,
+  },
+  vowels: ['A', 'E', 'I', 'O', 'U'],
+  rareLetters: ['C', 'F', 'J', 'Q', 'V', 'W', 'X', 'Z'],
+  requires: QU,
+  fold: folder(),
+  segment: byCodePoint,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -703,6 +844,9 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     NORWEGIAN,
     FINNISH,
     GREEK,
+    AFRIKAANS,
+    TURKISH,
+    TAGALOG,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 
