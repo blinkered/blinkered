@@ -56,7 +56,18 @@ const READ_MAX_MS = 6000
  */
 const DEAL_MS = 520
 
+/**
+ * Long enough for both badges to finish.
+ *
+ * The score badge is delayed 380ms behind the flips one, deliberately, and each takes a second
+ * to rise and fade. At the ordinary beat the frame was gone before the second one had finished
+ * arriving, so the half of the bargain the tour is there to explain was the half you missed.
+ */
+const GAIN_MS = 1800
+
 function holdFor(frame: Frame, previous: Frame): number {
+  // A completed word, which has two badges to play out and is the point of the screen.
+  if (frame.gain !== undefined) return GAIN_MS
   if (frame.caption !== previous.caption) {
     return Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
   }
@@ -335,6 +346,32 @@ export function Tutorial({
             </>
           )}
           {current.panel === 'controls' ? <ControlsPanel at={frame} messages={messages} /> : null}
+          {/*
+           * The Complete button, drawn but inert, on the screens that press it.
+           *
+           * The caption says to press Complete, and until now there was no Complete anywhere on
+           * the screen: the tour was describing an interface it was not showing. It is on every
+           * frame of those screens rather than appearing at the end, because in a real game it
+           * is on screen the whole time; what changes is that it lights when the tour presses it.
+           */}
+          {current.panel === 'controls' || current.panel === 'swap' ? null : (
+            /*
+             * Drawn on every board screen, and only *lit* on the screens that press it.
+             *
+             * Reserved rather than conditional so the card is the same height throughout: a
+             * modal that grows by a button's worth when you press Next makes the whole thing
+             * hop, and the buttons you are aiming at move while you aim. The same reason the
+             * board's own box is a fixed height a few rules up.
+             */
+            <div
+              className={`tut-controls${current.panel === 'complete' ? '' : ' is-spacer'}`}
+              aria-hidden="true"
+            >
+              <span className={`btn btn-primary${beat.pressing === true ? ' is-lit' : ''}`}>
+                {messages.completeShort}
+              </span>
+            </div>
+          )}
         </div>
 
         <p className="tut-caption">{beat.caption}</p>

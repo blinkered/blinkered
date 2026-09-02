@@ -30,13 +30,22 @@ export interface Frame {
   readonly wildAt?: number
   /** Flips and points a completed word just paid, for the badges the HUD shows in a real game. */
   readonly gain?: { readonly flips: number; readonly points: number }
+  /**
+   * Whether the Complete button is lit.
+   *
+   * The button is drawn on every frame of the words screen, because it is on screen throughout a
+   * real game; this says when the tour is pressing it. A caption telling you to press something
+   * that is nowhere on the screen is the tour describing a different interface from the one it
+   * is showing you.
+   */
+  readonly pressing?: boolean
 }
 
 export interface Step {
   readonly title: string
   readonly frames: readonly Frame[]
-  /** Drawn alongside or instead of the board, on the two screens that need something else. */
-  readonly panel?: 'controls' | 'swap'
+  /** Drawn alongside or instead of the board, on the screens that need something else. */
+  readonly panel?: 'controls' | 'swap' | 'complete'
   /** The letters on the tiles. Only the last screen differs, having taken the swap. */
   readonly tiles: readonly string[]
 }
@@ -124,9 +133,10 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
       ...(done ? { word: board.six } : {}),
     })
   }
-  // Completed: the word stays, and the two badges say what it paid.
+  // Pressed: the button lights, and the two badges say what the word paid.
   say(messages.tutComplete, longOrder, all, {
     word: board.six,
+    pressing: true,
     gain: gainFor(longWord.length, config),
   })
 
@@ -152,6 +162,7 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     caption: messages.htWildBody,
     word: board.card.word,
     wildAt,
+    pressing: true,
     gain: gainFor(cardWord.length, config),
   })
 
@@ -170,7 +181,7 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
         caption: messages.htBoardBody,
       })),
     },
-    { title: messages.htWordsTitle, tiles, frames: words },
+    { title: messages.htWordsTitle, tiles, panel: 'complete', frames: words },
     {
       title: messages.tutControlsTitle,
       tiles,
@@ -179,7 +190,7 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
         (caption) => ({ up: all, sel: [], caption }),
       ),
     },
-    { title: messages.htWildTitle, tiles, frames: cardFrames },
+    { title: messages.htWildTitle, tiles, panel: 'complete', frames: cardFrames },
     {
       title: messages.htSwapTitle,
       tiles,
