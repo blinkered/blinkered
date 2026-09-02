@@ -3,9 +3,9 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
-**Done since it was written: Afrikaans, Turkish and Tagalog ship, and the en.wiktionary category
-validator is built.** What that turned up is at [What building the first three
-changed](#what-building-the-first-three-changed), which is the part to read before doing the
+**Done since it was written: Afrikaans, Turkish, Tagalog, Swahili and Latin ship, and both
+missing pipeline capabilities are built.** What that turned up is at [What building the first
+five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
 stands in the way of each.
@@ -56,7 +56,8 @@ lists, which is what the pipeline uses today.
 
 ## Two things the pipeline could not do
 
-One of them it can now.
+It can do both now. Kept for the reasoning, since the next language will want to know which
+kind of gap it is looking at.
 
 Both live in `tools/dictionary`. Neither touches the engine. Together they are what most of the
 blocked rows above are actually blocked on.
@@ -64,10 +65,10 @@ blocked rows above are actually blocked on.
 1. ~~**A validator that reads en.wiktionary categories.**~~ **Built.** `SourceKind` `category`,
    read through the MediaWiki API because no dump is per-language-on-another-wiki. It also
    enumerates, which `titles` cannot, so it doubles as a lexicon.
-2. **A frequency source that is not OpenSubtitles.** The common tier is a size band intersected
-   with corpus frequency, and the tutorial board is ranked by it. A Wikipedia dump gives a word
-   count for every language with a wiki, which is every candidate here. STATUS.md already lists
-   the OpenSubtitles provenance as the weak link, so this is a debt worth paying regardless.
+2. ~~**A frequency source that is not OpenSubtitles.**~~ **Built.** A word count over one
+   Wikipedia's `pages-articles` dump, streamed through `bzip2` because Node's zlib will not.
+   Its first output was the Naija ranking — `for, di, wey, dey, of, e, an, na, dem` — which is
+   the language, in order, from a 2.2MB file.
 
 ## Decisions already taken
 
@@ -135,16 +136,16 @@ Worth doing anyway, for the reason above, as long as the file admits what it is.
    option on `folder`; Tagalog's was not the one expected. See below.
 2. ~~**An en.wiktionary category validator.**~~ Done, and it turned out to be a lexicon as well
    as a validator, which is a bigger win than expected.
-3. **A frequency source that is not OpenSubtitles.** Now the only thing standing between the
-   pipeline and Swahili, Latin, Yoruba, Hausa, Igbo and Naija, all six of which have neither a
-   2016 nor a 2018 list. Measured, not assumed: every one of those tags 404s at hermitdave.
-4. **RTL, then Hebrew and Arabic.**
-5. **Korean**, then Japanese if the JMdict readings work out.
-6. **Hausa, Igbo, Naija**, measured with `pnpm dictionary floor` and accepted or not on what it
-   says.
+3. ~~**A frequency source that is not OpenSubtitles.**~~ Done, and with it ~~**Swahili**~~ and
+   ~~**Latin**~~.
+4. **Yoruba, Hausa, Igbo, Naija.** Nothing in the pipeline is missing for these now. What is
+   missing is a decision per language about diacritics, which is the one thing that cannot be
+   measured — see below.
+5. **RTL, then Hebrew and Arabic.**
+6. **Korean**, then Japanese if the JMdict readings work out.
 7. **Abugidas**, when somebody wants to answer the tile question.
 
-## What building the first three changed
+## What building the first five changed
 
 Three things, and two of them are corrections to what is written above.
 
@@ -164,13 +165,32 @@ candidate pool the way ENABLE does for English — count zero, ranking below eve
 credit without ever being a word a board has to be solvable from. That is where two thirds of
 Tagalog's credit tier comes from.
 
-**Swahili is not blocked on the validator at all.** LibreOffice ships `sw_TZ`, a hunspell
+**Swahili was not blocked on the validator at all.** LibreOffice ships `sw_TZ`, a hunspell
 dictionary under the LGPL, which is a licence this project already relies on for Indonesian,
-Swedish and now Afrikaans. So Swahili wants morphology, not category members, and the only thing
-it is short of is a corpus. Same for Latin, Yoruba, Hausa, Igbo and Naija: **one capability now,
-not two.**
+Swedish and now Afrikaans. So Swahili wanted morphology rather than category members, and the
+only thing it was short of was a corpus. It ships at 9,215 common and 29,038 credit, board
+density 87, which puts it above Turkish and well clear of Malay. It was written off in the first
+pass at this survey.
 
-Two smaller notes worth keeping:
+**Latin is the awkward one, and the awkwardness is worth stating.** Its lexicon is the largest
+of any candidate here, 45,818 lemmas on en.wiktionary. Its inflected forms are also there —
+800,379 of them — and that is 1,600 paged API requests, which the API throttles hard enough to
+take most of a day. Fetching them would be both slow and rude, so Latin validates against lemmas
+only, and plays the way Finnish does: AMARE is a word and AMAVERUNT is not. Corpus coverage is
+27%, the lowest in the set, and that number _is_ the inflections being refused. It needed a
+common cut of 150,000 — seven times anything else — for the same reason: the corpus's top ranks
+are forms the validator rejects, so the lemmas sit a long way down. At rank 20,000 a board
+admitted 43 words, which is unplayable; at 150,000 it admits 91.
+
+**The West African four are now unblocked, and what is left is a judgement rather than a
+measurement.** Every piece of machinery they need exists. What does not exist is an answer to
+the diacritic question, which is per language and cannot be derived: Yoruba tone marks and
+subdots, Igbo ị ọ ụ ṅ, Hausa hooked ɓ ɗ ƙ ƴ. Undiacriticised writing is common online, so a
+Wikipedia-derived corpus will mix marked and stripped forms, and folding would silently merge
+distinct words while not folding will split one word into two rankings. That has to be settled
+before a list is built, not after.
+
+Three smaller notes worth keeping:
 
 - **Tagalog's NG is two tiles, and not for the reason the alphabet suggests.** It is a letter of
   the abakada and it is genuinely unambiguous in Tagalog spelling, so the Croatian machinery
@@ -178,6 +198,11 @@ Two smaller notes worth keeping:
   tile, so a multi-character tile can only be taken with the mouse. Croatian DŽ is rare enough
   for that to be a curiosity. NG is in a large share of Tagalog words, and a board whose
   commonest letter cannot be typed is a worse game than one whose alphabet is a letter short.
+- **Turkish broke two things that only Turkish would have, and both were found by playing it
+  rather than by testing it.** The keyboard upper-cased a key before handing it on, so on a board
+  holding both i tiles a typed i took the dotless one; and the wordmark, being uppercased by CSS
+  under `lang="tr"`, called the game BLİNKERED. Neither is in the language plan and both are the
+  argument for opening the browser on a new language rather than trusting a green suite.
 - **The English floor curve had drifted.** Re-running `pnpm dictionary floor` moved
   `MEDIAN_WORDS` up about 8% and every language's `DENSITY_SCALE` down by the same, so the
   product is unchanged everywhere except English, which gets a slightly stricter floor. The
@@ -192,3 +217,9 @@ Two smaller notes worth keeping:
 - Whether Vietnamese tones ride on the tile or on the word. Tiles carrying them explodes the
   inventory; folding them away merges words that differ only by tone.
 - Urdu needs Nastaliq to look right, which is a font decision on top of RTL.
+- Whether Latin's 800,379 inflected forms are worth having, and how to get them without spending
+  a day being throttled. A `categorylinks` dump would do it in one download, at the cost of
+  parsing a SQL dump of every category on en.wiktionary.
+- Whether the other nineteen languages should move to the Wikipedia corpus now that it exists.
+  It is the clean provenance and OpenSubtitles is not, but it means rebuilding and recalibrating
+  every one, and the cuts are calibrated against the corpus they were measured on.

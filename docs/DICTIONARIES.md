@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Nineteen playable languages. The credit tier is much the larger of the two, and its size is
+Twenty-one playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -50,6 +50,8 @@ driven by how productive the language's morphology is rather than by any choice 
 | af    | 12,354 | 12,354  | 72% / 72% | 94%      | 107         | 97%     | 37 KB   |
 | tr    | 17,867 | 638,282 | 89% / 38% | 93%      | 79          | 91%     | 1608 KB |
 | tl    | 3,540  | 23,306  | 35% / 69% | 70%      | 68          | 95%     | 69 KB   |
+| sw    | 9,215  | 29,038  | 46% / 14% | 74%      | 87          | 98%     | 88 KB   |
+| la    | 10,765 | 32,765  | 7% / 8%   | 27%      | 91          | 97%     | 104 KB  |
 
 Board words is the median a 12-tile board admits from the **common** tier at minimum length 3,
 over 300 sound draws, and it is the number the cut is calibrated against because it is the one a
@@ -310,7 +312,7 @@ from a 32-letter one. So the floor is scaled per language:
 ```
 it 1.10   en 1.00   ms 0.98   no 0.98   fr 0.92   id 0.89   pt-BR 0.86   nl 0.85
 de 0.84   pt 0.84   fi 0.81   sv 0.73   es 0.72   af 0.64   hr 0.59   el 0.58
-tr 0.47   ru 0.41   tl 0.41
+la 0.54   sw 0.52   tr 0.47   ru 0.41   tl 0.41
 ```
 
 With these in place every language accepts a board in a mean of 1.3 to 1.8 draws.
@@ -344,17 +346,30 @@ M, N, K and U and less A and R. They had been sharing one table.
 
 ## Sources
 
-**Frequency**: [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords),
-OpenSubtitles 2018, and it covers all but three. Of our set only Portuguese has a regional
-variant (`pt` and `pt_br`), so nineteen playable options come from eighteen languages.
+**Frequency**, for nineteen of the twenty-one:
+[hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), OpenSubtitles 2018.
+Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-one playable
+options come from twenty languages.
 
-**Open provenance question, still open.** That repo is MIT, but the data derives from
+**Frequency, for the two it does not cover**: a word count over one Wikipedia's articles,
+CC BY-SA. Swahili and Latin have no OpenSubtitles list at 2016 or 2018 — nor do Yoruba, Hausa,
+Igbo or Nigerian Pidgin, which is what this exists for — and a dead language never will. The
+dump is the ordinary `pages-articles` one and the stripper is not a wikitext parser, which it
+does not need to be: the corpus decides ordering and nothing else, so imperfect stripping costs
+a few template parameter names a place in the ranking, and every one of them still has to get
+past a dictionary of the language. What the stripper does have to get right is the two things
+that would skew the ordering: markup that repeats on every page, and pages that are not
+articles. Tokens seen once in a whole encyclopaedia are dropped, being typos and surnames far
+more often than words.
+
+**Open provenance question, half answered.** hermitdave's repo is MIT, but the data derives from
 OpenSubtitles via OPUS: user-uploaded subtitles of copyrighted films, distributed for research.
 The mitigation is real, since we ship only dictionary-validated words and the frequency list
-contributes ordering rather than content, but murky upstream is not the same as clean.
-[wordfreq](https://github.com/rspeer/wordfreq) is the alternative to evaluate: MIT code,
-CC BY-SA data, aggregated across corpora rather than subtitles alone. The pipeline treats the
-frequency source as one pluggable input, so switching later is cheap.
+contributes ordering rather than content, but murky upstream is not the same as clean. Wikipedia
+is the clean alternative and is now wired in, which settles the question for two languages and
+proves the seam works; the remaining nineteen could move to it, at the cost of rebuilding and
+re-calibrating every one. [wordfreq](https://github.com/rspeer/wordfreq) remains worth
+evaluating: MIT code, CC BY-SA data, aggregated across corpora rather than subtitles alone.
 
 ## What we distribute it under
 

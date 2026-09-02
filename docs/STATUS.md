@@ -7,14 +7,14 @@ next.
 
 - **`packages/engine`** — the whole game as one pure reducer. No clock, no I/O, no DOM.
   Deterministic from `(seed, difficulty, event log)`, which is what will let a server verify
-  a score rather than believe one. Nineteen alphabets, with draw weights derived from each
+  a score rather than believe one. Twenty-one alphabets, with draw weights derived from each
   language's own shipped vocabulary.
 - **`packages/words`** — word list normalization, anagram solver, board generation, weight
   derivation, and the dictionary pipeline's pure half. Node-only filesystem access sits behind
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
-- **`packages/i18n`** — every string the game says, in nineteen languages. Plurals go through
+- **`packages/i18n`** — every string the game says, in twenty-one languages. Plurals go through
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three.
-- **`packages/words/data`** — nineteen playable languages, generated and committed, each with
+- **`packages/words/data`** — twenty-one playable languages, generated and committed, each with
   its own `LICENSE` and `PROVENANCE.md`. 43MB, about 100KB gzipped per language, though
   Russian and Turkish are 1.6MB each.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
@@ -24,7 +24,7 @@ next.
   `tl-prod`. One container, nginx serving the built files, built and pushed by CI, fronted by
   Traefik with the www redirect and response compression as middlewares. See
   [DEPLOY.md](DEPLOY.md).
-- **`apps/web`** — playable React front end. Keyboard and pointer, nineteen languages with a
+- **`apps/web`** — playable React front end. Keyboard and pointer, twenty-one languages with a
   flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
   game over.
 - **iOS**, meaning the same build made genuinely playable on a phone and installable to the
