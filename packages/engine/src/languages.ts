@@ -826,6 +826,91 @@ export const TAGALOG: Alphabet = {
   segment: byCodePoint,
 }
 
+export const SWAHILI: Alphabet = {
+  id: 'sw',
+  endonym: 'Kiswahili',
+  // Twenty-four letters: no Q and no X, which Swahili has never had. The digraphs CH, DH, GH,
+  // KH, NY, SH and TH are two tiles each, for the reason Tagalog NG is: a multi-character tile
+  // can only be taken with the mouse, and these are far too common for that.
+  weights: {
+    A: 19,
+    B: 2,
+    C: 1,
+    D: 2,
+    E: 5,
+    F: 1,
+    G: 2,
+    H: 4,
+    I: 14,
+    J: 1,
+    K: 6,
+    L: 4,
+    M: 5,
+    N: 6,
+    O: 5,
+    P: 1,
+    R: 2,
+    S: 3,
+    T: 3,
+    U: 8,
+    V: 1,
+    W: 3,
+    Y: 1,
+    Z: 2,
+  },
+  vowels: ['A', 'E', 'I', 'O', 'U'],
+  rareLetters: ['C', 'F', 'J', 'P', 'V', 'Y'],
+  // No Q at all, so there is no lone-Q problem to rule out.
+  requires: {},
+  // The apostrophe in NG' is dropped rather than tiled. It marks a real distinction — NG'OMBE
+  // is a cow — but a tile nobody can type is worse than a spelling nobody can argue with, and
+  // Swahili has no pair of words that the two spellings would merge.
+  fold: folder({ expand: { "'": '', '’': '' } }),
+  segment: byCodePoint,
+}
+
+export const LATIN: Alphabet = {
+  id: 'la',
+  endonym: 'Latina',
+  // Twenty-four letters. No W, which Latin never had, and no J, because the dictionary spells
+  // consonantal i as I: IUSTITIA, not JUSTITIA. U and V *are* kept apart, which is the other
+  // half of the same convention and the one every modern Latin text follows.
+  weights: {
+    A: 10,
+    B: 1,
+    C: 5,
+    D: 2,
+    E: 8,
+    F: 1,
+    G: 2,
+    H: 1,
+    I: 11,
+    K: 1,
+    L: 5,
+    M: 5,
+    N: 5,
+    O: 7,
+    P: 3,
+    Q: 1,
+    R: 7,
+    S: 9,
+    T: 7,
+    U: 9,
+    V: 1,
+    X: 1,
+    Y: 1,
+    Z: 1,
+  },
+  vowels: ['A', 'E', 'I', 'O', 'U', 'Y'],
+  rareLetters: ['B', 'F', 'H', 'K', 'Q', 'V', 'X', 'Z'],
+  // Q is followed by U in every Latin word there is, so a lone Q is a dead tile.
+  requires: QU,
+  // Macrons are a teaching aid rather than spelling: no Roman wrote them and no dictionary
+  // headword carries them, so AMĀRE and AMARE are one word.
+  fold: folder(),
+  segment: byCodePoint,
+}
+
 const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
   [
     ENGLISH,
@@ -847,6 +932,8 @@ const ALPHABETS: Readonly<Record<string, Alphabet>> = Object.fromEntries(
     AFRIKAANS,
     TURKISH,
     TAGALOG,
+    SWAHILI,
+    LATIN,
   ].map((alphabet) => [alphabet.id, alphabet]),
 )
 

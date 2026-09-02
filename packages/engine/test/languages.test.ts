@@ -25,6 +25,10 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   tr: ['iğne', 'İĞNE', 4],
   // NG is two tiles, so six letters are six tiles, and the stress acute is decoration.
   tl: ['ngayón', 'NGAYON', 6],
+  // The apostrophe in NG' is dropped rather than tiled, so a cow is five tiles.
+  sw: ["ng'ombe", 'NGOMBE', 6],
+  // A macron is a teaching aid, not a spelling.
+  la: ['amāre', 'AMARE', 5],
 }
 
 describe('the language registry', () => {
@@ -40,6 +44,7 @@ describe('the language registry', () => {
       'hr',
       'id',
       'it',
+      'la',
       'ms',
       'nl',
       'no',
@@ -47,6 +52,7 @@ describe('the language registry', () => {
       'pt-BR',
       'ru',
       'sv',
+      'sw',
       'tl',
       'tr',
     ])
