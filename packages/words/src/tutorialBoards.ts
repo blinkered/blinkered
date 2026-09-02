@@ -11,8 +11,8 @@ import type { TutorialBoard } from './tutorialBoard.js'
  *
  * Ranked by corpus frequency, worst of the three words first, so a board only scores well when
  * every word on it is one a speaker uses rather than one a dictionary admits. The shipped
- * candidates run from rank 66 to rank 421 across the sixteen, which is comfortably inside
- * everyday vocabulary.
+ * candidates run from rank 66 to rank 421, which is comfortably inside everyday
+ * vocabulary.
  *
  * English is the exception and is chosen rather than generated. SAT to STAGES to GASSES teaches
  * the card better than anything the ranking picked: the card becomes a third S, and the board
@@ -24,6 +24,13 @@ import type { TutorialBoard } from './tutorialBoard.js'
  * year. Regenerate with tools/dictionary; see docs/DICTIONARIES.md.
  */
 export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
+  af: {
+    tiles: ['D', 'I', 'E', 'A', 'N', 'K'],
+    three: 'DIE',
+    six: 'DANKIE',
+    card: { at: 5, becomes: 'M', word: 'IEMAND' },
+    swap: { from: 'D', to: 'R' },
+  },
   de: {
     tiles: ['D', 'E', 'R', 'W', 'E', 'N'],
     three: 'DER',
@@ -135,5 +142,19 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     six: 'KÄNNER',
     card: { at: 4, becomes: 'T', word: 'TÄNKER' },
     swap: { from: 'Ä', to: 'A' },
+  },
+  tl: {
+    tiles: ['A', 'N', 'G', 'G', 'L', 'I'],
+    three: 'ANG',
+    six: 'GALING',
+    card: { at: 4, becomes: 'M', word: 'MAGING' },
+    swap: { from: 'G', to: 'O' },
+  },
+  tr: {
+    tiles: ['B', 'A', 'Y', 'U', 'R', 'A'],
+    three: 'BAY',
+    six: 'BURAYA',
+    card: { at: 2, becomes: 'D', word: 'BURADA' },
+    swap: { from: 'B', to: 'E' },
   },
 }

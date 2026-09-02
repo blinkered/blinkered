@@ -2,6 +2,16 @@
   "version": 1,
   "languages": [
     {
+      "tag": "af",
+      "endonym": "Afrikaans",
+      "common": 12354,
+      "full": 12354,
+      "bytes": 107546,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 107
+    },
+    {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 18389,
@@ -160,6 +170,26 @@
       "licence": "LGPL-3.0",
       "shareAlike": false,
       "density": 122
+    },
+    {
+      "tag": "tl",
+      "endonym": "Tagalog",
+      "common": 3540,
+      "full": 23306,
+      "bytes": 196515,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 68
+    },
+    {
+      "tag": "tr",
+      "endonym": "Türkçe",
+      "common": 17867,
+      "full": 638282,
+      "bytes": 8453388,
+      "license": "MIT",
+      "shareAlike": false,
+      "density": 79
     }
   ]
 }

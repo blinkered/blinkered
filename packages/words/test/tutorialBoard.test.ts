@@ -30,7 +30,7 @@ function wordsOf(tag: string): Set<string> {
 const tags = Object.keys(TUTORIAL_BOARDS)
 
 describe('the tour has a board for every language that ships a word list', () => {
-  it('covers the sixteen', () => {
+  it('covers every one of them', () => {
     const manifest = JSON.parse(readFileSync(`${DATA}manifest.json`, 'utf8')) as {
       languages: { tag: string }[]
     }
