@@ -163,26 +163,26 @@ export const en: Messages = {
     'Pick a level and play. How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
-    'Tiles turn face up one at a time, in reading order. You cannot see a letter until its tile turns.',
+    'Tiles turn face up one at a time, in reading order. Exposed tiles can be used to form words.',
   htWordsTitle: 'The words',
   htWordsBody:
-    'Spell a word from the tiles that are showing. Type it, or click them. Each tile can be used once, and only after it has turned.',
+    'Spell a word from the tiles that are showing by typing or clicking the letters in order.',
   htFlipsTitle: 'The flips',
   htFlipsBody:
-    'Every tile that turns costs a flip. A word pays flips back, and longer words pay more. When the flips run out, the game is over.',
+    'Every tile that turns costs a flip. A completed word adds flips back to your total, and longer words pay more. When the flips run out, the game is over.',
   htRoundTitle: 'The round',
   htRoundBody:
-    'When the last tile of a round turns, the whole board is showing. It holds there for a moment. Then it shuffles and deals again.',
+    'When the last tile of a round turns, the whole board holds for a moment. Then the tiles are turned over and shuffled, and a new round begins.',
   htLanguagesTitle: 'The languages',
   htLanguagesBody:
     'Sixteen of them. Every board can be solved from words people actually use. An unusual word still scores, if the dictionary knows it.',
   htKeysTitle: 'The keyboard',
   htWildTitle: 'Wild cards',
   htWildBody:
-    'Some tiles turn over as a card instead of a letter. A card counts as whatever letter makes a word, chosen from the ones that work, and you find out which when the word appears in your list. A word you have already found does not count.',
+    'Sometimes a wild card will appear instead of a letter. A wild card counts as any letter that makes a valid word. A previously-completed word does not count.',
   htSwapTitle: 'Changing letters',
   htSwapBody:
-    'Sometimes, between rounds, one tile swaps its letter. You see which letter went and which arrived, but not where it sits. The letters you remember may not be there any more.',
+    'Sometimes, between rounds, one letter gets replaced with a different one. You will see which letter was removed and which was added.',
   htLevelsTitle: 'The levels',
   htLevelEasy:
     'The same twelve letters all game, so you can learn them and carry a list of words in your head. Tiles turn slowly, and the full board stays in view long enough to plan one.',
