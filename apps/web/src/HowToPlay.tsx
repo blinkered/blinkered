@@ -110,7 +110,9 @@ export function HowToPlay({
           {/* The same A-Z keys, so no new key cap: the card is what they reach for when the board
               is not showing the letter, which is a fact about the board rather than the keyboard
               and belongs next to the keys that do it. */}
-          <dt aria-label={messages.wildCard}>{WILD_GLYPH}</dt>
+          <dt aria-label={messages.wildCard}>
+            <span className="wild-key">{WILD_GLYPH}</span>
+          </dt>
           <dd>{messages.keysWild}</dd>
           <dt>
             <kbd>shift-X</kbd>
