@@ -98,6 +98,23 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 ## Settled
 
+- **100% coverage everywhere, `apps/server` included, and pragmas are a joint decision.** The
+  bar is the same for the component holding other people's data as for the engine; a quieter one
+  there would be exactly backwards. And an ignore pragma is never added unilaterally: a branch
+  that looks untestable is nearly always a design fault wearing a disguise — a default that
+  cannot happen, a null check the types already forbid, an error path with no caller — so the
+  first move is to look at the code again, not at the config.
+
+  Four exclusions exist in `vitest.config.ts` today and predate the rule, so they are worth
+  re-reading rather than inheriting: `bin/**`, `db.ts`, `migrate.ts` and `schema.ts`. Two of
+  them justify themselves by pointing at `pnpm test:integration`, **which measures no coverage
+  at all** — `vitest.integration.config.ts` has no `coverage` block. So the claim that those
+  files are covered elsewhere is not being checked. Giving the integration run its own gate is
+  the fix, and is better than either an exclusion or a pragma.
+
+- **The database is in-cluster on tl-prod**, not Neon, and the chart already treats it as an
+  interface with two implementations so the decision is reversible. What does not come with it
+  is point-in-time recovery, which was the reason Neon was attractive. See ACCOUNTS.md.
 - **Tight Line LLC owns this.** NOTICE was already written that way; it is now a decision
   rather than a default. It also settles the Apple Developer account type, which is the part
   that is hard to undo: an organization account, not an individual one.

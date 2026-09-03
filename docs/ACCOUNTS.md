@@ -480,16 +480,65 @@ without it, and the last translation is never the interesting part of the day.
 
 The rules page needs nothing. Accounts do not change what a word is worth.
 
+## The database, now that it is in the cluster
+
+`postgres.enabled: true` and the StatefulSet the chart already has. The seam that would let a
+managed database in is the same one that lets this out, so the decision is reversible and costs
+a values file.
+
+**Replication and durability are different purchases, and only one of them is wanted yet.**
+
+A three-node streaming cluster buys **availability**: a node drains, a replica is promoted, and
+the API sees a few seconds of errors instead of however long a pod takes to reschedule. With no
+users, that is worth close to nothing.
+
+It buys no **durability** at all. Three replicas of a corrupted table are three corrupted tables,
+and `DROP TABLE` replicates in milliseconds. What buys durability is continuous WAL archiving to
+object storage plus scheduled base backups, which together give point-in-time recovery — and PITR
+is the thing that made Neon attractive in the first place. Losing a month of everyone's history
+is a real loss; ninety seconds of downtime during a node drain is not.
+
+So: **one instance, with PITR, before three instances without it.** In that order, and the second
+is a switch rather than a project.
+
+An operator is the way to get both. CloudNativePG describes a cluster, its backup schedule and
+its WAL archive in one manifest, and `instances: 1` to `instances: 3` is a one-line change with
+no application impact — precisely because the chart already treats the database as an interface.
+Doing it by hand in a StatefulSet means writing failover, and writing failover is how you get an
+outage caused by the thing that was supposed to prevent one.
+
+**Two facts about tl-prod decide whether one instance is enough, and I cannot see them from
+here:**
+
+- **Is the volume network-attached or node-local?** Network-attached (Longhorn, Ceph, NFS) and a
+  single instance reschedules onto another node by itself. Node-local and a lost node is downtime
+  until it returns, which moves three instances from luxury to insurance.
+- **Is there object storage on the cluster** — MinIO, or an external bucket — for the WAL archive?
+  Without somewhere to put it there is no PITR, and then the honest options are a managed
+  database or a backup job whose restore path someone has actually tried.
+
+The second question is the one that matters. A backup nobody has restored is a hope.
+
 ## Still open
 
 - **Does a rename rewrite history?** If the board joins `users`, yes, and an old screenshot
   disagrees with the live board. Probably fine, worth deciding rather than discovering.
 - **Is the bio wanted at launch**, given that generated avatars were chosen specifically to avoid
   hosting what people upload.
-- **Neon or in-cluster Postgres.** PLAN.md says Neon and that decision stands here; the reason is
-  backups and point-in-time recovery, which is the part nobody wants to build. Worth confirming
-  against tl-prod, and worth picking the region deliberately rather than by default.
-- **What the coverage bar for `apps/server` is.** Engine, words and i18n are at 100%. A silent
-  lower bar for the one component holding other people's data is the wrong way to arrive at one.
+- ~~**Neon or in-cluster Postgres.**~~ In-cluster, on tl-prod. The chart already treats the
+  database as an interface with two implementations — `postgres.enabled` and a seven-key secret —
+  so this is a values change rather than a design one, and Neon stays available behind the same
+  seam if it is ever wanted. What does **not** carry over for free is the reason Neon was
+  attractive: backups and point-in-time recovery. See below.
+- ~~**What the coverage bar for `apps/server` is.**~~ 100%, the same as everything else, and it
+  already is. A quieter bar for the one component holding other people's data would be exactly
+  backwards.
+
+  The rule that goes with it: **an ignore pragma is never added unilaterally.** If a branch looks
+  untestable the likeliest explanation is a design fault wearing a disguise — a default that
+  cannot happen, a null check the types already forbid, an error path with no caller — and
+  suppressing it hides the fault instead of removing it. Bring the line and the reason, and we
+  decide together.
+
 - **Whether guest games should reach the server in phase A already**, seeded and unclaimed, so
   that phase C opens with boards that have something on them.

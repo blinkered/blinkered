@@ -7,7 +7,7 @@ A word game where the letters hide from you.
 | Question        | Decision                                                                                                 | Why                                                                                                       |
 | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Client platform | React + TypeScript + Vite on the web, wrapped by Capacitor for iOS/Android                               | One codebase, one rendering model, one test suite; the native shells are additive and can come later      |
-| Backend         | Own Node API (Hono) + Postgres (Neon), Auth.js for SSO, Drizzle for schema                               | The client holds no database credential at all, only a session; score verification is just a route        |
+| Backend         | Own Node API (Hono) + Postgres in-cluster on tl-prod, Auth.js for SSO, Drizzle for schema                | The client holds no database credential at all, only a session; score verification is just a route        |
 | Round rule      | `spend`. A completed word takes its letters off the board and the round continues                        | Decided by playing it: spending the letters adds anxiety. `shuffle` and `keep` stay available as settings |
 | Flip economy    | Also a runtime setting (`none`, `perLetter`, `fibonacci`, `overMinimum`), default hypothesis `fibonacci` | Fibonacci flips are what actually make short words cost you ground and long words pay; see 1.10           |
 | Dictionary      | Two tiers: full list accepts words for credit, common list is what the generator counts toward W         | Keeps boards humanly solvable without disallowing legitimate obscure finds                                |
@@ -333,7 +333,7 @@ Licensing task: vendor SCOWL's copyright notice and confirm the attribution term
 
 ### 2.3 The server
 
-Hono on Node, deployed to Fly or Railway, Postgres on Neon. Auth.js (`@auth/core`) with Google, Facebook and Apple providers.
+Hono on Node, deployed to tl-prod alongside the site, Postgres in the same cluster. Auth.js (`@auth/core`) with Google, Facebook and Apple providers. See ACCOUNTS.md for why in-cluster, and for the part that does not come with it: point-in-time recovery.
 
 **Sign in with Apple is not optional.** App Store guideline 4.8 requires it if we offer any other third-party SSO.
 
