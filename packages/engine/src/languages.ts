@@ -502,7 +502,7 @@ export const RUSSIAN: Alphabet = {
     Е: 8,
     Ж: 1,
     З: 2,
-    И: 8,
+    И: 7,
     Й: 1,
     К: 3,
     Л: 5,
@@ -528,9 +528,14 @@ export const RUSSIAN: Alphabet = {
     Я: 2,
   },
   vowels: ['А', 'Е', 'И', 'О', 'У', 'Ы', 'Э', 'Ю', 'Я'],
-  rareLetters: ['Ъ', 'Щ', 'Э', 'Ц', 'Ф', 'Ж', 'Х'],
+  rareLetters: ['Ъ', 'Щ', 'Э', 'Ц', 'Ф', 'Ж', 'Х', 'Й'],
   requires: {},
-  fold: folder({ expand: { Ё: 'Е' } }),
+  // Й is и краткое, a letter of the alphabet and a tile in Russian's own word games, and it
+  // has to say so: in NFD it is И plus a combining breve, so the default fold quietly ate it.
+  // It was in `weights` the whole time, which made it a tile the board could deal and no word
+  // could ever use — МОЙ was stored as МОИ, merged with МОИ, and one draw in a hundred was
+  // dead on arrival. Ё really is folded onto Е, as Russian word games do.
+  fold: folder({ keep: ['Й'], expand: { Ё: 'Е' } }),
   segment: byCodePoint,
 }
 

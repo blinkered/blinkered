@@ -37,7 +37,7 @@
       "common": 18389,
       "full": 42747,
       "bytes": 407511,
-      "licence": "CC-BY-SA-4.0",
+      "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 140
     },
@@ -47,7 +47,7 @@
       "common": 17421,
       "full": 257014,
       "bytes": 5384035,
-      "licence": "MPL-1.1",
+      "license": "MPL-1.1",
       "shareAlike": false,
       "density": 97
     },
@@ -57,7 +57,7 @@
       "common": 16575,
       "full": 174456,
       "bytes": 1736592,
-      "licence": "MIT",
+      "license": "MIT",
       "shareAlike": false,
       "density": 167
     },
@@ -67,7 +67,7 @@
       "common": 16993,
       "full": 201655,
       "bytes": 2093774,
-      "licence": "MPL-1.1",
+      "license": "MPL-1.1",
       "shareAlike": false,
       "density": 120
     },
@@ -77,7 +77,7 @@
       "common": 17511,
       "full": 35648,
       "bytes": 322130,
-      "licence": "CC-BY-SA-4.0",
+      "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 136
     },
@@ -87,7 +87,7 @@
       "common": 16593,
       "full": 144105,
       "bytes": 1470729,
-      "licence": "MPL-2.0",
+      "license": "MPL-2.0",
       "shareAlike": false,
       "density": 153
     },
@@ -107,7 +107,7 @@
       "common": 17613,
       "full": 341040,
       "bytes": 3551631,
-      "licence": "SISSL",
+      "license": "SISSL",
       "shareAlike": false,
       "density": 99
     },
@@ -117,7 +117,7 @@
       "common": 17300,
       "full": 41132,
       "bytes": 393671,
-      "licence": "LGPL-3.0",
+      "license": "LGPL-3.0",
       "shareAlike": false,
       "density": 149
     },
@@ -127,7 +127,7 @@
       "common": 16507,
       "full": 37512,
       "bytes": 343384,
-      "licence": "CC-BY-SA-4.0",
+      "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 183
     },
@@ -167,7 +167,7 @@
       "common": 7372,
       "full": 9173,
       "bytes": 63105,
-      "licence": "CC-BY-SA-4.0",
+      "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 164
     },
@@ -177,7 +177,7 @@
       "common": 16334,
       "full": 322146,
       "bytes": 3922688,
-      "licence": "BSD-3-Clause",
+      "license": "BSD-3-Clause",
       "shareAlike": false,
       "density": 142
     },
@@ -187,7 +187,7 @@
       "common": 9994,
       "full": 13891,
       "bytes": 106732,
-      "licence": "CC-BY-SA-4.0",
+      "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 164
     },
@@ -197,7 +197,7 @@
       "common": 16107,
       "full": 134775,
       "bytes": 1377730,
-      "licence": "MPL-1.1",
+      "license": "MPL-1.1",
       "shareAlike": false,
       "density": 140
     },
@@ -207,19 +207,19 @@
       "common": 16627,
       "full": 200241,
       "bytes": 2048974,
-      "licence": "MPL-2.0",
+      "license": "MPL-2.0",
       "shareAlike": false,
       "density": 143
     },
     {
       "tag": "ru",
       "endonym": "Русский",
-      "common": 18094,
-      "full": 423100,
-      "bytes": 8471431,
-      "licence": "BSD-3-Clause",
+      "common": 18095,
+      "full": 424352,
+      "bytes": 8494899,
+      "license": "BSD-3-Clause",
       "shareAlike": false,
-      "density": 69
+      "density": 66
     },
     {
       "tag": "sv",
@@ -227,7 +227,7 @@
       "common": 16350,
       "full": 371287,
       "bytes": 4580853,
-      "licence": "LGPL-3.0",
+      "license": "LGPL-3.0",
       "shareAlike": false,
       "density": 122
     },

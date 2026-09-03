@@ -10,7 +10,7 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 | common tier | 16107 words, counted toward the board's word floor |
 | full tier | 134775 words, accepted for credit |
 | length | 3 to 16 tiles |
-| candidate cut | rank 20000 (common), undefined (full) |
+| candidate cut | rank 20000 for the common tier; no limit for credit |
 | validation yield | 80.5% at the common cut, 26.5% at the full cut |
 | corpus coverage | 93.9% of all occurrences |
 | board density | median 140 words on 12 tiles, 97.3% hold a six-letter word |
