@@ -51,9 +51,32 @@ api:
   env:
     LOG_LEVEL: info
 
+# Schema migrations, as a Job that Helm runs and waits for.
+#
+# Its own entrypoint rather than something the API does on the way up, because there is more than
+# one replica: two pods starting together would race, and a migration that takes a while would
+# hold the readiness probe off long enough to look like a failed rollout. The Job uses the API
+# image and overrides the command, so there is no second image to keep in step.
+migrations:
+  enabled: true
+  # The retries are the wait for Postgres. On a first install the StatefulSet is still coming up
+  # when this hook fires, so the first attempts fail and the Job's own backoff paces them. An
+  # init container polling pg_isready would do the same job and would replace migrate.ts's error
+  # message, which names every wrong key at once, with a shell loop's silence.
+  backoffLimit: 10
+  # Ten minutes, covering Postgres starting cold and the migration running. A migration still
+  # going after this is a migration to go and look at rather than to keep waiting on.
+  activeDeadlineSeconds: 600
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
 postgres:
   # false uses an external database instead. Nothing else in the chart changes: the API reads the
-  # same six keys out of a secret either way, so there is one code path rather than two.
+  # same seven keys out of a secret either way, so there is one code path rather than two.
   enabled: true
   image: postgres:17-alpine
   # A StatefulSet of one. More replicas need replication configured, which this chart does not

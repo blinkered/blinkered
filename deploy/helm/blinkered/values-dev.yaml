@@ -1,0 +1,97 @@
+# Blinkered on tl-dev, namespace blinkered-dev.
+#
+# Overrides only; everything unset inherits values.yaml beside this file.
+#
+#   helm upgrade --install blinkered deploy/helm/blinkered \
+#     -n blinkered-dev --create-namespace \
+#     -f deploy/helm/blinkered/values-dev.yaml
+#
+# The full stack: nginx, the API, its Postgres, and the migration Job that puts the
+# schema in it. Nothing here needs wiring by hand -- the chart writes one database
+# secret and the API, the migration and Postgres itself all read the same seven keys
+# out of it, so there is no arrangement in which they can disagree about which
+# database they mean.
+#
+# TLS is not this chart's problem here. `*.devapps.tightlinesoftware.com` is a
+# Caddy site block that terminates TLS with its own DNS-01 wildcard certificate
+# and reverse-proxies to port 80 on the tl-dev nodes. So there is no `tls:`
+# block, no Certificate resource, and no DNS record to add: the wildcard already
+# resolves and Caddy passes the real Host through. The pod serves plain HTTP.
+#
+# The consequence for the auth work is not in this file but is worth knowing here:
+# the pod sees plain HTTP, so `X-Forwarded-Proto` has to be trusted when building
+# OAuth redirect URIs or the app will hand Apple an http:// URL and Apple will
+# refuse it. `X-Forwarded-For` is the opposite case and must not be trusted on this
+# host: Caddy declares trusted proxies only for the Cloudflare-proxied production
+# block, so a client IP arriving here is not believed and cannot carry a rate limit.
+
+image:
+  # Pin a tag that exists in GHCR. `latest` moves under you.
+  # https://github.com/blinkered/blinkered/pkgs/container/blinkered
+  tag: sha-a875900
+
+web:
+  # One is enough for dev. Production runs two.
+  replicaCount: 1
+
+api:
+  enabled: true
+  # One, so that a schema change is not applied under two running replicas while
+  # the point of this environment is watching a single one do it.
+  replicaCount: 1
+  image:
+    # This must name whatever CI ends up pushing for the Dockerfile's `api` stage.
+    # As of writing nothing pushes it: .github/workflows/release.yml runs one
+    # build-push with no `target:`, so it builds the last stage (`serve`, nginx)
+    # and pushes `ghcr.io/blinkered/blinkered` alone. Until that workflow builds
+    # the api target too, the API and the migration Job are an ImagePullBackOff.
+    repository: ghcr.io/blinkered/blinkered-api
+    tag: sha-a875900
+  env:
+    LOG_LEVEL: debug
+
+# The chart's own StatefulSet rather than a managed database. Defaults otherwise:
+# `password: ''` generates one on first install and preserves it across upgrades by
+# reading the secret already in the cluster, and `schema: blinkered` has to stay as
+# it is -- the generated SQL names the schema, and runMigrations refuses to run
+# against a secret that disagrees rather than half-applying.
+postgres:
+  enabled: true
+
+ingress:
+  enabled: true
+  # Not optional, and an unset value fails in a way that reads like a broken
+  # proxy. tl-dev runs the same two Traefik classes as tl-prod: `public` on
+  # hostPort 80, which is what the devapps Caddy block proxies to, and
+  # `private` on 81, which is the cluster default and which nothing on the
+  # public path can reach. Leaving this unset produces an Ingress that
+  # Kubernetes accepts, that Traefik admits, and that never serves a request.
+  className: public
+  hosts:
+    - blinkered.devapps.tightlinesoftware.com
+  # No second hostname in dev, so nothing to redirect. Render before installing
+  # and check the result has exactly one host rule: an empty list overriding a
+  # non-empty default is not something to assume of Helm's merge, and a dev
+  # cluster claiming www.playblinkered.com would also chase a certificate for it.
+  #
+  #   helm template blinkered deploy/helm/blinkered -n blinkered-dev \
+  #     -f deploy/helm/blinkered/values-dev.yaml | grep -A2 'host:'
+  #
+  # `-n` is not optional even for a render. Without it `helm template` takes the
+  # namespace from whatever kubeconfig context happens to be current, and the
+  # middleware reference below is built from it -- so rendering from a prod
+  # context emits `blinkered-prod-...@kubernetescrd`, which is a name that does
+  # not exist in this cluster and which Traefik answers by taking the router out
+  # of service. The rendered output is right; the render is what lied.
+  redirectHosts: []
+  middlewares:
+    # MUST be false whenever redirectHosts is empty. templates/ingress.yaml
+    # attaches the middleware reference from this flag alone, while
+    # templates/middleware.yaml only creates the middleware when redirectHosts
+    # is also non-empty. True here leaves Traefik a reference it cannot resolve,
+    # which takes the whole router out of service rather than failing quietly.
+    wwwRedirect: false
+    # Traefik does not forward Accept-Encoding to the backend, so nginx's
+    # gzip_static never fires through the ingress. Keep this on or the word
+    # lists ship uncompressed: Russian is 8.1MB instead of 1.35MB.
+    compress: true

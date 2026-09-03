@@ -1,0 +1,82 @@
+{{- if and .Values.api.enabled .Values.migrations.enabled -}}
+{{/*
+The schema, applied by a Job rather than by the API on the way up.
+
+apps/server/src/bin/migrate.ts is written expecting exactly this and says why: there is more than
+one API replica, so two pods starting together would race, and a migration that takes a while
+would hold the readiness probe off long enough to look like a failed rollout.
+
+The same image as the API, because `pnpm deploy` puts both entrypoints in it. Only the command
+differs, so there is no second image to build, tag or keep in step.
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "blinkered.fullname" . }}-migrate
+  labels:
+    {{- include "blinkered.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate
+  annotations:
+    # A hook, so Helm runs it and waits for it rather than leaving it to race the rollout.
+    # `before-hook-creation` deletes the previous one first: a Job's pod template is immutable,
+    # so a second `helm upgrade` would otherwise fail on a field it is not allowed to change.
+    #
+    # The two halves are deliberately not the same phase.
+    #
+    # **post**-install, because on a first install there is no Postgres to migrate until Helm
+    # has created the StatefulSet. A pre-install hook could only ever exhaust its backoff.
+    #
+    # **pre**-upgrade, because by then Postgres exists and the ordering question inverts. Helm
+    # updates the Deployment before running post-upgrade hooks, so `post-upgrade` would put the
+    # new API in front of traffic against the old schema for the length of the rollout, and a
+    # migration that then failed would leave it there. Running first means the old code briefly
+    # sees the new schema instead, which is what additive migrations are for, and a failure
+    # aborts the upgrade before anything has rolled.
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrations.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "blinkered.labels" . | nindent 8 }}
+        app.kubernetes.io/component: migrate
+    spec:
+      # Never, so a failure makes a new pod and the backoff below is what paces the retries.
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: migrate
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # The image's CMD is the server. This is the other entrypoint in the same build.
+          command: [node, dist/src/bin/migrate.js]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          env:
+            # The same seven keys the API reads, from the same secret, so the migration and the
+            # application cannot disagree about which database they mean.
+            {{- $secret := include "blinkered.databaseSecret" . }}
+            - name: BLINKERED_DB_HOST
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: host } }
+            - name: BLINKERED_DB_PORT
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: port } }
+            - name: BLINKERED_DB_TLS
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: tls-enabled } }
+            - name: BLINKERED_DB_USER
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: username } }
+            - name: BLINKERED_DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: password } }
+            - name: BLINKERED_DB_NAME
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: db } }
+            - name: BLINKERED_DB_SCHEMA
+              valueFrom: { secretKeyRef: { name: {{ $secret }}, key: schema } }
+          resources:
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
+{{- end }}
