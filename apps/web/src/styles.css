@@ -1135,9 +1135,17 @@ kbd {
   margin-inline-start: auto;
   color: var(--dim);
 }
+/*
+ * A fixed width, so the names line up down one edge whatever the badge is. An emoji flag is
+ * sized by whichever font draws it and a drawn one by its own box, and the four pixels between
+ * them were enough to make Català and Euskara sit proud of the column.
+ */
 .drop-badge {
+  flex: 0 0 1.25rem;
+  width: 1.25rem;
   font-size: 1rem;
   line-height: 1;
+  text-align: center;
 }
 /*
  * The drawn flags, sized to sit level with the emoji ones beside them rather than to their own
@@ -1221,6 +1229,14 @@ kbd {
   flex-direction: column;
   min-width: 0;
   line-height: 1.2;
+  /*
+   * `start`, not `left`: the two names line up down the edge the reader starts from, so an
+   * Arabic or Hebrew interface stacks them against the right. Centring is what a stretched
+   * flex column does by default when the panel above it is centred, and it puts the shorter
+   * of the two names in the middle of the longer, which reads as neither aligned nor ragged.
+   */
+  align-items: flex-start;
+  text-align: start;
 }
 .drop-note {
   color: var(--dim);
