@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import {
   createWriteStream,
   existsSync,
@@ -286,12 +286,24 @@ async function askHunspell(
   const listPath = cachePath(`candidates-${id}.txt`)
   writeFileSync(listPath, `${candidates.join('\n')}\n`)
 
-  const rejected = execFileSync(
+  // stderr is captured rather than inherited, because the one thing hunspell does on a broken
+  // affix file is carry on. It prints `Failure loading aff file`, validates against the bare
+  // stems, and exits zero — so an inflected language quietly validates as though it had no
+  // morphology at all. Armenian shipped 52% coverage that way for exactly one build.
+  const run = spawnSync(
     'hunspell',
     ['-l', '-i', 'UTF-8', '-d', join(dir, id), listPath],
     // A large language rejects a lot of words, and the default buffer is not close to enough.
     { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 },
   )
+  // Only the fatal one. hunspell also writes `error - iconv: UTF-8 -> ISO8859-1` for a
+  // dictionary in a legacy encoding, which is a note about how it converted the file rather
+  // than a failure — Indonesian and Swahili have both shipped that way for a year.
+  const fatal = run.stderr
+    .split('\n')
+    .filter((line) => line.includes('Failure loading') || line.includes("Can't open"))
+  if (fatal.length > 0) throw new Error(`hunspell/${id}: ${fatal.join('; ')}`)
+  const rejected = run.stdout
   const no = new Set(rejected.split('\n').filter((word) => word !== ''))
   const yes = new Set(candidates.filter((word) => !no.has(word)))
   // A dictionary that accepts everything or nothing has not been read; the aff file failed to

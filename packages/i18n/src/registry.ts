@@ -1,3 +1,29 @@
+import { pl } from './locales/pl.js'
+import { cs } from './locales/cs.js'
+import { sk } from './locales/sk.js'
+import { sl } from './locales/sl.js'
+import { da } from './locales/da.js'
+import { et } from './locales/et.js'
+import { lt } from './locales/lt.js'
+import { lv } from './locales/lv.js'
+import { mk } from './locales/mk.js'
+import { sr } from './locales/sr.js'
+import { uk } from './locales/uk.js'
+import { bg } from './locales/bg.js'
+import { hy } from './locales/hy.js'
+import { ka } from './locales/ka.js'
+import { is } from './locales/is.js'
+import { ga } from './locales/ga.js'
+import { hu } from './locales/hu.js'
+import { ro } from './locales/ro.js'
+import { fa } from './locales/fa.js'
+import { vi } from './locales/vi.js'
+import { ca } from './locales/ca.js'
+import { cy } from './locales/cy.js'
+import { eu } from './locales/eu.js'
+import { gl } from './locales/gl.js'
+import { pcm } from './locales/pcm.js'
+import { BASQUE_COUNTRY, CATALONIA, GALICIA } from './flags.js'
 import { af } from './locales/af.js'
 import { ar } from './locales/ar.js'
 import { arz } from './locales/arz.js'
@@ -93,6 +119,35 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'fi', endonym: 'Suomi', flag: '🇫🇮', messages: fi },
   { tag: 'el', endonym: 'Ελληνικά', flag: '🇬🇷', messages: el },
   { tag: 'tr', endonym: 'Türkçe', flag: '🇹🇷', messages: tr },
+  { tag: 'pl', endonym: 'Polski', flag: '🇵🇱', messages: pl },
+  { tag: 'cs', endonym: 'Čeština', flag: '🇨🇿', messages: cs },
+  { tag: 'sk', endonym: 'Slovenčina', flag: '🇸🇰', messages: sk },
+  { tag: 'sl', endonym: 'Slovenščina', flag: '🇸🇮', messages: sl },
+  { tag: 'da', endonym: 'Dansk', flag: '🇩🇰', messages: da },
+  { tag: 'et', endonym: 'Eesti', flag: '🇪🇪', messages: et },
+  { tag: 'lt', endonym: 'Lietuvių', flag: '🇱🇹', messages: lt },
+  { tag: 'lv', endonym: 'Latviešu', flag: '🇱🇻', messages: lv },
+  { tag: 'mk', endonym: 'Македонски', flag: '🇲🇰', messages: mk },
+  { tag: 'sr', endonym: 'Српски', flag: '🇷🇸', messages: sr },
+  { tag: 'uk', endonym: 'Українська', flag: '🇺🇦', messages: uk },
+  { tag: 'bg', endonym: 'Български', flag: '🇧🇬', messages: bg },
+  { tag: 'hy', endonym: 'Հայերեն', flag: '🇦🇲', messages: hy },
+  { tag: 'ka', endonym: 'ქართული', flag: '🇬🇪', messages: ka },
+  { tag: 'is', endonym: 'Íslenska', flag: '🇮🇸', messages: is },
+  { tag: 'ga', endonym: 'Gaeilge', flag: '🇮🇪', messages: ga },
+  { tag: 'hu', endonym: 'Magyar', flag: '🇭🇺', messages: hu },
+  { tag: 'ro', endonym: 'Română', flag: '🇷🇴', messages: ro },
+  { tag: 'fa', endonym: 'فارسی', flag: '🇮🇷', messages: fa },
+  { tag: 'vi', endonym: 'Tiếng Việt', flag: '🇻🇳', messages: vi },
+  // Welsh gets a real emoji: Unicode has flags for England, Scotland and Wales and no other
+  // subdivision anywhere, which is why the next three are drawn instead. See flags.ts.
+  { tag: 'cy', endonym: 'Cymraeg', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', messages: cy },
+  { tag: 'ca', endonym: 'Català', flag: CATALONIA, messages: ca },
+  { tag: 'eu', endonym: 'Euskara', flag: BASQUE_COUNTRY, messages: eu },
+  { tag: 'gl', endonym: 'Galego', flag: GALICIA, messages: gl },
+  // Nigerian Pidgin, which ICU cannot name in any locale, so it files under English — where an
+  // English-lexified language is where somebody would look for it.
+  { tag: 'pcm', endonym: 'Naijá', flag: '🇳🇬', sortsWith: 'en', messages: pcm },
   // Last, and the one flag here that is a country nobody lives in.
   { tag: 'la', endonym: 'Latina', flag: '🇻🇦', messages: la },
 ]

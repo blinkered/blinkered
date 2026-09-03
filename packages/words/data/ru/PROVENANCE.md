@@ -13,7 +13,7 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 | candidate cut | rank 20000 for the common tier; no limit for credit |
 | validation yield | 90.5% at the common cut, 41.5% at the full cut |
 | corpus coverage | 94.2% of all occurrences |
-| board density | median 66 words on 12 tiles, 90.7% hold a six-letter word |
+| board density | median 70 words on 12 tiles, 92.3% hold a six-letter word |
 
 ## Sources
 

@@ -100,6 +100,9 @@ async function validators(
   refresh: boolean,
 ): Promise<ReadonlySet<string>[]> {
   if (spec.groups.length === 0) {
+    // Naija, and only by asking. See `unvalidated` in the manifest for why it is allowed and
+    // why an empty group list on its own is not.
+    if (spec.unvalidated === true) return []
     throw new Error(`${spec.tag}: no validator, so every candidate would be accepted unchecked`)
   }
   const forms = [...new Set(considered.flatMap((candidate) => candidate.forms))]

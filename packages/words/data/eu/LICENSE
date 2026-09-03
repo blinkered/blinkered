@@ -1,0 +1,20 @@
+Blinkered word list for Euskara (eu)
+SPDX-License-Identifier: CC-BY-SA-4.0
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of eu AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=eu`.
+
+Distributed under CC-BY-SA-4.0, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS
+  MIT
+
+Validation
+  eu.wiktionary.org page titles (CC-BY-SA-4.0) — eu.wiktionary.org contributors, page titles in namespace 0
+  en.wiktionary.org Category:Basque lemmas, Category:Basque non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Basque lemmas
+
+The full text of each license is in ../licenses/.

@@ -171,7 +171,7 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   hr: 0.59,
   ms: 0.98,
   id: 0.89,
-  ru: 0.41,
+  ru: 0.42,
   sv: 0.73,
   no: 0.98,
   fi: 0.81,
@@ -180,15 +180,41 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   tr: 0.47,
   sw: 0.52,
   la: 0.54,
-  // The two abjads, and the only entries above English. A script that writes the vowels as
+  // The abjads and Persian, the only entries above English. A script that writes the vowels as
   // marks and strips them puts far more of the dictionary within reach of twelve tiles: a
   // Hebrew board admits twice what an English one does, and three-consonant roots are why.
+  // Persian is written the same way and lands in the same place.
   he: 2.06,
   ar: 1.6,
-  arz: 1.17,
   ko: 0.57,
   ja: 0.89,
+  arz: 1.17,
   tl: 0.41,
+  pl: 0.32,
+  cs: 0.42,
+  sk: 0.26,
+  sl: 0.83,
+  da: 0.74,
+  ca: 0.92,
+  et: 0.72,
+  lt: 0.34,
+  lv: 0.35,
+  sr: 0.79,
+  hu: 0.32,
+  ro: 0.71,
+  bg: 0.47,
+  is: 0.53,
+  fa: 1.49,
+  vi: 0.35,
+  uk: 0.31,
+  mk: 0.62,
+  eu: 0.51,
+  gl: 0.66,
+  cy: 0.76,
+  ga: 0.65,
+  hy: 0.35,
+  ka: 0.56,
+  pcm: 0.81,
 }
 
 /** A language with no measurement yet is assumed to behave like the one that was measured. */

@@ -1,0 +1,19 @@
+Blinkered word list for Slovenčina (sk)
+SPDX-License-Identifier: LGPL-2.1-or-later
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of sk AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=sk`.
+
+Distributed under LGPL-2.1-or-later, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS
+  MIT
+
+Validation
+  hunspell `sk` (LGPL-2.1-or-later) — Slovak spelling dictionary, Zdenko Podobný and the sk-spell project
+
+The full text of each license is in ../licenses/.

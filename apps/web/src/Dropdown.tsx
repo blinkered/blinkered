@@ -72,6 +72,22 @@ function matches(option: Choice, needle: string): boolean {
   return hay.some((text) => text.includes(needle))
 }
 
+/**
+ * A badge is an emoji flag for almost every language, and a drawn one for the three Unicode has
+ * no character for. Both are decorative — the label carries the meaning — so the image is
+ * `alt=""` rather than named.
+ */
+function Badge({ badge }: { readonly badge: string }): React.JSX.Element {
+  if (badge.startsWith('data:')) {
+    return <img className="drop-badge drop-flag" src={badge} alt="" aria-hidden="true" />
+  }
+  return (
+    <span className="drop-badge" aria-hidden="true">
+      {badge}
+    </span>
+  )
+}
+
 export function Dropdown({
   options,
   value,
@@ -237,11 +253,7 @@ export function Dropdown({
             else show()
           }}
         >
-          {current?.badge === undefined ? null : (
-            <span className="drop-badge" aria-hidden="true">
-              {current.badge}
-            </span>
-          )}
+          {current?.badge === undefined ? null : <Badge badge={current.badge} />}
           <span className="drop-value">{current?.label ?? value}</span>
           <span className="drop-caret" aria-hidden="true">
             ▾
@@ -300,11 +312,7 @@ export function Dropdown({
                     pick(index)
                   }}
                 >
-                  {option.badge === undefined ? null : (
-                    <span className="drop-badge" aria-hidden="true">
-                      {option.badge}
-                    </span>
-                  )}
+                  {option.badge === undefined ? null : <Badge badge={option.badge} />}
                   <span className="drop-names">
                     <span className="drop-value">{option.label}</span>
                     {option.note === undefined || option.note === option.label ? null : (

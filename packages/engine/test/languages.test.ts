@@ -39,6 +39,54 @@ const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
   ja: ['ラーメン', 'らーめん', 4],
   // Egyptian Arabic writes with the same letters and folds the same way. إزاي is "how".
   arz: ['إزاي', 'ازاي', 4],
+  // Polish keeps its nine marked letters: ŁÓDŹ is a city and LODZ is nothing.
+  pl: ['Łódź', 'ŁÓDŹ', 4],
+  // Czech length is a letter, so BÝT (to be) keeps its Ý and stays four tiles.
+  cs: ['být', 'BÝT', 3],
+  // Slovak's syllabic Ĺ: VĹČA is a wolf cub, and the mark is the vowel.
+  sk: ['vĺča', 'VĹČA', 4],
+  sl: ['ključ', 'KLJUČ', 5],
+  // Danish Å is a letter and not an A: ÅL is an eel.
+  da: ['ål', 'ÅL', 2],
+  // Catalan folds the accent and keeps Ç; the ela geminada's interpunct is dropped, so
+  // COL·LEGI is seven tiles rather than eight.
+  ca: ['col·legi', 'COLLEGI', 7],
+  // Estonian Õ is a letter and Š is not a tile at all: it folds onto S.
+  et: ['sõdurišokolaad', 'SÕDURISOKOLAAD', 14],
+  // Lithuanian's hooks and macrons are letters. KĄSTI is to bite.
+  lt: ['kąsti', 'KĄSTI', 5],
+  // Latvian macrons are letters: KĀZAS is a wedding and KAZAS is goats.
+  lv: ['kāzas', 'KĀZAS', 5],
+  // Macedonian Ѓ decomposes to Г plus an acute, so it has to be protected by name.
+  mk: ['ѓавол', 'ЃАВОЛ', 5],
+  sr: ['џеп', 'ЏЕП', 3],
+  // Ukrainian Й and Ї both decompose, and both survive. МІЙ is "my".
+  uk: ['мій', 'МІЙ', 3],
+  // Bulgarian Ъ is a vowel here rather than Russian's hard sign.
+  bg: ['българия', 'БЪЛГАРИЯ', 8],
+  hy: ['հայերեն', 'ՀԱՅԵՐԵՆ', 7],
+  // Georgian is unicameral, and upper-casing it would deal Mtavruli. It must not change.
+  ka: ['ქართული', 'ქართული', 7],
+  eu: ['etxe', 'ETXE', 4],
+  gl: ['ollo', 'OLLO', 4],
+  // Icelandic acutes are letters, and Þ and Ð are the two English lost.
+  is: ['þjóð', 'ÞJÓÐ', 4],
+  // Welsh digraphs are two tiles each, so LLAN is four rather than three, and the to-bach folds.
+  cy: ['llŷn', 'LLYN', 4],
+  // The Irish fada is a letter: SEÁN is a name and SEAN is "old".
+  ga: ['seán', 'SEÁN', 4],
+  // Hungarian Ő and Ö are different letters. TŐRÖK is "daggers", TÖRÖK is "Turkish".
+  hu: ['tőrök', 'TŐRÖK', 5],
+  // Romanian's two spellings of ș converge: the Turkish cedilla folds onto the comma below.
+  ro: ['şi', 'ȘI', 2],
+  // Persian folds the Arabic look-alikes onto its own letters, and drops the ZWNJ that holds
+  // می apart from the verb after it.
+  fa: ['كتاب', 'کتاب', 4],
+  // Naija carries no marks at all, which is the whole of its diacritic decision.
+  pcm: ['sabi', 'SABI', 4],
+  // Vietnamese holds its tone on the tile and folds the space away, so the two syllables of
+  // SINH VIÊN arrive as seven tiles and no gap.
+  vi: ['sinh viên', 'SINHVIÊN', 8],
 }
 
 describe('the language registry', () => {
@@ -47,29 +95,54 @@ describe('the language registry', () => {
       'af',
       'ar',
       'arz',
+      'bg',
+      'ca',
+      'cs',
+      'cy',
+      'da',
       'de',
       'el',
       'en',
       'es',
+      'et',
+      'eu',
+      'fa',
       'fi',
       'fr',
+      'ga',
+      'gl',
       'he',
       'hr',
+      'hu',
+      'hy',
       'id',
+      'is',
       'it',
       'ja',
+      'ka',
       'ko',
       'la',
+      'lt',
+      'lv',
+      'mk',
       'ms',
       'nl',
       'no',
+      'pcm',
+      'pl',
       'pt',
       'pt-BR',
+      'ro',
       'ru',
+      'sk',
+      'sl',
+      'sr',
       'sv',
       'sw',
       'tl',
       'tr',
+      'uk',
+      'vi',
     ])
   })
 
@@ -208,11 +281,17 @@ describe('Arabic', () => {
     }
   })
 
-  it('is the only alphabet that has to say so', () => {
+  it('is one of only three that have to say so, and all three write this script', () => {
     // Every other language's row comes out right by sorting its tiles with its own collation.
-    // This is the check that a new one has been looked at rather than assumed.
+    // This is the check that a new one has been looked at rather than assumed. Persian joins
+    // them for the same reason and a different letter: it recites ا … ی, and the collator does
+    // not put ی last.
     const naming = ALPHABET_IDS.filter((id) => alphabetFor(id).recited !== undefined)
-    expect([...naming].sort()).toEqual(['ar', 'arz'])
+    expect([...naming].sort()).toEqual(['ar', 'arz', 'fa'])
+    expect(alphabetFor('fa').recited).toEqual(['ا', 'ی'])
+    for (const letter of alphabetFor('fa').recited ?? []) {
+      expect(Object.keys(alphabetFor('fa').weights)).toContain(letter)
+    }
   })
 })
 

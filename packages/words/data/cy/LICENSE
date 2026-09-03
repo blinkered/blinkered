@@ -1,0 +1,19 @@
+Blinkered word list for Cymraeg (cy)
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+This file is generated. It is not a copy of any dictionary. It is the list of words that
+appear in a frequency-ordered corpus of cy AND are accepted by every validator
+below, filtered to what the game can deal as tiles. Neither input is redistributed here.
+Rebuild it with `pnpm dictionary build --language=cy`.
+
+Distributed under LGPL-3.0-or-later, which is the most restrictive of the terms below. See
+PROVENANCE.md for what was relied on and why.
+
+Ordering
+  cy.wikipedia.org contributors, word counts over the article text of the pages-articles dump
+  CC-BY-SA-4.0
+
+Validation
+  hunspell `cy` (LGPL-3.0-or-later) — Welsh spelling dictionary, Kevin Donnelly and the Cysill / Meddal project
+
+The full text of each license is in ../licenses/.

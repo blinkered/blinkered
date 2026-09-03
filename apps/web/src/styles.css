@@ -1139,6 +1139,18 @@ kbd {
   font-size: 1rem;
   line-height: 1;
 }
+/*
+ * The drawn flags, sized to sit level with the emoji ones beside them rather than to their own
+ * aspect ratio. A thin border because two of the three are mostly white and would otherwise
+ * bleed into the menu.
+ */
+.drop-flag {
+  width: 1.25rem;
+  height: 0.85rem;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
 .drop-value {
   white-space: nowrap;
 }

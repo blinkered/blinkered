@@ -32,6 +32,56 @@
       "density": 195
     },
     {
+      "tag": "bg",
+      "endonym": "Български",
+      "common": 17555,
+      "full": 279165,
+      "bytes": 5401020,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 78
+    },
+    {
+      "tag": "ca",
+      "endonym": "Català",
+      "common": 16405,
+      "full": 46841,
+      "bytes": 428790,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 154
+    },
+    {
+      "tag": "cs",
+      "endonym": "Čeština",
+      "common": 15066,
+      "full": 23787,
+      "bytes": 203427,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 70
+    },
+    {
+      "tag": "cy",
+      "endonym": "Cymraeg",
+      "common": 10038,
+      "full": 47635,
+      "bytes": 424870,
+      "license": "LGPL-3.0-or-later",
+      "shareAlike": false,
+      "density": 127
+    },
+    {
+      "tag": "da",
+      "endonym": "Dansk",
+      "common": 16419,
+      "full": 309554,
+      "bytes": 3682208,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 124
+    },
+    {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 18389,
@@ -72,6 +122,36 @@
       "density": 120
     },
     {
+      "tag": "et",
+      "endonym": "Eesti",
+      "common": 17552,
+      "full": 589422,
+      "bytes": 6997475,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 119
+    },
+    {
+      "tag": "eu",
+      "endonym": "Euskara",
+      "common": 5323,
+      "full": 7417,
+      "bytes": 57339,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 85
+    },
+    {
+      "tag": "fa",
+      "endonym": "فارسی",
+      "common": 13248,
+      "full": 51132,
+      "bytes": 650492,
+      "license": "Apache-2.0",
+      "shareAlike": false,
+      "density": 249
+    },
+    {
       "tag": "fi",
       "endonym": "Suomi",
       "common": 17511,
@@ -90,6 +170,26 @@
       "license": "MPL-2.0",
       "shareAlike": false,
       "density": 153
+    },
+    {
+      "tag": "ga",
+      "endonym": "Gaeilge",
+      "common": 9886,
+      "full": 13545,
+      "bytes": 120821,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 109
+    },
+    {
+      "tag": "gl",
+      "endonym": "Galego",
+      "common": 8338,
+      "full": 11332,
+      "bytes": 97883,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 110
     },
     {
       "tag": "he",
@@ -112,6 +212,26 @@
       "density": 99
     },
     {
+      "tag": "hu",
+      "endonym": "Magyar",
+      "common": 17943,
+      "full": 1295061,
+      "bytes": 17223802,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 54
+    },
+    {
+      "tag": "hy",
+      "endonym": "Հայերեն",
+      "common": 11164,
+      "full": 19341,
+      "bytes": 325337,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 59
+    },
+    {
       "tag": "id",
       "endonym": "Bahasa Indonesia",
       "common": 17300,
@@ -120,6 +240,16 @@
       "license": "LGPL-3.0",
       "shareAlike": false,
       "density": 149
+    },
+    {
+      "tag": "is",
+      "endonym": "Íslenska",
+      "common": 14261,
+      "full": 68689,
+      "bytes": 682417,
+      "license": "CC-BY-SA-3.0",
+      "shareAlike": false,
+      "density": 88
     },
     {
       "tag": "it",
@@ -142,6 +272,16 @@
       "density": 149
     },
     {
+      "tag": "ka",
+      "endonym": "ქართული",
+      "common": 19347,
+      "full": 163684,
+      "bytes": 4562745,
+      "license": "MIT",
+      "shareAlike": false,
+      "density": 94
+    },
+    {
       "tag": "ko",
       "endonym": "한국어",
       "common": 19257,
@@ -160,6 +300,36 @@
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 91
+    },
+    {
+      "tag": "lt",
+      "endonym": "Lietuvių",
+      "common": 17488,
+      "full": 202690,
+      "bytes": 2184460,
+      "license": "BSD-3-Clause",
+      "shareAlike": false,
+      "density": 56
+    },
+    {
+      "tag": "lv",
+      "endonym": "Latviešu",
+      "common": 17087,
+      "full": 99801,
+      "bytes": 1051179,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 58
+    },
+    {
+      "tag": "mk",
+      "endonym": "Македонски",
+      "common": 13055,
+      "full": 21362,
+      "bytes": 334004,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 104
     },
     {
       "tag": "ms",
@@ -192,6 +362,26 @@
       "density": 164
     },
     {
+      "tag": "pcm",
+      "endonym": "Naijá",
+      "common": 8000,
+      "full": 16394,
+      "bytes": 121583,
+      "license": "",
+      "shareAlike": false,
+      "density": 136
+    },
+    {
+      "tag": "pl",
+      "endonym": "Polski",
+      "common": 18297,
+      "full": 544157,
+      "bytes": 6219734,
+      "license": "MPL-2.0",
+      "shareAlike": false,
+      "density": 53
+    },
+    {
       "tag": "pt",
       "endonym": "Português",
       "common": 16107,
@@ -212,6 +402,16 @@
       "density": 143
     },
     {
+      "tag": "ro",
+      "endonym": "Română",
+      "common": 16326,
+      "full": 187238,
+      "bytes": 1932275,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 118
+    },
+    {
       "tag": "ru",
       "endonym": "Русский",
       "common": 18095,
@@ -219,7 +419,37 @@
       "bytes": 8494899,
       "license": "BSD-3-Clause",
       "shareAlike": false,
-      "density": 66
+      "density": 70
+    },
+    {
+      "tag": "sk",
+      "endonym": "Slovenčina",
+      "common": 17538,
+      "full": 287672,
+      "bytes": 3103113,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 44
+    },
+    {
+      "tag": "sl",
+      "endonym": "Slovenščina",
+      "common": 17869,
+      "full": 262639,
+      "bytes": 2662695,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 138
+    },
+    {
+      "tag": "sr",
+      "endonym": "Српски",
+      "common": 17691,
+      "full": 109513,
+      "bytes": 1776456,
+      "license": "LGPL-2.1-or-later",
+      "shareAlike": false,
+      "density": 132
     },
     {
       "tag": "sv",
@@ -260,6 +490,26 @@
       "license": "MIT",
       "shareAlike": false,
       "density": 79
+    },
+    {
+      "tag": "uk",
+      "endonym": "Українська",
+      "common": 13175,
+      "full": 20903,
+      "bytes": 333543,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 52
+    },
+    {
+      "tag": "vi",
+      "endonym": "Tiếng Việt",
+      "common": 14564,
+      "full": 18616,
+      "bytes": 130732,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
+      "density": 58
     }
   ]
 }

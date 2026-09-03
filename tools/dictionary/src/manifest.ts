@@ -113,6 +113,16 @@ export interface LanguageSpec {
   readonly cuts: TierCuts
   /** Anything a reader of the shipped list deserves to be warned about. */
   readonly caveat?: string
+  /**
+   * Accept whatever the corpus ranks, with no dictionary to check it against.
+   *
+   * The one place this pipeline knowingly breaks its own model, and it has to be asked for by
+   * name: an empty `groups` is refused, because that is what a mistake looks like. Only Naija
+   * sets it, because Nigerian Pidgin has no lexicon anywhere to bound it — 188 lemmas on
+   * en.wiktionary and no Wiktionary of its own. Anything that sets this must also set `caveat`,
+   * so the shipped PROVENANCE says what the file is.
+   */
+  readonly unvalidated?: true
 }
 
 const wooorm = (id: string, license: string, attribution: string): HunspellSource => ({
@@ -525,6 +535,287 @@ export const LANGUAGES: readonly LanguageSpec[] = [
       'No Tagalog hunspell dictionary exists at any licence, so there is no morphology here ' +
       'and an affixed form validates only if somebody wrote it down. The common tier is ' +
       'small because the corpus is: 10,665 words, the shortest of the set.',
+  },
+  {
+    tag: 'pl',
+    corpus: subtitles('pl'),
+    groups: [
+      [
+        wooorm(
+          'pl',
+          'MPL-2.0',
+          'Polish spelling dictionary, Marek Futrega and the sjp.pl contributors',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'cs',
+    // Czech hunspell is GPL-2.0 only, so validation is cs.wiktionary's 162,989 titles.
+    corpus: subtitles('cs'),
+    groups: [[titles('cs')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'sk',
+    corpus: subtitles('sk'),
+    groups: [
+      [
+        wooorm(
+          'sk',
+          'LGPL-2.1-or-later',
+          'Slovak spelling dictionary, Zdenko Podobný and the sk-spell project',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'sl',
+    corpus: subtitles('sl'),
+    groups: [
+      [
+        wooorm(
+          'sl',
+          'LGPL-2.1-or-later',
+          'Slovenian spelling dictionary, the Slovenian language technologies community',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'da',
+    corpus: subtitles('da'),
+    groups: [
+      [
+        wooorm(
+          'da',
+          'LGPL-2.1-or-later',
+          'Den Danske Ordliste, Stavekontrolden and Foreningen for Frit Tilgængelige Sprogværktøjer',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'ca',
+    corpus: subtitles('ca'),
+    groups: [[wooorm('ca', 'LGPL-2.1-or-later', 'Catalan spelling dictionary, Softcatalà')]],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'et',
+    corpus: subtitles('et'),
+    groups: [
+      [
+        wooorm(
+          'et',
+          'LGPL-2.1-or-later',
+          'Estonian spelling dictionary, the Institute of the Estonian Language',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'lt',
+    corpus: subtitles('lt'),
+    groups: [
+      [
+        wooorm(
+          'lt',
+          'BSD-3-Clause',
+          'Lithuanian spelling dictionary, Albertas Agejevas and Marius Gedminas',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'lv',
+    corpus: subtitles('lv'),
+    groups: [
+      [
+        wooorm(
+          'lv',
+          'LGPL-2.1-or-later',
+          'Latvian spelling dictionary, Jānis Eisaks and the LibreOffice Latvian project',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'sr',
+    corpus: subtitles('sr'),
+    groups: [
+      [
+        wooorm(
+          'sr',
+          'LGPL-2.1-or-later',
+          'Serbian spelling dictionary, Milutin Smiljanić and the Serbian Open Source community',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'hu',
+    corpus: subtitles('hu'),
+    groups: [
+      [
+        wooorm(
+          'hu',
+          'LGPL-2.1-or-later',
+          'Szabad magyar szótár (Magyar Ispell), László Németh and contributors',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'ro',
+    corpus: subtitles('ro'),
+    groups: [[wooorm('ro', 'LGPL-2.1-or-later', 'Romanian hunspell package, the Rospell team')]],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'bg',
+    corpus: subtitles('bg'),
+    groups: [
+      [wooorm('bg', 'LGPL-2.1-or-later', 'Bulgarian spelling dictionary, the bgOffice project')],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'is',
+    corpus: subtitles('is'),
+    groups: [
+      [
+        wooorm(
+          'is',
+          'CC-BY-SA-3.0',
+          'Icelandic spelling dictionary, Stofnun Árna Magnússonar í íslenskum fræðum',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'fa',
+    corpus: subtitles('fa'),
+    groups: [[wooorm('fa', 'Apache-2.0', 'Lilak, Persian spell checking dictionary, Reza Sarabi')]],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'vi',
+    // Vietnamese hunspell has 6,631 words, which is a stub; vi.wiktionary has 346,328 titles.
+    corpus: subtitles('vi'),
+    groups: [[titles('vi')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'uk',
+    // Ukrainian hunspell is GPL-3.0 only, so two Wiktionaries stand in for it, unioned. Neither
+    // is enough alone: uk.wiktionary's 60,513 titles are lemmas, and Ukrainian inflects hard, so
+    // the corpus forms it rejects are most of the corpus. en.wiktionary files 30,415 Ukrainian
+    // lemmas *and* their non-lemma forms, which is the half that was missing.
+    corpus: subtitles('uk'),
+    groups: [[titles('uk'), enCategories('Ukrainian')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'mk',
+    // Macedonian hunspell is GPL-3.0 only, and mk.wiktionary has 6,225 titles to en.wiktionary's
+    // 46,098.
+    corpus: subtitles('mk'),
+    groups: [[enCategories('Macedonian')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'eu',
+    // Basque hunspell is GPL-2.0 only, so two Wiktionaries stand in for it, unioned. Basque is
+    // agglutinative and eu.wiktionary lists lemmas, so a lemma-only validator refuses most of
+    // what the corpus actually contains.
+    corpus: subtitles('eu'),
+    groups: [[titles('eu'), enCategories('Basque')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'gl',
+    // Galician hunspell is GPL-3.0 only. gl.wiktionary has 93,676 titles.
+    corpus: subtitles('gl'),
+    groups: [[titles('gl')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'cy',
+    // No OpenSubtitles list at 2016 or 2018; cy.wikipedia has 284,583 articles.
+    corpus: wikipedia('cy'),
+    groups: [
+      [
+        wooorm(
+          'cy',
+          'LGPL-3.0-or-later',
+          'Welsh spelling dictionary, Kevin Donnelly and the Cysill / Meddal project',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'ga',
+    // No OpenSubtitles list, and Irish hunspell is GPL-2.0 only. ga.wikipedia has 64,341 articles,
+    // and en.wiktionary files 22,063 Irish lemmas to ga.wiktionary's 3,164.
+    corpus: wikipedia('ga'),
+    groups: [[enCategories('Irish')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'hy',
+    // OpenSubtitles has a 2016 Armenian list and no 2018 one; hy.wikipedia has 331,520 articles.
+    //
+    // Not hunspell, though a clean-licensed Armenian one exists: its affix file does not load in
+    // hunspell 1.7, and what that buys is not an error but bare stems — `SFX VD` declares 171
+    // rules and carries 172, and correcting that is not the end of it. Armenian is heavily
+    // inflected, so validating against stems alone threw most of the language away, and the
+    // build said nothing. hy.wiktionary has 305,035 titles, against 19,174 Armenian lemmas on
+    // en.wiktionary.
+    corpus: wikipedia('hy'),
+    groups: [[titles('hy')]],
+    cuts: deepCuts(40_000, 90_000),
+  },
+  {
+    tag: 'ka',
+    corpus: wikipedia('ka'),
+    groups: [
+      [
+        wooorm(
+          'ka',
+          'MIT',
+          'Georgian spelling dictionary, Vladimer Sichinava and the ka_GE spell project',
+        ),
+      ],
+    ],
+    cuts: creditEverything(DEFAULT_CUTS),
+  },
+  {
+    tag: 'pcm',
+    corpus: wikipedia('pcm'),
+    // No validator at all, which is the one place this pipeline knowingly breaks its
+    // own rule. An empty group list accepts whatever the corpus ranks.
+    groups: [],
+    unvalidated: true,
+    cuts: deepCuts(8_000, 20_000),
+    caveat:
+      'Built from corpus frequency alone. Nigerian Pidgin has no lexicon to bound it: ' +
+      'en.wiktionary files 188 lemmas and there is no Naija Wiktionary, so nothing here ' +
+      'was checked against a dictionary of the language. Everything else in this ' +
+      'directory intersects a corpus ordering with a dictionary answer, and this does ' +
+      'not. Expect typos and English intrusions, which Naija orthography makes ' +
+      'invisible. See docs/LANGUAGES.md.',
   },
 ]
 
