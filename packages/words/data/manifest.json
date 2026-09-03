@@ -84,12 +84,12 @@
     {
       "tag": "de",
       "endonym": "Deutsch",
-      "common": 18389,
-      "full": 42747,
-      "bytes": 407912,
+      "common": 16918,
+      "full": 36493,
+      "bytes": 354206,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 140
+      "density": 113
     },
     {
       "tag": "el",
@@ -154,12 +154,12 @@
     {
       "tag": "fi",
       "endonym": "Suomi",
-      "common": 17511,
-      "full": 35648,
-      "bytes": 322466,
+      "common": 22968,
+      "full": 44104,
+      "bytes": 423530,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 136
+      "density": 111
     },
     {
       "tag": "fr",
@@ -184,12 +184,12 @@
     {
       "tag": "gl",
       "endonym": "Galego",
-      "common": 8338,
-      "full": 11332,
-      "bytes": 122425,
+      "common": 16602,
+      "full": 34583,
+      "bytes": 398589,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 110
+      "density": 125
     },
     {
       "tag": "he",
@@ -254,12 +254,12 @@
     {
       "tag": "it",
       "endonym": "Italiano",
-      "common": 16507,
-      "full": 37512,
-      "bytes": 352210,
+      "common": 17595,
+      "full": 40944,
+      "bytes": 395943,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 183
+      "density": 139
     },
     {
       "tag": "ja",
@@ -334,12 +334,12 @@
     {
       "tag": "ms",
       "endonym": "Bahasa Melayu",
-      "common": 7372,
-      "full": 9173,
-      "bytes": 63160,
+      "common": 5228,
+      "full": 7921,
+      "bytes": 60524,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 164
+      "density": 93
     },
     {
       "tag": "nl",
@@ -354,12 +354,12 @@
     {
       "tag": "no",
       "endonym": "Norsk",
-      "common": 9994,
-      "full": 13891,
-      "bytes": 107431,
+      "common": 27746,
+      "full": 41122,
+      "bytes": 387154,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 164
+      "density": 215
     },
     {
       "tag": "pcm",

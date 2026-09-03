@@ -211,7 +211,7 @@ export async function acceptedBy(
   if (source.kind === 'category') {
     const members: string[] = []
     for (const category of source.categories) {
-      members.push(...(await categoryMembers(source.wiki, category, refresh)))
+      appendAll(members, await categoryMembers(source.wiki, category, refresh))
     }
     return buildValidator(members, { caseRule })
   }
@@ -222,6 +222,20 @@ export async function acceptedBy(
     )
   }
   return askHunspell(source.id, source.dic, source.aff, candidates, refresh)
+}
+
+/**
+ * Appends one array to another without spreading it into an argument list.
+ *
+ * `push(...members)` reads better and works right up until a category is big enough to matter.
+ * Every element becomes a function argument, and the limit is somewhere near sixty-five
+ * thousand: `Category:Italian non-lemma forms` has 468,106 members, so moving Italian off page
+ * titles turned a working build into `RangeError: Maximum call stack size exceeded`. Galician,
+ * German and Finnish went the same way in the same minute; Malay and Norwegian did not, which
+ * is the shape of the bug — it hides until the data grows.
+ */
+function appendAll(into: string[], from: readonly string[]): void {
+  for (const item of from) into.push(item)
 }
 
 /**
@@ -249,7 +263,7 @@ export async function lexicon(source: Source, refresh: boolean): Promise<readonl
   if (source.kind === 'category') {
     const words: string[] = []
     for (const category of source.categories) {
-      words.push(...(await categoryMembers(source.wiki, category, refresh)))
+      appendAll(words, await categoryMembers(source.wiki, category, refresh))
     }
     return words
   }

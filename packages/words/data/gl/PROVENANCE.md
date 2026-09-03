@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 8338 words, counted toward the board's word floor |
-| full tier | 11332 words, accepted for credit |
+| common tier | 16602 words, counted toward the board's word floor |
+| full tier | 34583 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 40000 for the common tier; rank 90000 for credit |
-| validation yield | 20.8% at the common cut, 14.1% at the full cut |
-| corpus coverage | 59.7% of all occurrences |
-| board density | median 110 words on 12 tiles, 96.3% hold a six-letter word |
+| validation yield | 41.5% at the common cut, 38.4% at the full cut |
+| corpus coverage | 81.2% of all occurrences |
+| board density | median 125 words on 12 tiles, 98.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- gl.wiktionary.org page titles (CC-BY-SA-4.0) — gl.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Galician lemmas, Category:Galician non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Galician lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried

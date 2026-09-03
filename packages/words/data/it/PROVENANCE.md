@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 16507 words, counted toward the board's word floor |
-| full tier | 37512 words, accepted for credit |
+| common tier | 17595 words, counted toward the board's word floor |
+| full tier | 40944 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 20000 for the common tier; rank 50000 for credit |
-| validation yield | 82.5% at the common cut, 75.0% at the full cut |
-| corpus coverage | 92.2% of all occurrences |
-| board density | median 183 words on 12 tiles, 99.7% hold a six-letter word |
+| validation yield | 88.0% at the common cut, 81.9% at the full cut |
+| corpus coverage | 95.0% of all occurrences |
+| board density | median 139 words on 12 tiles, 99.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- it.wiktionary.org page titles (CC-BY-SA-4.0) — it.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Italian lemmas, Category:Italian non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Italian lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried
@@ -43,4 +43,4 @@ relied on, and it is never GPL. Distributed under `CC-BY-SA-4.0`.
 
 ## Caveat
 
-Validated against Wiktionary titles: the hunspell dictionary is GPL-3.0 only.
+Validated against en.wiktionary categories: the hunspell dictionary is GPL-3.0 only. A category asserts the language, which a wiki’s page titles do not.

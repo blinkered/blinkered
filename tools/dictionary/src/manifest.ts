@@ -243,21 +243,23 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   {
     tag: 'it',
     corpus: subtitles('it'),
-    groups: [[titles('it')]],
+    groups: [[enCategories('Italian')]],
     cuts: DEFAULT_CUTS,
-    caveat: 'Validated against Wiktionary titles: the hunspell dictionary is GPL-3.0 only.',
+    caveat:
+      'Validated against en.wiktionary categories: the hunspell dictionary is GPL-3.0 only. ' +
+      'A category asserts the language, which a wiki\u2019s page titles do not.',
   },
   {
     tag: 'de',
     corpus: subtitles('de'),
-    groups: [[titles('de')]],
+    groups: [[enCategories('German')]],
     // Every German noun is capitalized, so the filter that drops proper nouns everywhere
     // else would delete the nouns and leave the verbs. Case stops being evidence.
     caseRule: 'ignoreCase',
     cuts: DEFAULT_CUTS,
     caveat:
-      'Validated against Wiktionary titles (igerman98 is GPL only), and with case ignored, ' +
-      'so some proper nouns are admitted. Both are explained in docs/DICTIONARIES.md.',
+      'Validated against en.wiktionary categories (igerman98 is GPL only), and with case ' +
+      'ignored, so some proper nouns are admitted. Both are explained in docs/DICTIONARIES.md.',
   },
   {
     tag: 'nl',
@@ -286,12 +288,12 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   {
     tag: 'ms',
     corpus: subtitles('ms'),
-    groups: [[titles('ms')]],
+    groups: [[enCategories('Malay')]],
     cuts: deepCuts(50_000, 200_000),
     caveat:
-      'Validated against Wiktionary titles; no clean-licensed Malay hunspell dictionary ' +
-      'exists. The thinnest source in the set: the validator is exhausted by rank 100,000, ' +
-      'so a deeper cut recovers nothing and the two tiers nearly coincide.',
+      'Validated against en.wiktionary categories; no clean-licensed Malay hunspell ' +
+      'dictionary exists. The thinnest source in the set, at 10,588 lemmas and 397 ' +
+      'non-lemma forms, so a deeper cut recovers nothing and the two tiers nearly coincide.',
   },
   {
     tag: 'id',
@@ -325,19 +327,29 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   {
     tag: 'no',
     corpus: subtitles('no'),
-    groups: [[titles('no')]],
+    // Three categories unioned, because en.wiktionary does not file a language called
+    // Norwegian: `Category:Norwegian lemmas` holds 1,393 entries against Bokmål's 23,088 and
+    // Nynorsk's 24,855. Taking the obvious name would have shrunk the language to a tenth of
+    // itself and built green, which is how Armenian lost its morphology.
+    groups: [
+      [
+        enCategories('Norwegian Bokmål'),
+        enCategories('Norwegian Nynorsk'),
+        enCategories('Norwegian'),
+      ],
+    ],
     cuts: deepCuts(60_000, 150_000),
     caveat: 'Validated against Wiktionary titles: the Bokmål hunspell dictionary is GPL-2.0.',
   },
   {
     tag: 'fi',
     corpus: subtitles('fi'),
-    groups: [[titles('fi')]],
+    groups: [[enCategories('Finnish')]],
     cuts: deepCuts(50_000, 150_000),
     caveat:
-      'Validated against Wiktionary titles, which are mostly lemmas, so an inflected ' +
-      'Finnish form is usually refused. The weakest language in the set, and the one most ' +
-      'in need of a real morphological validator.',
+      'Validated against en.wiktionary categories, which are mostly lemmas, so an inflected ' +
+      'Finnish form is usually refused. Still the language most in need of a real ' +
+      'morphological validator.',
   },
   {
     tag: 'el',
@@ -770,7 +782,7 @@ export const LANGUAGES: readonly LanguageSpec[] = [
     tag: 'gl',
     // Galician hunspell is GPL-3.0 only. gl.wiktionary has 93,676 titles.
     corpus: subtitles('gl'),
-    groups: [[titles('gl')]],
+    groups: [[enCategories('Galician')]],
     cuts: deepCuts(40_000, 90_000),
   },
   {

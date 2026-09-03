@@ -125,13 +125,12 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   Vietnamese. That was five before the batch of twenty-five, and the store-build question grew
   with it — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
   whole obligation and we do it. Nothing anywhere is GPL.
-- **Seven languages are validated against a Wiktionary's page titles**, which cannot tell one
-  language from another: Italian, German, Malay, Norwegian, Finnish, Galician and Armenian. Six
-  of them therefore contain English. Against fourteen unambiguous English probes, Norwegian
-  admits seven, Italian, German, Malay and Finnish five each, and Galician one; Armenian admits
-  none only because English cannot be spelled in Armenian script. Moving them to en.wiktionary
-  categories is the fix and is not yet done — see LANGUAGES.md for the trap waiting in
-  Norwegian.
+- **Naijá is built from corpus frequency with no validator at all**, which is the one place the
+  pipeline knowingly breaks its own rule, and it shows: twelve of fourteen unambiguous English
+  probes are playable as Naijá. It cannot be fixed the way the other six were. Naijá is an
+  English-lexifier creole, so `for`, `of`, `to`, `and` and `go` are core vocabulary spelled
+  exactly as English — an English blocklist would delete the language. What it needs is a Naijá
+  lexicon, and the largest one anywhere is en.wiktionary's 188 entries. See LANGUAGES.md.
 - **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
   validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns

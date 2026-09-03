@@ -525,11 +525,13 @@ twelve-tile board holding all eight of the right toned vowels is rare.
 - ~~**Naijá's generated `LICENSE` names no license at all**, and Icelandic's CC-BY-SA-3.0 is
   flagged as unencumbered.~~ Both fixed; twenty-one languages are share-alike. DICTIONARIES.md
   has what the one line was doing.
-- **Naijá's fold strips ọ and ụ.** They are letters of the language, not decoration, so those
-  words are tiled wrong as well as written wrong — AFỌ plays as AFO. Nobody decided this; it is
-  what `folder()` does by default, and building the language without answering the diacritic
-  question answered it in the worst direction. It is the same decision Yoruba and Igbo are
-  waiting on, and the evidence gathered for them applies here unchanged.
+- **The subdots in the Naijá list are leaked Igbo, not Naijá.** Worth writing down because the
+  first reading was the opposite one. The words carrying them are `asụsụ` (language), `ndị`
+  (people), `akwụkwọ` (book), `ụdaume` (vowel), `mkpụrụedemede` (letter) — Igbo grammatical
+  vocabulary, quoted in pcm.wikipedia's articles about language and swept up because nothing
+  validates Naijá. So the fold is not throwing away letters of the language; the corpus is
+  handing it another language. Naijá's diacritic question is genuinely open, and this is not
+  evidence about it either way.
 - Vietnamese typing goes through an IME, and the browser delivers composed characters. It has
   not been tested with one attached.
 
@@ -544,33 +546,64 @@ That hole put 10,051 English words into Vietnamese and moved it and Czech onto c
 was never confined to those two. Seven languages still have `titles` as their only validator,
 and six of them contain English — measured against fourteen unambiguous English probes:
 
-|           | validator      | English probes admitted | words  |
-| --------- | -------------- | ----------------------- | ------ |
-| Norwegian | `titles('no')` | 7 / 14                  | 13,891 |
-| Italian   | `titles('it')` | 5 / 14                  | 37,512 |
-| German    | `titles('de')` | 5 / 14                  | 42,747 |
-| Malay     | `titles('ms')` | 5 / 14                  | 9,173  |
-| Finnish   | `titles('fi')` | 5 / 14                  | 35,648 |
-| Galician  | `titles('gl')` | 1 / 14                  | 11,332 |
-| Armenian  | `titles('hy')` | 0 / 14                  | 19,341 |
+|           | English probes, before | after | words, before | after     |
+| --------- | ---------------------- | ----- | ------------- | --------- |
+| Norwegian | 7 / 14                 | **0** | 13,891        | 41,122    |
+| Italian   | 5 / 14                 | **0** | 37,512        | 40,944    |
+| German    | 5 / 14                 | **0** | 42,747        | 36,493    |
+| Malay     | 5 / 14                 | **0** | 9,173         | 7,921     |
+| Finnish   | 5 / 14                 | **0** | 35,648        | 44,104    |
+| Galician  | 1 / 14                 | **0** | 11,332        | 34,583    |
+| Armenian  | 0 / 14                 | 0     | 19,341        | unchanged |
 
-BECAUSE, THROUGH, THOUGHT and BEAUTIFUL are playable in Italian, German and Finnish today.
+BECAUSE, THROUGH, THOUGHT and BEAUTIFUL were playable in Italian, German and Finnish.
 Armenian is clean for a structural reason rather than a careful one: English cannot be spelled in
 Armenian script, so the fold drops it. Galician is nearly clean for the same reason Italian is
 not — its corpus is Wikipedia rather than subtitles.
 
-Each of the six was on `titles` because its hunspell dictionary is GPL-only or does not exist,
-so this is a swap rather than a fix that was skipped. The categories are there: Italian has
-129,744 lemmas and 468,106 non-lemma forms, German 104,881 and 251,007, Finnish 177,091 and
-80,405, Malay 10,588.
+All six moved to `enCategories`, and **four of them got bigger**: a category is a lexicon as
+well as a validator, so it contributes candidates the subtitle corpus never saw. Galician and
+Norwegian both tripled. Armenian stayed on `titles` deliberately — hy.wiktionary has 305,035
+titles against en.wiktionary's 19,174 Armenian lemmas, and English cannot be spelled in Armenian
+script, so the leak the swap would fix does not exist there.
 
-**Norwegian has a trap in it.** `Category:Norwegian lemmas` holds 1,393 entries, because
-en.wiktionary files the language as Bokmål (23,088) and Nynorsk (24,855) instead. A switch that
-took the obvious category name would quietly shrink Norwegian to a tenth of itself and still
-build green, which is the same shape as the hunspell failure that cost Armenian its morphology.
+**Norwegian had a trap in it.** `Category:Norwegian lemmas` holds 1,393 entries, because
+en.wiktionary files the language as Bokmål (23,088) and Nynorsk (24,855) instead. Taking the
+obvious category name would have shrunk Norwegian to a tenth of itself and still built green,
+which is the shape of the hunspell failure that cost Armenian its morphology. All three
+categories are unioned into one group.
 
-The cost is fetching: about 2,500 throttled API requests across the six, and the rate limiting
-is real — it is what turned the Wikimedia work serial in the first place.
+### Three things it broke on the way
+
+- **`push(...members)` cannot take 468,106 arguments.** Every element becomes a function
+  argument and the limit sits somewhere near sixty-five thousand, so Italian, German, Finnish
+  and Galician all died with `RangeError: Maximum call stack size exceeded` in the same minute
+  while Malay and Norwegian went through. The bug had been there since categories were added,
+  waiting for a category big enough to reach it.
+- **Finnish's Å stopped spelling anything.** It is `ruotsalainen O`, the Swedish O, and it
+  appears in Finnish only inside Swedish names — precisely what a validator built from a wiki's
+  page titles cannot tell apart from Finnish. Dropped, on the Estonian precedent. The dead-tile
+  guard caught it, which is what that guard is for.
+- **Italian's density scale fell from 1.10 to 0.83.** Nothing about Italian changed; it had been
+  measured against a list with English in it, and a board scores an English word as readily as
+  an Italian one. Every derived number downstream of a word list inherits whatever is wrong with
+  the list.
+
+### Naijá is the one that cannot be fixed this way
+
+Twelve of the fourteen English probes are playable as Naijá, which is much the worst in the set
+and follows directly from having no validator: `unvalidated: true` accepts whatever the corpus
+ranks. The obvious remedy is the one that does not work. Naijá is an English-lexifier creole, so
+its commonest words after `di`, `wey`, `dey`, `na` and `dem` are `for`, `of`, `to`, `and` and
+`go` — spelled exactly as English. A blocklist built from `Category:English lemmas` would delete
+the language.
+
+The distinction that matters is usage rather than spelling, and usage cannot be recovered from a
+1,655-article wiki without a lexicon. `Category:Nigerian Pidgin lemmas` has 188 entries and
+there is no Naijá Wiktionary. So this stays as DICTIONARIES.md already describes it — a word
+list of a different kind from every other one here, which says so in its own PROVENANCE — until
+somebody finds a Naijá dictionary. That is the open question, and it is a sourcing question
+rather than a pipeline one.
 
 ## How Yoruba, Hausa and Igbo are handled elsewhere
 

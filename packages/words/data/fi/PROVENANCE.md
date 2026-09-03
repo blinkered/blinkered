@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 17511 words, counted toward the board's word floor |
-| full tier | 35648 words, accepted for credit |
+| common tier | 22968 words, counted toward the board's word floor |
+| full tier | 44104 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 50000 for the common tier; rank 150000 for credit |
-| validation yield | 35.0% at the common cut, 23.8% at the full cut |
-| corpus coverage | 71.2% of all occurrences |
-| board density | median 136 words on 12 tiles, 96.0% hold a six-letter word |
+| validation yield | 45.9% at the common cut, 29.4% at the full cut |
+| corpus coverage | 80.6% of all occurrences |
+| board density | median 111 words on 12 tiles, 98.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- fi.wiktionary.org page titles (CC-BY-SA-4.0) — fi.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Finnish lemmas, Category:Finnish non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Finnish lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried
@@ -43,4 +43,4 @@ relied on, and it is never GPL. Distributed under `CC-BY-SA-4.0`.
 
 ## Caveat
 
-Validated against Wiktionary titles, which are mostly lemmas, so an inflected Finnish form is usually refused. The weakest language in the set, and the one most in need of a real morphological validator.
+Validated against en.wiktionary categories, which are mostly lemmas, so an inflected Finnish form is usually refused. Still the language most in need of a real morphological validator.

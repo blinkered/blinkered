@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 7372 words, counted toward the board's word floor |
-| full tier | 9173 words, accepted for credit |
+| common tier | 5228 words, counted toward the board's word floor |
+| full tier | 7921 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 50000 for the common tier; rank 200000 for credit |
-| validation yield | 14.7% at the common cut, 8.7% at the full cut |
-| corpus coverage | 73.5% of all occurrences |
-| board density | median 164 words on 12 tiles, 93.0% hold a six-letter word |
+| validation yield | 10.5% at the common cut, 7.3% at the full cut |
+| corpus coverage | 79.7% of all occurrences |
+| board density | median 93 words on 12 tiles, 92.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- ms.wiktionary.org page titles (CC-BY-SA-4.0) — ms.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Malay lemmas, Category:Malay non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Malay lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried
@@ -43,4 +43,4 @@ relied on, and it is never GPL. Distributed under `CC-BY-SA-4.0`.
 
 ## Caveat
 
-Validated against Wiktionary titles; no clean-licensed Malay hunspell dictionary exists. The thinnest source in the set: the validator is exhausted by rank 100,000, so a deeper cut recovers nothing and the two tiers nearly coincide.
+Validated against en.wiktionary categories; no clean-licensed Malay hunspell dictionary exists. The thinnest source in the set, at 10,588 lemmas and 397 non-lemma forms, so a deeper cut recovers nothing and the two tiers nearly coincide.

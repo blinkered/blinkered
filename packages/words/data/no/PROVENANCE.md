@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 9994 words, counted toward the board's word floor |
-| full tier | 13891 words, accepted for credit |
+| common tier | 27746 words, counted toward the board's word floor |
+| full tier | 41122 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 60000 for the common tier; rank 150000 for credit |
-| validation yield | 16.7% at the common cut, 9.3% at the full cut |
-| corpus coverage | 79.0% of all occurrences |
-| board density | median 164 words on 12 tiles, 93.3% hold a six-letter word |
+| validation yield | 46.2% at the common cut, 27.4% at the full cut |
+| corpus coverage | 91.1% of all occurrences |
+| board density | median 215 words on 12 tiles, 98.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,9 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- no.wiktionary.org page titles (CC-BY-SA-4.0) — no.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Norwegian Bokmål lemmas, Category:Norwegian Bokmål non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Norwegian Bokmål lemmas
+- en.wiktionary.org Category:Norwegian Nynorsk lemmas, Category:Norwegian Nynorsk non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Norwegian Nynorsk lemmas
+- en.wiktionary.org Category:Norwegian lemmas, Category:Norwegian non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Norwegian lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried
