@@ -257,3 +257,47 @@ describe('shareText', () => {
     }
   })
 })
+
+describe('the languages ICU cannot name', () => {
+  const named = LOCALES.filter((locale) => locale.namedIn !== undefined)
+
+  it('is the two that have no CLDR name in any locale', () => {
+    expect(named.map((locale) => locale.tag).sort()).toEqual(['arz', 'pcm'])
+  })
+
+  it('names them in every interface language, so no reader gets a blank line', () => {
+    const interfaces = LOCALES.map((locale) => locale.tag)
+    for (const locale of named) {
+      // Except in its own, where the endonym on the first line is already the name and a
+      // second line repeating it is worse than none.
+      const wanted = interfaces.filter((tag) => tag !== locale.tag)
+      const missing = wanted.filter((tag) => locale.namedIn?.[tag] === undefined)
+      expect({ tag: locale.tag, missing }).toEqual({ tag: locale.tag, missing: [] })
+    }
+  })
+
+  it('names only languages some runtime really does leave unnamed', () => {
+    // The premise, checked rather than assumed. These two are the ragged edge of CLDR: this
+    // Node names both and Chrome 123 names neither, so the table is not redundant with ICU
+    // even where ICU happens to agree. A third language added here should be one a shipping
+    // browser genuinely cannot name, not one somebody preferred to rename.
+    for (const locale of named) {
+      expect(['arz', 'pcm']).toContain(locale.tag)
+    }
+  })
+
+  it('follows each locale\u2019s own capitalisation, so one row does not look like a mistake', () => {
+    // ICU writes a language name lower case in French and capitalised in German, and a list
+    // that mixes the two reads as an error rather than a convention.
+    const lowerCasing = ['fr', 'es', 'it', 'pt', 'ru', 'pl', 'uk', 'bg', 'ca', 'ro', 'hu']
+    for (const locale of named) {
+      for (const readIn of lowerCasing) {
+        const ours = locale.namedIn?.[readIn] ?? ''
+        const reference = new Intl.DisplayNames([readIn], { type: 'language' }).of('en') ?? ''
+        const wanted = reference.charAt(0) === reference.charAt(0).toLowerCase() ? 'lower' : 'upper'
+        const got = ours.charAt(0) === ours.charAt(0).toLowerCase() ? 'lower' : 'upper'
+        expect({ tag: locale.tag, readIn, ours, case: got }).toMatchObject({ case: wanted })
+      }
+    }
+  })
+})

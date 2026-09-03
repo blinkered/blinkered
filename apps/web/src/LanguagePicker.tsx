@@ -51,9 +51,14 @@ function namings(tags: readonly string[], readIn: string): Map<string, Naming> {
   const found = new Map<string, Naming>()
   for (const tag of tags) {
     const locale = localeFor(tag)
-    const own = names.of(tag)
-    // No name for this language anywhere: a browser knows none for `arz`. The locale says which
-    // language to file it under, and the endonym is the last resort.
+    // Ours first, where we have one, and ICU's otherwise — that order round on purpose. CLDR
+    // has only lately learned to name Nigerian Pidgin and Egyptian Arabic: Chrome 123 names
+    // neither in any locale and Node 26 names both, so leaving it to the runtime would sort the
+    // list one way on one browser and another way on the next, and a sorted list whose order
+    // depends on a browser update is the thing this whole function exists to stop.
+    const own = locale?.namedIn?.[readIn] ?? names.of(tag)
+    // Neither, which now means a language nobody has written a name for. The locale can say
+    // which one to file it under, and the endonym is the last resort.
     const under = locale?.sortsWith
     const filed = own ?? (under === undefined ? undefined : names.of(under))
     const key = filed ?? locale?.endonym ?? tag

@@ -24,6 +24,7 @@ import { eu } from './locales/eu.js'
 import { gl } from './locales/gl.js'
 import { pcm } from './locales/pcm.js'
 import { BASQUE_COUNTRY, CATALONIA, GALICIA } from './flags.js'
+import { EGYPTIAN_ARABIC, NAIJA } from './exonyms.js'
 import { af } from './locales/af.js'
 import { ar } from './locales/ar.js'
 import { arz } from './locales/arz.js'
@@ -78,6 +79,18 @@ export interface Locale {
    * for it would look. Absent for every language ICU can name, which is all but one of these.
    */
   readonly sortsWith?: string
+  /**
+   * What each interface language calls this one, where ICU calls it nothing.
+   *
+   * `Intl.DisplayNames` names forty-nine of the fifty-one everywhere, and Nigerian Pidgin and
+   * Egyptian Arabic only if the runtime's CLDR is new enough: Chrome 123 names neither in any
+   * locale, Node 26 names both. So a name here **overrides** ICU rather than filling in behind
+   * it, because the alternative is a list that sorts differently after a browser update.
+   *
+   * It is drawn under the endonym and it is what the list is sorted by, which is why neither
+   * language needs filing beside a neighbour any more. See exonyms.ts.
+   */
+  readonly namedIn?: Readonly<Record<string, string>>
   readonly messages: Messages
 }
 
@@ -103,7 +116,7 @@ export const LOCALES: readonly Locale[] = [
   // flag for a language spoken across twenty-odd countries and the usual compromise.
   { tag: 'he', endonym: 'עברית', flag: '🇮🇱', messages: he },
   { tag: 'ar', endonym: 'العربية', flag: '🇸🇦', messages: ar },
-  { tag: 'arz', endonym: 'مصرى', flag: '🇪🇬', sortsWith: 'ar', messages: arz },
+  { tag: 'arz', endonym: 'مصرى', flag: '🇪🇬', namedIn: EGYPTIAN_ARABIC, messages: arz },
   { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
   { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
   { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
@@ -145,9 +158,7 @@ export const LOCALES: readonly Locale[] = [
   { tag: 'ca', endonym: 'Català', flag: CATALONIA, messages: ca },
   { tag: 'eu', endonym: 'Euskara', flag: BASQUE_COUNTRY, messages: eu },
   { tag: 'gl', endonym: 'Galego', flag: GALICIA, messages: gl },
-  // Nigerian Pidgin, which ICU cannot name in any locale, so it files under English — where an
-  // English-lexified language is where somebody would look for it.
-  { tag: 'pcm', endonym: 'Naijá', flag: '🇳🇬', sortsWith: 'en', messages: pcm },
+  { tag: 'pcm', endonym: 'Naijá', flag: '🇳🇬', namedIn: NAIJA, messages: pcm },
   // Last, and the one flag here that is a country nobody lives in.
   { tag: 'la', endonym: 'Latina', flag: '🇻🇦', messages: la },
 ]

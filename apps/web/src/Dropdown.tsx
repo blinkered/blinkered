@@ -62,14 +62,25 @@ function loosely(text: string): string {
 }
 
 /**
- * Whether a choice answers to what was typed.
+ * How well a choice answers to what was typed, lower being better, and `null` for not at all.
  *
- * Every handle a reader might have for a language: what it calls itself, what they call it,
- * and its tag. `greek`, `Ελληνικά` and `el` all reach the same row.
+ * Every handle a reader might have for a language is searched — what it calls itself, what they
+ * call it, and its tag — so `greek`, `Ελληνικά` and `el` all reach the same row. What the rank
+ * adds is where in the string the hit was: a match at the start of a word beats one buried in
+ * the middle of one. Without it a reader typing `n` is shown Afrikaans, Armenian and Danish
+ * before Nederlands, because every one of those contains an n somewhere, and the list looks
+ * like it is ignoring them.
  */
-function matches(option: Choice, needle: string): boolean {
-  const hay = [option.label, option.note ?? '', option.value].map(loosely)
-  return hay.some((text) => text.includes(needle))
+function rank(option: Choice, needle: string): number | null {
+  let best: number | null = null
+  for (const text of [option.label, option.note ?? '', option.value].map(loosely)) {
+    const at = text.indexOf(needle)
+    if (at === -1) continue
+    // Start of the string, start of a later word, or anywhere at all.
+    const hit = at === 0 ? 0 : / |-|’|'/u.test(text[at - 1] ?? '') ? 1 : 2
+    if (best === null || hit < best) best = hit
+  }
+  return best
 }
 
 /**
@@ -113,7 +124,16 @@ export function Dropdown({
 
   // What the list is showing right now, which is what every index below counts against.
   const needle = loosely(query.trim())
-  const shown = needle === '' ? options : options.filter((option) => matches(option, needle))
+  // Sorted by rank and no further: `options` arrives in the caller's order, which for the
+  // languages is the reader's own alphabet, and a stable sort keeps it inside each rank.
+  const shown =
+    needle === ''
+      ? options
+      : options
+          .map((option) => ({ option, hit: rank(option, needle) }))
+          .filter((scored): scored is { option: Choice; hit: number } => scored.hit !== null)
+          .sort((left, right) => left.hit - right.hit)
+          .map((scored) => scored.option)
 
   const show = (): void => {
     setQuery('')
