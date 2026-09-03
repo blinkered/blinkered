@@ -18,7 +18,7 @@ shift-X clears all selected Xs, and clicking tiles works too. **Nerd mode**, the
 right, shows every rule and the arithmetic behind it: how long the whole board stays up, what
 a round costs in flips, and what each word length pays against what its letters cost.
 
-Twenty-six languages, picked from the flag menu, which sets the interface language too. The word
+Fifty-one languages, picked from the flag menu, which sets the interface language too. The word
 lists are committed, so there is no build step before playing; `pnpm dictionary build`
 regenerates them and [docs/DICTIONARIES.md](docs/DICTIONARIES.md) explains where they come
 from and why they are the size they are.

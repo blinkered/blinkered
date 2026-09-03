@@ -397,17 +397,108 @@ the bottom of a Latin list, which is the thing the sort exists to prevent. `Loca
 names the language to file such a one under, and Egyptian Arabic files under Arabic, where
 somebody looking for it would look.
 
+## The batch of twenty-five, and what it cost
+
+Fifty-one languages ship. The twenty-five added at once were Polish, Czech, Slovak, Slovene,
+Danish, Catalan, Estonian, Lithuanian, Latvian, Macedonian, Serbian, Ukrainian, Bulgarian,
+Armenian, Georgian, Basque, Galician, Icelandic, Welsh, Irish, Hungarian, Romanian, Persian,
+Naija and Vietnamese.
+
+**The survey that produced this file had a hole in it, and it was the shape of the file.** It
+enumerated the languages that were _blocked_ — by script, by licence, by a missing corpus — and
+so it never enumerated the ones that were not. Nothing about Polish or Danish or Hungarian was
+hard, which is exactly why none of them appeared. There are about forty more in the same
+position.
+
+### Five decisions that could not be derived
+
+- **Vietnamese carries its tone on the tile.** Eighty-nine of them, a number arrived at here
+  from the corpus and then found to be exactly Vietboard's, which is the only Vietnamese tile
+  game there is. Folding tone away buys forty more words a board and charges 14% of the
+  vocabulary; HOA, HOÀ, HOÁ, HOẠ, HOẢ, HÒA, HÓA, HỌA and HỎA are nine words that become one.
+- **The space folds and is not a tile.** 82% of Vietnamese words have one. Vietboard puts a
+  space tile in the bag at ten points, which a hundred-tile bag and a persistent board can
+  afford and a twelve-tile board cannot: spending one on whitespace drops the median from 64
+  words to 48. Folding costs nothing and is unambiguous — 36,353 words fold to 36,341 distinct
+  keys, and of the nine collisions only KẾTOÁN is real (KẾ TOÁN, accounting; KẾT OÁN, to bear a
+  grudge).
+- **No new digraph is a tile.** Welsh counts CH, DD, FF, NG, LL, PH, RH and TH as letters, and
+  Hungarian counts nine of its own. All of them are two tiles, because `keyToEvent` matches a
+  single code point and a multi-character tile can only be taken with the mouse. This is the
+  Tagalog decision, and Welsh is where it costs most: LL and DD are among the commonest letters
+  in the language.
+- **Serbian is Cyrillic.** The Latin spelling is the same words letter for letter, so it would
+  be a second language rather than a second spelling.
+- **Three flags are drawn.** Unicode has emoji flags for England, Scotland and Wales and no
+  other subdivision, so Welsh is fine and Catalan, Basque and Galician are not. Each is a
+  handful of rectangles; drawing them keeps the repository free of the CC BY-SA notice that
+  carrying somebody's SVG would add. See `packages/i18n/src/flags.ts`.
+
+### Four bugs, three of them in code that had already shipped
+
+- **Russian Й was a tile no word could use.** It is a letter of the alphabet and it was in
+  `weights`, but in NFD it is И plus a combining breve, so the default fold ate it. The board
+  dealt it at one draw in a hundred and not one word of 423,101 could spell it; МОЙ was stored
+  as МОИ and merged with it. Nothing caught it because every test that could have was written
+  against the same fold, so the guard now reads the shipped lists — the only place `weights` and
+  `fold` meet. It is `packages/words/test/deadTiles.test.ts`, and it caught Estonian's Š and Ž
+  on the way past.
+- **hunspell fails an affix file by carrying on.** It prints `Failure loading aff file`,
+  validates against the bare stems and exits zero, so Armenian — which inflects hard — shipped
+  one build at 52% coverage with no morphology at all. That message is now fatal. Armenian
+  validates against hy.wiktionary instead, because the Armenian affix file genuinely does not
+  load: `SFX VD` declares 171 rules and carries 172, and correcting that is not the end of it.
+- **A Wiktionary's titles are not one language.** `titles` accepts whatever that wiki
+  documents, which includes English. Vietnamese was the worst case — Vietnamese words are one or
+  two syllables, so every long entry that got through was English, 10,051 of 14,564 — and Czech
+  had the same hole. Both moved to en.wiktionary categories, which tag the language rather than
+  the wiki, and both now answer to none of thirteen English probes. **This is not confined to
+  the two that were fixed:** Finnish, German and Malay have shipped against `titles` for a year
+  and answer to seven, six and seven of the same thirteen. Left alone deliberately — they are
+  shipped languages with shipped scores, and changing them is a decision rather than a fix.
+- **Georgian upper-cases into a different script.** Unicode 11 gave Mkhedruli an upper case for
+  headings, so `toUpperCase` deals ᲥᲐᲠᲗᲣᲚᲘ rather than ქართული. Georgian has its own fold and
+  does not upper-case at all. This is Turkish's trap in another alphabet, found before shipping
+  rather than after.
+
+### What the numbers say
+
+Derived weights are most of the value and are easy to skip: with uniform placeholders Polish
+admitted 20 words a board, Czech 16, Estonian 14. Derived, they admit 53, 70 and 121. Two
+languages needed a second validator unioned into the same group, because a lemma-only
+Wiktionary refuses most of what an inflecting corpus contains — Ukrainian went from 3,197 words
+to 13,175 and Basque from 2,373 to 5,323.
+
+**Vietnamese is the thinnest language that ships**, at 27 words a board against Latin's 91 and
+Japanese's 149, and its density scale is 0.16, the lowest in the set. The reason is structural
+rather than a cut that could be moved: a folded compound is seven or eight tiles, and a
+twelve-tile board holding all eight of the right toned vowels is rare.
+
+### Still open on these
+
+- **Vietnamese is written without its spaces.** ÁCHÂU rather than Á CHÂU. Hebrew restores its
+  final forms in `display` because a rule can find them; a syllable boundary can only be looked
+  up, and `display` is deliberately a function of the word alone. Fixing it means a word-list
+  format that can carry a written form beside the folded one.
+- **Six of the twenty-five were written by someone who does not speak them**: Basque, Georgian,
+  Armenian, Welsh, Irish and Naija. They are fluent and idiomatic as far as that goes, and a
+  native reader would be worth more than another pass here.
+- Whether Finnish, German and Malay should move off `titles` too, given what it did to
+  Vietnamese.
+- Whether `sr-Latn` is worth a second entry. The word list is the same file transliterated.
+- Vietnamese typing goes through an IME, and the browser delivers composed characters. It has
+  not been tested with one attached.
+
 ## Still open
 
 - Whether the other twenty-four languages want their own measured `vowelShare` too. Japanese has
   one because the default was actively wrong there; nobody has reported a fault anywhere else,
   and changing it would change every board those languages have ever dealt.
-- Whether `pcm` wants `sortsWith: 'en'` when Naija lands. Nigerian Pidgin is English-lexified and
-  a reader would look for it near English, but nobody has been asked.
+- ~~Whether `pcm` wants `sortsWith: 'en'`~~ — it does, and it has it.
 - Whether `igboapi.com` is usable as a source, by licence and by size.
 - ~~What Egyptian Arabic would be~~ — answered by building it. See below.
-- Whether Vietnamese tones ride on the tile or on the word. Tiles carrying them explodes the
-  inventory; folding them away merges words that differ only by tone.
+- ~~Whether Vietnamese tones ride on the tile or on the word.~~ On the tile, eighty-nine of
+  them, measured rather than guessed. See above.
 - Urdu needs Nastaliq to look right, which is a font decision on top of RTL.
 - Whether Latin's 800,379 inflected forms are worth having, and how to get them without spending
   a day being throttled. A `categorylinks` dump would do it in one download, at the cost of

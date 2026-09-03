@@ -26,7 +26,7 @@ a board is solvable is a question about what people know, so the common tier is 
 rank. Whether a submission is a word is not a question about films, so the credit tier is not
 cut by corpus frequency at all.
 
-Twenty-six playable languages. The credit tier is much the larger of the two, and its size is
+Fifty-one playable languages. The credit tier is much the larger of the two, and its size is
 driven by how productive the language's morphology is rather than by any choice of ours.
 
 |       | common | credit  | yield     | coverage | board words | reach 6 | gzipped |
@@ -360,9 +360,9 @@ M, N, K and U and less A and R. They had been sharing one table.
 
 ## Sources
 
-**Frequency**, for nineteen of the twenty-six:
+**Frequency**, for most of them:
 [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), OpenSubtitles 2018.
-Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so twenty-six playable
+Of our set only Portuguese has a regional variant (`pt` and `pt_br`), so fifty-one playable
 options come from twenty languages.
 
 **Frequency, for Japanese**: JMdict's own `nf` priority bands, CC BY-SA 4.0, which rank about a
