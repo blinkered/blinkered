@@ -66,6 +66,8 @@ export const sw: Messages = {
   gameLanguage: 'lugha',
   interfaceLanguage: 'kiolesura',
   dictionarySize: 'maneno {common} ya kawaida kati ya {full}',
+  filterLanguages: 'Tafuta lugha',
+  noMatches: 'Hakuna matokeo',
 
   nerdMode: 'hali ya kitaalamu',
   rules: 'Kanuni',

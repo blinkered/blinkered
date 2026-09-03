@@ -66,6 +66,8 @@ export const ko: Messages = {
   gameLanguage: '언어',
   interfaceLanguage: '화면',
   dictionarySize: '{full}개 중 일상 단어 {common}개',
+  filterLanguages: '언어 검색',
+  noMatches: '결과 없음',
 
   nerdMode: '너드 모드',
   rules: '규칙',

@@ -62,6 +62,8 @@ export const fi: Messages = {
   gameLanguage: 'kieli',
   interfaceLanguage: 'käyttöliittymä',
   dictionarySize: '{common} yleistä / {full} sanaa',
+  filterLanguages: 'Hae kieliä',
+  noMatches: 'Ei osumia',
 
   nerdMode: 'asiantuntijatila',
   rules: 'Säännöt',

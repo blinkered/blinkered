@@ -70,6 +70,8 @@ export const arz: Messages = {
   gameLanguage: 'اللغة',
   interfaceLanguage: 'الشاشة',
   dictionarySize: '{common} كلمة على السنة الناس من {full}',
+  filterLanguages: 'دور على لغه',
+  noMatches: 'مفيش نتايج',
 
   nerdMode: 'وضع الخبراء',
   rules: 'القواعد',

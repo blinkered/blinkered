@@ -70,6 +70,8 @@ export const la: Messages = {
   gameLanguage: 'lingua',
   interfaceLanguage: 'interfacies',
   dictionarySize: 'verba usitata {common} ex {full}',
+  filterLanguages: 'Linguas quaerere',
+  noMatches: 'Nihil inventum',
 
   nerdMode: 'modus subtilis',
   rules: 'Regulae',

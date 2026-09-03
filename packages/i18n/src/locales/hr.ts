@@ -62,6 +62,8 @@ export const hr: Messages = {
   gameLanguage: 'jezik',
   interfaceLanguage: 'sučelje',
   dictionarySize: '{common} čestih od {full} riječi',
+  filterLanguages: 'Pretraži jezike',
+  noMatches: 'Nema rezultata',
 
   nerdMode: 'stručni prikaz',
   rules: 'Pravila',

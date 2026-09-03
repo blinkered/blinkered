@@ -59,6 +59,8 @@ export const sv: Messages = {
   gameLanguage: 'språk',
   interfaceLanguage: 'gränssnitt',
   dictionarySize: '{common} vanliga av {full} ord',
+  filterLanguages: 'Sök språk',
+  noMatches: 'Inga träffar',
 
   nerdMode: 'expertläge',
   rules: 'Regler',

@@ -65,6 +65,8 @@ export const af: Messages = {
   gameLanguage: 'taal',
   interfaceLanguage: 'koppelvlak',
   dictionarySize: '{common} algemene van {full} woorde',
+  filterLanguages: 'Soek tale',
+  noMatches: 'Geen resultate',
 
   nerdMode: 'nerd-modus',
   rules: 'Reëls',

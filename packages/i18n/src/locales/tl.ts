@@ -71,6 +71,8 @@ export const tl: Messages = {
   gameLanguage: 'wika',
   interfaceLanguage: 'interface',
   dictionarySize: '{common} karaniwan sa {full} salita',
+  filterLanguages: 'Maghanap ng wika',
+  noMatches: 'Walang tugma',
 
   nerdMode: 'nerd mode',
   rules: 'Mga tuntunin',

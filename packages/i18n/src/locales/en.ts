@@ -67,6 +67,8 @@ export const en: Messages = {
   gameLanguage: 'language',
   interfaceLanguage: 'interface',
   dictionarySize: '{common} common of {full} words',
+  filterLanguages: 'Search languages',
+  noMatches: 'No matches',
 
   nerdMode: 'nerd mode',
   rules: 'Rules',

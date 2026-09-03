@@ -59,6 +59,8 @@ export const pt: Messages = {
   gameLanguage: 'idioma',
   interfaceLanguage: 'interface',
   dictionarySize: '{common} comuns de {full} palavras',
+  filterLanguages: 'Procurar idiomas',
+  noMatches: 'Sem resultados',
 
   nerdMode: 'modo técnico',
   rules: 'Regras',

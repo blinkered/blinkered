@@ -62,6 +62,8 @@ export const de: Messages = {
   gameLanguage: 'Sprache',
   interfaceLanguage: 'Oberfläche',
   dictionarySize: '{common} häufige von {full} Wörtern',
+  filterLanguages: 'Sprachen suchen',
+  noMatches: 'Keine Treffer',
 
   nerdMode: 'Expertenmodus',
   rules: 'Regeln',

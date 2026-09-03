@@ -59,6 +59,8 @@ export const ms: Messages = {
   gameLanguage: 'bahasa',
   interfaceLanguage: 'antara muka',
   dictionarySize: '{common} biasa daripada {full} kata',
+  filterLanguages: 'Cari bahasa',
+  noMatches: 'Tiada hasil',
 
   nerdMode: 'mod terperinci',
   rules: 'Peraturan',

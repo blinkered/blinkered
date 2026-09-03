@@ -213,6 +213,17 @@ export interface Messages {
   readonly interfaceLanguage: string
   /** `{common}` `{full}` */
   readonly dictionarySize: string
+  /**
+   * Placeholder in the box that narrows the language list.
+   *
+   * Fifty languages is past what anybody scans, so the list has a filter and this names it.
+   * It matches on all four handles a reader might have for a language — what the language calls
+   * itself, what the reader calls it, its English name, and its tag — so `greek`, `Ελληνικά`
+   * and `el` all find the same row.
+   */
+  readonly filterLanguages: string
+  /** When the filter matches none of them. */
+  readonly noMatches: string
 
   // Nerd mode: the rules, and the arithmetic they produce.
   readonly nerdMode: string

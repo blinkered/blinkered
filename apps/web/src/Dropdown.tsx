@@ -21,6 +21,16 @@ export interface Choice {
   readonly label: string
   /** Shown before the label. Decorative: the label carries the meaning. */
   readonly badge?: string
+  /**
+   * A second line under the label, and the string the caller sorted by.
+   *
+   * The language list is ordered by what the *reader* calls each language while showing what
+   * each language calls itself, so for one row the sort key and the label are different
+   * strings — and for two years the key was the invisible one. An English reader saw Ελληνικά
+   * between Deutsch and עברית for an excellent reason they could not see. Showing the key is
+   * the whole fix.
+   */
+  readonly note?: string
 }
 
 interface DropdownProps {
@@ -28,7 +38,38 @@ interface DropdownProps {
   readonly value: string
   readonly label: string
   readonly disabled?: boolean
+  /**
+   * Placeholder for a box that narrows the list, and the switch that puts one there.
+   *
+   * Absent for the short lists — difficulty has four options and a search box over four options
+   * is furniture. Present for the languages, where no sort order makes fifty rows scannable.
+   */
+  readonly filter?: string
+  /** Shown when the filter matches nothing. Required with `filter`, unused without it. */
+  readonly empty?: string
   readonly onChange: (value: string) => void
+}
+
+/**
+ * Case- and accent-blind, because a reader searching for a language should not have to
+ * reproduce its diacritics: `espanol` finds Español and `turkce` finds Türkçe.
+ */
+function loosely(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+}
+
+/**
+ * Whether a choice answers to what was typed.
+ *
+ * Every handle a reader might have for a language: what it calls itself, what they call it,
+ * and its tag. `greek`, `Ελληνικά` and `el` all reach the same row.
+ */
+function matches(option: Choice, needle: string): boolean {
+  const hay = [option.label, option.note ?? '', option.value].map(loosely)
+  return hay.some((text) => text.includes(needle))
 }
 
 export function Dropdown({
@@ -36,9 +77,12 @@ export function Dropdown({
   value,
   label,
   disabled = false,
+  filter,
+  empty,
   onChange,
 }: DropdownProps): React.JSX.Element {
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const chosen = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -47,10 +91,16 @@ export function Dropdown({
 
   const trigger = useRef<HTMLButtonElement>(null)
   const list = useRef<HTMLUListElement>(null)
+  const search = useRef<HTMLInputElement>(null)
   const listId = useId()
   const current = options[chosen]
 
+  // What the list is showing right now, which is what every index below counts against.
+  const needle = loosely(query.trim())
+  const shown = needle === '' ? options : options.filter((option) => matches(option, needle))
+
   const show = (): void => {
+    setQuery('')
     setActive(chosen)
     setOpen(true)
   }
@@ -61,7 +111,7 @@ export function Dropdown({
   }
 
   const pick = (index: number): void => {
-    const option = options[index]
+    const option = shown[index]
     setOpen(false)
     // Focus goes back to the trigger and no further: leaving it on a list that no longer
     // exists would drop the player's keyboard on the floor.
@@ -69,10 +119,19 @@ export function Dropdown({
     if (option !== undefined && option.value !== value) onChange(option.value)
   }
 
-  // The list takes focus when it opens, so the arrow keys reach it without another Tab.
+  const retype = (text: string): void => {
+    setQuery(text)
+    // The old highlight indexed a list that no longer exists, so it starts again at the top.
+    setActive(0)
+  }
+
+  // Focus goes where the typing should: the search box when there is one, the list otherwise.
+  // Either way the arrow keys reach the options without another Tab.
   useEffect(() => {
-    if (open) list.current?.focus()
-  }, [open])
+    if (!open) return
+    if (filter === undefined) list.current?.focus()
+    else search.current?.focus()
+  }, [open, filter])
 
   // Anywhere else is a dismissal. Pointer-down rather than click, so it closes on the way
   // down and does not also activate whatever was underneath.
@@ -82,6 +141,8 @@ export function Dropdown({
       const target = event.target
       if (target instanceof Node && list.current?.contains(target) === true) return
       if (target instanceof Node && trigger.current?.contains(target) === true) return
+      // The search box sits outside the list, so clicking into it is not a dismissal.
+      if (target instanceof Node && search.current?.contains(target) === true) return
       setOpen(false)
     }
     document.addEventListener('pointerdown', onPointerDown)
@@ -90,23 +151,31 @@ export function Dropdown({
     }
   }, [open])
 
-  /** First letter jumps to the next option starting with it, wrapping. */
+  /**
+   * First letter jumps to the next option starting with it, wrapping.
+   *
+   * Only where there is no search box. With one, every keystroke belongs to the box, and a
+   * type-ahead that also moved the highlight would fight it.
+   */
   const typeAhead = (letter: string): void => {
     const lower = letter.toLowerCase()
-    const order = [...options.keys()].map((index) => (active + 1 + index) % options.length)
-    const hit = order.find((index) => (options[index]?.label ?? '').toLowerCase().startsWith(lower))
+    const order = [...shown.keys()].map((index) => (active + 1 + index) % shown.length)
+    const hit = order.find((index) => (shown[index]?.label ?? '').toLowerCase().startsWith(lower))
     if (hit !== undefined) setActive(hit)
   }
 
   const onListKeyDown = (event: React.KeyboardEvent): void => {
+    // Nothing matched, so there is nothing to move through or choose. Escape still works,
+    // which is the only way out that matters.
+    if (shown.length === 0 && event.key !== 'Escape' && event.key !== 'Tab') return
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault()
-        setActive((at) => (at + 1) % options.length)
+        setActive((at) => (at + 1) % shown.length)
         return
       case 'ArrowUp':
         event.preventDefault()
-        setActive((at) => (at - 1 + options.length) % options.length)
+        setActive((at) => (at - 1 + shown.length) % shown.length)
         return
       case 'Home':
         event.preventDefault()
@@ -114,10 +183,16 @@ export function Dropdown({
         return
       case 'End':
         event.preventDefault()
-        setActive(options.length - 1)
+        setActive(shown.length - 1)
         return
       case 'Enter':
+        event.preventDefault()
+        pick(active)
+        return
+      // A space chooses the highlighted option in a plain list, and is a character somebody is
+      // typing when there is a search box. `Bahasa Melayu` has one in the middle of it.
       case ' ':
+        if (filter !== undefined) return
         event.preventDefault()
         pick(active)
         return
@@ -129,7 +204,7 @@ export function Dropdown({
       default:
         break
     }
-    if (event.key.length === 1) {
+    if (filter === undefined && event.key.length === 1) {
       event.preventDefault()
       typeAhead(event.key)
     }
@@ -174,41 +249,72 @@ export function Dropdown({
         </button>
 
         {open ? (
-          <ul
-            ref={list}
-            className="drop-list"
-            role="listbox"
-            tabIndex={-1}
-            aria-labelledby={`${listId}-label`}
-            aria-activedescendant={`${listId}-${String(active)}`}
-            onKeyDown={onListKeyDown}
-          >
-            {options.map((option, index) => (
-              <li
-                key={option.value}
-                id={`${listId}-${String(index)}`}
-                role="option"
-                aria-selected={option.value === value}
-                className={`drop-option${index === active ? ' is-active' : ''}${
-                  option.value === value ? ' is-chosen' : ''
-                }`}
-                onMouseDown={withoutStealingFocus}
-                onMouseEnter={() => {
-                  setActive(index)
+          <div className="drop-popup">
+            {filter === undefined ? null : (
+              <input
+                ref={search}
+                type="text"
+                className="drop-search"
+                placeholder={filter}
+                value={query}
+                role="combobox"
+                aria-expanded={true}
+                aria-controls={listId}
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  shown.length === 0 ? undefined : `${listId}-${String(active)}`
+                }
+                onKeyDown={onListKeyDown}
+                onChange={(event) => {
+                  retype(event.target.value)
                 }}
-                onClick={() => {
-                  pick(index)
-                }}
-              >
-                {option.badge === undefined ? null : (
-                  <span className="drop-badge" aria-hidden="true">
-                    {option.badge}
+              />
+            )}
+            <ul
+              ref={list}
+              id={listId}
+              className="drop-list"
+              role="listbox"
+              tabIndex={-1}
+              aria-labelledby={`${listId}-label`}
+              aria-activedescendant={
+                filter === undefined && shown.length > 0 ? `${listId}-${String(active)}` : undefined
+              }
+              onKeyDown={onListKeyDown}
+            >
+              {shown.length === 0 ? <li className="drop-empty">{empty}</li> : null}
+              {shown.map((option, index) => (
+                <li
+                  key={option.value}
+                  id={`${listId}-${String(index)}`}
+                  role="option"
+                  aria-selected={option.value === value}
+                  className={`drop-option${index === active ? ' is-active' : ''}${
+                    option.value === value ? ' is-chosen' : ''
+                  }`}
+                  onMouseDown={withoutStealingFocus}
+                  onMouseEnter={() => {
+                    setActive(index)
+                  }}
+                  onClick={() => {
+                    pick(index)
+                  }}
+                >
+                  {option.badge === undefined ? null : (
+                    <span className="drop-badge" aria-hidden="true">
+                      {option.badge}
+                    </span>
+                  )}
+                  <span className="drop-names">
+                    <span className="drop-value">{option.label}</span>
+                    {option.note === undefined || option.note === option.label ? null : (
+                      <span className="drop-note">{option.note}</span>
+                    )}
                   </span>
-                )}
-                <span className="drop-value">{option.label}</span>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
       </div>
     </div>

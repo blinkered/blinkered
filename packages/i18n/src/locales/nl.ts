@@ -59,6 +59,8 @@ export const nl: Messages = {
   gameLanguage: 'taal',
   interfaceLanguage: 'interface',
   dictionarySize: '{common} gewone van {full} woorden',
+  filterLanguages: 'Talen zoeken',
+  noMatches: 'Geen resultaten',
 
   nerdMode: 'expertmodus',
   rules: 'Regels',

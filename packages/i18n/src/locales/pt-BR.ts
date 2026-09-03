@@ -63,6 +63,8 @@ export const ptBR: Messages = {
   gameLanguage: 'idioma',
   interfaceLanguage: 'interface',
   dictionarySize: '{common} comuns de {full} palavras',
+  filterLanguages: 'Buscar idiomas',
+  noMatches: 'Nenhum resultado',
 
   nerdMode: 'modo técnico',
   rules: 'Regras',

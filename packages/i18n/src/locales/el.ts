@@ -59,6 +59,8 @@ export const el: Messages = {
   gameLanguage: 'γλώσσα',
   interfaceLanguage: 'περιβάλλον',
   dictionarySize: '{common} κοινές από {full} λέξεις',
+  filterLanguages: 'Αναζήτηση γλωσσών',
+  noMatches: 'Καμία αντιστοιχία',
 
   nerdMode: 'λειτουργία λεπτομερειών',
   rules: 'Κανόνες',

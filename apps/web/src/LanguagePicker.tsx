@@ -1,4 +1,4 @@
-import { LOCALES, localeFor } from '@blinkered/i18n'
+import { LOCALES, localeFor, messagesFor } from '@blinkered/i18n'
 import { Dropdown } from './Dropdown.js'
 import type { Choice } from './Dropdown.js'
 import type { CatalogueEntry } from './dictionary.js'
@@ -11,6 +11,21 @@ function flagOf(tag: string): string | undefined {
 /** The name a speaker of the language would look for, which is the one to sort by. */
 function endonymOf(tag: string, fallback: string): string {
   return localeFor(tag)?.endonym ?? fallback
+}
+
+interface Naming {
+  /** What the list is ordered by, which every language must have one of. */
+  readonly key: string
+  /**
+   * What to draw under the endonym, which not every language has.
+   *
+   * Only ICU's own name for *this* language, never the one it is filed under. The two were the
+   * same string until the second line existed, and drawing it showed why they must not be:
+   * Egyptian Arabic sorts under Arabic, so a shared key put `Arabic` beneath both العربية and
+   * مصرى, labelling one language as another. Where ICU has no name, the endonym on the first
+   * line is the only name there is, and a second line repeating it is worse than none.
+   */
+  readonly note?: string
 }
 
 /**
@@ -31,18 +46,20 @@ function endonymOf(tag: string, fallback: string): string {
  * for it. The label stays the endonym, because a speaker looking for Greek is looking for
  * Ελληνικά, and the flag is what makes the row scannable either way.
  */
-function sortKeys(tags: readonly string[], readIn: string): Map<string, string> {
+function namings(tags: readonly string[], readIn: string): Map<string, Naming> {
   const names = new Intl.DisplayNames([readIn], { type: 'language', fallback: 'none' })
-  const keys = new Map<string, string>()
+  const found = new Map<string, Naming>()
   for (const tag of tags) {
     const locale = localeFor(tag)
+    const own = names.of(tag)
     // No name for this language anywhere: a browser knows none for `arz`. The locale says which
     // language to file it under, and the endonym is the last resort.
     const under = locale?.sortsWith
-    const named = names.of(tag) ?? (under === undefined ? undefined : names.of(under))
-    keys.set(tag, named ?? locale?.endonym ?? tag)
+    const filed = own ?? (under === undefined ? undefined : names.of(under))
+    const key = filed ?? locale?.endonym ?? tag
+    found.set(tag, own === undefined ? { key } : { key, note: own })
   }
-  return keys
+  return found
 }
 
 /** Compares in the reader's own collation, so the list is sorted the way they would sort it. */
@@ -77,21 +94,28 @@ export function LanguagePicker({
   disabled = false,
   onChange,
 }: LanguagePickerProps): React.JSX.Element {
-  const keys = sortKeys(
+  const named = namings(
     catalogue.map((entry) => entry.tag),
     readIn,
   )
   const collator = byName(readIn)
+  const messages = messagesFor(readIn)
   const options: Choice[] = catalogue
     .map((entry) => {
       const badge = flagOf(entry.tag)
       const label = endonymOf(entry.tag, entry.endonym)
+      const note = named.get(entry.tag)?.note
       // Spread rather than an always-present `badge: undefined`, which
       // exactOptionalPropertyTypes rightly refuses.
-      return badge === undefined ? { value: entry.tag, label } : { value: entry.tag, label, badge }
+      const row =
+        note === undefined ? { value: entry.tag, label } : { value: entry.tag, label, note }
+      return badge === undefined ? row : { ...row, badge }
     })
     .sort((left, right) =>
-      collator.compare(keys.get(left.value) ?? left.label, keys.get(right.value) ?? right.label),
+      collator.compare(
+        named.get(left.value)?.key ?? left.label,
+        named.get(right.value)?.key ?? right.label,
+      ),
     )
 
   return (
@@ -100,6 +124,8 @@ export function LanguagePicker({
       value={value}
       label={label}
       disabled={disabled}
+      filter={messages.filterLanguages}
+      empty={messages.noMatches}
       onChange={onChange}
     />
   )
@@ -125,18 +151,31 @@ export function InterfacePicker({
 }: InterfacePickerProps): React.JSX.Element {
   // Sorted in whatever the interface is currently set to, which is this picker's own value:
   // changing it re-sorts the list, which is right, because the names have changed.
-  const keys = sortKeys(
+  const named = namings(
     LOCALES.map((locale) => locale.tag),
     value,
   )
   const collator = byName(value)
-  const options: Choice[] = LOCALES.map((locale) => ({
-    value: locale.tag,
-    label: locale.endonym,
-    badge: locale.flag,
-  })).sort((left, right) =>
-    collator.compare(keys.get(left.value) ?? left.label, keys.get(right.value) ?? right.label),
+  const messages = messagesFor(value)
+  const options: Choice[] = LOCALES.map((locale) => {
+    const note = named.get(locale.tag)?.note
+    const row = { value: locale.tag, label: locale.endonym, badge: locale.flag }
+    return note === undefined ? row : { ...row, note }
+  }).sort((left, right) =>
+    collator.compare(
+      named.get(left.value)?.key ?? left.label,
+      named.get(right.value)?.key ?? right.label,
+    ),
   )
 
-  return <Dropdown options={options} value={value} label={label} onChange={onChange} />
+  return (
+    <Dropdown
+      options={options}
+      value={value}
+      label={label}
+      filter={messages.filterLanguages}
+      empty={messages.noMatches}
+      onChange={onChange}
+    />
+  )
 }

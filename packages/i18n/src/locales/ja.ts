@@ -71,6 +71,8 @@ export const ja: Messages = {
   gameLanguage: '言語',
   interfaceLanguage: '表示',
   dictionarySize: '{full}語のうち日常語{common}語',
+  filterLanguages: '言語を検索',
+  noMatches: '該当なし',
 
   nerdMode: 'マニアモード',
   rules: 'ルール',

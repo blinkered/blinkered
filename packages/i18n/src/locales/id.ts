@@ -63,6 +63,8 @@ export const id: Messages = {
   gameLanguage: 'bahasa',
   interfaceLanguage: 'antarmuka',
   dictionarySize: '{common} umum dari {full} kata',
+  filterLanguages: 'Cari bahasa',
+  noMatches: 'Tidak ada hasil',
 
   nerdMode: 'mode rinci',
   rules: 'Aturan',

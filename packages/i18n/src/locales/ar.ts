@@ -72,6 +72,8 @@ export const ar: Messages = {
   gameLanguage: 'اللغة',
   interfaceLanguage: 'الواجهة',
   dictionarySize: '{common} كلمة شائعة من {full}',
+  filterLanguages: 'ابحث عن لغة',
+  noMatches: 'لا نتائج',
 
   nerdMode: 'وضع الخبراء',
   rules: 'القواعد',

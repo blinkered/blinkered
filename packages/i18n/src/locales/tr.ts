@@ -66,6 +66,8 @@ export const tr: Messages = {
   gameLanguage: 'dil',
   interfaceLanguage: 'arayüz',
   dictionarySize: '{full} kelimenin {common} tanesi gündelik',
+  filterLanguages: 'Dil ara',
+  noMatches: 'Sonuç yok',
 
   nerdMode: 'inek modu',
   rules: 'Kurallar',

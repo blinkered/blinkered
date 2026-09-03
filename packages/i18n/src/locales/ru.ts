@@ -64,6 +64,8 @@ export const ru: Messages = {
   gameLanguage: 'язык',
   interfaceLanguage: 'интерфейс',
   dictionarySize: '{common} частых из {full} слов',
+  filterLanguages: 'Поиск языков',
+  noMatches: 'Ничего не найдено',
 
   nerdMode: 'подробный режим',
   rules: 'Правила',

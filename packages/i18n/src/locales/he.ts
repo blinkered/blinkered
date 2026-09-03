@@ -69,6 +69,8 @@ export const he: Messages = {
   gameLanguage: 'שפה',
   interfaceLanguage: 'ממשק',
   dictionarySize: '{common} מילים שכיחות מתוך {full}',
+  filterLanguages: 'חיפוש שפות',
+  noMatches: 'אין תוצאות',
 
   nerdMode: 'מצב חנון',
   rules: 'חוקים',

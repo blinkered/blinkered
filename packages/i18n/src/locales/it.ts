@@ -60,6 +60,8 @@ export const it: Messages = {
   gameLanguage: 'lingua',
   interfaceLanguage: 'interfaccia',
   dictionarySize: '{common} comuni su {full} parole',
+  filterLanguages: 'Cerca lingue',
+  noMatches: 'Nessun risultato',
 
   nerdMode: 'modo tecnico',
   rules: 'Regole',

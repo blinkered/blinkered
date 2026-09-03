@@ -1143,25 +1143,79 @@ kbd {
   white-space: nowrap;
 }
 
-.drop-list {
+/*
+ * The popup is the chrome; the list inside it is what scrolls.
+ *
+ * They were one element until the language list grew a search box. A box that scrolled away
+ * with the options would be useless, so the border, the shadow and the placement live out here
+ * and the `max-height` moved inside.
+ */
+.drop-popup {
   position: absolute;
   z-index: 20;
   top: calc(100% + 0.25rem);
   inset-inline-start: 0;
-  /* Tall enough for the list, short enough to stay on the page, and it scrolls if neither. */
-  max-height: min(60dvh, 22rem);
   min-width: 100%;
-  overflow-y: auto;
-  margin: 0;
-  padding: 0.25rem;
-  list-style: none;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
   box-shadow: 0 12px 32px rgb(0 0 0 / 45%);
 }
+.drop-list {
+  /* Tall enough for the list, short enough to stay on the page, and it scrolls if neither. */
+  max-height: min(60dvh, 22rem);
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+}
 .drop-list:focus {
   outline: none;
+}
+.drop-search {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.6rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+/*
+ * The box holds focus the whole time the list is open, so a focus ring would be on permanently.
+ * The caret says where the typing goes; the border says where the box ends.
+ */
+.drop-search:focus {
+  outline: none;
+  border-bottom-color: var(--sel);
+}
+.drop-search::placeholder {
+  color: var(--dim);
+}
+.drop-empty {
+  padding: 0.6rem;
+  color: var(--dim);
+  text-align: center;
+}
+/*
+ * Endonym over the reader's own name for the language. The second line is what the list is
+ * sorted by, which is the whole reason it is drawn: an order nobody can see reads as no order.
+ */
+.drop-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+.drop-note {
+  color: var(--dim);
+  font-size: 0.8em;
+}
+.drop-option.is-active .drop-note {
+  color: rgb(255 255 255 / 75%);
 }
 .drop-option {
   display: flex;
