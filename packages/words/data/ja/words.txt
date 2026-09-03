@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ja common=17000 full=191188
+#blinkered/wordlist/2 language=ja common=17000 full=191188 digest=82ef094fe5889c9c
 あいうち
 あいえんか
 あいかわらす

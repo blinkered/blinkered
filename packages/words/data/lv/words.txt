@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=lv common=17087 full=99801
+#blinkered/wordlist/2 language=lv common=17087 full=99801 digest=03543a2aab211872
 ABAS
 ABI
 ABIEM

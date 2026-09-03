@@ -307,6 +307,28 @@ function share(part: number, whole: number): number {
 const HEADER = '#blinkered/wordlist/2'
 
 /**
+ * A content digest of a word list's body, so a game can record which dictionary it was played
+ * against.
+ *
+ * Not a checksum and not a secret: an identity token. It has to change whenever the words
+ * change and stay put when they do not, which is the one property a hand-kept version number
+ * never has — the version you forget to bump is exactly the rebuild that mattered. FNV-1a over
+ * two 32-bit lanes, because this runs in the browser's bundle as well as the build tool and a
+ * `node:crypto` import here would follow the parser everywhere it goes.
+ */
+export function digestOf(body: string): string {
+  let low = 0x811c9dc5
+  let high = 0x01000193
+  for (let at = 0; at < body.length; at += 1) {
+    const code = body.charCodeAt(at)
+    low = Math.imul(low ^ code, 0x01000193)
+    high = Math.imul(high ^ (code + at), 0x85ebca6b)
+  }
+  const hex = (value: number): string => (value >>> 0).toString(16).padStart(8, '0')
+  return hex(low) + hex(high)
+}
+
+/**
  * Separates a folded word from how it is written. A tab, because no word contains one and
  * several contain every other plausible separator: Vietnamese words contain spaces, Irish
  * and Welsh contain hyphens, and plenty contain an apostrophe.
@@ -327,7 +349,10 @@ export function formatWordList(language: string, tiers: Tiers): string {
     const spelling = tiers.written.get(word)
     return spelling === undefined ? word : `${word}${WRITTEN}${spelling}`
   }
-  return [head, ...tiers.common.map(line), ...rest.map(line), ''].join('\n')
+  const body = [...tiers.common.map(line), ...rest.map(line), ''].join('\n')
+  // Over the body, not the whole file: the header carries the digest, so hashing the header
+  // would make the value depend on itself.
+  return `${head} digest=${digestOf(body)}\n${body}`
 }
 
 export interface ParsedWordList {
@@ -336,6 +361,13 @@ export interface ParsedWordList {
   readonly full: readonly string[]
   /** How to write a folded word, for the words where the two differ. Sparse; see `Tiers`. */
   readonly written: ReadonlyMap<string, string>
+  /**
+   * Which build of this language's list this is, recorded against every game played on it.
+   *
+   * Empty for a file written before the field existed, which is the honest answer rather than a
+   * made-up one: that game does not know what it was played against.
+   */
+  readonly digest: string
 }
 
 /**
@@ -375,5 +407,11 @@ export function parseWordList(text: string): ParsedWordList {
     words.push(word)
     written.set(word, entry.slice(split + 1))
   }
-  return { language, common: words.slice(0, commonCount), full: words, written }
+  return {
+    language,
+    common: words.slice(0, commonCount),
+    full: words,
+    written,
+    digest: fields.get('digest') ?? '',
+  }
 }

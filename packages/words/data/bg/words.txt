@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=bg common=17555 full=279165
+#blinkered/wordlist/2 language=bg common=17555 full=279165 digest=149e9edbf68fecbc
 АБИ
 АБОРТ
 АБСОЛЮТЕН

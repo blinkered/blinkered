@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=sv common=16350 full=371287
+#blinkered/wordlist/2 language=sv common=16350 full=371287 digest=54b2420fba2b39fa
 ABORT
 ABSOLUT
 ABSOLUTA

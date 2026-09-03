@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=is common=14261 full=68689
+#blinkered/wordlist/2 language=is common=14261 full=68689 digest=b38285ba62d9c809
 ABBAST
 ADRENALÍN
 AFA

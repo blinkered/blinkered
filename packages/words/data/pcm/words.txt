@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=pcm common=8000 full=16394
+#blinkered/wordlist/2 language=pcm common=8000 full=16394 digest=d53abe79b01f84c1
 AADUN
 AALTONEN
 AARE

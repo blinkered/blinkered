@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ko common=19257 full=38467
+#blinkered/wordlist/2 language=ko common=19257 full=38467 digest=8e6ada61ff5510c2
 ㄱㅏㄱ
 ㄱㅏㄱㄱㅏㄱ
 ㄱㅏㄱㄱㅘ

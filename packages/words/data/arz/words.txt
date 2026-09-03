@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=arz common=11570 full=154576
+#blinkered/wordlist/2 language=arz common=11570 full=154576 digest=085b044dc0c7b4bb
 ابا
 اباء
 ابابا

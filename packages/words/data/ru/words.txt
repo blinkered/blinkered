@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ru common=18095 full=424352
+#blinkered/wordlist/2 language=ru common=18095 full=424352 digest=5f508ecbbc08b423
 АБОРТ
 АБСОЛЮТНАЯ
 АБСОЛЮТНО

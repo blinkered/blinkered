@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=fi common=22968 full=44104
+#blinkered/wordlist/2 language=fi common=22968 full=44104 digest=ef43f62add024e56
 AAH
 AAKKOSET
 AALLON

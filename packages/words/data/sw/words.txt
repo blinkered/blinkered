@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=sw common=9200 full=29002
+#blinkered/wordlist/2 language=sw common=9200 full=29002 digest=5a209d1633cf67a8
 AACHE
 AANZE
 ABA

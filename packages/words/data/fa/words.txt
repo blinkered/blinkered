@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=fa common=13248 full=51132
+#blinkered/wordlist/2 language=fa common=13248 full=51132 digest=3b0a4cf020a11b87
 ابا
 اباد
 ابت

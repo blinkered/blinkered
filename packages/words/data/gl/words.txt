@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=gl common=16602 full=34583
+#blinkered/wordlist/2 language=gl common=16602 full=34583 digest=0a2d051aedf0a564
 ABA
 ABADIA	ABADÍA
 ABAFABA

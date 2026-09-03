@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=sk common=17538 full=287672
+#blinkered/wordlist/2 language=sk common=17538 full=287672 digest=8c3a9a9340ea7e43
 ABE
 ABSOLÚTNA
 ABSOLÚTNE

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=af common=12354 full=12354
+#blinkered/wordlist/2 language=af common=12354 full=12354 digest=1a2ff9376d5cdf77
 AAG
 AAI
 AAKLIG

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=sl common=17869 full=262639
+#blinkered/wordlist/2 language=sl common=17869 full=262639 digest=b84f862034ce5ba4
 ABSOLUTNO
 ABSURDNO
 ADMIRAL

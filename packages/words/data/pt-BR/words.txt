@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=pt-BR common=16627 full=200241
+#blinkered/wordlist/2 language=pt-BR common=16627 full=200241 digest=8d215ad0cb8234fd
 ABACAXI
 ABADE
 ABAFADO

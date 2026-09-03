@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=da common=16419 full=309554
+#blinkered/wordlist/2 language=da common=16419 full=309554 digest=55d908aa1badcd49
 ABC
 ABE
 ABEKAT

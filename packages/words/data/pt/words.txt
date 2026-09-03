@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=pt common=16107 full=134775
+#blinkered/wordlist/2 language=pt common=16107 full=134775 digest=05fbdd6d83820647
 ABADE
 ABADIA
 ABAFADO

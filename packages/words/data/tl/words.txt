@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=tl common=3540 full=23306
+#blinkered/wordlist/2 language=tl common=3540 full=23306 digest=f4565d535dba0294
 AAA
 AAABAN
 AAB

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=fr common=16593 full=144105
+#blinkered/wordlist/2 language=fr common=16593 full=144105 digest=322af62b69d15d96
 ABAISSE
 ABAISSER
 ABANDON

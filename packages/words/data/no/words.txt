@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=no common=27746 full=41122
+#blinkered/wordlist/2 language=no common=27746 full=41122 digest=8bc8a318f869e92b
 ABBA
 ABBED
 ABBEDEN

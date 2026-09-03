@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=id common=17300 full=41132
+#blinkered/wordlist/2 language=id common=17300 full=41132 digest=e19a5a5140b94a11
 ABA
 ABAD
 ABADI

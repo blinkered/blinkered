@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=es common=16993 full=201655
+#blinkered/wordlist/2 language=es common=16993 full=201655 digest=80b72c9d34a1434d
 ABAD
 ABADIA	ABADÍA
 ABAJO

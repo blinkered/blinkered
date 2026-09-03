@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=mk common=13055 full=21362
+#blinkered/wordlist/2 language=mk common=13055 full=21362 digest=555d9b5f1cda1930
 ЃАВОЛ
 ЃАВОЛИ
 ЃАВОЛСКИ

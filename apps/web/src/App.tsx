@@ -225,6 +225,11 @@ function Session({
         at: Date.now(),
         seed,
         engineVersion: ENGINE_VERSION,
+        // Which build of the word list this was played against, read off the dictionary in
+        // hand rather than looked up, so it cannot describe a different one. Spread rather
+        // than defaulted: no dictionary means the field is absent, which is the honest
+        // answer, and a game cannot have been finished without one anyway.
+        ...(dictionary === null ? {} : { dictionaryVersion: dictionary.digest }),
       }
       const stored = recordScore(result)
       setFinished({

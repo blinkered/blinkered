@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=he common=12992 full=15924
+#blinkered/wordlist/2 language=he common=12992 full=15924 digest=2e0808f7a92de484
 אאוטינג
 אאוטסיידר
 אבא

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ro common=16326 full=187238
+#blinkered/wordlist/2 language=ro common=16326 full=187238 digest=76bee5a5a8803c25
 ABANDONA
 ABANDONAT
 ABANDONATE

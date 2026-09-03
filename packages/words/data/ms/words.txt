@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ms common=5228 full=7921
+#blinkered/wordlist/2 language=ms common=5228 full=7921 digest=750620ebef3c32f9
 AAA
 ABA
 ABAD

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=vi common=23977 full=25622
+#blinkered/wordlist/2 language=vi common=23977 full=25622 digest=efbc38a6c18b54cd
 ACÒNG	A CÒNG
 ADRENALIN
 ADUA	A DUA

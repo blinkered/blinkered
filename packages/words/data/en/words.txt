@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=en common=16575 full=174456
+#blinkered/wordlist/2 language=en common=16575 full=174456 digest=e23b3c56c3db97a6
 AAH
 AARGH
 ABANDON

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=eu common=5323 full=7417
+#blinkered/wordlist/2 language=eu common=5323 full=7417 digest=3f8a68d2e01d0d63
 ABA
 ABADE
 ABADEA

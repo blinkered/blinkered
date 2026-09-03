@@ -10,6 +10,7 @@ export {
   VALIDATOR_DEFAULTS,
   buildValidator,
   foldCandidates,
+  digestOf,
   formatWordList,
   fullCut,
   isAccepted,

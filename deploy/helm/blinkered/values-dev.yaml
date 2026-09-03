@@ -27,8 +27,19 @@
 
 image:
   # Pin a tag that exists in GHCR. `latest` moves under you.
-  # https://github.com/blinkered/blinkered/pkgs/container/blinkered
-  tag: sha-a875900
+  #
+  # One tag for both images. release.yml builds the Dockerfile's `serve` and `api`
+  # targets in the same run and pushes `blinkered` and `blinkered-api` with the
+  # same tag set, so this names a commit rather than an image, and there is no
+  # arrangement in which the API and the web bundle are from different ones.
+  #
+  #   https://github.com/blinkered/blinkered/pkgs/container/blinkered
+  #   https://github.com/blinkered/blinkered/pkgs/container/blinkered-api
+  #
+  # Both verified anonymously pullable at this tag, which is worth checking for a
+  # newly created package: GHCR does not always inherit the repository's
+  # visibility, and a private one is an ImagePullBackOff with no useful message.
+  tag: sha-e41968f
 
 web:
   # One is enough for dev. Production runs two.
@@ -39,14 +50,9 @@ api:
   # One, so that a schema change is not applied under two running replicas while
   # the point of this environment is watching a single one do it.
   replicaCount: 1
-  image:
-    # This must name whatever CI ends up pushing for the Dockerfile's `api` stage.
-    # As of writing nothing pushes it: .github/workflows/release.yml runs one
-    # build-push with no `target:`, so it builds the last stage (`serve`, nginx)
-    # and pushes `ghcr.io/blinkered/blinkered` alone. Until that workflow builds
-    # the api target too, the API and the migration Job are an ImagePullBackOff.
-    repository: ghcr.io/blinkered/blinkered-api
-    tag: sha-a875900
+  # No image block. The repository is in values.yaml and the tag is `image.tag`
+  # above, shared with the web image: both come out of the same Dockerfile in the
+  # same CI run, so there is no version of this where they should differ.
   env:
     LOG_LEVEL: debug
 
@@ -57,6 +63,12 @@ api:
 # against a secret that disagrees rather than half-applying.
 postgres:
   enabled: true
+  persistence:
+    # Retain, so deleting the release or the PVC leaves the PV and its data behind. The
+    # default class on tl-dev is `standard-disposable`, whose reclaim policy is Delete: a
+    # `helm uninstall` there takes the database with it, which is the wrong default for the
+    # one thing in this stack that is not rebuildable from the repository.
+    storageClass: standard-retain
 
 ingress:
   enabled: true

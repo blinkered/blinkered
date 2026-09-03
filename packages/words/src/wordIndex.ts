@@ -85,6 +85,15 @@ export interface TieredIndex extends WordIndex {
    * what a rule can find, and this handles what only a lookup can.
    */
   spell(word: string): string
+  /**
+   * Which build of this language's list this is, carried onto every game played against it.
+   *
+   * A word list is not a constant. Six languages changed vocabulary by up to four times in one
+   * afternoon, and a score is only comparable to another score set against the same words. The
+   * engine version does not cover this: the rules were identical either side of that rebuild
+   * and the dictionary was not.
+   */
+  readonly digest: string
 }
 
 /**
@@ -101,6 +110,7 @@ export function buildTieredIndex(
   common: Iterable<string>,
   alphabet: Alphabet,
   written: ReadonlyMap<string, string> = new Map(),
+  digest = '',
 ): TieredIndex {
   const everything = new Set(full)
   const shortlist = new Set(common)
@@ -112,5 +122,6 @@ export function buildTieredIndex(
     // The stored spelling first, then whatever a rule can restore, then the word as tiled.
     // A list with no spellings in it and an alphabet with no `display` leaves this identity.
     spell: (word) => written.get(word) ?? alphabet.display?.(word) ?? word,
+    digest,
   }
 }

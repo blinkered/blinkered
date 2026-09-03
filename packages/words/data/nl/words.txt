@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=nl common=16334 full=322146
+#blinkered/wordlist/2 language=nl common=16334 full=322146 digest=508d3c362e59fbf6
 AAIEN
 AAL
 AAN

@@ -28,6 +28,23 @@ export interface GameResult {
   /** With the ruleset, enough to replay the game and verify the score. */
   readonly seed: number
   readonly engineVersion: string
+  /**
+   * Which build of the language's word list the game was played against.
+   *
+   * Recorded, and deliberately not part of `ResultGroup`. A word list is not a constant — six
+   * languages changed vocabulary by up to four times in a single afternoon — and a score set
+   * against a different dictionary is a different achievement in a way `engineVersion` does not
+   * capture, because the rules were identical across that rebuild.
+   *
+   * Whether a change to it should ever retire a board is a separate question with its own
+   * answer, and today that answer is no: see `DICTIONARY_VERSION_RETIRES_BOARDS`. Ranking on it
+   * would fragment every board in the game every time a language was rebuilt, which is a high
+   * price for a distinction nobody has yet said they want.
+   *
+   * Optional because games played before it existed genuinely do not know. `undefined` is the
+   * honest answer there, and inventing one would be worse than admitting it.
+   */
+  readonly dictionaryVersion?: string
 }
 
 /** What a leaderboard compares like with like across. */

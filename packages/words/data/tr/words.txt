@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=tr common=17867 full=638282
+#blinkered/wordlist/2 language=tr common=17867 full=638282 digest=8a6e38614e4d2c77
 ABARTILI
 ABARTIYORSUN
 ABARTMA

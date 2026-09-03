@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=cs common=14002 full=22001
+#blinkered/wordlist/2 language=cs common=14002 full=22001 digest=30d5bd722eeb2812
 ABNORMÁLNÍ
 ABSENCE
 ABSOLUTNÍ

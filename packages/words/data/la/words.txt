@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=la common=10745 full=32765
+#blinkered/wordlist/2 language=la common=10745 full=32765 digest=c4a623f74d4f7467
 ABACUS
 ABAVUS
 ABBA

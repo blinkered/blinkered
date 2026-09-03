@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=pl common=18297 full=544157
+#blinkered/wordlist/2 language=pl common=18297 full=544157 digest=d680eae060eb2af7
 AAA
 AARONA
 ABORCJI

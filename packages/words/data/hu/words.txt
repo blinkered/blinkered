@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=hu common=17943 full=1295061
+#blinkered/wordlist/2 language=hu common=17943 full=1295061 digest=597b0e3e68704d04
 ABBA
 ABBAN
 ABBÓL

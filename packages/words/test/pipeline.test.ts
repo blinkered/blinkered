@@ -3,6 +3,7 @@ import { FRENCH, GERMAN, SPANISH } from '@blinkered/engine'
 import {
   buildValidator,
   foldCandidates,
+  digestOf,
   formatWordList,
   isAccepted,
   isLowerCase,
@@ -286,8 +287,28 @@ describe('formatWordList and parseWordList', () => {
 
   it('writes the common tier first and records the split in the header', () => {
     expect(formatWordList('test-mini', tiers)).toBe(
-      '#blinkered/wordlist/2 language=test-mini common=2 full=3\nANT\nNOTE\nSENATOR\n',
+      '#blinkered/wordlist/2 language=test-mini common=2 full=3 digest=60df490276a107d6\n' +
+        'ANT\nNOTE\nSENATOR\n',
     )
+  })
+
+  it('digests the words, so the same list twice is the same digest and one word moves it', () => {
+    // The whole point of the field: it has to change when the words do and hold still when
+    // they do not, which is the property a hand-kept version number never has.
+    const again: Tiers = { ...tiers, full: ['ANT', 'NOTE', 'SENATOR'] }
+    expect(digestOf('ANT\nNOTE\n')).toBe(digestOf('ANT\nNOTE\n'))
+    expect(digestOf('ANT\nNOTE\n')).not.toBe(digestOf('ANT\nNOTES\n'))
+    // And it is over the words rather than over the count, so a reorder is a different list.
+    expect(digestOf('ANT\nNOTE\n')).not.toBe(digestOf('NOTE\nANT\n'))
+    expect(formatWordList('test-mini', again)).toBe(formatWordList('test-mini', tiers))
+  })
+
+  it('carries the digest back out again, and says nothing when a file predates it', () => {
+    expect(parseWordList(formatWordList('test-mini', tiers)).digest).toBe('60df490276a107d6')
+    // An older file has no `digest=` field, and empty is the honest answer rather than a
+    // fabricated one: that list genuinely does not know which build it is.
+    const older = '#blinkered/wordlist/2 language=en common=1 full=1\nANT\n'
+    expect(parseWordList(older).digest).toBe('')
   })
 
   it('round-trips', () => {
@@ -297,6 +318,7 @@ describe('formatWordList and parseWordList', () => {
       common: tiers.common,
       full: tiers.full,
       written: new Map(),
+      digest: '60df490276a107d6',
     })
   })
 
@@ -305,7 +327,8 @@ describe('formatWordList and parseWordList', () => {
     // second column at all, which is most of them and all of English.
     const spelled: Tiers = { ...tiers, written: new Map([['NOTE', 'NÔTE']]) }
     expect(formatWordList('test-mini', spelled)).toBe(
-      '#blinkered/wordlist/2 language=test-mini common=2 full=3\nANT\nNOTE\tNÔTE\nSENATOR\n',
+      '#blinkered/wordlist/2 language=test-mini common=2 full=3 digest=4951f48cfbe49b3b\n' +
+        'ANT\nNOTE\tNÔTE\nSENATOR\n',
     )
     const parsed = parseWordList(formatWordList('test-mini', spelled))
     expect(parsed.full).toEqual(['ANT', 'NOTE', 'SENATOR'])

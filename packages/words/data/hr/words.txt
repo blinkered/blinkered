@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=hr common=17613 full=341040
+#blinkered/wordlist/2 language=hr common=17613 full=341040 digest=3972962284099b3b
 ADMIRAL
 ADMIRALA
 ADMIRALE

@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=lt common=17488 full=202690
+#blinkered/wordlist/2 language=lt common=17488 full=202690 digest=a1b0e6a58cca37b4
 ABEJO
 ABEJOJA
 ABEJOJI

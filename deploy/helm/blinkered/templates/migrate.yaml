@@ -50,7 +50,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: migrate
-          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.api.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # The image's CMD is the server. This is the other entrypoint in the same build.
           command: [node, dist/src/bin/migrate.js]

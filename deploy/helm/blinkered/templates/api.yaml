@@ -25,7 +25,10 @@ spec:
         runAsUser: 1000
       containers:
         - name: api
-          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
+          # `image.tag`, not one of its own. Two repositories, one tag: both images come out
+          # of the same Dockerfile in the same CI run, so a per-component tag could only ever
+          # express a mistake — an API from one commit talking to a web bundle from another.
+          image: "{{ .Values.api.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

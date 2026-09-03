@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=it common=17595 full=40944
+#blinkered/wordlist/2 language=it common=17595 full=40944 digest=dbf3274eb9fa7579
 ABBAIA
 ABBAIARE
 ABBANDONA

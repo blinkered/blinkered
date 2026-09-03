@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=ar common=18686 full=656979
+#blinkered/wordlist/2 language=ar common=18686 full=656979 digest=de35fba78aff29dc
 ااستطيع
 اامل
 اانا

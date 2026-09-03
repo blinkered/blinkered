@@ -1,4 +1,4 @@
-#blinkered/wordlist/2 language=el common=17421 full=257014
+#blinkered/wordlist/2 language=el common=17421 full=257014 digest=00a345a2e22885f2
 ΑΒΓΑ
 ΑΒΓΟ
 ΑΒΛΑΒΗΣ

@@ -39,6 +39,16 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+        # The primary group, and it has to be set rather than left to `fsGroup`.
+        #
+        # `fsGroup` adds 999 as a *supplementary* group and chowns the volume to it, which is
+        # enough on block storage and is not enough on NFS: the server does its own permission
+        # check and only honours the primary GID. With `runAsGroup` unset the process runs as
+        # uid 999 / gid 0, the server falls through to the directory's `other` bits, and
+        # Postgres cannot create PGDATA on a directory its own group owns. The failure reads as
+        # `mkdir: can't create directory '/var/lib/postgresql/data/pgdata': Permission denied`,
+        # which sounds like a chown that did not happen rather than one that did.
+        runAsGroup: 999
         fsGroup: 999
       containers:
         - name: postgres

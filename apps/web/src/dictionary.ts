@@ -71,5 +71,5 @@ export async function loadDictionary(
     throw new Error(format(messages.noWordList, { language }))
   }
   if (parsed.full.length === 0) throw new Error(format(messages.emptyWordList, { language }))
-  return buildTieredIndex(parsed.full, parsed.common, alphabet, parsed.written)
+  return buildTieredIndex(parsed.full, parsed.common, alphabet, parsed.written, parsed.digest)
 }
