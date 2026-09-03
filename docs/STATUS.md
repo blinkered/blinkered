@@ -144,10 +144,18 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   whole obligation and we do it. Nothing anywhere is GPL.
 - **Naijá is built from corpus frequency with no validator at all**, which is the one place the
   pipeline knowingly breaks its own rule, and it shows: twelve of fourteen unambiguous English
-  probes are playable as Naijá. It cannot be fixed the way the other six were. Naijá is an
-  English-lexifier creole, so `for`, `of`, `to`, `and` and `go` are core vocabulary spelled
-  exactly as English — an English blocklist would delete the language. What it needs is a Naijá
-  lexicon, and the largest one anywhere is en.wiktionary's 188 entries. See LANGUAGES.md.
+  probes are playable as Naijá. **Accepted, deliberately.** It cannot be fixed the way the other
+  six were — Naijá is an English-lexifier creole, so `for`, `of`, `to`, `and` and `go` are core
+  vocabulary spelled exactly as English, and an English blocklist would delete the language. What
+  it needs is a Naijá lexicon and the largest one anywhere is en.wiktionary's 188 entries. It is
+  there so that a colleague in Lagos finds their language in the menu, which was always the
+  reason, and that reason survives a loose word list. Revisit if a lexicon turns up.
+- **Yoruba, Hausa and Igbo are parked**, not blocked. The evidence for the diacritic decision is
+  gathered and written up in LANGUAGES.md; the decision itself is deliberately not being taken
+  yet. Naijá's own diacritic question rides along with it.
+- **Six locales were written by someone who does not speak them** — Basque, Georgian, Armenian,
+  Welsh, Irish, Naijá. Fluent and idiomatic as far as that goes. A native reader would be worth
+  more than another pass by the author, and none is queued.
 - **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
   validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns

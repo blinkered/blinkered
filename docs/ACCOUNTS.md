@@ -521,10 +521,31 @@ The second question is the one that matters. A backup nobody has restored is a h
 
 ## Still open
 
-- **Does a rename rewrite history?** If the board joins `users`, yes, and an old screenshot
-  disagrees with the live board. Probably fine, worth deciding rather than discovering.
-- **Is the bio wanted at launch**, given that generated avatars were chosen specifically to avoid
-  hosting what people upload.
+- ~~**Does a rename rewrite history?**~~ Yes. The board joins `users`, so a score set as `nick`
+  shows under `trout` the moment `nick` becomes `trout`, and an old screenshot disagrees with the
+  live board.
+
+  The screenshot is the weakest argument on either side. The decisive one is **account
+  deletion**, which this design promises: if the username were copied onto each game row at
+  submit time, deleting an account would leave that name scattered across every row the person
+  ever wrote, and there would be no single place to redact it. A live join means identity is the
+  account and the name is one column. It also means renaming actually works as a remedy — a
+  handle you regret is not one you can shed if history keeps it.
+
+  The cost is rename-squatting: reach the top of a board, rename to something ugly, and the board
+  carries it. That is the same problem as the bio and has the same answer, `reports` and a
+  moderator, rather than a different data model.
+
+- ~~**Is the bio wanted at launch?**~~ Yes, with a profile page, and the bio is editable. Content
+  controls come later; `reports` is already in the schema for when they do.
+
+  **The bio is text and is never markup.** Stored as text, rendered as text, length-capped. React
+  escapes by default, so the ways this goes wrong are all deliberate: `dangerouslySetInnerHTML`,
+  auto-linking by parsing what somebody typed, or the bio reaching a surface React does not
+  render — an `og:description`, an email, a PDF. If links are ever wanted they get built from an
+  allowlist, not by finding them in the string. This is not the same question as avatars: avatars
+  avoid hosting a _file_, and a bio is a short string in a column.
+
 - ~~**Neon or in-cluster Postgres.**~~ In-cluster, on tl-prod. The chart already treats the
   database as an interface with two implementations — `postgres.enabled` and a seven-key secret —
   so this is a values change rather than a design one, and Neon stays available behind the same
@@ -540,5 +561,16 @@ The second question is the one that matters. A backup nobody has restored is a h
   suppressing it hides the fault instead of removing it. Bring the line and the reason, and we
   decide together.
 
-- **Whether guest games should reach the server in phase A already**, seeded and unclaimed, so
-  that phase C opens with boards that have something on them.
+- ~~**Whether guest games should reach the server in phase A already.**~~ No. A guest's games
+  stay in `localStorage`, where they already are, and nothing anonymous is uploaded.
+
+  **But a sign-in on the game-over screen claims the game that is on it.** That is the one moment
+  a score stops being anonymous, and losing it there would be the worst time to lose it — it is
+  the score that just persuaded somebody to make an account.
+
+  One consequence to carry into phase C: **a claimed guest game is never
+  `leaderboard_eligible`.** Phase A trusts scores because a personal history is a diary and
+  nobody forges a diary, and that stays true for a claimed game. A leaderboard entry is a
+  different object: it needs a server-issued seed and the envelope check, and a game played
+  before the server knew it existed has neither. It belongs in the person's history and not on a
+  board, and the column for saying so is already there.
