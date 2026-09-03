@@ -205,7 +205,7 @@ const DENSITY_SCALE: Readonly<Record<string, number>> = {
   bg: 0.47,
   is: 0.53,
   fa: 1.49,
-  vi: 0.35,
+  vi: 0.16,
   uk: 0.31,
   mk: 0.62,
   eu: 0.51,

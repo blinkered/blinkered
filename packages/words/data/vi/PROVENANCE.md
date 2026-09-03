@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 14564 words, counted toward the board's word floor |
-| full tier | 18616 words, accepted for credit |
+| common tier | 23977 words, counted toward the board's word floor |
+| full tier | 25622 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 40000 for the common tier; rank 90000 for credit |
-| validation yield | 36.4% at the common cut, 28.9% at the full cut |
-| corpus coverage | 97.3% of all occurrences |
-| board density | median 58 words on 12 tiles, 37.0% hold a six-letter word |
+| validation yield | 59.9% at the common cut, 29.2% at the full cut |
+| corpus coverage | 95.7% of all occurrences |
+| board density | median 27 words on 12 tiles, 28.0% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- vi.wiktionary.org page titles (CC-BY-SA-4.0) — vi.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Vietnamese lemmas, Category:Vietnamese non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Vietnamese lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried

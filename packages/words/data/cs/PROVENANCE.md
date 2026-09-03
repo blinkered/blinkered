@@ -7,13 +7,13 @@ hand; edit the sources in `tools/dictionary/src/manifest.ts` and rebuild.
 
 | | |
 | --- | --- |
-| common tier | 15066 words, counted toward the board's word floor |
-| full tier | 23787 words, accepted for credit |
+| common tier | 14002 words, counted toward the board's word floor |
+| full tier | 22001 words, accepted for credit |
 | length | 3 to 16 tiles |
 | candidate cut | rank 40000 for the common tier; rank 90000 for credit |
-| validation yield | 37.7% at the common cut, 26.4% at the full cut |
-| corpus coverage | 68.8% of all occurrences |
-| board density | median 70 words on 12 tiles, 76.7% hold a six-letter word |
+| validation yield | 35.0% at the common cut, 24.4% at the full cut |
+| corpus coverage | 70.7% of all occurrences |
+| board density | median 52 words on 12 tiles, 74.3% hold a six-letter word |
 
 ## Sources
 
@@ -27,7 +27,7 @@ proposes that no validator accepts does not appear.
 does.
 
 Group 1:
-- cs.wiktionary.org page titles (CC-BY-SA-4.0) — cs.wiktionary.org contributors, page titles in namespace 0
+- en.wiktionary.org Category:Czech lemmas, Category:Czech non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Czech lemmas
 
 Hunspell sources are consulted with `hunspell -l`, which asks the dictionary about our
 candidates rather than expanding it into every form it can generate. Expansion was tried

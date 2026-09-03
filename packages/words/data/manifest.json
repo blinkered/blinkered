@@ -54,12 +54,12 @@
     {
       "tag": "cs",
       "endonym": "Čeština",
-      "common": 15066,
-      "full": 23787,
-      "bytes": 203427,
+      "common": 14002,
+      "full": 22001,
+      "bytes": 189235,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 70
+      "density": 52
     },
     {
       "tag": "cy",
@@ -504,12 +504,12 @@
     {
       "tag": "vi",
       "endonym": "Tiếng Việt",
-      "common": 14564,
-      "full": 18616,
-      "bytes": 130732,
+      "common": 23977,
+      "full": 25622,
+      "bytes": 272284,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
-      "density": 58
+      "density": 27
     }
   ]
 }

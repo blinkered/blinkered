@@ -123,6 +123,21 @@ export interface LanguageSpec {
    * so the shipped PROVENANCE says what the file is.
    */
   readonly unvalidated?: true
+  /**
+   * Rank a multi-word lexicon entry by the corpus counts of its parts.
+   *
+   * A lexicon word the corpus has never seen normally gets a count of zero, which is right:
+   * it earns credit and cannot be one of the words a board must be solvable from. Vietnamese
+   * is the exception, and not because its words are rare. Vietnamese writes a space between
+   * syllables and 82% of its words have one, so a corpus tokenised on whitespace contains
+   * every Vietnamese syllable and not one Vietnamese word — SINH VIÊN is two tokens, and no
+   * amount of corpus will ever rank it.
+   *
+   * So a phrase is scored by its rarest part, which is how `pnpm dictionary board` already
+   * ranks a three-word tutorial board. Without it Vietnamese ships 4,513 one-syllable words,
+   * reaches six tiles on 2% of boards, and is not a playable language.
+   */
+  readonly phrasesFromParts?: true
 }
 
 const wooorm = (id: string, license: string, attribution: string): HunspellSource => ({
@@ -552,9 +567,12 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'cs',
-    // Czech hunspell is GPL-2.0 only, so validation is cs.wiktionary's 162,989 titles.
+    // Czech hunspell is GPL-2.0 only. Not cs.wiktionary either, for the reason Vietnamese is
+    // not vi.wiktionary: titles carry whatever that wiki documents, and BECAUSE, THROUGH and
+    // YESTERDAY were all passing as Czech. en.wiktionary files 49,758 Czech lemmas and 20,810
+    // non-lemma forms, and every one of them is tagged Czech.
     corpus: subtitles('cs'),
-    groups: [[titles('cs')]],
+    groups: [[enCategories('Czech')]],
     cuts: deepCuts(40_000, 90_000),
   },
   {
@@ -711,9 +729,14 @@ export const LANGUAGES: readonly LanguageSpec[] = [
   },
   {
     tag: 'vi',
-    // Vietnamese hunspell has 6,631 words, which is a stub; vi.wiktionary has 346,328 titles.
+    // Vietnamese hunspell has 6,631 words, which is a stub, and vi.wiktionary's 346,328 titles
+    // are the wrong 346,328: a Wiktionary documents foreign words too, Vietnamese subtitles
+    // carry a great deal of English, and Vietnamese words are one or two syllables — so every
+    // long entry that got through was English. AARDVARK, ABANDON and ABIGAIL all validated.
+    // A category says which language a word belongs to, which is the whole difference.
     corpus: subtitles('vi'),
-    groups: [[titles('vi')]],
+    groups: [[enCategories('Vietnamese')]],
+    phrasesFromParts: true,
     cuts: deepCuts(40_000, 90_000),
   },
   {

@@ -81,13 +81,27 @@ export async function build(spec: LanguageSpec, refresh: boolean): Promise<Built
 async function pool(spec: LanguageSpec, refresh: boolean): Promise<FrequencyEntry[]> {
   const entries = parseFrequencies(await frequencyLines(spec.corpus, refresh))
   const seen = new Set(entries.map((entry) => entry.word))
+  const counts = new Map(entries.map((entry) => [entry.word.toLowerCase(), entry.count] as const))
+
+  /**
+   * A phrase is only as common as its rarest part, and every part has to be attested: one
+   * unknown syllable and the whole entry falls back to zero, which is the honest answer for a
+   * compound built out of something the corpus has never seen.
+   */
+  const fromParts = (word: string): number => {
+    if (spec.phrasesFromParts !== true) return 0
+    const parts = word.split(/\s+/u)
+    if (parts.length < 2) return 0
+    const each = parts.map((part) => counts.get(part.toLowerCase()) ?? 0)
+    return Math.min(...each)
+  }
 
   const extra: FrequencyEntry[] = []
   for (const source of spec.groups.flat()) {
     for (const word of await lexicon(source, refresh)) {
       if (seen.has(word)) continue
       seen.add(word)
-      extra.push({ word, count: 0 })
+      extra.push({ word, count: fromParts(word) })
     }
   }
   return [...entries, ...extra]
