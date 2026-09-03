@@ -1,4 +1,4 @@
-import type { Alphabet } from '@blinkered/engine'
+import { writeFor, type Alphabet } from '@blinkered/engine'
 
 /**
  * Turning a frequency list and a dictionary into a word list Blinkered can ship.
@@ -221,6 +221,14 @@ export interface Tiers {
   readonly common: readonly string[]
   /** Accepted for credit. */
   readonly full: readonly string[]
+  /**
+   * How to write a folded word, for the words where the two differ.
+   *
+   * Sparse on purpose: most words fold onto themselves and storing a second identical copy
+   * of the English list would double it for nothing. Keyed by the folded word, so a reader
+   * looks up what it has.
+   */
+  readonly written: ReadonlyMap<string, string>
   readonly stats: TierStats
 }
 
@@ -233,7 +241,13 @@ export function splitTiers(
   groups: readonly ReadonlySet<string>[],
   cuts: TierCuts,
   totalTokens: number,
+  alphabet?: Alphabet,
 ): Tiers {
+  // `forms` arrives commonest first, so the spelling written down is the one the corpus
+  // actually uses. Where several fold together — French sur and sûr, both SUR — that is a
+  // choice between real spellings rather than a guess, and frequency is the honest tiebreak.
+  const write = alphabet === undefined ? undefined : writeFor(alphabet)
+  const written = new Map<string, string>()
   const common: string[] = []
   const full: string[] = []
   let commonConsidered = 0
@@ -250,6 +264,12 @@ export function splitTiers(
     full.push(candidate.word)
     keptTokens += candidate.count
     if (withinCommon) common.push(candidate.word)
+    if (write !== undefined) {
+      const spelling = write(candidate.forms[0] as string)
+      // Only where it says something the folded key does not. Most words fold onto
+      // themselves and a second identical copy is bytes for nothing.
+      if (spelling !== candidate.word) written.set(candidate.word, spelling)
+    }
   }
 
   common.sort()
@@ -257,6 +277,7 @@ export function splitTiers(
   return {
     common,
     full,
+    written,
     stats: {
       candidates: candidates.length,
       commonConsidered,
@@ -275,8 +296,22 @@ function share(part: number, whole: number): number {
   return whole === 0 ? 0 : part / whole
 }
 
-/** Magic line every shipped list starts with, so a truncated or wrong file is obvious. */
-const HEADER = '#blinkered/wordlist/1'
+/**
+ * Magic line every shipped list starts with, so a truncated or wrong file is obvious.
+ *
+ * Version 2 added the written form. There is no version 1 reader, because there are no
+ * version 1 files left: every list is generated, so a format change is a rebuild rather than
+ * a migration, and carrying a reader for a file that no longer exists is how a format ends up
+ * with four of them.
+ */
+const HEADER = '#blinkered/wordlist/2'
+
+/**
+ * Separates a folded word from how it is written. A tab, because no word contains one and
+ * several contain every other plausible separator: Vietnamese words contain spaces, Irish
+ * and Welsh contain hyphens, and plenty contain an apostrophe.
+ */
+const WRITTEN = '\t'
 
 /**
  * Renders both tiers as one file, common words first, with the split recorded in the header.
@@ -288,13 +323,19 @@ export function formatWordList(language: string, tiers: Tiers): string {
   const head = `${HEADER} language=${language} common=${String(tiers.common.length)} full=${String(tiers.full.length)}`
   const common = new Set(tiers.common)
   const rest = tiers.full.filter((word) => !common.has(word))
-  return [head, ...tiers.common, ...rest, ''].join('\n')
+  const line = (word: string): string => {
+    const spelling = tiers.written.get(word)
+    return spelling === undefined ? word : `${word}${WRITTEN}${spelling}`
+  }
+  return [head, ...tiers.common.map(line), ...rest.map(line), ''].join('\n')
 }
 
 export interface ParsedWordList {
   readonly language: string
   readonly common: readonly string[]
   readonly full: readonly string[]
+  /** How to write a folded word, for the words where the two differ. Sparse; see `Tiers`. */
+  readonly written: ReadonlyMap<string, string>
 }
 
 /**
@@ -316,10 +357,23 @@ export function parseWordList(text: string): ParsedWordList {
   const commonCount = Number(fields.get('common'))
   const fullCount = Number(fields.get('full'))
 
-  const words = lines.slice(1).filter((word) => word !== '')
+  const entries = lines.slice(1).filter((line) => line !== '')
   const counted = Number.isInteger(commonCount) && Number.isInteger(fullCount)
-  if (!counted || words.length !== fullCount || commonCount > fullCount) {
+  if (!counted || entries.length !== fullCount || commonCount > fullCount) {
     throw new Error(`word list for "${language}" is truncated or mislabelled`)
   }
-  return { language, common: words.slice(0, commonCount), full: words }
+
+  const words: string[] = []
+  const written = new Map<string, string>()
+  for (const entry of entries) {
+    const split = entry.indexOf(WRITTEN)
+    if (split === -1) {
+      words.push(entry)
+      continue
+    }
+    const word = entry.slice(0, split)
+    words.push(word)
+    written.set(word, entry.slice(split + 1))
+  }
+  return { language, common: words.slice(0, commonCount), full: words, written }
 }

@@ -1,4 +1,4 @@
-#blinkered/wordlist/1 language=ka common=19347 full=163684
+#blinkered/wordlist/2 language=ka common=19347 full=163684
 ააგეს
 ააგო
 აარონ

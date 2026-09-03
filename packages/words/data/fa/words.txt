@@ -1,4 +1,4 @@
-#blinkered/wordlist/1 language=fa common=13248 full=51132
+#blinkered/wordlist/2 language=fa common=13248 full=51132
 ابا
 اباد
 ابت

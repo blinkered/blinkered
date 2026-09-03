@@ -1,4 +1,4 @@
-#blinkered/wordlist/1 language=hy common=11164 full=19341
+#blinkered/wordlist/2 language=hy common=11164 full=19341
 ԱԲԱՍԻ
 ԱԲԲԱ
 ԱԲԲԱՅՈՒԹՅՈՒՆ

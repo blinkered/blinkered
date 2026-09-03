@@ -411,30 +411,29 @@ it, and assuming otherwise costs nothing.
 Thirty come out permissive or weak-copyleft: LGPL-2.1-or-later (12), MPL-1.1 (4), MIT (3),
 MPL-2.0 (3), BSD-3-Clause (3), LGPL-3.0 (2), LGPL-3.0-or-later, Apache-2.0, SISSL.
 
-**Twenty come out CC BY-SA**: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician,
-German, Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian,
-Tagalog, Ukrainian and Vietnamese — the ones validated against Wiktionary. That was five before
-the batch of twenty-five, and it is the number in this file a store build actually turns on.
+**Twenty-one come out CC BY-SA**: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician,
+German, Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Naijá,
+Norwegian, Tagalog, Ukrainian and Vietnamese. That was five before the batch of twenty-five, and
+it is the number in this file a store build actually turns on.
 
-**Two of those twenty the manifest gets wrong, and both are the same one-line cause.**
-`SHARE_ALIKE` in `tools/dictionary/src/write.ts` is a literal set with one member,
-`CC-BY-SA-4.0`, and it does two jobs: it sets the `shareAlike` flag, and it picks which license
-dominates when a language has several validators.
+**Two of those twenty-one used to be counted wrong, from one line.** `SHARE_ALIKE` was a literal
+set holding only `CC-BY-SA-4.0`, and it did two jobs: setting the `shareAlike` flag, and picking
+which license dominates when a language has several validators.
 
-- **Icelandic is CC-BY-SA-3.0**, which is not in that set, so its manifest entry says
-  `shareAlike: false` while its `LICENSE` says CC-BY-SA-3.0. The flag is what a store build
-  would filter on. It is only the flag today because Icelandic has a single validator; a second
-  one would also stop 3.0 from dominating, and the terms would come out as an `AND` join.
-- **Naijá comes out with no terms at all.** `distributionTerms` reduces over a language's
-  _validators_, on the argument that the corpus contributes ordering and no content. Naijá is
-  the one language with no validator — that is the rule it breaks knowingly — so the corpus
-  contributes all of the content and the set reduced over is empty. Its `LICENSE` reads
-  `SPDX-License-Identifier:` with nothing after it and `Distributed under , which is`.
-  pcm.wikipedia is CC BY-SA 4.0, so the honest answer makes it a twenty-first.
+- **Icelandic is CC-BY-SA-3.0**, which was not in that set, so the manifest said
+  `shareAlike: false` while its own `LICENSE` said otherwise. The flag is what a store build
+  filters on. It is a prefix test now, so the next version of the license does not repeat it.
+- **Naijá came out with no terms at all**, and shipped a `LICENSE` reading
+  `SPDX-License-Identifier:` with nothing after it. `distributionTerms` reduces over a
+  language's validators, on the argument that the corpus contributes ordering and no content —
+  which PROVENANCE.md states outright, and which is true for fifty languages. Naijá is the one
+  with no validator, so the corpus chooses every word in the file and that sentence is false.
+  The corpus license now joins the reduction exactly where `unvalidated` is set, and Naijá comes
+  out CC BY-SA 4.0 from pcm.wikipedia.
 
-Neither is a web-build problem, since attribution is satisfied either way and PROVENANCE.md
-names the real sources in both cases. Both are exactly the kind of thing the audit exists to
-catch.
+An empty set of conditions reads as `MIT` rather than as a blank, since a list derived from
+unconditioned inputs carries no copyleft and saying so beats leaving an SPDX identifier empty.
+Nothing reaches that path today.
 
 **That needs a decision before a store build, and only then.** Share-alike is satisfied for the
 web build by attribution, which we do. The question is whether a store binary's DRM around a
@@ -445,6 +444,76 @@ list is not a derivative at all; ship the twenty as a download rather than a bun
 them from the mobile build. At five languages the last option was tolerable. At twenty — German,
 Italian, Japanese and Korean among them — it is not, which reorders the list: the first two are
 now worth real effort. Nothing else in the repo is blocked by this, and nothing is GPL.
+
+## The written form, and why a word list has two columns
+
+A word list stores what the fold produced, because that is what the game deals in tiles. What
+that costs is the word: French ÉPÉE is stored EPEE, and Vietnamese CHÂU CHẤU ĐÁ XE — a proverb,
+four words — was stored and shown as CHÂUCHẤUĐÁXE.
+
+`Alphabet.display` cannot fix that. It takes the folded word, so it restores anything a rule can
+find, which is why Hebrew's five final forms work there and a space does not: a syllable
+boundary can only be looked up. The lookup has to happen where the unfolded word still exists,
+and that is the build. A candidate already carries `forms`, the raw spellings that fold onto it,
+commonest first, so `splitTiers` writes the commonest one down beside the folded key.
+
+```
+#blinkered/wordlist/2 language=vi common=23977 full=25622
+ACÒNG	A CÒNG
+ADRENALIN
+CHÂUCHẤUĐÁXE	CHÂU CHẤU ĐÁ XE
+```
+
+Tab-separated, and **only where the two differ**, which is what keeps it cheap: English carries
+780 spellings against 174,456 words and Hungarian 73 against 1.3 million. The parser reads the
+second column into a map; every other consumer reads the first column and cannot tell the
+difference. A tab because no word contains one, and several contain every other plausible
+separator.
+
+`writer()` is the display counterpart of `folder()` — the same case rule and the same
+expansions, without the stripping — and `writeFor()` finds it. An alphabet that answers nothing
+falls back to its own fold, so a language nobody has thought about writes exactly what it wrote
+before rather than inventing a spelling.
+
+### What the data said that the design did not
+
+Both of these came from reading the output. Neither would have failed a test as written.
+
+- **Greek does not accent its capitals.** Upper-case Greek drops the tonos, so ΆΒΟΛΑ is a
+  misspelling of ΑΒΟΛΑ rather than a more careful version of it, and only
+  `toLocaleUpperCase('el')` knows it. Without that, Greek came back with a spelling for 255,526
+  of its 257,014 words; with it, 1,629. Turkish and Georgian a third time: **case is a fact
+  about a language, not about Unicode.**
+- **`stripDiacritics` had been quietly eating punctuation.** U+0060 and U+00B4 carry
+  `Diacritic=Yes`, so a standalone backtick strips like an accent. That is the right answer for
+  a tile and nobody had noticed, because it never reached a screen. It reached one the day raw
+  spellings did: OpenSubtitles writes an apostrophe as a backtick and Russian frequency lists
+  mark stress with one, so YOU`VE and Б`ЕТОР arrived looking like words. The writer drops a
+  diacritic that is not a combining mark, which is that distinction stated grammatically rather
+  than as a list of characters to ban.
+
+Across all fifty-one languages the only non-letters that survive into a spelling are the space
+and the hyphen, both Vietnamese, both real: A-LÊ-HẤP and BA-LÊ are how Vietnamese writes a
+transliterated loanword. `packages/words/test/writtenForms.test.ts` asserts that against the
+shipped files, with the invariant that folding a spelling gives back the key it is stored under.
+
+### Where the spellings are
+
+|                                       | words with a spelling | what it is                                            |
+| ------------------------------------- | --------------------- | ----------------------------------------------------- |
+| Vietnamese                            | 80.9%                 | the space between syllables                           |
+| French                                | 33.3%                 | accents                                               |
+| Spanish                               | 26.5%                 | accents                                               |
+| Galician, Catalan, Portuguese         | 16–20%                | accents                                               |
+| Arabic                                | 7.1%                  | tanwīn                                                |
+| Naijá                                 | 1.0%                  | subdots: AFỌ, AHỤ                                     |
+| English                               | 0.4%                  | loanwords whose accented spelling is the commoner one |
+| Hungarian, Polish, Russian, Bulgarian | under 0.1%            | little; their marks are letters already               |
+
+Naijá is the row worth stopping on. Its fold strips ọ and ụ, which are letters of the language
+rather than decoration, so those words are tiled wrong as well as written wrong. That is the
+decision Yoruba and Igbo are waiting on, and it turns out to have been taken for Naijá already —
+by default, and the wrong way. See LANGUAGES.md.
 
 ## Per-language data layout
 

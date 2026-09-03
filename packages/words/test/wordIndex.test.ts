@@ -81,4 +81,25 @@ describe('buildTieredIndex', () => {
     expect(tiered.profile([...'SEAT'], 3)).toEqual({ count: 3, longest: 3 })
     expect(buildIndex(WORDS, ENGLISH).profile([...'SEAT'], 3)).toEqual({ count: 5, longest: 4 })
   })
+
+  it('writes a word as the corpus spelled it, and as tiled when it has nothing to add', () => {
+    const spelled = buildTieredIndex(WORDS, ['AT'], ENGLISH, new Map([['ATONES', 'ÁTONES']]))
+    expect(spelled.spell('ATONES')).toBe('ÁTONES')
+    expect(spelled.spell('AT')).toBe('AT')
+  })
+
+  it('falls back to the rule when the list has nothing stored', () => {
+    // The middle rung. Hebrew's final forms are found by rule rather than looked up, so an
+    // alphabet with `display` still writes its words properly on a list with no spellings.
+    const shouty = { ...ENGLISH, display: (word: string) => `${word}!` }
+    expect(buildTieredIndex(['AT'], ['AT'], shouty).spell('AT')).toBe('AT!')
+    // And the stored spelling wins over the rule, because it knows more.
+    const both = buildTieredIndex(['AT'], ['AT'], shouty, new Map([['AT', 'ÀT']]))
+    expect(both.spell('AT')).toBe('ÀT')
+  })
+
+  it('leaves every word alone when the list carries no spellings', () => {
+    // Which is most of them. English has none, so this is the path almost every game takes.
+    for (const word of WORDS) expect(tiered.spell(word)).toBe(word)
+  })
 })

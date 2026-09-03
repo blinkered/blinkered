@@ -77,6 +77,14 @@ export function buildIndex(words: Iterable<string>, alphabet: Alphabet): WordInd
 export interface TieredIndex extends WordIndex {
   /** Words `profile` counts, as against the `size` that `has` accepts. */
   readonly commonSize: number
+  /**
+   * How to write a found word, where the fold threw part of it away.
+   *
+   * Travels with the dictionary because it comes out of the same file and answers a question
+   * only the dictionary can: what the corpus actually spelled. `Alphabet.display` handles
+   * what a rule can find, and this handles what only a lookup can.
+   */
+  spell(word: string): string
 }
 
 /**
@@ -92,6 +100,7 @@ export function buildTieredIndex(
   full: Iterable<string>,
   common: Iterable<string>,
   alphabet: Alphabet,
+  written: ReadonlyMap<string, string> = new Map(),
 ): TieredIndex {
   const everything = new Set(full)
   const shortlist = new Set(common)
@@ -100,5 +109,8 @@ export function buildTieredIndex(
     commonSize: shortlist.size,
     has: (word) => everything.has(word),
     profile: solver(anagramMap(shortlist, alphabet)),
+    // The stored spelling first, then whatever a rule can restore, then the word as tiled.
+    // A list with no spellings in it and an alphabet with no `display` leaves this identity.
+    spell: (word) => written.get(word) ?? alphabet.display?.(word) ?? word,
   }
 }

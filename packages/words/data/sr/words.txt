@@ -1,4 +1,4 @@
-#blinkered/wordlist/1 language=sr common=17691 full=109513
+#blinkered/wordlist/2 language=sr common=17691 full=109513
 ЂАВО
 ЂАВОЛА
 ЂАВОЛЕ

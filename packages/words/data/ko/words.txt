@@ -1,4 +1,4 @@
-#blinkered/wordlist/1 language=ko common=19257 full=38467
+#blinkered/wordlist/2 language=ko common=19257 full=38467
 ㄱㅏㄱ
 ㄱㅏㄱㄱㅏㄱ
 ㄱㅏㄱㄱㅘ

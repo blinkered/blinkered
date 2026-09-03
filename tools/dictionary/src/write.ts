@@ -9,11 +9,17 @@ import type { Source } from './manifest.js'
 export const DATA_DIR = 'packages/words/data'
 
 /**
- * Licenses that carry a share-alike obligation onto the shipped list. Recorded rather than
- * hidden: a permissively validated language can go anywhere, and one of these needs a
+ * Whether a license carries a share-alike obligation onto the shipped list. Recorded rather
+ * than hidden: a permissively validated language can go anywhere, and one of these needs a
  * decision before a store build applies DRM to the binary around it. See DICTIONARIES.md.
+ *
+ * A prefix test rather than a list of exact versions. The list held only `CC-BY-SA-4.0`, so
+ * Icelandic's CC-BY-SA-3.0 was flagged as unencumbered while its own LICENSE said otherwise,
+ * and the next version of the license would have done it again.
  */
-const SHARE_ALIKE = new Set(['CC-BY-SA-4.0'])
+function shareAlike(license: string): boolean {
+  return license.startsWith('CC-BY-SA-')
+}
 
 /** A source with no conditions at all. Recorded for attribution, not for terms. */
 const PUBLIC_DOMAIN = 'LicenseRef-public-domain'
@@ -48,8 +54,20 @@ function creditCut(spec: Built['spec']): string {
   return limit === undefined ? 'no limit' : `rank ${String(limit)}`
 }
 
+/**
+ * Every license the shipped list actually depends on.
+ *
+ * The validators, plus the corpus **only where the corpus decides membership**. Everywhere
+ * else the corpus contributes ordering and no content — a word it proposes that no validator
+ * accepts does not appear — which is the argument PROVENANCE.md makes, and it is sound. For an
+ * `unvalidated` language that sentence is simply false: there is no validator, so the corpus
+ * chooses every word in the file. Naijá is the one language in that position, and it is the
+ * one whose terms came out empty.
+ */
 function licenses(built: Built): string[] {
-  return [...new Set(built.spec.groups.flat().map((source) => source.license))].sort()
+  const validators = built.spec.groups.flat().map((source) => source.license)
+  const fromCorpus = built.spec.unvalidated === true ? [corpusTerms(built.spec.corpus).license] : []
+  return [...new Set([...validators, ...fromCorpus])].sort()
 }
 
 /**
@@ -62,11 +80,16 @@ function licenses(built: Built): string[] {
  */
 function distributionTerms(built: Built): string {
   const all = licenses(built)
-  const found = all.filter((license) => SHARE_ALIKE.has(license))
+  const found = all.filter(shareAlike)
+  // Sorted, so the oldest version wins where a language somehow depends on two. Nothing does
+  // today; picking deterministically is cheaper than finding out the day something does.
   if (found[0] !== undefined) return found[0]
   // Public domain adds no condition, so it adds nothing to the terms either.
   const binding = all.filter((license) => license !== PUBLIC_DOMAIN)
-  return binding.join(' AND ')
+  // No conditions from anywhere is not a missing answer, it is the permissive one. A list
+  // derived from unconditioned inputs carries no copyleft, and saying so beats a blank line
+  // where an SPDX identifier belongs.
+  return binding.length === 0 ? 'MIT' : binding.join(' AND ')
 }
 
 function licenseFile(built: Built): string {
@@ -177,7 +200,7 @@ export function writeLanguage(built: Built): ManifestEntry {
     full: built.tiers.full.length,
     bytes: Buffer.byteLength(built.text, 'utf8'),
     license: terms,
-    shareAlike: SHARE_ALIKE.has(terms),
+    shareAlike: shareAlike(terms),
     density: built.density.median,
   }
 }

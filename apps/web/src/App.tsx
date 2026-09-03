@@ -384,6 +384,7 @@ function Session({
                   words={finished.words}
                   messages={messages}
                   language={finished.result.language}
+                  dictionary={dictionary}
                 />
                 <Share
                   result={finished.result}
@@ -638,6 +639,7 @@ function Playing({
         words={game.state.wordsFound}
         messages={messages}
         language={spec.config.language}
+        dictionary={dictionary}
       />
     </>
   )
@@ -685,40 +687,69 @@ function FoundWords({
   words,
   messages,
   language,
+  dictionary,
 }: {
   words: readonly { word: string; points: number; wilds?: readonly number[] }[]
   messages: Messages
   /** The game's language, not the interface's: these are its words, spelled its way. */
   language: string
+  /**
+   * The dictionary the words came from, which is also the only thing that knows how they are
+   * written. Optional because a finished game can outlive the fetch that produced it, and a
+   * word rendered as it was tiled beats a rail that will not draw.
+   */
+  dictionary?: TieredIndex | null
 }): React.JSX.Element {
   if (words.length === 0) {
     return <p className="found dim">{messages.noWordsYet}</p>
   }
   const alphabet = alphabetFor(language)
-  // Hebrew's five final forms live here rather than on the tiles, because a tile cannot be two
-  // shapes. Everywhere else this is the identity and costs nothing.
-  const spell = (word: string): string => alphabet.display?.(word) ?? word
+  // Two different jobs wear this name. The dictionary restores what only a lookup can find —
+  // Vietnamese CHÂU CHẤU ĐÁ XE is four words the fold ran together — and `display` restores
+  // what a rule can, which is Hebrew's five final forms. Everywhere else both are identity.
+  const spell = (word: string): string =>
+    dictionary?.spell(word) ?? alphabet.display?.(word) ?? word
+  /**
+   * The written word, with each character told which tile it came from.
+   *
+   * The two stopped being the same string the moment a spelling could be longer than what was
+   * tiled: CHÂU CHẤU ĐÁ XE is sixteen characters over twelve tiles. `wilds` indexes tiles, so
+   * marking by character position would mark the wrong letters, and `--len` measured on the
+   * tiles would size the rail for a shorter word than it is about to draw.
+   *
+   * A character belongs to a tile when the fold keeps it. The separators the fold eats — the
+   * space and the hyphen Vietnamese writes its compounds with — belong to no tile and are
+   * what pushes the two apart in the first place.
+   */
+  const laid = (word: string): { letter: string; tile: number }[] => {
+    let tile = 0
+    return [...spell(word)].map((letter) => {
+      const at = alphabet.fold(letter) === '' ? -1 : tile++
+      return { letter, tile: at }
+    })
+  }
+
   return (
     <ul className="found">
       {[...words].reverse().map((found) => (
-        // `--len` is the word's length, which the narrow rail uses to size the text so that a
-        // long word shrinks to fit rather than being cut. Spread rather than measured in JS: the
-        // length is already known here, and a ResizeObserver per word would be a lot of
-        // machinery for an answer arithmetic can give. The title still carries the whole thing,
-        // for the rare word too long even at the smallest size.
+        // `--len` is how many characters are about to be drawn, which the narrow rail uses to
+        // size the text so that a long word shrinks to fit rather than being cut. Counted here
+        // rather than measured: the length is already known, and a ResizeObserver per word
+        // would be a lot of machinery for an answer arithmetic can give. The title still
+        // carries the whole thing, for the rare word too long even at the smallest size.
         <li
           key={found.word}
           title={`${spell(found.word)} +${String(found.points)}`}
-          style={{ ['--len' as string]: String([...found.word].length) }}
+          style={{ ['--len' as string]: String(laid(found.word).length) }}
         >
           <span className="found-word" dir={alphabet.direction}>
             {/* Letters the wild was given are marked, so the player can see what the board
                 handed them rather than what they chose. Marked per character rather than
                 highlighting the whole word, because usually only one of them was a gift. */}
-            {[...spell(found.word)].map((letter, at) => (
+            {laid(found.word).map(({ letter, tile }, at) => (
               <span
                 key={`${String(at)}-${letter}`}
-                className={found.wilds?.includes(at) === true ? 'from-wild' : undefined}
+                className={found.wilds?.includes(tile) === true ? 'from-wild' : undefined}
               >
                 {letter}
               </span>

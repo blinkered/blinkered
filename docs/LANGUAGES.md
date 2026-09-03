@@ -512,27 +512,65 @@ twelve-tile board holding all eight of the right toned vowels is rare.
 
 ### Still open on these
 
-- **Vietnamese is written without its spaces.** ÁCHÂU rather than Á CHÂU. Hebrew restores its
-  final forms in `display` because a rule can find them; a syllable boundary can only be looked
-  up, and `display` is deliberately a function of the word alone. Fixing it means a word-list
-  format that can carry a written form beside the folded one.
+- ~~**Vietnamese is written without its spaces.**~~ Done. The word list carries a written form
+  beside the folded key now, and 80.9% of Vietnamese words have one. See the end of
+  DICTIONARIES.md, and note what it cost to get right: Greek had to learn that its capitals
+  carry no accents, and the writer had to learn that a backtick is not a diacritic.
 - **Six of the twenty-five were written by someone who does not speak them**: Basque, Georgian,
   Armenian, Welsh, Irish and Naija. They are fluent and idiomatic as far as that goes, and a
   native reader would be worth more than another pass here.
 - Whether Finnish, German and Malay should move off `titles` too, given what it did to
   Vietnamese.
 - Whether `sr-Latn` is worth a second entry. The word list is the same file transliterated.
-- **Naijá's generated `LICENSE` names no license at all.** `distributionTerms` takes the most
-  restrictive of a language's _validators_, on the argument that the corpus contributes ordering
-  and no content. Naijá has no validators — that is the rule it breaks knowingly — so the corpus
-  contributes all of the content and the set is empty: the file reads `SPDX-License-Identifier:`
-  and `Distributed under , which is`. The right answer is almost certainly CC BY-SA 4.0 from
-  pcm.wikipedia, which would make it a twenty-first share-alike language rather than the one with
-  no terms. Icelandic has the mirror-image fault — CC-BY-SA-3.0 flagged `shareAlike: false`,
-  because the set that decides is a literal holding only `CC-BY-SA-4.0`. Both are build fixes and
-  a decision, not doc fixes. DICTIONARIES.md has the detail.
+- ~~**Naijá's generated `LICENSE` names no license at all**, and Icelandic's CC-BY-SA-3.0 is
+  flagged as unencumbered.~~ Both fixed; twenty-one languages are share-alike. DICTIONARIES.md
+  has what the one line was doing.
+- **Naijá's fold strips ọ and ụ.** They are letters of the language, not decoration, so those
+  words are tiled wrong as well as written wrong — AFỌ plays as AFO. Nobody decided this; it is
+  what `folder()` does by default, and building the language without answering the diacritic
+  question answered it in the worst direction. It is the same decision Yoruba and Igbo are
+  waiting on, and the evidence gathered for them applies here unchanged.
 - Vietnamese typing goes through an IME, and the browser delivers composed characters. It has
   not been tested with one attached.
+
+## Leaked words: seven languages validated by the wrong question
+
+`titles(x)` asks whether x.wiktionary has a page with this spelling. `enCategories(x)` asks
+whether en.wiktionary files this spelling **as a word of x**. Only the second is the question
+worth asking, because a Wiktionary in any language documents every other language, and the deep
+tail of a subtitle corpus is full of them.
+
+That hole put 10,051 English words into Vietnamese and moved it and Czech onto categories. It
+was never confined to those two. Seven languages still have `titles` as their only validator,
+and six of them contain English — measured against fourteen unambiguous English probes:
+
+|           | validator      | English probes admitted | words  |
+| --------- | -------------- | ----------------------- | ------ |
+| Norwegian | `titles('no')` | 7 / 14                  | 13,891 |
+| Italian   | `titles('it')` | 5 / 14                  | 37,512 |
+| German    | `titles('de')` | 5 / 14                  | 42,747 |
+| Malay     | `titles('ms')` | 5 / 14                  | 9,173  |
+| Finnish   | `titles('fi')` | 5 / 14                  | 35,648 |
+| Galician  | `titles('gl')` | 1 / 14                  | 11,332 |
+| Armenian  | `titles('hy')` | 0 / 14                  | 19,341 |
+
+BECAUSE, THROUGH, THOUGHT and BEAUTIFUL are playable in Italian, German and Finnish today.
+Armenian is clean for a structural reason rather than a careful one: English cannot be spelled in
+Armenian script, so the fold drops it. Galician is nearly clean for the same reason Italian is
+not — its corpus is Wikipedia rather than subtitles.
+
+Each of the six was on `titles` because its hunspell dictionary is GPL-only or does not exist,
+so this is a swap rather than a fix that was skipped. The categories are there: Italian has
+129,744 lemmas and 468,106 non-lemma forms, German 104,881 and 251,007, Finnish 177,091 and
+80,405, Malay 10,588.
+
+**Norwegian has a trap in it.** `Category:Norwegian lemmas` holds 1,393 entries, because
+en.wiktionary files the language as Bokmål (23,088) and Nynorsk (24,855) instead. A switch that
+took the obvious category name would quietly shrink Norwegian to a tenth of itself and still
+build green, which is the same shape as the hunspell failure that cost Armenian its morphology.
+
+The cost is fetching: about 2,500 throttled API requests across the six, and the rate limiting
+is real — it is what turned the Wikimedia work serial in the first place.
 
 ## How Yoruba, Hausa and Igbo are handled elsewhere
 
@@ -630,7 +668,9 @@ stripped spellings of genuinely different words, which no fold can sort out afte
   worse than Yoruba's and nobody has shipped it either way.
 - **Hausa**: ɓ ɗ ƙ ƴ are tiles and there is nothing to decide. Measure the corpus for
   ASCIIfication before trusting its ordering.
-- **All three want the display-form field first.** A folded list cannot write the word it folded.
+- ~~**All three want the display-form field first.**~~ Built, for Vietnamese, and it turned out
+  Naijá needed it too. A folded list can write the word it folded now, so folding tone no longer
+  costs the spelling.
 
 ## Still open
 

@@ -233,6 +233,33 @@ describe('splitTiers', () => {
     expect(tiers.full).toEqual(['ATONES', 'SENATOR'])
   })
 
+  it('records how a word is written, when handed the alphabet that knows', () => {
+    // The fold is where the spelling is lost, so the spelling has to be taken here, from the
+    // raw forms the candidate still carries. French is the ordinary case: an accent that
+    // folds away and has to be written back.
+    const entries = parseFrequencies(['épée 90', 'chat 80', 'ete 70', 'été 60'])
+    const candidates = foldCandidates(entries, FRENCH)
+    const everything = buildValidator(['épée', 'chat', 'ete', 'été'])
+    const tiers = splitTiers(candidates, [everything], { commonRank: 4 }, 300, FRENCH)
+
+    expect(tiers.written.get('EPEE')).toBe('ÉPÉE')
+    // CHAT folds onto itself and is stored once, not twice.
+    expect(tiers.written.has('CHAT')).toBe(false)
+    // ETE and ÉTÉ fold together, and the commoner spelling is the one written down. `ete`
+    // outranks `été` here, so the pair is written the plain way.
+    expect(tiers.written.has('ETE')).toBe(false)
+  })
+
+  it('writes nothing at all when nobody says which alphabet this is', () => {
+    // `calibrate` splits tiers a dozen times to compare cuts and never renders a file, so it
+    // does not pay for spellings it will throw away.
+    const entries = parseFrequencies(['épée 90'])
+    const candidates = foldCandidates(entries, FRENCH)
+    const tiers = splitTiers(candidates, [buildValidator(['épée'])], { commonRank: 1 }, 90)
+    expect(tiers.common).toEqual(['EPEE'])
+    expect(tiers.written.size).toBe(0)
+  })
+
   it('sorts both tiers, so an unchanged rebuild produces no diff', () => {
     const tiers = splitTiers(ranked, [everything], { commonRank: 4, fullRank: 4 }, 400)
     expect(tiers.common).toEqual([...tiers.common].sort())
@@ -244,6 +271,7 @@ describe('formatWordList and parseWordList', () => {
   const tiers: Tiers = {
     common: ['ANT', 'NOTE'],
     full: ['ANT', 'NOTE', 'SENATOR'],
+    written: new Map(),
     stats: {
       candidates: 3,
       commonConsidered: 2,
@@ -258,13 +286,38 @@ describe('formatWordList and parseWordList', () => {
 
   it('writes the common tier first and records the split in the header', () => {
     expect(formatWordList('test-mini', tiers)).toBe(
-      '#blinkered/wordlist/1 language=test-mini common=2 full=3\nANT\nNOTE\nSENATOR\n',
+      '#blinkered/wordlist/2 language=test-mini common=2 full=3\nANT\nNOTE\nSENATOR\n',
     )
   })
 
   it('round-trips', () => {
     const parsed = parseWordList(formatWordList('test-mini', tiers))
-    expect(parsed).toEqual({ language: 'test-mini', common: tiers.common, full: tiers.full })
+    expect(parsed).toEqual({
+      language: 'test-mini',
+      common: tiers.common,
+      full: tiers.full,
+      written: new Map(),
+    })
+  })
+
+  it('writes a spelling beside the word only where the two differ', () => {
+    // The sparse half of the format. A list where every word folds onto itself carries no
+    // second column at all, which is most of them and all of English.
+    const spelled: Tiers = { ...tiers, written: new Map([['NOTE', 'NÔTE']]) }
+    expect(formatWordList('test-mini', spelled)).toBe(
+      '#blinkered/wordlist/2 language=test-mini common=2 full=3\nANT\nNOTE\tNÔTE\nSENATOR\n',
+    )
+    const parsed = parseWordList(formatWordList('test-mini', spelled))
+    expect(parsed.full).toEqual(['ANT', 'NOTE', 'SENATOR'])
+    expect(parsed.written.get('NOTE')).toBe('NÔTE')
+    expect(parsed.written.has('ANT')).toBe(false)
+  })
+
+  it('counts a spelled line once, so the header still describes the file', () => {
+    // The count is over words, not over bytes or columns. Getting this wrong would make
+    // every list with a spelling in it look truncated.
+    const spelled: Tiers = { ...tiers, written: new Map([['ANT', 'ÂNT']]) }
+    expect(() => parseWordList(formatWordList('test-mini', spelled))).not.toThrow()
   })
 
   it('refuses anything that is not a word list', () => {
@@ -274,16 +327,16 @@ describe('formatWordList and parseWordList', () => {
   })
 
   it('refuses a file whose contents do not match its header', () => {
-    const truncated = '#blinkered/wordlist/1 language=en common=2 full=9\nANT\nNOTE\n'
+    const truncated = '#blinkered/wordlist/2 language=en common=2 full=9\nANT\nNOTE\n'
     expect(() => parseWordList(truncated)).toThrow(/truncated or mislabelled/)
-    const unlabelled = '#blinkered/wordlist/1 language=en\nANT\n'
+    const unlabelled = '#blinkered/wordlist/2 language=en\nANT\n'
     expect(() => parseWordList(unlabelled)).toThrow(/truncated or mislabelled/)
-    const upsideDown = '#blinkered/wordlist/1 language=en common=2 full=1\nANT\n'
+    const upsideDown = '#blinkered/wordlist/2 language=en common=2 full=1\nANT\n'
     expect(() => parseWordList(upsideDown)).toThrow(/truncated or mislabelled/)
   })
 
   it('survives a header with no fields at all', () => {
-    expect(() => parseWordList('#blinkered/wordlist/1\n')).toThrow(/truncated or mislabelled/)
+    expect(() => parseWordList('#blinkered/wordlist/2\n')).toThrow(/truncated or mislabelled/)
   })
 })
 

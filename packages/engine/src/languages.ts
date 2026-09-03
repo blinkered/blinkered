@@ -703,7 +703,11 @@ export const GREEK: Alphabet = {
   vowels: ['Α', 'Ε', 'Η', 'Ι', 'Ο', 'Υ', 'Ω'],
   rareLetters: ['Β', 'Ζ', 'Ξ', 'Ψ'],
   requires: {},
-  fold: folder(),
+  // `locale` changes nothing about the fold, which strips the tonos anyway. It is here for
+  // the writer: upper-case Greek drops its accents, so ΆΒΟΛΑ is a misspelling of ΑΒΟΛΑ rather
+  // than a more careful version of it, and only `toLocaleUpperCase('el')` knows that. Without
+  // it every Greek word in the set came back accented — 255,526 of 257,014 of them.
+  fold: folder({ locale: 'el' }),
   segment: byCodePoint,
 }
 
@@ -2758,6 +2762,10 @@ export const VIETNAMESE: Alphabet = {
       .toUpperCase()
       .replace(/[\s\u00a0-]+/gu, '')
       .normalize('NFC'),
+  // The same, minus the part that eats the word. 82% of Vietnamese words have a space in
+  // them, so this is the language the written form exists for: CHÂU CHẤU ĐÁ XE is a proverb
+  // and CHÂUCHẤUĐÁXE is nothing at all.
+  write: (raw) => raw.toUpperCase().normalize('NFC'),
   segment: byCodePoint,
 }
 

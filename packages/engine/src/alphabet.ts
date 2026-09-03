@@ -85,6 +85,24 @@ export interface Alphabet {
    * dictionary, the scoring and the tiles all use the folded form.
    */
   display?(word: string): string
+  /**
+   * How a raw dictionary spelling is written on screen, where the fold threw something away.
+   *
+   * `fold` is lossy on purpose: French ÉPÉE plays on plain E tiles and Vietnamese CHÂU CHẤU
+   * plays with no space tile. What it costs is the word itself. The folded key is the only
+   * thing a word list held, so the rail printed EPEE and, worse, CHÂUCHẤUĐÁXE — one run-on
+   * where the language has four words.
+   *
+   * `display` cannot fix that: it takes the folded word, so it can only do what a rule can
+   * find, which is why Hebrew's final forms work and a space does not. This runs at build
+   * time instead, on the raw spelling the corpus had, and the result is stored beside the
+   * folded key. See `formatWordList`.
+   *
+   * Absent means the fold threw nothing away worth keeping, and the caller treats absent as
+   * `fold` — so a language that forgets to answer keeps exactly its old behaviour rather than
+   * inventing a spelling.
+   */
+  readonly write?: (raw: string) => string
 }
 
 /**
@@ -117,14 +135,19 @@ export interface FoldOptions {
  * Upper-casing does some of this already, and correctly: German eszett upper-cases to SS on
  * its own, which is exactly how German word games spell it.
  */
-export function folder(options: FoldOptions = {}): (key: string) => string {
+export type Fold = ((key: string) => string) & {
+  /** How to write what this fold discards. Attached by `folder`; see `writeFor`. */
+  readonly write?: (raw: string) => string
+}
+
+export function folder(options: FoldOptions = {}): Fold {
   const kept = options.keep ?? []
   const expand = Object.entries(options.expand ?? {})
   const locale = options.locale
   // Guard the protected letters behind characters no alphabet contains, strip, put them back.
   const guards = kept.map((letter, index) => [letter, `\u0001${String(index)}\u0001`] as const)
 
-  return (key) => {
+  const fold = (key: string): string => {
     let text = locale === undefined ? key.toUpperCase() : key.toLocaleUpperCase(locale)
     for (const [from, to] of expand) text = text.split(from).join(to)
     if (guards.length === 0) return stripDiacritics(text)
@@ -133,7 +156,47 @@ export function folder(options: FoldOptions = {}): (key: string) => string {
     for (const [letter, guard] of guards) text = text.split(guard).join(letter)
     return text
   }
+
+  // Attached rather than declared on every alphabet, because the writer is a function of the
+  // same options and there are forty-four of them. An alphabet whose fold is hand-written
+  // answers with its own `write`; one built here never has to.
+  return Object.assign(fold, { write: writer(options) })
 }
+
+/**
+ * Builds the display counterpart of a `folder`: the same case rule and the same expansions,
+ * without the stripping.
+ *
+ * The two have to agree about case or the rail is written in a different alphabet from the
+ * board — Turkish dotted I and Georgian Mtavruli are both one careless `toUpperCase` away.
+ * Expansions are applied here too, deliberately: Œ stands for two letters, and showing it
+ * beside an O tile and an E tile reads as a fault rather than as spelling.
+ */
+export function writer(options: FoldOptions = {}): (raw: string) => string {
+  const expand = Object.entries(options.expand ?? {})
+  const locale = options.locale
+
+  return (raw) => {
+    let text = locale === undefined ? raw.toUpperCase() : raw.toLocaleUpperCase(locale)
+    for (const [from, to] of expand) text = text.split(from).join(to)
+    return text.replace(LOOSE_ACCENT, '').normalize('NFC')
+  }
+}
+
+/**
+ * A diacritic standing on its own rather than sitting on a letter, which is corpus noise
+ * every time.
+ *
+ * `stripDiacritics` deletes these silently and nobody noticed, because deleting them is the
+ * right answer for a tile. Keeping them was wrong the moment the raw spelling started being
+ * shown: OpenSubtitles writes an apostrophe as a backtick, so `you\`ve` came back as YOU`VE,
+ * and Russian frequency lists mark stress the same way, so БЕТОР came back as Б`ЕТОР.
+ *
+ * The test is grammatical rather than a list of characters. A combining mark is part of the
+ * letter in front of it and belongs to the word; a spacing accent is a character in its own
+ * right and belongs to whatever produced the file.
+ */
+const LOOSE_ACCENT = /(?!\p{M})\p{Diacritic}/gu
 
 /**
  * Builds a greedy longest-match segmenter for an alphabet with multi-character letters, so
@@ -162,3 +225,15 @@ export function segmentBy(letters: readonly string[]): (word: string) => string[
 
 /** One code point per tile: correct for every alphabet without digraph letters. */
 export const byCodePoint = (word: string): string[] => [...word]
+
+/**
+ * How an alphabet writes a raw dictionary spelling, in the order the answers are trusted:
+ * the alphabet's own `write` for a hand-written fold, the one `folder` attached otherwise,
+ * and the fold itself when neither exists.
+ *
+ * The last is the safe default rather than a guess: it produces exactly the folded key, so a
+ * language nobody has thought about writes what it has always written.
+ */
+export function writeFor(alphabet: Alphabet): (raw: string) => string {
+  return alphabet.write ?? (alphabet.fold as Fold).write ?? ((raw) => alphabet.fold(raw))
+}

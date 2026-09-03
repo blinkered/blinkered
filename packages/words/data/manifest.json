@@ -6,7 +6,7 @@
       "endonym": "Afrikaans",
       "common": 12354,
       "full": 12354,
-      "bytes": 107546,
+      "bytes": 109490,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 107
@@ -16,7 +16,7 @@
       "endonym": "العربية",
       "common": 18686,
       "full": 656979,
-      "bytes": 9044564,
+      "bytes": 9778532,
       "license": "MPL-1.1",
       "shareAlike": false,
       "density": 268
@@ -26,7 +26,7 @@
       "endonym": "مصرى",
       "common": 11570,
       "full": 154576,
-      "bytes": 1989012,
+      "bytes": 2003004,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 195
@@ -36,7 +36,7 @@
       "endonym": "Български",
       "common": 17555,
       "full": 279165,
-      "bytes": 5401020,
+      "bytes": 5401027,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 78
@@ -46,7 +46,7 @@
       "endonym": "Català",
       "common": 16405,
       "full": 46841,
-      "bytes": 428790,
+      "bytes": 515855,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 154
@@ -56,7 +56,7 @@
       "endonym": "Čeština",
       "common": 14002,
       "full": 22001,
-      "bytes": 189235,
+      "bytes": 189260,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 52
@@ -66,7 +66,7 @@
       "endonym": "Cymraeg",
       "common": 10038,
       "full": 47635,
-      "bytes": 424870,
+      "bytes": 430905,
       "license": "LGPL-3.0-or-later",
       "shareAlike": false,
       "density": 127
@@ -76,7 +76,7 @@
       "endonym": "Dansk",
       "common": 16419,
       "full": 309554,
-      "bytes": 3682208,
+      "bytes": 3689958,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 124
@@ -86,7 +86,7 @@
       "endonym": "Deutsch",
       "common": 18389,
       "full": 42747,
-      "bytes": 407511,
+      "bytes": 407912,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 140
@@ -96,7 +96,7 @@
       "endonym": "Ελληνικά",
       "common": 17421,
       "full": 257014,
-      "bytes": 5384035,
+      "bytes": 5416736,
       "license": "MPL-1.1",
       "shareAlike": false,
       "density": 97
@@ -106,7 +106,7 @@
       "endonym": "English",
       "common": 16575,
       "full": 174456,
-      "bytes": 1736592,
+      "bytes": 1738588,
       "license": "MIT",
       "shareAlike": false,
       "density": 167
@@ -116,7 +116,7 @@
       "endonym": "Español",
       "common": 16993,
       "full": 201655,
-      "bytes": 2093774,
+      "bytes": 2728122,
       "license": "MPL-1.1",
       "shareAlike": false,
       "density": 120
@@ -126,7 +126,7 @@
       "endonym": "Eesti",
       "common": 17552,
       "full": 589422,
-      "bytes": 6997475,
+      "bytes": 6998421,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 119
@@ -136,7 +136,7 @@
       "endonym": "Euskara",
       "common": 5323,
       "full": 7417,
-      "bytes": 57339,
+      "bytes": 57466,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 85
@@ -156,7 +156,7 @@
       "endonym": "Suomi",
       "common": 17511,
       "full": 35648,
-      "bytes": 322130,
+      "bytes": 322466,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 136
@@ -166,7 +166,7 @@
       "endonym": "Français",
       "common": 16593,
       "full": 144105,
-      "bytes": 1470729,
+      "bytes": 2032204,
       "license": "MPL-2.0",
       "shareAlike": false,
       "density": 153
@@ -176,7 +176,7 @@
       "endonym": "Gaeilge",
       "common": 9886,
       "full": 13545,
-      "bytes": 120821,
+      "bytes": 120883,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 109
@@ -186,7 +186,7 @@
       "endonym": "Galego",
       "common": 8338,
       "full": 11332,
-      "bytes": 97883,
+      "bytes": 122425,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 110
@@ -196,7 +196,7 @@
       "endonym": "עברית",
       "common": 12992,
       "full": 15924,
-      "bytes": 172528,
+      "bytes": 172630,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 344
@@ -206,7 +206,7 @@
       "endonym": "Hrvatski",
       "common": 17613,
       "full": 341040,
-      "bytes": 3551631,
+      "bytes": 3552371,
       "license": "SISSL",
       "shareAlike": false,
       "density": 99
@@ -216,7 +216,7 @@
       "endonym": "Magyar",
       "common": 17943,
       "full": 1295061,
-      "bytes": 17223802,
+      "bytes": 17224461,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 54
@@ -236,7 +236,7 @@
       "endonym": "Bahasa Indonesia",
       "common": 17300,
       "full": 41132,
-      "bytes": 393671,
+      "bytes": 393692,
       "license": "LGPL-3.0",
       "shareAlike": false,
       "density": 149
@@ -246,9 +246,9 @@
       "endonym": "Íslenska",
       "common": 14261,
       "full": 68689,
-      "bytes": 682417,
+      "bytes": 682895,
       "license": "CC-BY-SA-3.0",
-      "shareAlike": false,
+      "shareAlike": true,
       "density": 88
     },
     {
@@ -256,7 +256,7 @@
       "endonym": "Italiano",
       "common": 16507,
       "full": 37512,
-      "bytes": 343384,
+      "bytes": 352210,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 183
@@ -296,7 +296,7 @@
       "endonym": "Latina",
       "common": 10745,
       "full": 32765,
-      "bytes": 309628,
+      "bytes": 309862,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 91
@@ -306,7 +306,7 @@
       "endonym": "Lietuvių",
       "common": 17488,
       "full": 202690,
-      "bytes": 2184460,
+      "bytes": 2184633,
       "license": "BSD-3-Clause",
       "shareAlike": false,
       "density": 56
@@ -316,7 +316,7 @@
       "endonym": "Latviešu",
       "common": 17087,
       "full": 99801,
-      "bytes": 1051179,
+      "bytes": 1051425,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 58
@@ -336,7 +336,7 @@
       "endonym": "Bahasa Melayu",
       "common": 7372,
       "full": 9173,
-      "bytes": 63105,
+      "bytes": 63160,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 164
@@ -346,7 +346,7 @@
       "endonym": "Nederlands",
       "common": 16334,
       "full": 322146,
-      "bytes": 3922688,
+      "bytes": 3976252,
       "license": "BSD-3-Clause",
       "shareAlike": false,
       "density": 142
@@ -356,7 +356,7 @@
       "endonym": "Norsk",
       "common": 9994,
       "full": 13891,
-      "bytes": 106732,
+      "bytes": 107431,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 164
@@ -366,9 +366,9 @@
       "endonym": "Naijá",
       "common": 8000,
       "full": 16394,
-      "bytes": 121583,
-      "license": "",
-      "shareAlike": false,
+      "bytes": 123079,
+      "license": "CC-BY-SA-4.0",
+      "shareAlike": true,
       "density": 136
     },
     {
@@ -376,7 +376,7 @@
       "endonym": "Polski",
       "common": 18297,
       "full": 544157,
-      "bytes": 6219734,
+      "bytes": 6219999,
       "license": "MPL-2.0",
       "shareAlike": false,
       "density": 53
@@ -386,7 +386,7 @@
       "endonym": "Português",
       "common": 16107,
       "full": 134775,
-      "bytes": 1377730,
+      "bytes": 1638834,
       "license": "MPL-1.1",
       "shareAlike": false,
       "density": 140
@@ -396,7 +396,7 @@
       "endonym": "Português (Brasil)",
       "common": 16627,
       "full": 200241,
-      "bytes": 2048974,
+      "bytes": 2478896,
       "license": "MPL-2.0",
       "shareAlike": false,
       "density": 143
@@ -406,7 +406,7 @@
       "endonym": "Română",
       "common": 16326,
       "full": 187238,
-      "bytes": 1932275,
+      "bytes": 1932980,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 118
@@ -416,7 +416,7 @@
       "endonym": "Русский",
       "common": 18095,
       "full": 424352,
-      "bytes": 8494899,
+      "bytes": 8495032,
       "license": "BSD-3-Clause",
       "shareAlike": false,
       "density": 70
@@ -426,7 +426,7 @@
       "endonym": "Slovenčina",
       "common": 17538,
       "full": 287672,
-      "bytes": 3103113,
+      "bytes": 3103566,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 44
@@ -436,7 +436,7 @@
       "endonym": "Slovenščina",
       "common": 17869,
       "full": 262639,
-      "bytes": 2662695,
+      "bytes": 2663042,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 138
@@ -456,7 +456,7 @@
       "endonym": "Svenska",
       "common": 16350,
       "full": 371287,
-      "bytes": 4580853,
+      "bytes": 4608093,
       "license": "LGPL-3.0",
       "shareAlike": false,
       "density": 122
@@ -466,7 +466,7 @@
       "endonym": "Kiswahili",
       "common": 9200,
       "full": 29002,
-      "bytes": 256395,
+      "bytes": 258131,
       "license": "LGPL-2.1-or-later",
       "shareAlike": false,
       "density": 87
@@ -476,7 +476,7 @@
       "endonym": "Tagalog",
       "common": 3540,
       "full": 23306,
-      "bytes": 196515,
+      "bytes": 196557,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 68
@@ -486,7 +486,7 @@
       "endonym": "Türkçe",
       "common": 17867,
       "full": 638282,
-      "bytes": 8453388,
+      "bytes": 8459187,
       "license": "MIT",
       "shareAlike": false,
       "density": 79
@@ -496,7 +496,7 @@
       "endonym": "Українська",
       "common": 13175,
       "full": 20903,
-      "bytes": 333543,
+      "bytes": 333621,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 52
@@ -506,7 +506,7 @@
       "endonym": "Tiếng Việt",
       "common": 23977,
       "full": 25622,
-      "bytes": 272284,
+      "bytes": 538222,
       "license": "CC-BY-SA-4.0",
       "shareAlike": true,
       "density": 27

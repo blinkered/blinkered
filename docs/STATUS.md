@@ -52,10 +52,11 @@ next.
   `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
   believed. No database yet, so no other route exists: one that answered from nothing would be a
   fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
-- 1,225 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
-  CI on ubuntu and macos. Two of them are per-language sweeps rather than samples: every alphabet
-  deals an accepted board over three seeds, and every letter in every `weights` table appears in
-  some shipped word.
+- 1,287 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
+  CI on ubuntu and macos. Three of them are per-language sweeps rather than samples: every
+  alphabet deals an accepted board over three seeds, every letter in every `weights` table
+  appears in some shipped word, and every written form in every shipped list folds back onto the
+  word it is filed under.
 
 ## Next, in order
 
@@ -124,11 +125,13 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   Vietnamese. That was five before the batch of twenty-five, and the store-build question grew
   with it — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
   whole obligation and we do it. Nothing anywhere is GPL.
-- **The licence audit has two holes, both from one line.** `SHARE_ALIKE` in
-  `tools/dictionary/src/write.ts` holds only `CC-BY-SA-4.0`, so Icelandic's CC-BY-SA-3.0 is
-  flagged `shareAlike: false`; and Naijá, the one language with no validator, derives no terms
-  at all and ships a `LICENSE` with an empty SPDX identifier. Not yet fixed. See
-  DICTIONARIES.md.
+- **Seven languages are validated against a Wiktionary's page titles**, which cannot tell one
+  language from another: Italian, German, Malay, Norwegian, Finnish, Galician and Armenian. Six
+  of them therefore contain English. Against fourteen unambiguous English probes, Norwegian
+  admits seven, Italian, German, Malay and Finnish five each, and Galician one; Armenian admits
+  none only because English cannot be spelled in Armenian script. Moving them to en.wiktionary
+  categories is the fix and is not yet done — see LANGUAGES.md for the trap waiting in
+  Norwegian.
 - **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
   validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns

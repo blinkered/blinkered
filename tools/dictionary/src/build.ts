@@ -60,7 +60,7 @@ export async function build(spec: LanguageSpec, refresh: boolean): Promise<Built
   const considered = candidates.filter((candidate) => candidate.rank <= deepest)
   const groups = await validators(spec, considered, refresh)
 
-  const tiers = splitTiers(candidates, groups, spec.cuts, totalTokens)
+  const tiers = splitTiers(candidates, groups, spec.cuts, totalTokens, alphabet)
   if (tiers.common.length === 0) throw new Error(`${spec.tag}: nothing survived validation`)
 
   return {

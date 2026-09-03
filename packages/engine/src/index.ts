@@ -10,6 +10,8 @@ export {
   folder,
   segmentBy,
   stripDiacritics,
+  writeFor,
+  writer,
   type Alphabet,
   type FoldOptions,
 } from './alphabet.js'

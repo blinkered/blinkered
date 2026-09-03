@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ALPHABET_IDS, DEFAULT_LANGUAGE, alphabetFor, configFor } from '../src/index.js'
+import { ALPHABET_IDS, DEFAULT_LANGUAGE, alphabetFor, configFor, writeFor } from '../src/index.js'
 
 /** One probe per language: a word that exercises that alphabet's diacritic policy. */
 const PROBES: Readonly<Record<string, readonly [string, string, number]>> = {
@@ -382,5 +382,45 @@ describe('Japanese', () => {
     // Every kana is already a syllable, so the floor that keeps other alphabets speakable has
     // nothing to do here and 35% would spend a third of the board on the three rarest tiles.
     expect(japanese.vowelShare).toBe(0.17)
+  })
+})
+
+describe('writing a word back', () => {
+  it('restores what the fold dropped, and only that', () => {
+    // The fold is lossy by design and the loss is the word itself. These are the three shapes
+    // it takes: an accent that is decoration, a character standing for two letters, and a
+    // space. Each is checked against its own alphabet, since the policy is per language.
+    expect(writeFor(alphabetFor('fr'))('épée')).toBe('ÉPÉE')
+    expect(alphabetFor('fr').fold('épée')).toBe('EPEE')
+    expect(writeFor(alphabetFor('vi'))('châu chấu đá xe')).toBe('CHÂU CHẤU ĐÁ XE')
+    expect(alphabetFor('vi').fold('châu chấu đá xe')).toBe('CHÂUCHẤUĐÁXE')
+  })
+
+  it('upper-cases by the language\u2019s own rules, not the default ones', () => {
+    // The writer and the fold have to agree about case or the rail is written in a different
+    // alphabet from the board. Turkish is where a plain toUpperCase gets it wrong.
+    expect(writeFor(alphabetFor('tr'))('ılık')).toBe('ILIK')
+    expect(writeFor(alphabetFor('tr'))('ilik')).toBe('İLİK')
+  })
+
+  it('never invents a spelling for an alphabet that has not asked for one', () => {
+    // The safe default: absent means the fold threw nothing away worth keeping, so writing a
+    // word gives back exactly what tiling it gives. A new language that forgets to answer
+    // keeps its old behaviour rather than growing a second spelling nobody checked.
+    for (const id of ALPHABET_IDS) {
+      const alphabet = alphabetFor(id)
+      if (alphabet.write !== undefined) continue
+      const write = writeFor(alphabet)
+      for (const probe of ['ABC', 'abc']) {
+        expect(write(probe), id).toBe(alphabet.fold(probe))
+      }
+    }
+  })
+
+  it('does not upper-case Georgian, which has no upper case worth having', () => {
+    // Mkhedruli has a Mtavruli upper case for headings, and using it would deal a different
+    // script. Georgian has no `write`, so it falls through to its own fold, which is the
+    // whole point of that default.
+    expect(writeFor(alphabetFor('ka'))('ქართული')).toBe('ქართული')
   })
 })
