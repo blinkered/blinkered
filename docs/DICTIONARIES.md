@@ -408,18 +408,43 @@ Conservatively, the most restrictive of a language's inputs, recorded per langua
 inherits nothing from its filter is a good one; making it is not the same as being right about
 it, and assuming otherwise costs nothing.
 
-Eleven languages come out permissive: MIT, BSD-3-Clause, MPL-1.1, MPL-2.0, SISSL, LGPL-3.0.
-**Five come out CC BY-SA 4.0**: Italian, German, Norwegian, Finnish and Malay, the ones
-validated against Wiktionary.
+Thirty come out permissive or weak-copyleft: LGPL-2.1-or-later (12), MPL-1.1 (4), MIT (3),
+MPL-2.0 (3), BSD-3-Clause (3), LGPL-3.0 (2), LGPL-3.0-or-later, Apache-2.0, SISSL.
+
+**Twenty come out CC BY-SA**: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician,
+German, Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian,
+Tagalog, Ukrainian and Vietnamese — the ones validated against Wiktionary. That was five before
+the batch of twenty-five, and it is the number in this file a store build actually turns on.
+
+**Two of those twenty the manifest gets wrong, and both are the same one-line cause.**
+`SHARE_ALIKE` in `tools/dictionary/src/write.ts` is a literal set with one member,
+`CC-BY-SA-4.0`, and it does two jobs: it sets the `shareAlike` flag, and it picks which license
+dominates when a language has several validators.
+
+- **Icelandic is CC-BY-SA-3.0**, which is not in that set, so its manifest entry says
+  `shareAlike: false` while its `LICENSE` says CC-BY-SA-3.0. The flag is what a store build
+  would filter on. It is only the flag today because Icelandic has a single validator; a second
+  one would also stop 3.0 from dominating, and the terms would come out as an `AND` join.
+- **Naijá comes out with no terms at all.** `distributionTerms` reduces over a language's
+  _validators_, on the argument that the corpus contributes ordering and no content. Naijá is
+  the one language with no validator — that is the rule it breaks knowingly — so the corpus
+  contributes all of the content and the set reduced over is empty. Its `LICENSE` reads
+  `SPDX-License-Identifier:` with nothing after it and `Distributed under , which is`.
+  pcm.wikipedia is CC BY-SA 4.0, so the honest answer makes it a twenty-first.
+
+Neither is a web-build problem, since attribution is satisfied either way and PROVENANCE.md
+names the real sources in both cases. Both are exactly the kind of thing the audit exists to
+catch.
 
 **That needs a decision before a store build, and only then.** Share-alike is satisfied for the
 web build by attribution, which we do. The question is whether a store binary's DRM around a
 BY-SA data file is the same objection the FSF raises about the GPL. It is less settled than the
-GPL case and the same shape. The four options, in the order I would try them: find a
-permissively licensed validator for those five; get the frequency source onto `wordfreq` and
-argue the list is not a derivative at all; ship those five as a download rather than a bundle;
-or drop them from the mobile build. Nothing else in the repo is blocked by this, and nothing is
-GPL.
+GPL case and the same shape. The four options, in the order I would try them: find permissively
+licensed validators for those twenty; get the frequency source onto `wordfreq` and argue the
+list is not a derivative at all; ship the twenty as a download rather than a bundle; or drop
+them from the mobile build. At five languages the last option was tolerable. At twenty — German,
+Italian, Japanese and Korean among them — it is not, which reorders the list: the first two are
+now worth real effort. Nothing else in the repo is blocked by this, and nothing is GPL.
 
 ## Per-language data layout
 

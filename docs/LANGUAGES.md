@@ -143,9 +143,10 @@ Worth doing anyway, for the reason above, as long as the file admits what it is.
    as a validator, which is a bigger win than expected.
 3. ~~**A frequency source that is not OpenSubtitles.**~~ Done, and with it ~~**Swahili**~~ and
    ~~**Latin**~~.
-4. **Yoruba, Hausa, Igbo, Naija.** Nothing in the pipeline is missing for these now. What is
-   missing is a decision per language about diacritics, which is the one thing that cannot be
-   measured — see below.
+4. **Yoruba, Hausa, Igbo.** ~~Naija~~ shipped with the batch of twenty-five. Nothing in the
+   pipeline is missing for the other three. What is missing is a decision per language about
+   diacritics, which is the one thing here that cannot be measured — though it turns out it can
+   be looked up, because other people have shipped these games. See below.
 5. ~~**RTL, then Hebrew and Arabic.**~~ Done.
 6. ~~**Korean**, then Japanese.~~ Both done, and Japanese only after the first answer was
    wrong. See below.
@@ -391,11 +392,46 @@ between Italian and Korean; a Japanese reader gets a list ordered by 語. The la
 endonym, because a Greek speaker looking for Greek is looking for Ελληνικά, and the flag is what
 makes the row scannable either way.
 
-One thing that needed saying out loud: **ICU does not name every language.** A browser knows no
-name for `arz` in any locale, nor for `pcm`, so both would fall back to their endonym and sink to
-the bottom of a Latin list, which is the thing the sort exists to prevent. `Locale.sortsWith`
-names the language to file such a one under, and Egyptian Arabic files under Arabic, where
-somebody looking for it would look.
+One thing that needed saying out loud: **ICU does not name every language, and which ones it
+misses depends on the browser.** `arz` and `pcm` are the ragged edge of CLDR — this Node names
+both in nearly every locale and Chrome 123 names neither in any. Left to the runtime those two
+rows are blank on one machine and named on another, and the list sorts differently depending on
+which, which is a sorted order that changes with a browser update: the thing the sort exists to
+prevent.
+
+So `Locale.namedIn` carries a name for each of them in all fifty other interface languages, and
+it **overrides** ICU rather than filling in behind it, because a name that is present on one
+machine and absent on another is worse than one that is simply ours. See
+`packages/i18n/src/exonyms.ts`. Each follows its own locale's convention, checked against that
+locale's ICU data rather than guessed: capitalised in English, German and Welsh, lower case in
+French, Spanish, Polish and Russian, `-erea` in Basque, `Tiếng` in Vietnamese, `語` in Japanese.
+One capitalised row in a lower-case list reads as a bug, and these rows are already the odd ones
+out, so a test asserts it.
+
+`Locale.sortsWith` is the older answer to the same problem — file the unnameable language under
+one that can be named — and it survives for anything that wants it, but neither of these two
+uses it now. Egyptian Arabic used to file under Arabic; it sorts under its own name instead,
+which moves it (an English reader finds it under E rather than beside العربية) and is what every
+other row already did.
+
+### Fifty-one rows is past what a sort alone fixes
+
+Sorting them well was the fix for twenty-six and it hid the real problem, which is that a reader
+is scanning for one row and the order only helps if they already know where it falls. Three
+changes, all in `apps/web/src/Dropdown.tsx`:
+
+- **Two lines per row.** The label stays the endonym and the sort key goes underneath, so an
+  English reader sees `Ελληνικά` over `Greek` and can finally see why it sits between German and
+  Hebrew. For two years the key was the invisible one.
+- **A search box**, on the language pickers only — difficulty has four options and a search box
+  over four options is furniture. It matches the endonym, the reader's own name for the language
+  and the tag, blind to case and to accents, so `espanol`, `Español` and `es` all reach the same
+  row.
+- **Word-start matches rank first.** Matching anywhere in the string put Afrikaans, Armenian and
+  Danish ahead of Nederlands for `n`, and the list looked like it was ignoring what was typed.
+
+The second line aligns to the start of the row rather than centred, which is `text-align: start`
+and not `left`: the two right-to-left interfaces need it to hang off the other edge.
 
 ## The batch of twenty-five, and what it cost
 
@@ -486,15 +522,123 @@ twelve-tile board holding all eight of the right toned vowels is rare.
 - Whether Finnish, German and Malay should move off `titles` too, given what it did to
   Vietnamese.
 - Whether `sr-Latn` is worth a second entry. The word list is the same file transliterated.
+- **Naijá's generated `LICENSE` names no license at all.** `distributionTerms` takes the most
+  restrictive of a language's _validators_, on the argument that the corpus contributes ordering
+  and no content. Naijá has no validators — that is the rule it breaks knowingly — so the corpus
+  contributes all of the content and the set is empty: the file reads `SPDX-License-Identifier:`
+  and `Distributed under , which is`. The right answer is almost certainly CC BY-SA 4.0 from
+  pcm.wikipedia, which would make it a twenty-first share-alike language rather than the one with
+  no terms. Icelandic has the mirror-image fault — CC-BY-SA-3.0 flagged `shareAlike: false`,
+  because the set that decides is a literal holding only `CC-BY-SA-4.0`. Both are build fixes and
+  a decision, not doc fixes. DICTIONARIES.md has the detail.
 - Vietnamese typing goes through an IME, and the browser delivers composed characters. It has
   not been tested with one attached.
+
+## How Yoruba, Hausa and Igbo are handled elsewhere
+
+The diacritic decision is the one thing in this file that cannot be measured against our own
+corpus. It can be looked up, though: people have shipped these games. What follows is what they
+did, which is not the same as what is right, but it is evidence and there was none before.
+
+### Yoruba answers it twice, in public
+
+Báyọ̀ (`gbakinroa`) published two Yoruba Wordles on the same day in March 2022, both forks of the
+any-language Wordle template from mothertongues.org. They differ on exactly the axis in question
+and on nothing else, which makes them a controlled experiment nobody set out to run.
+
+|                                                                           | tiles | tone        | ẹ ọ ṣ | GB       | tries |
+| ------------------------------------------------------------------------- | ----- | ----------- | ----- | -------- | ----- |
+| [`Yoruba-Wordle`](https://github.com/gbakinroa/Yoruba-Wordle)             | 26    | folded away | kept  | one tile | 6     |
+| [`Yoruba-Wordle-Tones`](https://github.com/gbakinroa/Yoruba-Wordle-Tones) | 45    | on the tile | kept  | one tile | 9     |
+
+The toned set spends its extra nineteen tiles on three-way vowels — A/À/Á, Ẹ/Ẹ̀/Ẹ́ and the same
+for E I O Ọ U — and on four-way syllabic nasals that carry an explicit mid-tone macron: M/M̀/M̄/Ḿ
+and N/Ǹ/N̄/Ń.
+
+Two things that costs, both recorded in the repository rather than argued: the toned game gives
+**nine guesses rather than six**, and its own config names it `ẹ̀yà bẹ́tà pẹ̀lú àmì ohùn` — the beta
+version, with tone marks. The plain one is the one presented as the game.
+
+**Both keep the underdot in every variant.** Ẹ, Ọ and Ṣ are letters in a way the tone marks are
+not, and that is the answer this file has been waiting for: _underdots are tiles, tone is not._
+
+Both also tokenize by longest-match-first regex over the tile list, which is `segmentBy` under
+another name, and both normalize to NFC. Neither is a coincidence: they are what a multigraph
+alphabet forces on anyone who writes one.
+
+There is prior art off the screen too. **EGBEJE EDE** (Adetola Balogun and Dayo Taiwo, 2018) is a
+physical Yoruba Scrabble on a 169-square board with Yoruba alphabet tiles, and a second was made
+by Joseph Akin Samson around the same time. Whether either puts tone on a tile is unconfirmed —
+`egbejeede.com` no longer resolves — though a bag that needed three tiles per vowel would be an
+odd thing to manufacture.
+
+### The modern one splits the display form from the matched form
+
+[Ayò Ọ̀rọ̀](https://ayo-oro.com) is the current Yoruba Wordle. Its data
+([`temitope/yoruba-dictionary-data`](https://github.com/temitope/yoruba-dictionary-data),
+CC BY-SA 4.0, 937 entries from Wiktionary via kaikki.org) carries three fields where we carry
+one:
+
+```jsonc
+"word":       "Àgbọ̀n",           // display form, NFC
+"normalized": "agbon",           // tone-stripped, lower case: what a guess is matched against
+"tokens":     ["À", "gbọ̀", "n"]  // digraph-aware
+```
+
+**That is the same shape as the thing already open for Vietnamese** — ÁCHÂU rather than Á CHÂU —
+and these three languages turn it from a blemish into a prerequisite. Folding tone merges owó
+(money) with owo (hand), and once merged one of them has to be the written form. A list carrying
+only the folded key has no way to say which.
+
+One more idea worth taking from its pipeline: it admits a word only if it contains **at least one
+tone mark or one of ẹ/ọ/ṣ**, and rejects anything carrying a diacritic Yoruba does not use. That
+is a corpus-contamination guard, and it is pointed at the exact hole that let 10,051 English
+words into Vietnamese.
+
+### Igbo has no spelling game to learn from, and the worst case
+
+`Arụ` ([igbolingo.com](https://igbolingo.com/products/aru-the-igbo-word-game)) is the only Igbo
+word game with any reach, and it is Taboo rather than a spelling game: the tone marks are printed
+on the cards and nothing is ever matched letter by letter. No Igbo Wordle exists on GitHub or on
+wordle.global.
+
+The literature is unanimous that Igbo is the hard one. Unmarked `akwa` is four words — ákwá
+(cry), àkwà (bed), ákwà (cloth), àkwá (egg) — and there is a research subfield of _Igbo diacritic
+restoration_ precisely because electronic Igbo arrives stripped. Igbo also carries nine digraphs
+(CH GB GH GW KP KW NW NY SH), so the multigraph question arrives here whatever is decided about
+tone, and our answer to that is already settled and unhappy: `keyToEvent` matches a single code
+point, so each is two tiles. This is the Welsh decision again.
+
+### Hausa is not the same question
+
+`Kalmar Wasanni` ([App Store](https://apps.apple.com/mx/app/kalmar-wasanni/id6746351243), 2025)
+is a Hausa Wordle — four to six letters over seven levels, six attempts, the usual colours. Its
+store page was rate-limiting when this was written, so whether ɓ ɗ ƙ ƴ reach its keyboard is
+unconfirmed.
+
+It matters less here than it would for the other two, because **Hausa's hooks are letters rather
+than marks**: ƙafa (foot) and kafa (to establish) differ in a consonant, the way Danish Ø differs
+from O. There is no fold-or-tile decision to take, only tiles. The Hausa risk sits entirely in
+the corpus, where ASCIIfication is routine and online text writes k for ƙ — mixing marked and
+stripped spellings of genuinely different words, which no fold can sort out afterwards.
+
+### What that suggests
+
+- **Yoruba**: 26 tiles. Keep ẹ ọ ṣ, fold tone away, GB as two tiles for us rather than one.
+  Follow the shipped variant, not the beta.
+- **Igbo**: the same shape — keep ị ọ ụ ṅ, fold tone — with the caveat that the collisions are
+  worse than Yoruba's and nobody has shipped it either way.
+- **Hausa**: ɓ ɗ ƙ ƴ are tiles and there is nothing to decide. Measure the corpus for
+  ASCIIfication before trusting its ordering.
+- **All three want the display-form field first.** A folded list cannot write the word it folded.
 
 ## Still open
 
 - Whether the other twenty-four languages want their own measured `vowelShare` too. Japanese has
   one because the default was actively wrong there; nobody has reported a fault anywhere else,
   and changing it would change every board those languages have ever dealt.
-- ~~Whether `pcm` wants `sortsWith: 'en'`~~ — it does, and it has it.
+- ~~Whether `pcm` wants `sortsWith: 'en'`~~ — superseded rather than answered. It has a real
+  name in every interface language now, and so does `arz`. See `namedIn` above.
 - Whether `igboapi.com` is usable as a source, by licence and by size.
 - ~~What Egyptian Arabic would be~~ — answered by building it. See below.
 - ~~Whether Vietnamese tones ride on the tile or on the word.~~ On the tile, eighty-nine of

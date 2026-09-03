@@ -7,16 +7,17 @@ next.
 
 - **`packages/engine`** — the whole game as one pure reducer. No clock, no I/O, no DOM.
   Deterministic from `(seed, difficulty, event log)`, which is what will let a server verify
-  a score rather than believe one. Twenty-six alphabets, with draw weights derived from each
+  a score rather than believe one. Fifty-one alphabets, with draw weights derived from each
   language's own shipped vocabulary.
 - **`packages/words`** — word list normalization, anagram solver, board generation, weight
   derivation, and the dictionary pipeline's pure half. Node-only filesystem access sits behind
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
-- **`packages/i18n`** — every string the game says, in twenty-six languages. Plurals go through
-  `Intl.PluralRules`, so Russian gets its four forms and Croatian its three.
-- **`packages/words/data`** — twenty-six playable languages, generated and committed, each with
-  its own `LICENSE` and `PROVENANCE.md`. 53MB, about 100KB gzipped per language, though
-  Russian, Turkish and Arabic are 1.6 to 1.8MB each.
+- **`packages/i18n`** — every string the game says, in fifty-one languages. Plurals go through
+  `Intl.PluralRules`, so Russian gets its four forms and Croatian its three. Two languages CLDR
+  cannot reliably name carry their own table of exonyms; see LANGUAGES.md.
+- **`packages/words/data`** — fifty-one playable languages, generated and committed, each with
+  its own `LICENSE` and `PROVENANCE.md`. 122MB, about 100KB gzipped per language, though
+  Hungarian is 17.2MB on its own and Arabic, Russian and Turkish are 8.5 to 9MB each.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
@@ -24,9 +25,9 @@ next.
   `tl-prod`. One container, nginx serving the built files, built and pushed by CI, fronted by
   Traefik with the www redirect and response compression as middlewares. See
   [DEPLOY.md](DEPLOY.md).
-- **`apps/web`** — playable React front end. Keyboard and pointer, twenty-six languages with a
-  flag picker, full interface localisation, nerd mode, flip and shuffle animation, pause,
-  game over.
+- **`apps/web`** — playable React front end. Keyboard and pointer, fifty-one languages behind a
+  searchable flag picker that shows each language's own name over the reader's name for it, full
+  interface localisation, nerd mode, flip and shuffle animation, pause, game over.
 - **iOS**, meaning the same build made genuinely playable on a phone and installable to the
   home screen: the board sizes itself from the room available instead of from `vmin`, every
   touch target clears Apple's 44pt floor, the four touch defaults that fight a tapping game are
@@ -51,8 +52,10 @@ next.
   `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
   believed. No database yet, so no other route exists: one that answered from nothing would be a
   fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
-- 404 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server. CI
-  on ubuntu and macos.
+- 1,225 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
+  CI on ubuntu and macos. Two of them are per-language sweeps rather than samples: every alphabet
+  deals an accepted board over three seeds, and every letter in every `weights` table appears in
+  some shipped word.
 
 ## Next, in order
 
@@ -115,11 +118,17 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 ## Known and accepted
 
-- **Five languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
-  them: Italian, German, Norwegian, Finnish, Malay. No effect on the web build, where
-  attribution is the whole obligation and we do it. Before a store build wraps DRM around a
-  share-alike data file, someone should read the end of DICTIONARIES.md and probably a lawyer.
-  Nothing anywhere is GPL.
+- **Twenty languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
+  them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German, Hebrew, Icelandic,
+  Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian, Tagalog, Ukrainian,
+  Vietnamese. That was five before the batch of twenty-five, and the store-build question grew
+  with it — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
+  whole obligation and we do it. Nothing anywhere is GPL.
+- **The licence audit has two holes, both from one line.** `SHARE_ALIKE` in
+  `tools/dictionary/src/write.ts` holds only `CC-BY-SA-4.0`, so Icelandic's CC-BY-SA-3.0 is
+  flagged `shareAlike: false`; and Naijá, the one language with no validator, derives no terms
+  at all and ships a `LICENSE` with an empty SPDX identifier. Not yet fixed. See
+  DICTIONARIES.md.
 - **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
   validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
   enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns

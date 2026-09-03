@@ -453,7 +453,7 @@ Non-Latin scripts are a different project rather than another language. Arabic h
 
 ### 5.4 Where the word lists come from
 
-Twenty-six playable languages, built and committed. The sourcing design, the license audit and
+Fifty-one playable languages, built and committed. The sourcing design, the license audit and
 every measurement behind the sizing live in [DICTIONARIES.md](DICTIONARIES.md). The short
 version: a frequency list selects candidates, a dictionary validates them, and we ship the
 intersection, which is smaller, better and a thinner derivative of either input than a copy of
