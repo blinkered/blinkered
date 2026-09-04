@@ -30,6 +30,14 @@ export interface AuthStore {
    * and a flow where two codes are live at once is one where a stolen older code still works.
    */
   latestCode(email: string): Promise<StoredCode | null>
+  /**
+   * Removes a code that was never sent.
+   *
+   * The row is written before the mail goes, so a failed send would otherwise leave a live code
+   * nobody has and a slot spent against the rate limit. Three of those in a quarter of an hour
+   * lock an address out of a relay that has since been fixed.
+   */
+  deleteCode(id: string): Promise<void>
   /** Counts a wrong guess. Separate from consuming, because a wrong guess leaves it usable. */
   recordAttempt(id: string): Promise<void>
   /** Spends a code. After this it is dead whatever else is true of it. */

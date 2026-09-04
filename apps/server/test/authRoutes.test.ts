@@ -18,13 +18,13 @@ function fakeStore(): AuthStore & {
   codes: Map<string, StoredCode & { email: string }>
   users: Map<string, { email: string; username: string }>
   sessions: Map<string, { userId: string; expiresAt: Date }>
-  issued: { email: string; at: Date }[]
+  issued: { id: string; email: string; at: Date }[]
   takenUsernames: Set<string>
 } {
   const codes = new Map<string, StoredCode & { email: string }>()
   const users = new Map<string, { email: string; username: string }>()
   const sessions = new Map<string, { userId: string; expiresAt: Date }>()
-  const issued: { email: string; at: Date }[] = []
+  const issued: { id: string; email: string; at: Date }[] = []
   const takenUsernames = new Set<string>()
 
   return {
@@ -41,12 +41,18 @@ function fakeStore(): AuthStore & {
         attempts: 0,
         consumedAt: null,
       })
-      issued.push({ email: row.email, at: new Date() })
+      issued.push({ id: row.id, email: row.email, at: new Date() })
       return Promise.resolve()
     },
     latestCode: (email) => {
       const live = [...codes.values()].filter((c) => c.email === email && c.consumedAt === null)
       return Promise.resolve(live.at(-1) ?? null)
+    },
+    deleteCode: (id) => {
+      codes.delete(id)
+      const at = issued.findIndex((i) => i.id === id)
+      if (at !== -1) issued.splice(at, 1)
+      return Promise.resolve()
     },
     recordAttempt: (id) => {
       const row = codes.get(id)
@@ -376,5 +382,59 @@ describe('who am I', () => {
     ]) {
       expect((await app.request('/v1/me', { headers })).status).toBe(401)
     }
+  })
+})
+
+describe('a send that fails', () => {
+  it('leaves no code behind and costs nothing against the limit', async () => {
+    // The bug this exists for: the row is written before the mail goes, so two failed sends
+    // spent two of three slots and locked the address out of a relay that had since been fixed.
+    const store = fakeStore()
+    const app = authRoutes({
+      store,
+      mailer: { send: () => Promise.reject(new Error('421 try again later')) },
+      secureCookies: false,
+    })
+    const ask = async (): Promise<number> =>
+      (
+        await app.request('/code', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email: 'nick@example.com' }),
+        })
+      ).status
+
+    for (let i = 0; i < MAX_CODES_PER_WINDOW + 2; i += 1) expect(await ask()).toBe(500)
+    // No live code nobody has, and no slot spent.
+    expect(store.codes.size).toBe(0)
+    expect(await store.countCodesSince('nick@example.com', new Date(0))).toBe(0)
+  })
+
+  it('still lets a working send through afterwards', async () => {
+    const store = fakeStore()
+    let broken = true
+    const sent: string[] = []
+    const app = authRoutes({
+      store,
+      mailer: {
+        send: (mail) => {
+          if (broken) return Promise.reject(new Error('421'))
+          sent.push(mail.code)
+          return Promise.resolve()
+        },
+      },
+      secureCookies: false,
+    })
+    const ask = async (): Promise<Response> =>
+      app.request('/code', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: 'nick@example.com' }),
+      })
+
+    for (let i = 0; i < 4; i += 1) await ask()
+    broken = false
+    expect((await ask()).status).toBe(202)
+    expect(sent).toHaveLength(1)
   })
 })

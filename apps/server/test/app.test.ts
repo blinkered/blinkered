@@ -47,6 +47,7 @@ describe('the auth routes, once the app is given what they need', () => {
           countCodesSince: () => Promise.resolve(0),
           insertCode: () => Promise.resolve(),
           latestCode: () => Promise.resolve(null),
+          deleteCode: () => Promise.resolve(),
           recordAttempt: () => Promise.resolve(),
           consumeCode: () => Promise.resolve(),
           userIdForEmail: () => Promise.resolve(null),

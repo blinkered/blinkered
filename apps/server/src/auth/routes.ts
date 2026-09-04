@@ -87,13 +87,19 @@ export function authRoutes(deps: AuthDeps): Hono {
     if (tooManyCodes(issued)) return context.body(null, 202)
 
     const code = newCode()
-    await deps.store.insertCode({
-      id: newId(),
-      email,
-      codeHash: hashCode(code),
-      expiresAt: codeExpiry(now),
-    })
-    await deps.mailer.send({ to: email, code, locale })
+    const id = newId()
+    await deps.store.insertCode({ id, email, codeHash: hashCode(code), expiresAt: codeExpiry(now) })
+    try {
+      await deps.mailer.send({ to: email, code, locale })
+    } catch (failure) {
+      // Undo the row. It is written first so that a code can never be in somebody's inbox
+      // without being in the table, and the cost of that order is this: a send that fails would
+      // otherwise leave a live code nobody has, and spend a slot against the rate limit. Three
+      // of those in a quarter of an hour lock an address out of a relay that has since been
+      // fixed, which is exactly what happened the day Google started refusing our EHLO.
+      await deps.store.deleteCode(id)
+      throw failure
+    }
     return context.body(null, 202)
   })
 

@@ -51,6 +51,10 @@ export function pgAuthStore(db: Database): AuthStore {
       }
     },
 
+    deleteCode: async (id) => {
+      await db.delete(loginCodes).where(eq(loginCodes.id, id))
+    },
+
     recordAttempt: async (id) => {
       // Incremented in the database rather than read-then-written, so two verifications racing
       // cannot both read three and both write four.
