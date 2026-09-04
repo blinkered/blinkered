@@ -238,9 +238,22 @@ anything here. [DEPLOY.md](DEPLOY.md) has it.
 
 ## The order to do it in
 
-1. **Stand up the dev host.** Apple's domain verification needs it live over HTTPS, so it gates
-   everything Apple, and it is the long pole rather than the easy first step it looks like.
+1. ~~**Stand up the dev host.**~~ Done. `blinkered.devapps.tightlinesoftware.com` serves the
+   game, the API and Postgres, behind basic auth in Caddy. It gated everything Apple, because
+   Apple's domain verification needs a live HTTPS host to fetch a file from.
 2. **Email**, because Apple's relay registration depends on the sending domain existing with SPF
    on it, and because the code flow is the one sign-in method with no third party in it.
-3. **Google**, which is an afternoon: consent screen, two clients, done.
-4. **Apple**, once the enrolment is through and the two domains verify.
+3. **Apple**, once the enrolment is through and the two domains verify.
+4. **Google**, which is an afternoon: consent screen, two clients, done.
+
+**Apple before Google, and the earlier ordering here was wrong.** It put Google third on the
+grounds that it is cheap and Apple is slow, which is true and is not the question. The phone is
+the platform this is being built for, iOS is where sign-in has to feel native, and Sign in with
+Apple is mandatory on iOS the moment any other third-party sign-in exists — App Store guideline
+4.8, already noted in ACCOUNTS.md. Shipping Google first would mean either shipping an app that
+cannot pass review or holding Google back until Apple caught up. Do the constrained one first
+and let the afternoon's work be the afternoon's work.
+
+The one thing that can reorder this again is the enrolment: Sign in with Apple on the web is not
+available on a free account, so if the Developer Program membership is not through, Apple is
+blocked no matter where it sits on this list.
