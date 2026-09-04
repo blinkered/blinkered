@@ -2368,3 +2368,13 @@ kbd {
 .signin-note.is-bad {
   color: var(--bad, #ff6b6b);
 }
+/* Secondary to the submit button beside it: asking again invalidates the code already sent. */
+.signin-again {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  min-height: 2.75rem;
+  cursor: pointer;
+}

@@ -3,6 +3,51 @@ import { requestCode, submitCode, whoAmI } from './account.js'
 import type { Account, SignInResult } from './account.js'
 
 /**
+ * Where the flow got to, kept across a reload.
+ *
+ * Asking for a code invalidates the last one, so a panel that forgets it has already sent one
+ * costs whoever reloads the page the code sitting in their inbox: the only way back to the
+ * second step was to press the button again, which issues another and kills the first. Session
+ * storage rather than local: this is one sign-in attempt in one tab, not a preference.
+ *
+ * Ten minutes, matching the code's own life, so a tab left open overnight offers to enter a code
+ * that expired long ago.
+ */
+const RESUME_KEY = 'blinkered.signin'
+const RESUME_MS = 10 * 60 * 1000
+
+function remembered(): { email: string } | null {
+  try {
+    const raw = sessionStorage.getItem(RESUME_KEY)
+    if (raw === null) return null
+    const parsed = JSON.parse(raw) as { email?: unknown; at?: unknown }
+    if (typeof parsed.email !== 'string' || typeof parsed.at !== 'number') return null
+    if (Date.now() - parsed.at > RESUME_MS) return null
+    return { email: parsed.email }
+  } catch {
+    // Private browsing, or storage the browser refuses. Starting over is a worse experience
+    // than resuming and a much better one than a sign-in panel that will not render.
+    return null
+  }
+}
+
+function remember(email: string): void {
+  try {
+    sessionStorage.setItem(RESUME_KEY, JSON.stringify({ email, at: Date.now() }))
+  } catch {
+    /* Nothing to do: the flow still works, it just will not survive a reload. */
+  }
+}
+
+function forget(): void {
+  try {
+    sessionStorage.removeItem(RESUME_KEY)
+  } catch {
+    /* As above. */
+  }
+}
+
+/**
  * Signing in, in two steps and one panel.
  *
  * The address and the code are the same panel rather than two screens, because the second step
@@ -22,9 +67,10 @@ export function SignIn({
   readonly locale: string
   readonly onSignedIn: (account: Account) => void
 }): React.JSX.Element {
-  const [email, setEmail] = useState('')
+  // Restored, so that a reload does not throw away a code that is already in somebody's inbox.
+  const [email, setEmail] = useState(() => remembered()?.email ?? '')
   const [code, setCode] = useState('')
-  const [sent, setSent] = useState(false)
+  const [sent, setSent] = useState(() => remembered() !== null)
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<SignInResult | null>(null)
 
@@ -34,6 +80,7 @@ export function SignIn({
     const result = await requestCode(email.trim(), locale)
     setBusy(false)
     if (result === 'sent') {
+      remember(email.trim())
       setSent(true)
       return
     }
@@ -53,6 +100,7 @@ export function SignIn({
     // the interface can show, and it proves the cookie survived the round trip rather than
     // assuming it did.
     const account = await whoAmI()
+    forget()
     setBusy(false)
     if (account === null) {
       setProblem('unavailable')
@@ -119,6 +167,23 @@ export function SignIn({
       <button type="submit" disabled={busy}>
         {busy ? 'Working…' : sent ? 'Sign in' : 'Email me a code'}
       </button>
+
+      {sent ? (
+        <button
+          type="button"
+          className="signin-again"
+          disabled={busy}
+          onClick={() => {
+            // Says what it costs, because it does: the code already sent stops working.
+            forget()
+            setSent(false)
+            setCode('')
+            setProblem(null)
+          }}
+        >
+          Send a new code
+        </button>
+      ) : null}
 
       {sent && problem === null ? (
         <p className="signin-note">Check your email. The code lasts 10 minutes.</p>

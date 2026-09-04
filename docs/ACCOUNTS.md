@@ -519,6 +519,86 @@ here:**
 
 The second question is the one that matters. A backup nobody has restored is a hope.
 
+## The sign-in surface, and the order to build it
+
+Written after a false start worth recording: the code flow was built first and hung on the setup
+screen as a bare email box with no heading and no explanation. Every mechanism in it worked and
+none of it was usable, because a form with no context is not a feature. What follows starts from
+where a person meets an account instead.
+
+### What a player sees
+
+**Signed out.** A **Sign in** button at the top of the page, beside How to play and the language
+picker. That is the only entry point that exists at all times.
+
+**Signed in.** The button is replaced by the generated avatar in a circle. Clicking it opens a
+menu: **My Profile**, **My Games**, **Sign out**.
+
+**After a game.** The game-over panel offers to keep the result. Choosing it opens the same
+sign-in dialog **over** the panel — never in place of it. This is the trap this document already
+records under the game-over flow: replacing the panel unmounts the game, and a sign-up that fails
+then costs the player the result it existed to preserve.
+
+**On return.** The session is a thirty-day cookie and `whoAmI()` runs on load, so coming back
+signed in is the default. Nothing needs building for it; what it needs is for nobody to add
+eager invalidation.
+
+### The dialog
+
+One dialog, three ways in, reached from both entry points:
+
+```
+Continue with Apple      <- stub
+Continue with Google     <- stub
+or
+Email                    <- built
+  -> six-digit code
+```
+
+It uses the existing `.modal` / `.modal-card` pattern, which lives at the top level of `App.tsx`
+for a reason recorded there: `.board-wrap` is an inline-size container, so `position: fixed`
+inside it is contained and a full-screen dialog cannot be built there at all.
+
+It has to say what signing in is **for** — keeping your games, and a leaderboard later — because
+the thing being asked for is an email address.
+
+### Order
+
+1. **The shell.** `AccountMenu` in the top bar, both states. Account state lifted out of `App`
+   so one `whoAmI()` serves every consumer. A deterministic avatar drawn from `avatarSeed`,
+   which `GET /v1/me` starts returning.
+2. **The dialog.** The two-step email flow moves inside it; the standalone panel is deleted.
+   Apple and Google render as buttons that call routes returning 501, so the client path is real
+   and only the provider is missing.
+3. **Game over.** The keep-this-game CTA, opening the dialog over the panel, and
+   `POST /v1/games/import` on success. A claimed guest game is never `leaderboard_eligible`: it
+   has no server-issued seed and never passed the envelope check.
+4. **The destinations.** My Profile (username through `checkUsername`, country, languages) and
+   My Games. Sign out revokes the session rather than dropping the cookie, so a stolen one dies
+   too.
+
+### Server work it needs
+
+| route                                       | for                                            |
+| ------------------------------------------- | ---------------------------------------------- |
+| `POST /v1/auth/signout`                     | the menu item, revoking rather than forgetting |
+| `GET /v1/me`                                | extend with `avatarSeed`, country, languages   |
+| `PATCH /v1/me`                              | the profile screen                             |
+| `GET /v1/usernames/:name`                   | availability while typing, rate-limited        |
+| `POST /v1/games/import`                     | keeping the game that prompted the sign-up     |
+| `GET /v1/me/games`                          | My Games                                       |
+| `GET /v1/auth/apple`, `GET /v1/auth/google` | 501 for now, with the redirect shape sketched  |
+
+### Two things to decide before starting
+
+- **Localization.** This is roughly twenty new strings, and `Messages` requires every key in all
+  fifty-one locales at once. Recommendation: English until the flow has been used, then one pass
+  — translating a flow nobody has walked through is translating a guess. It is the same call
+  already taken for the login email.
+- **The avatar.** Generated from a seed, never uploaded, which is settled. What is not settled is
+  what it draws: initials on a colour, or a geometric identicon. It wants to be legible at
+  24 pixels in the top bar, which rules out anything detailed.
+
 ## Still open
 
 - ~~**Does a rename rewrite history?**~~ Yes. The board joins `users`, so a score set as `nick`
