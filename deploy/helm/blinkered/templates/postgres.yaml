@@ -73,16 +73,33 @@ spec:
               value: /var/lib/postgresql/data/pgdata
           # `pg_isready` rather than a TCP check: the port is open well before the database will
           # answer a query, so a TCP probe reports ready and the API's first connection fails.
+          # Through a shell, and the `$(VAR)` form is deliberately not used.
+          #
+          # Kubernetes expands `$(VAR)` in a container's `command` and `args` and **not** in a
+          # probe's, so the array form hands `pg_isready` the eleven literal characters
+          # `$(POSTGRES_USER)`. That is documented behaviour and it is easy to miss, because
+          # `pg_isready` only pings the postmaster and ignores both values, so the probe passes
+          # anyway and the mistake never shows.
+          #
+          # `sh -c` with the ordinary `$VAR` form is what actually reads the environment. It
+          # costs a fork per probe and buys a probe that means what it says.
           readinessProbe:
             exec:
-              command: [pg_isready, -U, $(POSTGRES_USER), -d, $(POSTGRES_DB)]
+              command: [sh, -c, 'exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
             initialDelaySeconds: 5
             periodSeconds: 10
+            # NFS makes a cold start slow, and the default of three strikes at ten seconds
+            # gives Postgres thirty seconds to finish recovery before the pod is marked down.
+            failureThreshold: 12
           livenessProbe:
             exec:
-              command: [pg_isready, -U, $(POSTGRES_USER), -d, $(POSTGRES_DB)]
-            initialDelaySeconds: 30
+              command: [sh, -c, 'exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+            initialDelaySeconds: 60
             periodSeconds: 20
+            # Liveness restarts the container, so it has to be slower to act than readiness.
+            # At the old 30s/3-strikes a database still replaying WAL was killed for not having
+            # finished, which is how a slow start turns into a crash loop that never ends.
+            failureThreshold: 6
           resources:
             {{- toYaml .Values.postgres.resources | nindent 12 }}
           volumeMounts:
