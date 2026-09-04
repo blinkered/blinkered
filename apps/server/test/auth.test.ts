@@ -20,7 +20,7 @@ import {
 } from '../src/auth/policy.js'
 import type { CodeRow } from '../src/auth/policy.js'
 import { consoleMailer, noMailer } from '../src/auth/mail.js'
-import { loginMessage, openSmtp, smtpMailer } from '../src/auth/smtp.js'
+import { ehloName, loginMessage, openSmtp, smtpMailer } from '../src/auth/smtp.js'
 import {
   LONGEST_GENERATED,
   USERNAME_MAX,
@@ -363,5 +363,29 @@ describe('the generator and the rules agree', () => {
       // `reserved` is the only complaint a generated name may draw.
       expect(checkUsername(name), name).toBe('reserved')
     }
+  })
+})
+
+describe('what we greet a relay as', () => {
+  it('is the domain we send from, angle brackets and display name removed', () => {
+    expect(ehloName({ from: 'Blinkered <noreply@playblinkered.com>' })).toBe('playblinkered.com')
+    expect(ehloName({ from: 'noreply@playblinkered.com' })).toBe('playblinkered.com')
+  })
+
+  it('never greets as a pod name, which is what broke this', () => {
+    // Nodemailer defaults EHLO to `os.hostname()`. In a container that is the pod name, which
+    // changes every deploy, and Google's relay answers it with `421 Try again later` -- a
+    // message that reads as throttling and is not: the same pod greeting as a FQDN is accepted.
+    const options = openSmtp({
+      host: 'smtp-relay.gmail.com',
+      port: 587,
+      implicitTls: false,
+      from: 'Blinkered <noreply@playblinkered.com>',
+    }).options as Record<string, unknown>
+    expect(options.name).toBe('playblinkered.com')
+  })
+
+  it('falls back to something valid rather than to nothing', () => {
+    expect(ehloName({ from: 'not-an-address' })).toBe('localhost')
   })
 })

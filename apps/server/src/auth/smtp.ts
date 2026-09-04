@@ -106,6 +106,22 @@ export function loginMessage(mail: LoginMail): Written {
   }
 }
 
+/**
+ * The name to greet a relay with: the domain we send as.
+ *
+ * Taken from the sender rather than configured separately, because those two disagreeing is a
+ * thing nobody would notice until a relay did. `Blinkered <noreply@playblinkered.com>` greets as
+ * `playblinkered.com`.
+ */
+export function ehloName(config: Pick<SmtpConfig, 'from'>): string {
+  const at = config.from.lastIndexOf('@')
+  if (at === -1) return 'localhost'
+  return config.from
+    .slice(at + 1)
+    .replace(/>.*$/u, '')
+    .trim()
+}
+
 /** What this file needs of a transport, which is one method. Injected so a test needs no socket. */
 export interface Transport {
   sendMail(message: {
@@ -159,6 +175,14 @@ export function openSmtp(config: SmtpConfig): Transport & { options?: unknown } 
     host: config.host,
     port: config.port,
     secure: config.implicitTls,
+    // Who we say we are in EHLO, and it has to be a real domain name.
+    //
+    // Nodemailer defaults this to `os.hostname()`, which inside a container is the pod name --
+    // `blinkered-api-7c98c97847-m2mc4`. Google's relay answers a greeting like that with
+    // `421 4.7.0 Try again later, closing connection`, which reads as throttling and is not:
+    // the same pod greeting as a FQDN is accepted immediately. The pod name changes on every
+    // deployment, so this was never stable, it had simply not failed yet.
+    name: ehloName(config),
     pool: true,
     ...(config.auth === undefined
       ? {}
