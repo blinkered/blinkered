@@ -20,6 +20,12 @@ import {
 } from '../src/auth/policy.js'
 import type { CodeRow } from '../src/auth/policy.js'
 import { consoleMailer, noMailer } from '../src/auth/mail.js'
+import {
+  checkUsername,
+  generateUsername,
+  isGeneratedUsername,
+  normalizeUsername,
+} from '../src/auth/usernames.js'
 
 describe('login codes', () => {
   it('is six digits, and every digit is reachable', () => {
@@ -182,5 +188,65 @@ describe('mailers', () => {
     await expect(noMailer().send({ to: 'a@b.com', code: '1', locale: 'en' })).rejects.toThrow(
       /no mailer is configured/,
     )
+  })
+})
+
+describe('usernames', () => {
+  it('gives a new account a name it can use immediately', () => {
+    // The whole point: every path that makes a user produces a complete row, so nothing
+    // downstream has to ask whether this one is real yet.
+    for (let i = 0; i < 50; i += 1) {
+      const name = generateUsername()
+      expect(isGeneratedUsername(name), name).toBe(true)
+      // And the generated form has to satisfy everything except the reservation it trips.
+      expect(checkUsername(name)).toBe('reserved')
+    }
+  })
+
+  it('spreads over enough names that a collision is a retry, not a design', () => {
+    const many = new Set(Array.from({ length: 500 }, () => generateUsername()))
+    expect(many.size).toBeGreaterThan(495)
+  })
+
+  it('will not let anybody choose a name the generator could produce', () => {
+    // Without this, somebody registers the name a future account is about to be handed, or
+    // lies in wait for a specific one.
+    expect(checkUsername('swift-otter-4821')).toBe('reserved')
+    // The pattern is exact, so a name that merely resembles it is fine.
+    expect(checkUsername('swift-otter-482')).toBeNull()
+    expect(checkUsername('swift-badger')).toBeNull()
+  })
+
+  it('folds width and case, because two of those are one account', () => {
+    expect(normalizeUsername('ＮＩＣＫ')).toBe('nick')
+    expect(normalizeUsername('Nick')).toBe(normalizeUsername('nick'))
+  })
+
+  it('accepts a name in the reader’s own script', () => {
+    // Fifty-one languages ship. A Greek player wanting to be Ελληνικά is not an edge case.
+    for (const good of ['nick', 'trout_fan', 'a-b-c', 'Ελληνικά', 'Русский', 'ניקי', '日本語']) {
+      expect(checkUsername(good), good).toBeNull()
+    }
+  })
+
+  it('refuses a name that mixes confusable scripts', () => {
+    // `pаypal` with a Cyrillic а is the entire reason this check exists.
+    expect(checkUsername('pаypal')).toBe('mixed-scripts')
+    expect(checkUsername('nickο')).toBe('mixed-scripts')
+  })
+
+  it('refuses the lengths and the shapes', () => {
+    expect(checkUsername('ab')).toBe('too-short')
+    expect(checkUsername('a'.repeat(21))).toBe('too-long')
+    expect(checkUsername('-nick')).toBe('bad-edges')
+    expect(checkUsername('nick-')).toBe('bad-edges')
+    expect(checkUsername('nick!')).toBe('bad-characters')
+    expect(checkUsername('ni ck')).toBe('bad-characters')
+  })
+
+  it('counts length in characters rather than in code units', () => {
+    // Four astral characters are eight UTF-16 units, and refusing them as `too-long` while
+    // accepting eight Latin letters would be a rule about our storage, not about names.
+    expect(checkUsername('𝕹𝖎𝖈𝖐')).not.toBe('too-long')
   })
 })
