@@ -19,6 +19,27 @@ export interface StoredCode extends CodeRow {
   readonly id: string
 }
 
+/**
+ * A person, as every authenticated route wants them.
+ *
+ * Returned by `findSession` rather than fetched separately, because the session lookup already
+ * joins `users` in order to check `deletedAt`, and asking twice for a row already in hand is how
+ * `GET /v1/me` becomes two round trips for one sentence. It is also the reason `avatarSeed` is
+ * here rather than on a route of its own: the picture is drawn wherever the name is shown.
+ *
+ * The three nullable fields are nullable in the schema for the same reason. A brand-new account
+ * has said nothing about itself, and a country of `''` would be a country.
+ */
+export interface Profile {
+  readonly userId: string
+  readonly username: string
+  readonly avatarSeed: string
+  readonly country: string | null
+  readonly uiLanguage: string | null
+  readonly gameLanguage: string | null
+  readonly bio: string | null
+}
+
 export interface AuthStore {
   /** How many codes this address has been sent since a moment, for the rate limit. */
   countCodesSince(email: string, since: Date): Promise<number>
@@ -59,11 +80,20 @@ export interface AuthStore {
    * `secrets.ts`. Expiry and revocation are the store's to check, so a caller cannot forget:
    * every route that asks this question would otherwise have to remember both.
    */
-  findSession(id: string, now: Date): Promise<{ userId: string; username: string } | null>
+  findSession(id: string, now: Date): Promise<Profile | null>
   createSession(row: {
     id: string
     userId: string
     kind: 'cookie' | 'bearer'
     expiresAt: Date
   }): Promise<void>
+  /**
+   * Ends a session, by the hash the cookie hashes to.
+   *
+   * Revoked rather than deleted, and revoked rather than the client simply dropping the cookie.
+   * Signing out has to kill the credential, not just stop presenting it, or a token copied off
+   * a shared machine outlives the sign-out that was supposed to be the remedy. Idempotent: an
+   * unknown or already-revoked id is a sign-out that has already happened.
+   */
+  revokeSession(id: string, at: Date): Promise<void>
 }

@@ -41,10 +41,11 @@ export default defineConfig({
         // would prove that the mock was called, not that the schema is right.
         'apps/server/src/db.ts',
         'apps/server/src/migrate.ts',
-        // The same category, and the same decision: `pgAuthStore` is eight statements against
-        // Drizzle, and every rule it enforces lives in `auth/policy.ts` and `auth/routes.ts`,
-        // which are tested against a fake store. Exercised by the integration suite.
-        'apps/server/src/auth/pgStore.ts',
+        // The same category, and the same decision: `pgStore` is statements against Drizzle, and
+        // every rule it enforces lives in `auth/policy.ts`, `account/profile.ts`,
+        // `account/importing.ts` and the routes, all tested against a fake store. Exercised by
+        // the integration suite.
+        'apps/server/src/pgStore.ts',
         // Table declarations. The uncovered parts are drizzle's index and `relations` callbacks,
         // which only run when SQL is built, so a percentage here measures which callback a test
         // happened to trigger rather than whether the schema is right. That is the same reason

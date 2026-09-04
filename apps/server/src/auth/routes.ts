@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { Hono } from 'hono'
-import { getCookie, setCookie } from 'hono/cookie'
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import type { Mailer } from './mail.js'
 import {
   codeExpiry,
@@ -18,7 +18,7 @@ import {
   newCode,
   newSessionToken,
 } from './secrets.js'
-import type { AuthStore } from './types.js'
+import type { AuthStore, Profile } from './types.js'
 import { generateUsername } from './usernames.js'
 
 /** The cookie the session travels in. Named once, because three places have to agree about it. */
@@ -46,11 +46,22 @@ function newId(): string {
   return randomBytes(16).toString('base64url')
 }
 
-export interface AuthDeps {
-  readonly store: AuthStore
-  readonly mailer: Mailer
+/**
+ * What it takes to answer "who is this", and nothing more.
+ *
+ * Its own interface because the account routes need exactly this and none of the rest: they have
+ * no use for a mailer, and a test of the profile screen should not have to invent one. `AuthDeps`
+ * extends it rather than repeating it, so there is one definition of where a session comes from.
+ */
+export interface SessionDeps {
+  readonly store: Pick<AuthStore, 'findSession'>
   /** Injected so a test can move it, and so expiry is decided once per request rather than twice. */
   readonly now?: () => Date
+}
+
+export interface AuthDeps extends SessionDeps {
+  readonly store: AuthStore
+  readonly mailer: Mailer
   /** False in development over plain HTTP, where a `Secure` cookie is never sent back. */
   readonly secureCookies?: boolean
 }
@@ -156,6 +167,45 @@ export function authRoutes(deps: AuthDeps): Hono {
     return context.json({ userId })
   })
 
+  /*
+   * Sign out, by killing the credential rather than by forgetting it.
+   *
+   * Dropping the cookie client-side would look identical from the browser and would leave the
+   * token working for thirty days, which matters exactly where signing out matters: a shared
+   * machine, or a session somebody has reason to think was copied.
+   *
+   * 204 whatever was presented. No cookie, an unknown one, and one already revoked are all
+   * "you are signed out now", and the cookie is cleared in every case so a browser holding a
+   * token the server has never heard of stops sending it.
+   */
+  routes.post('/signout', async (context) => {
+    const token = getCookie(context, SESSION_COOKIE)
+    if (token !== undefined && token !== '') {
+      await deps.store.revokeSession(hashSessionToken(token), clock())
+    }
+    deleteCookie(context, SESSION_COOKIE, { path: '/', secure: deps.secureCookies !== false })
+    return context.body(null, 204)
+  })
+
+  /*
+   * Apple and Google, which are not built.
+   *
+   * Mounted rather than absent, and 501 rather than 404, because the difference is the whole
+   * point of a stub: the client's path is real -- a button, a redirect, a failure it can show --
+   * and only the provider is missing. A 404 would be indistinguishable from a routing mistake,
+   * which is the bug this is most likely to be confused with.
+   *
+   * When they arrive they are redirects, not JSON: `GET /v1/auth/apple` sends the browser to
+   * Apple with `response_mode=form_post` and a state cookie, and Apple posts back to
+   * `/v1/auth/apple/callback`. Enrolment is done; what is missing is the Services ID, the Team
+   * ID, the Key ID and the `.p8`. See docs/AUTH.md.
+   */
+  for (const provider of ['apple', 'google'] as const) {
+    routes.get(`/${provider}`, (context) =>
+      context.json({ error: 'not-implemented', provider }, 501),
+    )
+  }
+
   return routes
 }
 
@@ -167,9 +217,9 @@ export function authRoutes(deps: AuthDeps): Hono {
  * and telling them apart is how a 401 turns into a description of somebody else's session.
  */
 export async function currentUser(
-  deps: AuthDeps,
+  deps: SessionDeps,
   context: { req: { header: (name: string) => string | undefined } },
-): Promise<{ userId: string; username: string } | null> {
+): Promise<Profile | null> {
   const token = getCookie(context as never, SESSION_COOKIE)
   if (token === undefined || token === '') return null
   const clock = deps.now ?? ((): Date => new Date())

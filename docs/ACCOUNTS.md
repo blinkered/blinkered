@@ -562,32 +562,62 @@ inside it is contained and a full-screen dialog cannot be built there at all.
 It has to say what signing in is **for** — keeping your games, and a leaderboard later — because
 the thing being asked for is an email address.
 
-### Order
+### Order, and what each step became
 
-1. **The shell.** `AccountMenu` in the top bar, both states. Account state lifted out of `App`
-   so one `whoAmI()` serves every consumer. A deterministic avatar drawn from `avatarSeed`,
-   which `GET /v1/me` starts returning.
-2. **The dialog.** The two-step email flow moves inside it; the standalone panel is deleted.
-   Apple and Google render as buttons that call routes returning 501, so the client path is real
-   and only the provider is missing.
-3. **Game over.** The keep-this-game CTA, opening the dialog over the panel, and
-   `POST /v1/games/import` on success. A claimed guest game is never `leaderboard_eligible`: it
-   has no server-issued seed and never passed the envelope check.
-4. **The destinations.** My Profile (username through `checkUsername`, country, languages) and
-   My Games. Sign out revokes the session rather than dropping the cookie, so a stolen one dies
-   too.
+All four are built. What follows is what they are, rather than what they were going to be.
 
-### Server work it needs
+1. **The shell.** `AccountMenu` sits at the end of the title bar: a Sign in button when signed
+   out, the generated avatar and a menu when signed in. Account state is lifted into `Session`,
+   so one `whoAmI()` on arrival serves every consumer. `Avatar.tsx` draws the identicon.
+2. **The dialog.** `SignInDialog` holds the two-step email flow; the standalone panel is gone.
+   Apple and Google are buttons that say they are not ready — the routes behind them answer 501,
+   so the client path is real and only the provider is missing.
+3. **Game over.** A **Keep this game** button opens the dialog over the panel, never in place of
+   it, and one effect in `Session` sends the game the moment there is an account to attach it to.
+   That one effect is why signing in _on_ the game-over screen keeps the score that is still on
+   it: playing signed in and signing up afterwards are the same two facts becoming true, in
+   either order. Imported games are never `leaderboard_eligible`.
+4. **The destinations.** `AccountScreen` is one overlay with two tabs. Profile edits the
+   username (checked while typing, against `GET /v1/usernames/:name`), the bio, the country and
+   both languages; Games lists what `GET /v1/me/games` returns. Sign out revokes the session
+   rather than dropping the cookie, so a copied token dies with it.
 
-| route                                       | for                                            |
-| ------------------------------------------- | ---------------------------------------------- |
-| `POST /v1/auth/signout`                     | the menu item, revoking rather than forgetting |
-| `GET /v1/me`                                | extend with `avatarSeed`, country, languages   |
-| `PATCH /v1/me`                              | the profile screen                             |
-| `GET /v1/usernames/:name`                   | availability while typing, rate-limited        |
-| `POST /v1/games/import`                     | keeping the game that prompted the sign-up     |
-| `GET /v1/me/games`                          | My Games                                       |
-| `GET /v1/auth/apple`, `GET /v1/auth/google` | 501 for now, with the redirect shape sketched  |
+### Server work it needed
+
+| route                                       | for                                             |
+| ------------------------------------------- | ----------------------------------------------- |
+| `POST /v1/auth/signout`                     | the menu item, revoking rather than forgetting  |
+| `GET /v1/me`                                | the whole profile, avatar seed and all          |
+| `PATCH /v1/me`                              | the profile screen                              |
+| `GET /v1/usernames/:name`                   | availability while typing, behind a session     |
+| `POST /v1/games/import`                     | keeping a game played before there was a person |
+| `GET /v1/me/games`                          | My Games                                        |
+| `GET /v1/auth/apple`, `GET /v1/auth/google` | 501, so a stub is not mistaken for a 404        |
+
+Three decisions taken while building them, none of which the plan above had settled.
+
+**The availability check is behind the session cookie.** This document asks for a rate limit on
+it, and rightly: `/v1/usernames/:name` enumerates. There is no rate limiter yet, and requiring a
+session turns "anyone can walk the namespace" into "anyone with an account can" — a smaller
+problem, and free. The rate limit is still owed, and it belongs in front of the API rather than
+in it.
+
+**A game played while signed in is imported too.** Phase A issues no seeds, so a game finished in
+a browser is a client's claim whether or not somebody was signed in when it started. Writing it
+through the same route, with `imported` true and `leaderboard_eligible` false, means there is one
+path rather than two and no row that quietly claims a provenance it does not have. Phase C is
+where a game becomes a server-side object first and a claim second; until then, this is the
+honest column.
+
+**The store is one object behind two ports.** `AuthStore` proves who somebody is, `AccountStore`
+says what they have, and `Store` is both. One Postgres implementation, one fake in the test
+suite, and route tests that hand over only the half they need.
+
+**And one bug worth recording, because only the integration suite could have found it.** Drizzle
+wraps a driver error in an `Error` of its own carrying the SQL and the parameters, so reading
+`failure.code` for `23505` finds `undefined` on the wrapper. A rename that lost the unique index
+came back as a 500 instead of a 409. No fake would have built the wrapper; `pnpm test:integration`
+did, on the first run.
 
 ### Two decisions, taken
 

@@ -37,6 +37,17 @@ takes about two seconds. Nothing else to run and nothing to remember.
 The site and the API are on one origin there, as they are in production, so a session cookie
 behaves the same way in both.
 
+**Signing in works locally, and the code goes to the log rather than to a mailbox.** Ask for one
+on the site, then read it out of `docker compose logs api`:
+
+```
+[mailer:console] NO MAIL SENT. login code for you@example.com (en) is 493018
+```
+
+`BLINKERED_MAIL_CONSOLE` in `compose.yaml` is what does that, and it has to be asked for by name.
+A deployment that logged every code instead of sending it would come up healthy, accept sign-ups,
+and sign nobody in.
+
 `docker compose down -v` stops it and discards the database. `docker compose build` is needed
 only after changing a dependency, because `node_modules` lives in the image rather than in the
 mount.

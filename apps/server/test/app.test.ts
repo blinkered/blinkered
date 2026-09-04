@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createApp } from '../src/app.js'
+import { capturingMailer, fakeStore } from './fake.js'
 
 describe('the API', () => {
   it('answers /healthz without touching anything else', async () => {
@@ -41,23 +42,7 @@ describe('the auth routes, once the app is given what they need', () => {
   })
 
   it('are mounted under /v1/auth when it is', async () => {
-    const app = createApp({
-      auth: {
-        store: {
-          countCodesSince: () => Promise.resolve(0),
-          insertCode: () => Promise.resolve(),
-          latestCode: () => Promise.resolve(null),
-          deleteCode: () => Promise.resolve(),
-          recordAttempt: () => Promise.resolve(),
-          consumeCode: () => Promise.resolve(),
-          userIdForEmail: () => Promise.resolve(null),
-          createUser: ({ id }) => Promise.resolve(id),
-          findSession: () => Promise.resolve(null),
-          createSession: () => Promise.resolve(),
-        },
-        mailer: { send: () => Promise.resolve() },
-      },
-    })
+    const app = createApp({ auth: { store: fakeStore(), mailer: capturingMailer() } })
     const response = await app.request('/v1/auth/code', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

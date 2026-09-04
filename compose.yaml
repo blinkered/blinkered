@@ -86,6 +86,10 @@ services:
     environment:
       <<: *database
       PORT: '8080'
+      # Login codes go to this container's log rather than to anybody's inbox. Asked for by name
+      # rather than inferred from the absence of an SMTP host, because a deployment that silently
+      # logged every code instead of sending it would look healthy while signing nobody in.
+      BLINKERED_MAIL_CONSOLE: 'true'
     # Not published. Everything reaches it through the web container, which is what puts the two
     # on one origin, exactly as Traefik does in production.
     expose:

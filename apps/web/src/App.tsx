@@ -23,9 +23,13 @@ import { overFixture } from './fixtures.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { useFocusRelease, withoutStealingFocus } from './focus.js'
 import { Share } from './Share.js'
-import { SignIn } from './SignIn.js'
-import { whoAmI } from './account.js'
-import type { Account } from './account.js'
+import { AccountMenu } from './AccountMenu.js'
+import type { Destination } from './AccountMenu.js'
+import { AccountScreen } from './AccountScreen.js'
+import { SignInDialog } from './SignInDialog.js'
+import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
+import type { Account, GameToKeep } from './account.js'
+import { isNativeApp } from './platform.js'
 import { isPersonalBest, recordScore, standingOf } from './scores.js'
 import type { Standing } from './scores.js'
 import {
@@ -54,6 +58,18 @@ interface Finished {
   readonly result: GameResult
   readonly standing: Standing
   readonly words: readonly { word: string; points: number }[]
+  /**
+   * Everything the server needs in order to keep this game, assembled while the facts are still
+   * in hand.
+   *
+   * Optional because the development fixture invents a finished game without ever having dealt
+   * one, so it has no board and no ruleset to send. A game with nothing to keep simply is not
+   * offered, which is the honest answer rather than a disabled button.
+   *
+   * Note what is not in it: a score. `wordScore` is a function of tile count and nothing else,
+   * so the words are sufficient and the server does its own addition. See docs/ACCOUNTS.md.
+   */
+  readonly keepable?: GameToKeep
 }
 
 export function App(): React.JSX.Element {
@@ -166,15 +182,52 @@ function Session({
    * honestly if there is nothing behind it.
    */
   const [account, setAccount] = useState<Account | null>(null)
+  /** Open, and why. The reason is shown in the dialog; `null` means it is not open. */
+  const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
+  const [visiting, setVisiting] = useState<Destination | null>(null)
+
+  /*
+   * Taking an account on, which is more than remembering it.
+   *
+   * docs/ACCOUNTS.md: the account is authoritative on sign-in and `localStorage` is authoritative
+   * while signed out. So both languages come down from the account when a session starts and
+   * overwrite what this device had. Any other rule produces a device that quietly disagrees with
+   * the account and a player who cannot tell which one they are editing.
+   *
+   * A field the account has never been given stays null and is left alone, so a brand-new
+   * account does not reset the language somebody picked before they signed up.
+   */
+  const adopt = useCallback(
+    (found: Account | null): void => {
+      setAccount(found)
+      if (found === null) return
+      const ui = found.uiLanguage
+      const game = found.gameLanguage
+      if (ui === null && game === null) return
+      onChange({
+        ...settings,
+        ...(ui === null ? {} : { uiLanguage: ui }),
+        ...(game === null ? {} : { gameLanguage: game }),
+      })
+    },
+    [onChange, settings],
+  )
+
+  /*
+   * Asked once, on arrival.
+   *
+   * A ref rather than an empty dependency array, because `adopt` closes over the settings and so
+   * changes identity whenever anything in them does. An honest dependency list would therefore
+   * ask the server who we are every time somebody moved a slider; an empty one would be a lie
+   * about what the effect uses. The flag says what is actually meant, which is that this happens
+   * once per page load.
+   */
+  const asked = useRef(false)
   useEffect(() => {
-    let live = true
-    void whoAmI().then((found) => {
-      if (live) setAccount(found)
-    })
-    return () => {
-      live = false
-    }
-  }, [])
+    if (asked.current) return
+    asked.current = true
+    void whoAmI().then(adopt)
+  }, [adopt])
   /*
    * `?fixture=over` opens straight onto the game-over panel with a canned game behind it, because
    * reaching that panel for real is several minutes of deliberately playing badly. The components
@@ -208,8 +261,19 @@ function Session({
   const playing = phase === 'playing'
   const nerdFocus = useFocusRelease()
 
+  /*
+   * When the game on screen began.
+   *
+   * A ref rather than state, because nothing renders from it: it is written once when a game
+   * starts and read once when it ends. The server takes it as the client's claim and nothing
+   * more — an imported game is never leaderboard-eligible, so this is a fact about somebody's
+   * own history rather than a number anything is checked against.
+   */
+  const startedAt = useRef(0)
+
   const begin = useCallback((): void => {
     setFinished(null)
+    startedAt.current = Date.now()
     setSpec({ config, seed: freshSeed() })
     setPhase('playing')
   }, [config])
@@ -236,7 +300,7 @@ function Session({
   }
 
   const onFinish = useCallback(
-    (state: GameState, seed: number): void => {
+    (state: GameState, seed: number, letters: readonly string[]): void => {
       const result: GameResult = {
         score: state.score,
         words: state.wordsFound.length,
@@ -262,11 +326,51 @@ function Session({
           engineVersion: ENGINE_VERSION,
         }),
         words: state.wordsFound,
+        keepable: {
+          startedAt: startedAt.current,
+          finishedAt: result.at,
+          seed,
+          difficulty: settings.difficulty,
+          // The shell and the browser write the same row and say which they were, because
+          // "where was this played" is a question a history is asked and an engine version
+          // cannot answer.
+          source: isNativeApp() ? 'ios' : 'web',
+          // The whole ruleset, not the difficulty label. A label's meaning changes -- medium has
+          // been retuned once already -- and a row carrying its own numbers stays explainable
+          // after the next retune.
+          config,
+          letters,
+          words: state.wordsFound.map((found) => found.word),
+          rounds: result.rounds,
+          ...(dictionary === null ? {} : { dictionaryVersion: dictionary.digest }),
+        },
       })
       setPhase('over')
     },
-    [language, settings],
+    [config, dictionary, language, settings],
   )
+
+  /*
+   * A finished game reaches the server the moment there is somebody to attach it to.
+   *
+   * One effect rather than two paths, and that is what makes the game-over sign-up work: playing
+   * signed in keeps the game as it ends, and signing in *on* the game-over panel keeps the game
+   * that is still on screen, because both are the same two facts becoming true. Nothing
+   * anonymous is ever uploaded — no account, no request.
+   *
+   * The ref holds the payload rather than a flag, so a second game in the same session is kept
+   * too while the one already sent is not sent twice.
+   */
+  const kept = useRef<GameToKeep | null>(null)
+  useEffect(() => {
+    const keepable = finished?.keepable
+    if (account === null || keepable === undefined || kept.current === keepable) return
+    kept.current = keepable
+    // Nothing is shown if this fails. The game is in `localStorage` either way, which is where
+    // it would have been with no account at all, and an error about a background upload on top
+    // of somebody's final score is noise at the worst moment.
+    void keepGame(keepable)
+  }, [account, finished])
 
   const setup = (startLabel: string): React.JSX.Element => (
     <GameSetup
@@ -316,6 +420,39 @@ function Session({
           }}
         />
       ) : null}
+
+      {signingIn === null ? null : (
+        <SignInDialog
+          locale={messages.tag}
+          {...(signingIn.reason === undefined ? {} : { reason: signingIn.reason })}
+          onSignedIn={(found) => {
+            adopt(found)
+            setSigningIn(null)
+          }}
+          onClose={() => {
+            setSigningIn(null)
+          }}
+        />
+      )}
+
+      {/*
+        The profile and the games, over the page rather than in place of it — the same rule the
+        rules overlay follows below, and for the same reason: React unmounts what it replaces,
+        and a game underneath has to still be there when this closes.
+      */}
+      {visiting === null || account === null ? null : (
+        <AccountScreen
+          account={account}
+          at={visiting}
+          catalogue={catalogue}
+          readIn={settings.uiLanguage}
+          onAccount={adopt}
+          onTab={setVisiting}
+          onClose={() => {
+            setVisiting(null)
+          }}
+        />
+      )}
 
       {readingRules ? (
         <div className="rules-overlay">
@@ -369,6 +506,11 @@ function Session({
             disabled={playing}
             onChange={(tag) => {
               onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
+              // And on the account, when there is one. Without this the device and the account
+              // disagree from the next sign-in onwards, and the account wins -- so a language
+              // picked here would silently revert on the next machine. Fire and forget: the
+              // change has already happened locally and a failed save is not worth a message.
+              if (account !== null) void saveProfile({ uiLanguage: tag, gameLanguage: tag })
             }}
           />
           <label className="toggle">
@@ -384,6 +526,30 @@ function Session({
             />
             <span>{messages.nerdMode}</span>
           </label>
+
+          {/*
+            The account, at the end of the bar.
+
+            Pinned there rather than kept in the group at the start, which is the opposite of what
+            the nerd toggle does two lines up. That comment's reasoning was about the toggle: a
+            right-pinned control read as chrome belonging to the sidebar it opens. An account
+            menu at the end of a title bar reads as an account menu, because that is where
+            everybody has been trained to look for one.
+          */}
+          <AccountMenu
+            account={account}
+            onSignIn={() => {
+              setSigningIn({})
+            }}
+            onGo={setVisiting}
+            onSignOut={() => {
+              setVisiting(null)
+              // The interface signs out immediately and the request goes on its own; the server
+              // revokes so a copied token dies too, but nobody should watch a spinner for it.
+              setAccount(null)
+              void signOut()
+            }}
+          />
         </div>
 
         <div className={`body${settings.nerdMode ? ' has-nerd' : ''}`}>
@@ -391,21 +557,6 @@ function Session({
             {error !== null ? <p className="error">{error}</p> : null}
 
             {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
-
-            {/*
-              Sign-in lives on the setup screen while it is being built. ACCOUNTS.md is clear
-              that its real home is over the game-over panel, where somebody has a score worth
-              keeping; this is where it can be reached without playing a game first.
-            */}
-            {phase === 'setup' ? (
-              <div className="panel">
-                {account === null ? (
-                  <SignIn locale={messages.tag} onSignedIn={setAccount} />
-                ) : (
-                  <p className="signin-note">Signed in as {account.username}</p>
-                )}
-              </div>
-            ) : null}
 
             {phase === 'over' && finished !== null ? (
               <div className="panel">
@@ -433,6 +584,35 @@ function Session({
                   personalBest={isPersonalBest(finished.standing)}
                   messages={messages}
                 />
+                {/*
+                  Keep this game.
+
+                  The one moment a score stops being anonymous, and the worst possible time to
+                  lose one: it is the score that just persuaded somebody to sign up. The dialog
+                  opens *over* this panel and never in place of it, so a sign-up that fails halfway
+                  leaves the result exactly where it was.
+
+                  Signed in, there is nothing to offer — the effect above has already sent it —
+                  and the line says so rather than leaving somebody wondering.
+                */}
+                {finished.keepable === undefined ? null : account === null ? (
+                  <button
+                    type="button"
+                    className="btn"
+                    lang="en"
+                    onClick={() => {
+                      setSigningIn({
+                        reason: 'Sign in to keep this game, and every one after it.',
+                      })
+                    }}
+                  >
+                    Keep this game
+                  </button>
+                ) : (
+                  <p className="signin-note" lang="en">
+                    Saved to your games.
+                  </p>
+                )}
                 {setup(messages.newGame)}
               </div>
             ) : null}
@@ -487,7 +667,7 @@ function Playing({
   messages: Messages
   onRestart: () => void
   onQuit: () => void
-  onFinish: (state: GameState, seed: number) => void
+  onFinish: (state: GameState, seed: number, letters: readonly string[]) => void
   /**
    * True while the in-app rules cover the game, which only happens in the native shell. Reading
    * the rules must not cost flips, and the clock lives in here rather than in Session, so Session
@@ -512,9 +692,13 @@ function Playing({
   // Reported once the reducer says so; the parent then takes over and unmounts this.
   const finalState = game.state
   const { seed } = spec
+  // The board as first dealt, which only this component ever holds. Not the board at the end:
+  // from 0.3.0 a letter can be replaced at any deal, so those are different things and only one
+  // of them is a fact about how the game started.
+  const dealt = game.board.letters
   useEffect(() => {
-    if (over) onFinish(finalState, seed)
-  }, [over, finalState, seed, onFinish])
+    if (over) onFinish(finalState, seed, dealt)
+  }, [over, finalState, seed, dealt, onFinish])
 
   return (
     <>

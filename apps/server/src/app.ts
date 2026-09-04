@@ -1,6 +1,19 @@
 import { Hono } from 'hono'
-import { authRoutes, currentUser } from './auth/routes.js'
+import { accountRoutes } from './account/routes.js'
+import { authRoutes } from './auth/routes.js'
 import type { AuthDeps } from './auth/routes.js'
+import type { Store } from './types.js'
+
+/**
+ * Everything the mounted half of the API needs.
+ *
+ * One object rather than one per feature: it is one database and one session, and splitting the
+ * dependencies would only mean wiring the same store in twice. The *ports* are split -- see
+ * `types.ts` -- which is what keeps the fakes in the test suite small.
+ */
+export interface ApiDeps extends AuthDeps {
+  readonly store: Store
+}
 
 /**
  * The API, as a value rather than as a running process.
@@ -18,7 +31,7 @@ import type { AuthDeps } from './auth/routes.js'
  * database and no mailer. A deployment without it serves the game and answers probes and cannot
  * sign anybody in, which is a better failure than a process that will not start.
  */
-export function createApp(options: { auth?: AuthDeps } = {}): Hono {
+export function createApp(options: { auth?: ApiDeps } = {}): Hono {
   const app = new Hono()
 
   /*
@@ -41,19 +54,13 @@ export function createApp(options: { auth?: AuthDeps } = {}): Hono {
   const auth = options.auth
   if (auth !== undefined) {
     v1.route('/auth', authRoutes(auth))
-
     /*
-     * Who am I.
+     * The account itself: `/me`, `/me/games`, `/usernames/:name`, `/games/import`.
      *
-     * The smallest possible authenticated route, and the one the browser uses to find out
-     * whether the cookie it is holding still means anything. 401 rather than an empty body for
-     * a signed-out caller, so the client has one thing to branch on.
+     * Mounted flat rather than under a prefix of their own, because these are the nouns of the
+     * API rather than a subsystem of it, and `/v1/account/me` would say the same word twice.
      */
-    v1.get('/me', async (context) => {
-      const user = await currentUser(auth, context)
-      if (user === null) return context.json({ error: 'signed-out' }, 401)
-      return context.json({ userId: user.userId, username: user.username })
-    })
+    v1.route('/', accountRoutes(auth))
   }
 
   app.route('/v1', v1)
