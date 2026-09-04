@@ -20,7 +20,10 @@ import {
 } from '../src/auth/policy.js'
 import type { CodeRow } from '../src/auth/policy.js'
 import { consoleMailer, noMailer } from '../src/auth/mail.js'
+import { loginMessage, openSmtp, smtpMailer } from '../src/auth/smtp.js'
 import {
+  LONGEST_GENERATED,
+  USERNAME_MAX,
   checkUsername,
   generateUsername,
   isGeneratedUsername,
@@ -240,7 +243,10 @@ describe('usernames', () => {
 
   it('refuses the lengths and the shapes', () => {
     expect(checkUsername('ab')).toBe('too-short')
-    expect(checkUsername('a'.repeat(21))).toBe('too-long')
+    // The server's cap is loose on purpose; the tight one lives in the form, where it can be a
+    // live character count rather than a rejection after the fact.
+    expect(checkUsername('a'.repeat(USERNAME_MAX))).toBeNull()
+    expect(checkUsername('a'.repeat(USERNAME_MAX + 1))).toBe('too-long')
     expect(checkUsername('-nick')).toBe('bad-edges')
     expect(checkUsername('nick-')).toBe('bad-edges')
     expect(checkUsername('nick!')).toBe('bad-characters')
@@ -251,5 +257,92 @@ describe('usernames', () => {
     // Four astral characters are eight UTF-16 units, and refusing them as `too-long` while
     // accepting eight Latin letters would be a rule about our storage, not about names.
     expect(checkUsername('𝕹𝖎𝖈𝖐')).not.toBe('too-long')
+  })
+})
+
+describe('sending over SMTP', () => {
+  const config = {
+    host: 'smtp.gmail.com',
+    port: 587,
+    implicitTls: false,
+    from: 'noreply@playblinkered.com',
+  }
+
+  it('puts the code where a person will find it, in the subject and the body', async () => {
+    // The subject carries it too, because a phone notification shows the subject and nothing
+    // else, and reading the code without opening the mail is the whole ergonomics of this.
+    const sent: { subject: string; text: string; to: string; from: string }[] = []
+    const mailer = smtpMailer(config, () => ({
+      sendMail: (message) => {
+        sent.push(message)
+        return Promise.resolve(null)
+      },
+    }))
+    await mailer.send({ to: 'nick@example.com', code: '123456', locale: 'en' })
+    expect(sent).toHaveLength(1)
+    expect(sent[0]?.subject).toContain('123456')
+    expect(sent[0]?.text).toContain('123456')
+    expect(sent[0]?.to).toBe('nick@example.com')
+    expect(sent[0]?.from).toBe('noreply@playblinkered.com')
+  })
+
+  it('says what the code is for and what to do if it was not asked for', () => {
+    // An unexpected sign-in code is the first sign somebody else has your address. Saying
+    // plainly that nothing has happened is the difference between that and a panic.
+    const written = loginMessage({ to: 'a@b.com', code: '000111', locale: 'en' })
+    expect(written.text).toMatch(/once/)
+    expect(written.text).toMatch(/ten minutes/)
+    expect(written.text).toMatch(/did not ask/)
+  })
+
+  it('propagates a refusal rather than swallowing it', async () => {
+    // A route that cannot send has to answer differently from one that did, or the player is
+    // told to check mail that was never sent.
+    const mailer = smtpMailer(config, () => ({
+      sendMail: () => Promise.reject(new Error('550 relay denied')),
+    }))
+    await expect(mailer.send({ to: 'a@b.com', code: '123456', locale: 'en' })).rejects.toThrow(
+      /relay denied/,
+    )
+  })
+})
+
+describe('the SMTP transport itself', () => {
+  const base = { host: 'smtp.gmail.com', port: 587, from: 'noreply@playblinkered.com' }
+
+  it('turns a config into the options nodemailer expects, and opens nothing doing it', () => {
+    const options = openSmtp({ ...base, implicitTls: false }).options as Record<string, unknown>
+    expect(options).toMatchObject({ host: 'smtp.gmail.com', port: 587, secure: false, pool: true })
+    // No credentials means no auth block at all, for a relay that authorizes by address.
+    expect(options.auth).toBeUndefined()
+  })
+
+  it('carries credentials when there are some', () => {
+    const options = openSmtp({
+      ...base,
+      implicitTls: true,
+      auth: { user: 'u', password: 'p' },
+    }).options as Record<string, unknown>
+    // `secure` is when the connection is encrypted, not whether: true is 465, false is 587
+    // with STARTTLS. Getting it backwards fails as a hang rather than as an error.
+    expect(options).toMatchObject({ secure: true, auth: { user: 'u', pass: 'p' } })
+  })
+})
+
+describe('the generator and the rules agree', () => {
+  it('cannot deal a name too long to have been chosen', () => {
+    // The bug this exists for: `polished-thistle-4821` is twenty-one characters against a limit
+    // of twenty, so an account could be handed a name it would have been refused for typing.
+    // Checked against the word lists rather than against a sample, so adding a longer word
+    // fails here rather than one sign-up in a thousand.
+    expect(LONGEST_GENERATED).toBeLessThanOrEqual(USERNAME_MAX)
+  })
+
+  it('deals nothing that breaks any other rule either', () => {
+    for (let i = 0; i < 300; i += 1) {
+      const name = generateUsername()
+      // `reserved` is the only complaint a generated name may draw.
+      expect(checkUsername(name), name).toBe('reserved')
+    }
   })
 })

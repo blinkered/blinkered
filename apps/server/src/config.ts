@@ -96,3 +96,55 @@ export function databaseConfig(env: Environment): DatabaseConfig {
 
 const TRUE = new Set(['true', 'yes', 'on', '1'])
 const FALSE = new Set(['false', 'no', 'off', '0'])
+
+/**
+ * Where mail goes, and who we are when we send it.
+ *
+ * Optional as a whole: a deployment with no `BLINKERED_SMTP_HOST` serves the game, answers
+ * probes, and cannot sign anybody in. That is a better failure than refusing to start, and a
+ * much better one than coming up healthy with a mailer that silently discards.
+ *
+ * `BLINKERED_SMTP_TLS` says *when* the connection is encrypted rather than whether: `implicit`
+ * is TLS from the first byte, which is port 465, and anything else is STARTTLS, which is 587.
+ * Getting those backwards is the classic SMTP misconfiguration and it fails as a hang, because
+ * one side is waiting for a handshake and the other for a greeting.
+ */
+export interface SmtpEnv {
+  readonly host: string
+  readonly port: number
+  readonly implicitTls: boolean
+  /** Together or not at all; see `SmtpConfig`. */
+  readonly auth?: { readonly user: string; readonly password: string }
+  readonly from: string
+}
+
+export function smtpConfig(env: Environment): SmtpEnv | null {
+  const host = env.BLINKERED_SMTP_HOST
+  if (host === undefined || host === '') return null
+
+  const problems: string[] = []
+  const port = Number(env.BLINKERED_SMTP_PORT ?? '587')
+  if (!Number.isInteger(port) || port <= 0) {
+    problems.push('BLINKERED_SMTP_PORT is not a port number')
+  }
+  const from = env.BLINKERED_MAIL_FROM
+  // Named rather than defaulted. A relay authorizes a sender, so guessing one produces mail that
+  // is refused at submission, and the error arrives at the relay rather than here.
+  if (from === undefined || from === '') problems.push('BLINKERED_MAIL_FROM is not set')
+  // A user without a password is a submission that will fail to authenticate; a password without
+  // a user is a value nothing reads. Both are worth catching before the first sign-in attempt.
+  const user = env.BLINKERED_SMTP_USER
+  const password = env.BLINKERED_SMTP_PASSWORD
+  if (user !== undefined && user !== '' && (password === undefined || password === '')) {
+    problems.push('BLINKERED_SMTP_USER is set without BLINKERED_SMTP_PASSWORD')
+  }
+  if (problems.length > 0) throw new ConfigError(problems)
+
+  return {
+    host,
+    port,
+    implicitTls: env.BLINKERED_SMTP_TLS === 'implicit',
+    ...(user === undefined || user === '' ? {} : { auth: { user, password: password as string } }),
+    from: from as string,
+  }
+}

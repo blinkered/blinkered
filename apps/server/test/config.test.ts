@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ConfigError, databaseConfig } from '../src/config.js'
+import { ConfigError, databaseConfig, smtpConfig } from '../src/config.js'
 
 const complete = {
   BLINKERED_DB_HOST: 'db.example.com',
@@ -111,5 +111,59 @@ describe('databaseConfig', () => {
   it('says everything wrong in one message', () => {
     const error = problems({ ...complete, BLINKERED_DB_PORT: 'x', BLINKERED_DB_HOST: '' })
     expect(error).toHaveLength(2)
+  })
+})
+
+describe('smtpConfig', () => {
+  const base = {
+    BLINKERED_SMTP_HOST: 'smtp.gmail.com',
+    BLINKERED_MAIL_FROM: 'noreply@playblinkered.com',
+  }
+
+  it('is absent when no host is named, rather than an error', () => {
+    // A deployment with no mailer serves the game and cannot sign anybody in, which is a better
+    // failure than refusing to start.
+    expect(smtpConfig({})).toBeNull()
+    expect(smtpConfig({ BLINKERED_SMTP_HOST: '' })).toBeNull()
+  })
+
+  it('defaults to 587, which is the submission port that uses STARTTLS', () => {
+    expect(smtpConfig(base)).toMatchObject({ port: 587, implicitTls: false })
+  })
+
+  it('reads implicit TLS as a word rather than as a boolean', () => {
+    // It says *when* the connection is encrypted, not whether. Both are encrypted.
+    expect(smtpConfig({ ...base, BLINKERED_SMTP_TLS: 'implicit' })?.implicitTls).toBe(true)
+    expect(smtpConfig({ ...base, BLINKERED_SMTP_TLS: 'starttls' })?.implicitTls).toBe(false)
+  })
+
+  it('carries credentials when there are any, and none when there are not', () => {
+    expect(smtpConfig(base)).not.toHaveProperty('auth')
+    expect(
+      smtpConfig({ ...base, BLINKERED_SMTP_USER: 'u', BLINKERED_SMTP_PASSWORD: 'p' }),
+    ).toMatchObject({ auth: { user: 'u', password: 'p' } })
+  })
+
+  it('refuses a sender it would have to guess', () => {
+    // A relay authorizes a sender, so a guessed one produces mail refused at submission, and
+    // that error arrives at the relay rather than here.
+    expect(() => smtpConfig({ BLINKERED_SMTP_HOST: 'x' })).toThrow(ConfigError)
+  })
+
+  it('refuses a username with no password, which cannot authenticate', () => {
+    expect(() => smtpConfig({ ...base, BLINKERED_SMTP_USER: 'u' })).toThrow(ConfigError)
+  })
+
+  it('refuses a port that is not one', () => {
+    expect(() => smtpConfig({ ...base, BLINKERED_SMTP_PORT: 'submission' })).toThrow(ConfigError)
+  })
+
+  it('reports everything wrong at once, like the database config does', () => {
+    try {
+      smtpConfig({ BLINKERED_SMTP_HOST: 'x', BLINKERED_SMTP_PORT: 'no', BLINKERED_SMTP_USER: 'u' })
+      expect.unreachable()
+    } catch (error) {
+      expect((error as ConfigError).problems).toHaveLength(3)
+    }
   })
 })

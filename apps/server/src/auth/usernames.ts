@@ -100,6 +100,21 @@ const NOUNS = [
 const SUFFIX_DIGITS = 4
 
 /**
+ * The longest name the generator can produce.
+ *
+ * Asserted against `USERNAME_MAX` by a test rather than left to whoever adds a word. Not because
+ * the limit is tight — it is not, deliberately — but because the two have to stay coherent: the
+ * first version squeezed the word list to fit a UI-shaped limit of twenty, which is the wrong
+ * direction. A generated name must be one the server would accept; what a *form* will accept is
+ * the form's business.
+ */
+export const LONGEST_GENERATED =
+  Math.max(...ADJECTIVES.map((word) => word.length)) +
+  Math.max(...NOUNS.map((word) => word.length)) +
+  SUFFIX_DIGITS +
+  2
+
+/**
  * The shape a generated name always has, and which a person is never allowed to type.
  *
  * Reserving it closes a squat: without this, somebody can register `swift-otter-4821` today and
@@ -143,7 +158,17 @@ export function normalizeUsername(name: string): string {
 }
 
 export const USERNAME_MIN = 3
-export const USERNAME_MAX = 20
+
+/**
+ * The cap the server enforces, which is deliberately looser than the one a person will see.
+ *
+ * The tighter limit is a UI concern — a name that fits a leaderboard row and a profile header —
+ * and it belongs in the form, where it can be a live character count rather than a rejection
+ * after the fact. Down here the job is narrower: stop a name that is an abuse of a text column,
+ * and stop nothing else. Making the two the same number is how a generated name ends up
+ * refused by the rules that generated it, which is exactly what happened.
+ */
+export const USERNAME_MAX = 32
 
 export type UsernameProblem =
   'too-short' | 'too-long' | 'bad-characters' | 'bad-edges' | 'mixed-scripts' | 'reserved'
