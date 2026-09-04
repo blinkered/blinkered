@@ -290,6 +290,10 @@ describe('sending over SMTP', () => {
     // An unexpected sign-in code is the first sign somebody else has your address. Saying
     // plainly that nothing has happened is the difference between that and a panic.
     const written = loginMessage({ to: 'a@b.com', code: '000111', locale: 'en' })
+    // The code stands alone on its own line: a trailing full stop falls inside a double-click
+    // selection on some clients, and a pasted `123456.` fails the six-digit check invisibly.
+    expect(written.text.split('\n')).toContain('000111')
+    expect(written.text).not.toContain('000111.')
     expect(written.text).toMatch(/once/)
     expect(written.text).toMatch(/ten minutes/)
     expect(written.text).toMatch(/did not ask/)

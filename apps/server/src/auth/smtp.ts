@@ -48,19 +48,26 @@ export interface Written {
 /**
  * What the mail says.
  *
- * **Not localized yet, and it has to be.** docs/AUTH.md is right that this is the one message in
- * the product that cannot be shrugged off — a player who reads Greek and is sent English can
- * still find six digits in it, but they were sent it because they were trying to get in, and
- * being unable to read the thing that lets you in is a different class of failure from a menu you
- * cannot read. The blocker is mechanical rather than hard: `Messages` requires every key in all
- * fifty-one locales, so this cannot be added partially, and it is a hundred and two strings.
- * Tracked rather than forgotten.
+ * English for now, deliberately, on the grounds that almost nobody reads it: the code is copied
+ * out of the subject line or the first line and pasted back. That makes **layout** the part
+ * that has to be right, and it is why the code sits alone on its own line with nothing attached
+ * to it — a trailing full stop is inside a double-click selection on some clients, and pasting
+ * `123456.` fails the six-digit check for a reason nobody can see. The subject leads with the
+ * code for the same reason: a phone notification shows the subject and nothing else, so a person
+ * can read it without opening anything.
+ *
+ * Localization is still owed, and docs/AUTH.md is right about why — this is the one message a
+ * player cannot route around, since it is the thing that lets them in. The blocker is mechanical
+ * rather than hard: `Messages` requires every key in all fifty-one locales, so it cannot be added
+ * partially, and it is a hundred and two strings.
  */
 export function loginMessage(mail: LoginMail): Written {
   return {
     subject: `${mail.code} is your Blinkered sign-in code`,
     text: [
-      `Your Blinkered sign-in code is ${mail.code}.`,
+      'Your Blinkered sign-in code is',
+      '',
+      mail.code,
       '',
       'It works once, and for ten minutes.',
       'If you did not ask for it, nothing has happened to your account and you can ignore this.',

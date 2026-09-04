@@ -55,6 +55,11 @@ api:
   # same CI run, so there is no version of this where they should differ.
   env:
     LOG_LEVEL: debug
+  smtp:
+    # Verified from inside the pod: it reaches the banner and the EHLO advertises STARTTLS with
+    # no AUTH. What that does *not* prove is that this cluster may relay -- the IP check happens
+    # at MAIL FROM. tl-dev egresses as 66.186.179.148, which is the address to allowlist.
+    host: smtp-relay.gmail.com
 
 # The chart's own StatefulSet rather than a managed database. Defaults otherwise:
 # `password: ''` generates one on first install and preserves it across upgrades by

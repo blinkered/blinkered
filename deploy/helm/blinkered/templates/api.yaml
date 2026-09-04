@@ -45,6 +45,16 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.api.smtp.host }}
+            - name: BLINKERED_SMTP_HOST
+              value: {{ .Values.api.smtp.host | quote }}
+            - name: BLINKERED_SMTP_PORT
+              value: {{ .Values.api.smtp.port | quote }}
+            - name: BLINKERED_SMTP_TLS
+              value: {{ .Values.api.smtp.tls | quote }}
+            - name: BLINKERED_MAIL_FROM
+              value: {{ .Values.api.smtp.from | quote }}
+            {{- end }}
             # The seven keys, from whichever secret is in play. Identical whether the database
             # is this chart's StatefulSet or a managed one somewhere else.
             {{- $secret := include "blinkered.databaseSecret" . }}
