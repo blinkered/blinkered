@@ -102,9 +102,12 @@ describe('the rules a code is subject to', () => {
     expect(verifyCode(row({ attempts: 1 }), '000000', at(0), right)).toBe('wrong')
   })
 
-  it('kills the code on the attempt that reaches the limit', () => {
-    // So the caller does not have to check again on the next request to get this right.
-    expect(verifyCode(row({ attempts: MAX_ATTEMPTS - 1 }), '000000', at(0), right)).toBe('dead')
+  it('calls the last wrong guess wrong, and the one after it dead', () => {
+    // The first version returned `dead` for the guess that reached the limit, which read well
+    // and broke the route: attempts are only recorded on `wrong`, so that guess was never
+    // counted, the total stopped one short of the limit, and the real code worked for ever.
+    expect(verifyCode(row({ attempts: MAX_ATTEMPTS - 1 }), '000000', at(0), right)).toBe('wrong')
+    expect(verifyCode(row({ attempts: MAX_ATTEMPTS }), '000000', at(0), right)).toBe('dead')
   })
 
   it('says the same thing for expired, reused and exhausted', () => {

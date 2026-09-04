@@ -30,3 +30,37 @@ describe('the API', () => {
     expect(response.status).toBe(404)
   })
 })
+
+describe('the auth routes, once the app is given what they need', () => {
+  it('are absent when it is not, so probes work without a database', async () => {
+    const app = createApp()
+    expect((await app.request('/v1/healthz')).status).toBe(200)
+    // 404 rather than a 500: a deployment with no mailer cannot sign anybody in, and saying so
+    // is better than a process that refuses to start and takes the game down with it.
+    expect((await app.request('/v1/auth/code', { method: 'POST' })).status).toBe(404)
+  })
+
+  it('are mounted under /v1/auth when it is', async () => {
+    const app = createApp({
+      auth: {
+        store: {
+          countCodesSince: () => Promise.resolve(0),
+          insertCode: () => Promise.resolve(),
+          latestCode: () => Promise.resolve(null),
+          recordAttempt: () => Promise.resolve(),
+          consumeCode: () => Promise.resolve(),
+          userIdForEmail: () => Promise.resolve(null),
+          createUser: ({ id }) => Promise.resolve(id),
+          createSession: () => Promise.resolve(),
+        },
+        mailer: { send: () => Promise.resolve() },
+      },
+    })
+    const response = await app.request('/v1/auth/code', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'nick@example.com' }),
+    })
+    expect(response.status).toBe(202)
+  })
+})

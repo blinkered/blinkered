@@ -1,4 +1,6 @@
 import { Hono } from 'hono'
+import { authRoutes } from './auth/routes.js'
+import type { AuthDeps } from './auth/routes.js'
 
 /**
  * The API, as a value rather than as a running process.
@@ -12,10 +14,11 @@ import { Hono } from 'hono'
  * rewriting, because a development stack that differs from production in the routing is a
  * development stack that cannot show you a routing bug.
  *
- * There is very little here because there is no database work yet. Every other endpoint in
- * docs/ACCOUNTS.md either reads or writes a row.
+ * `auth` is optional so that the health checks, and the tests that only care about them, need no
+ * database and no mailer. A deployment without it serves the game and answers probes and cannot
+ * sign anybody in, which is a better failure than a process that will not start.
  */
-export function createApp(): Hono {
+export function createApp(options: { auth?: AuthDeps } = {}): Hono {
   const app = new Hono()
 
   /*
@@ -35,6 +38,7 @@ export function createApp(): Hono {
 
   const v1 = new Hono()
   v1.get('/healthz', (context) => context.text('ok'))
+  if (options.auth !== undefined) v1.route('/auth', authRoutes(options.auth))
 
   app.route('/v1', v1)
 

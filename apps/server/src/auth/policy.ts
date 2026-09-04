@@ -47,8 +47,10 @@ export type CodeVerdict =
  * Whether a submitted code opens this row.
  *
  * `dead` is returned for expiry, reuse and exhaustion alike, and the route says the same thing to
- * the client for all three. Distinguishing them is a gift to somebody working through codes: "out
- * of attempts" confirms the address is real and that they were close enough to matter.
+ * the client for all three — and for `wrong` too. Distinguishing them is a gift to somebody
+ * working through codes: "out of attempts" confirms the address is real and that they were close
+ * enough to matter. The distinction exists here only because the two cost different things: a
+ * wrong guess is charged an attempt, and a dead row is not written to at all.
  *
  * The order is deliberate. Everything that can be decided from the row alone is decided first, so
  * a dead row never reaches the scrypt call — which is the expensive one, and therefore the one an
@@ -63,11 +65,12 @@ export function verifyCode(
   if (row.consumedAt !== null) return 'dead'
   if (row.attempts >= MAX_ATTEMPTS) return 'dead'
   if (now.getTime() >= row.expiresAt.getTime()) return 'dead'
-  if (!matches(code, row.codeHash)) {
-    // The attempt that reaches the limit kills the code, so the caller does not have to
-    // remember to check again on the next request.
-    return row.attempts + 1 >= MAX_ATTEMPTS ? 'dead' : 'wrong'
-  }
+  // Wrong is wrong, including the guess that spends the last attempt. Reporting that one as
+  // `dead` was the first version and it was subtly broken: the route only counts an attempt on
+  // `wrong`, so the guess that reached the limit was never recorded, `attempts` stopped one
+  // short of it, and the real code went on working for ever. The row becomes dead on the next
+  // call, from the check above, which is where deadness belongs.
+  if (!matches(code, row.codeHash)) return 'wrong'
   return 'ok'
 }
 
