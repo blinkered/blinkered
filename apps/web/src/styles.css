@@ -2321,3 +2321,50 @@ kbd {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
 }
+
+/*
+ * Signing in.
+ *
+ * Sized like the setup controls rather than like a form on its own, because it sits inside the
+ * same panel and a login box that looks imported from somewhere else is exactly what a login box
+ * must not look like.
+ */
+.signin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  /* `start` rather than `left`: the two right-to-left interfaces need the other edge. */
+  text-align: start;
+}
+.signin-field > span {
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+.signin-field input {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--bg);
+  color: inherit;
+  /* Apple's floor for a touch target, and the reason IOS.md exists. */
+  min-height: 2.75rem;
+}
+.signin button {
+  min-height: 2.75rem;
+}
+.signin-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--dim);
+  text-align: start;
+}
+.signin-note.is-bad {
+  color: var(--bad, #ff6b6b);
+}

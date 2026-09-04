@@ -51,6 +51,7 @@ describe('the auth routes, once the app is given what they need', () => {
           consumeCode: () => Promise.resolve(),
           userIdForEmail: () => Promise.resolve(null),
           createUser: ({ id }) => Promise.resolve(id),
+          findSession: () => Promise.resolve(null),
           createSession: () => Promise.resolve(),
         },
         mailer: { send: () => Promise.resolve() },

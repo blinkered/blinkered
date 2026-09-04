@@ -44,6 +44,14 @@ export interface AuthStore {
    * — a check followed by an insert is a race, and the unique index is not.
    */
   createUser(input: { id: string; email: string; username: string }): Promise<string | null>
+  /**
+   * Who a session token belongs to, or null.
+   *
+   * Takes the hash rather than the token, because the token never reaches the database — see
+   * `secrets.ts`. Expiry and revocation are the store's to check, so a caller cannot forget:
+   * every route that asks this question would otherwise have to remember both.
+   */
+  findSession(id: string, now: Date): Promise<{ userId: string; username: string } | null>
   createSession(row: {
     id: string
     userId: string

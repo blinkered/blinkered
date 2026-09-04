@@ -271,7 +271,7 @@ describe('sending over SMTP', () => {
   it('puts the code where a person will find it, in the subject and the body', async () => {
     // The subject carries it too, because a phone notification shows the subject and nothing
     // else, and reading the code without opening the mail is the whole ergonomics of this.
-    const sent: { subject: string; text: string; to: string; from: string }[] = []
+    const sent: { subject: string; text: string; html: string; to: string; from: string }[] = []
     const mailer = smtpMailer(config, () => ({
       sendMail: (message) => {
         sent.push(message)
@@ -290,13 +290,28 @@ describe('sending over SMTP', () => {
     // An unexpected sign-in code is the first sign somebody else has your address. Saying
     // plainly that nothing has happened is the difference between that and a panic.
     const written = loginMessage({ to: 'a@b.com', code: '000111', locale: 'en' })
-    // The code stands alone on its own line: a trailing full stop falls inside a double-click
-    // selection on some clients, and a pasted `123456.` fails the six-digit check invisibly.
+    // The code stands alone: a trailing full stop falls inside a double-click selection on some
+    // clients, and a pasted `123456.` fails the six-digit check for a reason nobody can see.
     expect(written.text.split('\n')).toContain('000111')
     expect(written.text).not.toContain('000111.')
-    expect(written.text).toMatch(/once/)
-    expect(written.text).toMatch(/ten minutes/)
-    expect(written.text).toMatch(/did not ask/)
+    expect(written.text).toMatch(/10 minutes/)
+    expect(written.text).toMatch(/safely ignore/)
+  })
+
+  it('sends both bodies, because a sign-in mail that is only plain text is half a mail', () => {
+    const written = loginMessage({ to: 'a@b.com', code: '000111', locale: 'en' })
+    expect(written.html).toContain('000111')
+    // Colours are set rather than inherited: a client in dark mode inverts what it is given, and
+    // a code that lands dark grey on near-black is unreadable exactly when it is needed.
+    expect(written.html).toContain('background:#ffffff')
+    // Bold and large, because the code is the only thing most people will look at.
+    expect(written.html).toContain('font-weight:700')
+    expect(written.html).toContain('color:#111111')
+  })
+
+  it('leads the subject with the code, for a notification that shows nothing else', () => {
+    const written = loginMessage({ to: 'a@b.com', code: '000111', locale: 'en' })
+    expect(written.subject.startsWith('000111')).toBe(true)
   })
 
   it('propagates a refusal rather than swallowing it', async () => {

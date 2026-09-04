@@ -112,6 +112,25 @@ export function pgAuthStore(db: Database): AuthStore {
       })
     },
 
+    findSession: async (id, now) => {
+      const [row] = await db
+        .select({ userId: users.id, username: users.username })
+        .from(sessions)
+        .innerJoin(users, eq(users.id, sessions.userId))
+        // Expiry and revocation in the query rather than in the caller, and `deletedAt` with
+        // them: a deleted account whose session is still live would otherwise keep working.
+        .where(
+          and(
+            eq(sessions.id, id),
+            isNull(sessions.revokedAt),
+            gte(sessions.expiresAt, now),
+            isNull(users.deletedAt),
+          ),
+        )
+        .limit(1)
+      return row ?? null
+    },
+
     createSession: async (row) => {
       await db.insert(sessions).values(row)
     },

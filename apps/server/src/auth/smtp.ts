@@ -35,49 +35,86 @@ export interface SmtpConfig {
    * authorizes by address.
    */
   readonly auth?: { readonly user: string; readonly password: string }
-  /** The envelope sender. Has to be a domain the relay is allowed to send as. */
+  /**
+   * The sender, as a mail header rather than as a bare address.
+   *
+   * `Blinkered <noreply@playblinkered.com>` and not `noreply@playblinkered.com`. Without the
+   * display name an inbox shows the address, or just `noreply`, which reads as machinery before
+   * anybody has opened it. The address inside the angle brackets still has to be one the relay
+   * is allowed to send as.
+   */
   readonly from: string
 }
 
-/** Subject and body. English only for now; see the note in `loginMessage`. */
+/** Subject and both bodies. English only for now; see the note in `loginMessage`. */
 export interface Written {
   readonly subject: string
   readonly text: string
+  readonly html: string
 }
 
 /**
  * What the mail says.
  *
- * English for now, deliberately, on the grounds that almost nobody reads it: the code is copied
- * out of the subject line or the first line and pasted back. That makes **layout** the part
- * that has to be right, and it is why the code sits alone on its own line with nothing attached
- * to it — a trailing full stop is inside a double-click selection on some clients, and pasting
- * `123456.` fails the six-digit check for a reason nobody can see. The subject leads with the
- * code for the same reason: a phone notification shows the subject and nothing else, so a person
- * can read it without opening anything.
+ * Sent as both, because every real sign-in mail is: HTML where the code can be set large enough
+ * to read across a desk, and plain text for the clients that refuse HTML and for anybody who
+ * reads mail in a terminal. Nodemailer sends them as one multipart message and the client picks.
  *
- * Localization is still owed, and docs/AUTH.md is right about why — this is the one message a
+ * The layout is the part that has to be right, because almost nobody reads the words: the code
+ * is copied out of the subject or the first thing in the body and pasted back. So it stands
+ * alone, bold and large, with nothing attached to it. A trailing full stop falls inside a
+ * double-click selection on some clients, and a pasted `123456.` fails the six-digit check for
+ * a reason the person cannot see.
+ *
+ * The words around it are deliberately the boring standard ones. The first draft wrote its own
+ * — "It works once, and for ten minutes", "nothing has happened to your account" — and both
+ * read as machinery, which is the one thing a mail asking somebody to trust a six-digit number
+ * cannot afford.
+ *
+ * The HTML sets its own colours rather than inheriting. Mail clients in dark mode invert what
+ * they are given, and a code that comes out dark grey on near-black is unreadable in exactly the
+ * situation it is needed.
+ *
+ * Localization is still owed, and docs/AUTH.md is right about why: this is the one message a
  * player cannot route around, since it is the thing that lets them in. The blocker is mechanical
- * rather than hard: `Messages` requires every key in all fifty-one locales, so it cannot be added
- * partially, and it is a hundred and two strings.
+ * rather than hard — `Messages` requires every key in all fifty-one locales, so it cannot be
+ * added partially.
  */
 export function loginMessage(mail: LoginMail): Written {
   return {
-    subject: `${mail.code} is your Blinkered sign-in code`,
+    // Leads with the code, because a phone notification shows the subject and nothing else.
+    subject: `${mail.code} is your Blinkered code`,
     text: [
-      'Your Blinkered sign-in code is',
+      'Your sign-in code:',
       '',
       mail.code,
       '',
-      'It works once, and for ten minutes.',
-      'If you did not ask for it, nothing has happened to your account and you can ignore this.',
+      'It expires in 10 minutes and can only be used once.',
+      '',
+      "If you didn't request this, you can safely ignore this email.",
+      '',
+      'Blinkered',
+      'https://playblinkered.com',
     ].join('\n'),
+    html: `<div style="background:#ffffff;color:#111111;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;padding:24px;max-width:480px">
+<p style="margin:0 0 16px">Your sign-in code:</p>
+<p style="margin:0 0 16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:34px;font-weight:700;letter-spacing:0.12em;color:#111111">${mail.code}</p>
+<p style="margin:0 0 24px">It expires in 10 minutes and can only be used once.</p>
+<p style="margin:0 0 8px;color:#666666;font-size:13px">If you didn&rsquo;t request this, you can safely ignore this email.</p>
+<p style="margin:0;color:#666666;font-size:13px"><a href="https://playblinkered.com" style="color:#666666">Blinkered</a></p>
+</div>`,
   }
 }
 
 /** What this file needs of a transport, which is one method. Injected so a test needs no socket. */
 export interface Transport {
-  sendMail(message: { from: string; to: string; subject: string; text: string }): Promise<unknown>
+  sendMail(message: {
+    from: string
+    to: string
+    subject: string
+    text: string
+    html: string
+  }): Promise<unknown>
 }
 
 /**
@@ -104,6 +141,7 @@ export function smtpMailer(
         to: mail.to,
         subject: written.subject,
         text: written.text,
+        html: written.html,
       })
     },
   }

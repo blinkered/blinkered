@@ -75,7 +75,9 @@ api:
     # `implicit` is TLS from the first byte, which is 465. Anything else is STARTTLS, which is
     # what 587 speaks and what the relay advertises.
     tls: starttls
-    from: noreply@playblinkered.com
+    # A display name, not a bare address: an inbox showing `noreply@playblinkered.com` reads as
+    # machinery before the mail is opened. The address itself is what the relay authorizes.
+    from: Blinkered <noreply@playblinkered.com>
 
 # Schema migrations, as a Job that Helm runs and waits for.
 #

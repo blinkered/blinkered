@@ -23,6 +23,9 @@ import { overFixture } from './fixtures.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { useFocusRelease, withoutStealingFocus } from './focus.js'
 import { Share } from './Share.js'
+import { SignIn } from './SignIn.js'
+import { whoAmI } from './account.js'
+import type { Account } from './account.js'
 import { isPersonalBest, recordScore, standingOf } from './scores.js'
 import type { Standing } from './scores.js'
 import {
@@ -153,6 +156,25 @@ function Session({
     : (catalogue[0]?.tag ?? settings.gameLanguage)
 
   const { dictionary, error } = useDictionary(language, messages)
+
+  /*
+   * Whether anybody is signed in, asked once on load.
+   *
+   * Null covers signed out and no API at all, which is deliberate: a build served without one is
+   * still a game, and refusing to start because it could not learn that nobody is signed in
+   * would be a poor trade. The panel below simply offers to sign in, and the offer fails
+   * honestly if there is nothing behind it.
+   */
+  const [account, setAccount] = useState<Account | null>(null)
+  useEffect(() => {
+    let live = true
+    void whoAmI().then((found) => {
+      if (live) setAccount(found)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
   /*
    * `?fixture=over` opens straight onto the game-over panel with a canned game behind it, because
    * reaching that panel for real is several minutes of deliberately playing badly. The components
@@ -369,6 +391,21 @@ function Session({
             {error !== null ? <p className="error">{error}</p> : null}
 
             {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
+
+            {/*
+              Sign-in lives on the setup screen while it is being built. ACCOUNTS.md is clear
+              that its real home is over the game-over panel, where somebody has a score worth
+              keeping; this is where it can be reached without playing a game first.
+            */}
+            {phase === 'setup' ? (
+              <div className="panel">
+                {account === null ? (
+                  <SignIn locale={messages.tag} onSignedIn={setAccount} />
+                ) : (
+                  <p className="signin-note">Signed in as {account.username}</p>
+                )}
+              </div>
+            ) : null}
 
             {phase === 'over' && finished !== null ? (
               <div className="panel">

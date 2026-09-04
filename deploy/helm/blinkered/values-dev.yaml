@@ -39,7 +39,7 @@ image:
   # Both verified anonymously pullable at this tag, which is worth checking for a
   # newly created package: GHCR does not always inherit the repository's
   # visibility, and a private one is an ImagePullBackOff with no useful message.
-  tag: sha-d6da005
+  tag: sha-579b09b
 
 web:
   # One is enough for dev. Production runs two.

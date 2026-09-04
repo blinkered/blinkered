@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { Hono } from 'hono'
-import { setCookie } from 'hono/cookie'
+import { getCookie, setCookie } from 'hono/cookie'
 import type { Mailer } from './mail.js'
 import {
   codeExpiry,
@@ -10,9 +10,19 @@ import {
   verifyCode,
   windowStart,
 } from './policy.js'
-import { codeMatches, hashCode, looksLikeCode, newCode, newSessionToken } from './secrets.js'
+import {
+  codeMatches,
+  hashCode,
+  hashSessionToken,
+  looksLikeCode,
+  newCode,
+  newSessionToken,
+} from './secrets.js'
 import type { AuthStore } from './types.js'
 import { generateUsername } from './usernames.js'
+
+/** The cookie the session travels in. Named once, because three places have to agree about it. */
+export const SESSION_COOKIE = 'blinkered_session'
 
 /** How long a browser session lasts. Long, because signing in again is the friction it removes. */
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
@@ -128,7 +138,7 @@ export function authRoutes(deps: AuthDeps): Hono {
     const expiresAt = new Date(now.getTime() + SESSION_LIFETIME_MS)
     await deps.store.createSession({ id: hash, userId, kind: 'cookie', expiresAt })
 
-    setCookie(context, 'blinkered_session', token, {
+    setCookie(context, SESSION_COOKIE, token, {
       httpOnly: true,
       // Development serves plain HTTP behind Caddy, and a Secure cookie there is a cookie the
       // browser accepts and never sends back, which looks exactly like a broken session.
@@ -141,6 +151,23 @@ export function authRoutes(deps: AuthDeps): Hono {
   })
 
   return routes
+}
+
+/**
+ * Who is asking, from the cookie they carried.
+ *
+ * Null covers every way of not being signed in — no cookie, an unknown one, an expired one, a
+ * revoked one, a deleted account — because a caller can do nothing useful with the distinction
+ * and telling them apart is how a 401 turns into a description of somebody else's session.
+ */
+export async function currentUser(
+  deps: AuthDeps,
+  context: { req: { header: (name: string) => string | undefined } },
+): Promise<{ userId: string; username: string } | null> {
+  const token = getCookie(context as never, SESSION_COOKIE)
+  if (token === undefined || token === '') return null
+  const clock = deps.now ?? ((): Date => new Date())
+  return deps.store.findSession(hashSessionToken(token), clock())
 }
 
 /**

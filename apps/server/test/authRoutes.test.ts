@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { createApp } from '../src/app.js'
 import { authRoutes } from '../src/auth/routes.js'
 import type { AuthDeps } from '../src/auth/routes.js'
 import type { AuthStore, StoredCode } from '../src/auth/types.js'
@@ -66,6 +67,13 @@ function fakeStore(): AuthStore & {
       takenUsernames.add(username)
       users.set(id, { email, username })
       return Promise.resolve(id)
+    },
+    findSession: (id, now) => {
+      const row = sessions.get(id)
+      if (row === undefined || row.expiresAt <= now) return Promise.resolve(null)
+      const user = users.get(row.userId)
+      if (user === undefined) return Promise.resolve(null)
+      return Promise.resolve({ userId: row.userId, username: user.username })
     },
     createSession: (row) => {
       sessions.set(row.id, { userId: row.userId, expiresAt: row.expiresAt })
@@ -330,5 +338,43 @@ describe('bodies that are not what the route hoped for', () => {
       expect((await post('/code/verify', body)).status).toBe(400)
     }
     expect(mailer.sent).toHaveLength(0)
+  })
+})
+
+describe('who am I', () => {
+  it('answers with the account the cookie belongs to, and round-trips a real sign-in', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const app = createApp({ auth: { store, mailer, secureCookies: false } })
+    const json = { 'content-type': 'application/json' }
+
+    await app.request('/v1/auth/code', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com' }),
+    })
+    const verified = await app.request('/v1/auth/code/verify', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com', code: mailer.sent[0]?.code }),
+    })
+    const cookie = (verified.headers.get('set-cookie') ?? '').split(';')[0] as string
+
+    const me = await app.request('/v1/me', { headers: { cookie } })
+    expect(me.status).toBe(200)
+    expect(((await me.json()) as { username: string }).username).toMatch(/^[a-z]+-[a-z]+-\d{4}$/)
+  })
+
+  it('is 401 for no cookie, an unknown one, and a spoiled one alike', async () => {
+    // One thing for the client to branch on. Telling them apart describes somebody else's
+    // session back to whoever is guessing at it.
+    const app = createApp({ auth: { store: fakeStore(), mailer: capturingMailer() } })
+    for (const headers of [
+      {},
+      { cookie: 'blinkered_session=' },
+      { cookie: 'blinkered_session=x' },
+    ]) {
+      expect((await app.request('/v1/me', { headers })).status).toBe(401)
+    }
   })
 })

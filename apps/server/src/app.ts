@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { authRoutes } from './auth/routes.js'
+import { authRoutes, currentUser } from './auth/routes.js'
 import type { AuthDeps } from './auth/routes.js'
 
 /**
@@ -38,7 +38,23 @@ export function createApp(options: { auth?: AuthDeps } = {}): Hono {
 
   const v1 = new Hono()
   v1.get('/healthz', (context) => context.text('ok'))
-  if (options.auth !== undefined) v1.route('/auth', authRoutes(options.auth))
+  const auth = options.auth
+  if (auth !== undefined) {
+    v1.route('/auth', authRoutes(auth))
+
+    /*
+     * Who am I.
+     *
+     * The smallest possible authenticated route, and the one the browser uses to find out
+     * whether the cookie it is holding still means anything. 401 rather than an empty body for
+     * a signed-out caller, so the client has one thing to branch on.
+     */
+    v1.get('/me', async (context) => {
+      const user = await currentUser(auth, context)
+      if (user === null) return context.json({ error: 'signed-out' }, 401)
+      return context.json({ userId: user.userId, username: user.username })
+    })
+  }
 
   app.route('/v1', v1)
 
