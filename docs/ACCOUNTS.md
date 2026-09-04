@@ -589,15 +589,25 @@ the thing being asked for is an email address.
 | `GET /v1/me/games`                          | My Games                                       |
 | `GET /v1/auth/apple`, `GET /v1/auth/google` | 501 for now, with the redirect shape sketched  |
 
-### Two things to decide before starting
+### Two decisions, taken
 
-- **Localization.** This is roughly twenty new strings, and `Messages` requires every key in all
-  fifty-one locales at once. Recommendation: English until the flow has been used, then one pass
-  — translating a flow nobody has walked through is translating a guess. It is the same call
-  already taken for the login email.
-- **The avatar.** Generated from a seed, never uploaded, which is settled. What is not settled is
-  what it draws: initials on a colour, or a geometric identicon. It wants to be legible at
-  24 pixels in the top bar, which rules out anything detailed.
+- **English first, one localization pass afterwards.** Roughly twenty new strings, and `Messages`
+  requires every key in all fifty-one locales at once, so it cannot be added a little at a time.
+  Translating a flow nobody has walked through is translating a guess. The same call already
+  taken for the login email, and it carries the same debt: write it down rather than discover it.
+- **A geometric identicon**, drawn from `avatarSeed`. Deterministic, so the same account is the
+  same picture everywhere without anything being stored; inline SVG, so there is no dependency
+  and no second request; and coarse on purpose, because it has to read at 24 pixels in the top
+  bar. Initials on a colour was the alternative and loses to it for one reason worth naming: a
+  generated name like `clever-beacon-1267` gives `CB`, and the point of the picture is to be the
+  thing you recognise when the name is one you did not choose.
+
+**Uploads are wanted later, and that is a reversal rather than an addition.** This document
+chose generated avatars specifically so that there is nothing hosted to moderate, and the bio
+section repeats the reasoning. Accepting uploads brings back all of it: storage, a moderation
+path, a report queue that has to be acted on rather than filled, and a deletion story that
+reaches an object store as well as a row. None of that is a reason not to do it; it is the work
+that comes with it, and it should be planned rather than arrived at.
 
 ## Still open
 
