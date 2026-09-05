@@ -360,14 +360,6 @@ function Games(): React.JSX.Element {
             <td>{new Date(game.finishedAt).toLocaleDateString()}</td>
             <td>
               {game.language} · {game.difficulty}
-              {/* Not a footnote: an imported game can never be on a leaderboard, and the row it
-                  sits in is the only place that fact is ever visible to its owner. */}
-              {game.imported ? (
-                <span className="dim" lang="en">
-                  {' '}
-                  · kept from a guest game
-                </span>
-              ) : null}
             </td>
             <td>{game.score}</td>
             <td>{game.words}</td>

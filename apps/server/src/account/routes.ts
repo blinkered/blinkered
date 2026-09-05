@@ -107,12 +107,17 @@ export function accountRoutes(deps: AccountDeps): Hono {
   })
 
   /*
-   * Keep a game played before there was an account.
+   * Keep a finished game.
    *
-   * The one moment a score stops being anonymous, and the worst possible time to lose one: it is
-   * the score that just persuaded somebody to sign up. Never leaderboard-eligible — it has no
-   * server-issued seed and never passed an envelope check — and `imported` says so in the row
-   * rather than only in the eligibility flag, so the reason survives the next schema argument.
+   * Both kinds arrive here, because phase A issues no seeds and so every game is finished on the
+   * client whoever was signed in: one played while signed in, and one played by a guest who then
+   * signed up on the game-over panel. That second one is the moment a score stops being
+   * anonymous, and the worst possible time to lose one -- it is the score that just persuaded
+   * somebody to sign up.
+   *
+   * Neither is ever leaderboard-eligible, and the row says so through the column that means it.
+   * `imported` is a different fact -- whether the game predates the account -- and conflating the
+   * two put "kept from a guest game" under games their owner had played while signed in.
    */
   routes.post('/games/import', async (context) => {
     const user = await currentUser(deps, context)
@@ -137,7 +142,7 @@ export function accountRoutes(deps: AccountDeps): Hono {
         userId: user.userId,
         seed: game.seed,
         source: game.source,
-        imported: true,
+        imported: game.imported,
         difficulty: game.difficulty,
         language: game.config.language,
         canonical: game.canonical,

@@ -270,13 +270,22 @@ function Session({
    * own history rather than a number anything is checked against.
    */
   const startedAt = useRef(0)
+  /**
+   * Whether nobody was signed in when the game on screen began.
+   *
+   * Read here rather than at the end, because by then it may have changed: signing up on the
+   * game-over panel is the whole point of that panel, and the account exists by the time the
+   * game is sent. This is what makes `games.imported` mean what the schema says it means.
+   */
+  const beganAsGuest = useRef(true)
 
   const begin = useCallback((): void => {
     setFinished(null)
     startedAt.current = Date.now()
+    beganAsGuest.current = account === null
     setSpec({ config, seed: freshSeed() })
     setPhase('playing')
-  }, [config])
+  }, [account, config])
 
   const start = (): void => {
     if (titleDone) {
@@ -335,6 +344,7 @@ function Session({
           // "where was this played" is a question a history is asked and an engine version
           // cannot answer.
           source: isNativeApp() ? 'ios' : 'web',
+          guest: beganAsGuest.current,
           // The whole ruleset, not the difficulty label. A label's meaning changes -- medium has
           // been retuned once already -- and a row carrying its own numbers stays explainable
           // after the next retune.

@@ -191,6 +191,20 @@ export interface GameToKeep {
   readonly words: readonly string[]
   readonly rounds: number
   readonly dictionaryVersion?: string
+  /**
+   * Whether nobody was signed in when this game **began**.
+   *
+   * Which is a different question from who is signed in now, and the only party that can answer
+   * it is this one. It sets `games.imported`, whose meaning the schema states: a game brought in
+   * from a browser's localStorage. A game played while signed in is not that, even though phase A
+   * sends both through this same route.
+   *
+   * It is a claim, and it is allowed to be, for the reason docs/ACCOUNTS.md already gives about
+   * scores in phase A: a personal history is a diary and nobody forges a diary. Nothing is
+   * granted by it -- `leaderboard_eligible` is a separate column decided elsewhere, and false for
+   * both kinds until the server issues seeds.
+   */
+  readonly guest: boolean
 }
 
 /** Keeps a guest game. Null when it could not be kept, which the caller has to be able to say. */

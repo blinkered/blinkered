@@ -37,6 +37,17 @@ export interface ImportedGame {
   readonly canonical: boolean
   readonly seed: number
   readonly source: 'web' | 'ios'
+  /**
+   * Whether the game began before there was an account, which is what `games.imported` means.
+   *
+   * Not "was it sent by a signed-in browser", which is true of every game that reaches this
+   * route: phase A issues no seeds, so a game played while signed in is also finished on the
+   * client and posted at the end. Marking both as imported was the first version and it produced
+   * a history that told people their own games had been kept from a guest game, which was untrue
+   * and told them nothing they could use. `leaderboard_eligible` is the column that decides
+   * ranking, and it is false for both of these regardless.
+   */
+  readonly imported: boolean
   readonly letters: readonly string[]
   readonly words: readonly string[]
   readonly rounds: number
@@ -135,6 +146,9 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
       canonical: isCanonical(config, difficulty),
       seed,
       source: fields.source === 'ios' ? 'ios' : 'web',
+      // Absent reads as "not a guest game", which is the safer default of the two: it withholds
+      // a label rather than inventing one about where somebody's game came from.
+      imported: fields.guest === true,
       letters,
       words,
       rounds,

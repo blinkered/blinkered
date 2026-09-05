@@ -213,14 +213,21 @@ describe('the account surface', () => {
       expect(stored?.words[0]?.tiles).toBe(5)
     })
 
-    it('never marks an imported game as one for a leaderboard', async () => {
+    it('never marks any game as one for a leaderboard', async () => {
       await send('POST', '/v1/games/import', game())
-      // It has no server-issued seed and never passed an envelope check. `imported` says why in
-      // the row rather than only in the eligibility flag.
-      expect(store.games[0]?.row.imported).toBe(true)
       // The row never mentions eligibility at all, so the column's `false` default is the only
       // thing that can stand. A route that has no way to say yes cannot be talked into it.
       expect('leaderboardEligible' in (store.games[0]?.row ?? {})).toBe(false)
+    })
+
+    it('marks a game imported only when it began before the account did', async () => {
+      // The bug this exists for: every game was written with `imported: true`, so a history told
+      // people that games they had played while signed in were kept from a guest game. Untrue,
+      // and useless even where it was true.
+      await send('POST', '/v1/games/import', game({ guest: true }))
+      await send('POST', '/v1/games/import', game({ guest: false }))
+      await send('POST', '/v1/games/import', game())
+      expect(store.games.map((kept) => kept.row.imported)).toEqual([true, false, false])
     })
 
     it('counts tiles in the game’s own alphabet', async () => {

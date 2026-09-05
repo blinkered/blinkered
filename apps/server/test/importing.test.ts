@@ -159,6 +159,20 @@ describe('reading a game a browser played before there was an account', () => {
     })
   })
 
+  it('takes the game as a guest game only when told so, and never guesses', () => {
+    // Absent withholds the label rather than inventing one about where a game came from.
+    expect(parseImport(body({ guest: true }), NOW)).toMatchObject({
+      ok: true,
+      game: { imported: true },
+    })
+    for (const guest of [false, undefined, 'yes', 1]) {
+      expect(parseImport(body({ guest }), NOW)).toMatchObject({
+        ok: true,
+        game: { imported: false },
+      })
+    }
+  })
+
   it('reads the source, and treats anything unfamiliar as the web', () => {
     expect(parseImport(body({ source: 'ios' }), NOW).ok).toBe(true)
     const parsed = parseImport(body({ source: 'toaster' }), NOW)

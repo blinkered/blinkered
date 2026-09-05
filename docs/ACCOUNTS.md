@@ -602,12 +602,23 @@ session turns "anyone can walk the namespace" into "anyone with an account can" 
 problem, and free. The rate limit is still owed, and it belongs in front of the API rather than
 in it.
 
-**A game played while signed in is imported too.** Phase A issues no seeds, so a game finished in
-a browser is a client's claim whether or not somebody was signed in when it started. Writing it
-through the same route, with `imported` true and `leaderboard_eligible` false, means there is one
-path rather than two and no row that quietly claims a provenance it does not have. Phase C is
-where a game becomes a server-side object first and a claim second; until then, this is the
-honest column.
+**A game played while signed in goes through the same route, and is not marked `imported`.**
+Phase A issues no seeds, so every game is finished on the client whoever was signed in, and one
+route takes both. What the two are is still different: `imported` means a game brought in from a
+browser's localStorage, and `leaderboard_eligible` means a game that can be ranked.
+
+The first version set `imported` on everything, on the reasoning that both are unrankable
+anyway. That is true and it is the other column's job to say so. What it produced was a history
+telling people that games they had played while signed in had been "kept from a guest game" —
+untrue, and of no use to them even where it was true, which is why the label is gone from My
+Games as well. Provenance is worth a column and is not worth a line in somebody's own list of
+their own games.
+
+The client says which it was, because the client is the only party that knows: whether an account
+existed when the game **began**, not when it was sent. Signing up on the game-over panel is the
+whole point of that panel, so by the time the game is posted the account always exists. It is a
+claim, and it is allowed to be, on the same footing as scores in phase A: a personal history is a
+diary and nobody forges a diary. Nothing is granted by it.
 
 **The store is one object behind two ports.** `AuthStore` proves who somebody is, `AccountStore`
 says what they have, and `Store` is both. One Postgres implementation, one fake in the test
