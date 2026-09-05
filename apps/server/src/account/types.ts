@@ -67,13 +67,19 @@ export interface GameWordRow {
   readonly points: number
 }
 
-/** A game as My Games lists one: enough to rank and to recognise, and nothing else. */
+/**
+ * A game as My Games lists one: enough to rank and to recognise, and nothing else.
+ *
+ * `imported` is deliberately not here, though the column is. Where a game came from is
+ * bookkeeping: it explains to us why a row is not on a board, and it says nothing to the person
+ * whose row it is, who knows only that they played it. Sending it anyway would leave a field on
+ * the wire that nothing renders, which is how it ends up rendered again.
+ */
 export interface GameSummary {
   readonly id: string
   readonly language: string
   readonly difficulty: string
   readonly canonical: boolean
-  readonly imported: boolean
   readonly score: number
   readonly words: number
   readonly rounds: number

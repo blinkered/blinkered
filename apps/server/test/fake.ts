@@ -152,7 +152,6 @@ export function fakeStore(): FakeStore {
           language: g.row.language,
           difficulty: g.row.difficulty,
           canonical: g.row.canonical,
-          imported: g.row.imported,
           score: g.row.score,
           words: g.row.wordsCount,
           rounds: g.row.roundsPlayed,

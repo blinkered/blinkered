@@ -38,7 +38,6 @@ export interface PlayedGame {
   readonly language: string
   readonly difficulty: string
   readonly canonical: boolean
-  readonly imported: boolean
   readonly score: number
   readonly words: number
   readonly rounds: number

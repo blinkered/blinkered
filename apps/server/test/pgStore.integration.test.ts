@@ -179,7 +179,10 @@ describe('keeping games', () => {
 
     const listed = await theStore().gamesOf(userId, 10)
     expect(listed.map((game) => game.score)).toEqual([20, 12])
-    expect(listed[0]).toMatchObject({ imported: true, canonical: true, language: 'en' })
+    expect(listed[0]).toMatchObject({ canonical: true, language: 'en' })
+    // Bookkeeping stays in the column and off the wire: a listing has no use for it, and a
+    // field nothing renders is one somebody renders later.
+    expect(listed[0]).not.toHaveProperty('imported')
   })
 
   it('keeps a game that found nothing', async () => {

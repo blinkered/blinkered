@@ -198,7 +198,6 @@ export function pgStore(db: Database): Store {
           language: games.language,
           difficulty: games.difficulty,
           canonical: games.canonical,
-          imported: games.imported,
           score: games.score,
           words: games.wordsCount,
           rounds: games.roundsPlayed,

@@ -610,9 +610,12 @@ browser's localStorage, and `leaderboard_eligible` means a game that can be rank
 The first version set `imported` on everything, on the reasoning that both are unrankable
 anyway. That is true and it is the other column's job to say so. What it produced was a history
 telling people that games they had played while signed in had been "kept from a guest game" —
-untrue, and of no use to them even where it was true, which is why the label is gone from My
-Games as well. Provenance is worth a column and is not worth a line in somebody's own list of
-their own games.
+untrue, and of no use to them even where it was true.
+
+So it is gone from My Games, and gone from what `GET /v1/me/games` returns as well. Provenance is
+worth a column and is worth nothing to the person whose row it is: it explains to _us_ why a game
+is not on a board, and to them it is a game they played. Leaving it on the wire for nothing to
+render is how it ends up rendered again.
 
 The client says which it was, because the client is the only party that knows: whether an account
 existed when the game **began**, not when it was sent. Signing up on the game-over panel is the
