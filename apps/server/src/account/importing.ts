@@ -1,7 +1,8 @@
-import { ENGINE_VERSION, configFor, isCanonical } from '@blinkered/engine'
+import { ENGINE_VERSION, alphabetFor, configFor, isCanonical, wordScore } from '@blinkered/engine'
 import type { Difficulty, FlipEconomy, GameConfig, WordCompleteMode } from '@blinkered/engine'
 import type { Rejection } from '../submission.js'
 import { scoreSubmission } from '../submission.js'
+import type { DetailWord } from './types.js'
 
 /**
  * Reading a game a browser played before anybody was signed in.
@@ -26,7 +27,7 @@ export type ImportProblem =
   | 'bad-seed'
   | 'bad-difficulty'
   | 'bad-config'
-  | 'bad-letters'
+  | 'bad-boards'
   | 'bad-words'
   | Rejection
 
@@ -48,8 +49,10 @@ export interface ImportedGame {
    * ranking, and it is false for both of these regardless.
    */
   readonly imported: boolean
-  readonly letters: readonly string[]
-  readonly words: readonly string[]
+  /** The board at the start of each round, tiles joined by a space. See `GameDetail`. */
+  readonly boards: readonly string[]
+  /** Every word, with what the engine knew about it. Scored here, never read from the body. */
+  readonly words: readonly DetailWord[]
   readonly rounds: number
   readonly score: number
   readonly dictionaryVersion: string | null
@@ -100,6 +103,15 @@ const LETTER_MAX = 8
 /** Longest a submitted word may be, as a bound on the request rather than a rule of play. */
 const WORD_MAX = 64
 
+/**
+ * Ceilings on the numbers the engine reports about a word, so a document cannot be an attack on
+ * the column that holds it. Bounds on the request rather than rules of play, and loose enough
+ * that no game anybody could sit through comes near them.
+ */
+const ROUND_MAX = 100_000
+const FLIPS_MAX = 10_000_000
+const TICK_MAX = 100_000_000
+
 export function parseImport(body: unknown, now: Date): ParsedImport {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
     return { ok: false, problem: 'not-an-object' }
@@ -124,17 +136,39 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
   const config = parseConfig(fields.config)
   if (config === null) return { ok: false, problem: 'bad-config' }
 
-  const letters = parseLetters(fields.letters, config.n)
-  if (letters === null) return { ok: false, problem: 'bad-letters' }
-
-  const words = parseWords(fields.words)
-  if (words === null) return { ok: false, problem: 'bad-words' }
-
+  // Checked here rather than left to `scoreSubmission`, which would also catch it, because the
+  // board count is bounded by the round count below: a zero would make every board an excess one
+  // and report a board problem for what is a round problem.
   const rounds = whole(fields.rounds)
-  if (rounds === null) return { ok: false, problem: 'impossible-rounds' }
+  if (rounds === null || rounds < 1) return { ok: false, problem: 'impossible-rounds' }
 
-  const verdict = scoreSubmission({ words, rounds }, config)
+  const boards = parseBoards(fields.boards, config.n, rounds)
+  if (boards === null) return { ok: false, problem: 'bad-boards' }
+
+  const found = parseWords(fields.words)
+  if (found === null) return { ok: false, problem: 'bad-words' }
+
+  // Scored from the words alone and never read from the body: `wordScore` is a function of tile
+  // count and nothing else. See docs/ACCOUNTS.md, "How a score is checked".
+  const verdict = scoreSubmission({ words: found.map((one) => one.word), rounds }, config)
   if (!verdict.ok) return { ok: false, problem: verdict.reason }
+
+  const alphabet = alphabetFor(config.language)
+  const words: DetailWord[] = found.map((one) => {
+    // Tiles rather than characters, for the reason reducer.ts gives where it matters: Croatian
+    // LJ is one tile, and a length in characters would overpay every word that holds one.
+    const tiles = alphabet.segment(one.word).length
+    return {
+      word: one.word,
+      tiles,
+      points: wordScore(tiles),
+      round: one.round,
+      flips: one.flips,
+      tick: one.tick,
+      // Absent rather than empty, so the ordinary word costs nothing to say it has no wilds.
+      ...(one.wilds.length === 0 ? {} : { wilds: one.wilds }),
+    }
+  })
 
   return {
     ok: true,
@@ -146,10 +180,10 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
       canonical: isCanonical(config, difficulty),
       seed,
       source: fields.source === 'ios' ? 'ios' : 'web',
+      boards,
       // Absent reads as "not a guest game", which is the safer default of the two: it withholds
       // a label rather than inventing one about where somebody's game came from.
       imported: fields.guest === true,
-      letters,
       words,
       rounds,
       score: verdict.score,
@@ -237,21 +271,71 @@ function bounded(
   return value
 }
 
-/** The board as first dealt: exactly `n` faces, each of them a face. */
-function parseLetters(value: unknown, n: number): readonly string[] | null {
-  if (!Array.isArray(value) || value.length !== n) return null
-  const letters = value as unknown[]
-  if (!letters.every((l) => typeof l === 'string' && l !== '' && l.length <= LETTER_MAX))
-    return null
-  return letters as readonly string[]
+/**
+ * The board at the start of each round, one string per round.
+ *
+ * At least one and never more than the rounds claimed, rather than exactly the rounds claimed. A
+ * client that failed to snapshot a boundary should lose a board and not the whole game: the
+ * import is silent on failure by design, so strictness here would cost somebody their score to
+ * report a bug they cannot see.
+ *
+ * Each board is exactly `n` faces joined by a space, which is checked, because a board of the
+ * wrong size is a board the ruleset says did not happen.
+ */
+function parseBoards(value: unknown, n: number, rounds: number): readonly string[] | null {
+  if (!Array.isArray(value) || value.length === 0 || value.length > rounds) return null
+  const boards = value as unknown[]
+  const usable = (board: unknown): boolean => {
+    if (typeof board !== 'string' || board.length > n * (LETTER_MAX + 1)) return false
+    const faces = board.split(' ')
+    return faces.length === n && faces.every((face) => face !== '' && face.length <= LETTER_MAX)
+  }
+  return boards.every(usable) ? (boards as readonly string[]) : null
 }
 
-/** Words as an array of words. Whether they make a possible game is `scoreSubmission`'s question. */
-function parseWords(value: unknown): readonly string[] | null {
+/** What the client claims about one found word, before this file scores it. */
+interface FoundClaim {
+  readonly word: string
+  readonly round: number
+  readonly flips: number
+  readonly tick: number
+  readonly wilds: readonly number[]
+}
+
+/**
+ * Words, with what the engine already knew about each one.
+ *
+ * Whether they make a possible game is `scoreSubmission`'s question and stays there. What this
+ * decides is only that every field is the kind of thing it claims to be, so a document cannot
+ * carry a string where a round number belongs and surface it years later in a chart.
+ */
+function parseWords(value: unknown): readonly FoundClaim[] | null {
   if (!Array.isArray(value)) return null
-  const words = value as unknown[]
-  if (!words.every((w) => typeof w === 'string' && w !== '' && w.length <= WORD_MAX)) return null
-  return words as readonly string[]
+  const claims: FoundClaim[] = []
+  for (const entry of value as unknown[]) {
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return null
+    const fields = entry as Record<string, unknown>
+    const word = fields.word
+    if (typeof word !== 'string' || word === '' || word.length > WORD_MAX) return null
+    const round = bounded(fields.round, [0, ROUND_MAX], true)
+    const flips = bounded(fields.flips, [0, FLIPS_MAX], true)
+    const tick = bounded(fields.tick, [0, TICK_MAX], true)
+    if (round === null || flips === null || tick === null) return null
+    const wilds = parseWilds(fields.wilds, word.length)
+    if (wilds === null) return null
+    claims.push({ word, round, flips, tick, wilds })
+  }
+  return claims
+}
+
+/** Letter positions a wild stood in. Absent is none, which is what almost every word says. */
+function parseWilds(value: unknown, length: number): readonly number[] | null {
+  if (value === undefined || value === null) return []
+  if (!Array.isArray(value) || value.length > length) return null
+  const wilds = value as unknown[]
+  const usable = (at: unknown): boolean =>
+    typeof at === 'number' && Number.isInteger(at) && at >= 0 && at < length
+  return wilds.every(usable) ? (wilds as readonly number[]) : null
 }
 
 /** A non-negative whole number, or null for anything else somebody sent instead. */

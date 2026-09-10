@@ -1,13 +1,11 @@
 import { randomBytes } from 'node:crypto'
 import { Hono } from 'hono'
-import { alphabetFor, wordScore } from '@blinkered/engine'
 import { currentUser } from '../auth/routes.js'
 import type { SessionDeps } from '../auth/routes.js'
 import { normalizeUsername } from '../auth/usernames.js'
 import type { Store } from '../types.js'
 import { parseImport } from './importing.js'
 import { parsePatch } from './profile.js'
-import type { GameWordRow } from './types.js'
 
 /**
  * What an account *is*, once somebody has one: a profile, a name, and a history.
@@ -128,14 +126,6 @@ export function accountRoutes(deps: AccountDeps): Hono {
     const { game } = parsed
 
     const id = newId()
-    const alphabet = alphabetFor(game.config.language)
-    const words: GameWordRow[] = game.words.map((word, ordinal) => {
-      // Tiles rather than characters, for the reason reducer.ts gives where it matters: Croatian
-      // LJ is one tile, and a length in characters would overpay every word that holds one.
-      const tiles = alphabet.segment(word).length
-      return { ordinal, word, tiles, points: wordScore(tiles) }
-    })
-
     await deps.store.insertGame(
       {
         id,
@@ -157,7 +147,6 @@ export function accountRoutes(deps: AccountDeps): Hono {
         chargeFullRound: game.config.chargeFullRound,
         wildChance: game.config.wildChance,
         replaceChance: game.config.replaceChance,
-        letters: game.letters,
         score: game.score,
         wordsCount: game.words.length,
         roundsPlayed: game.rounds,
@@ -166,12 +155,34 @@ export function accountRoutes(deps: AccountDeps): Hono {
         startedAt: game.startedAt,
         finishedAt: game.finishedAt,
       },
-      words,
+      { boards: game.boards, words: game.words },
     )
 
     // The score the server computed, not the one the client believed. A client showing a
     // different number afterwards is a bug worth seeing rather than one worth hiding.
     return context.json({ id, score: game.score }, 201)
+  })
+
+  /*
+   * One game, in full.
+   *
+   * The only route that reads a detail document, and the reason the document is a document: it is
+   * fetched whole, by primary key, and never filtered or aggregated.
+   *
+   * Scoped to the owner in the query rather than checked after it. A 404 rather than a 403 for
+   * somebody else's game, because the two are distinguishable only to whoever is guessing at ids,
+   * and telling them apart is how this endpoint reports which games exist.
+   *
+   * `detail` can be null for a game whose document a retention policy has pruned. There is no
+   * such policy yet; the summary is still a game, and a reader that treated the missing document
+   * as a missing game would make somebody's history shorter than it is.
+   */
+  routes.get('/me/games/:id', async (context) => {
+    const user = await currentUser(deps, context)
+    if (user === null) return context.json({ error: 'signed-out' }, 401)
+    const found = await deps.store.gameFor(user.userId, context.req.param('id'))
+    if (found === null) return context.json({ error: 'no-game' }, 404)
+    return context.json({ ...found.summary, detail: found.detail })
   })
 
   return routes

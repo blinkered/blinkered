@@ -166,6 +166,38 @@ export async function checkName(
   return getting(`usernames/${encodeURIComponent(name)}`)
 }
 
+/** A word, with everything the engine knew about it when it was found. */
+export interface PlayedWord {
+  readonly word: string
+  readonly tiles: number
+  readonly points: number
+  readonly round: number
+  readonly flips: number
+  readonly tick: number
+  /** Absent for an ordinary word, which is almost all of them. */
+  readonly wilds?: readonly number[]
+}
+
+/**
+ * One game in full.
+ *
+ * `detail` can be null: the summary outlives the document, so a game whose words have been pruned
+ * is still a game and still has a score. Nothing prunes yet, and a display that treated the
+ * missing document as a missing game would make somebody's history shorter than it is.
+ */
+export interface PlayedGameDetail extends PlayedGame {
+  readonly detail: {
+    /** The board at the start of each round, tiles joined by a space. */
+    readonly boards: readonly string[]
+    readonly words: readonly PlayedWord[]
+  } | null
+}
+
+/** One game, whole. Null for somebody else's, a missing one, and a server that did not answer. */
+export async function gameDetail(id: string): Promise<PlayedGameDetail | null> {
+  return getting(`me/games/${encodeURIComponent(id)}`)
+}
+
 /** Somebody's own games, newest first. Null when the question could not be asked. */
 export async function myGames(): Promise<readonly PlayedGame[] | null> {
   const answered = await getting<{ games: readonly PlayedGame[] }>('me/games')
@@ -186,8 +218,21 @@ export interface GameToKeep {
   readonly difficulty: string
   readonly source: 'web' | 'ios'
   readonly config: unknown
-  readonly letters: readonly string[]
-  readonly words: readonly string[]
+  /** The board at the start of each round, tiles joined by a space. */
+  readonly boards: readonly string[]
+  /**
+   * Every word, with what the engine knew about it when it was found.
+   *
+   * No score and no tile count: `wordScore` is a function of tile count and nothing else, so the
+   * words are sufficient and the server does its own arithmetic. See docs/ACCOUNTS.md.
+   */
+  readonly words: readonly {
+    readonly word: string
+    readonly round: number
+    readonly flips: number
+    readonly tick: number
+    readonly wilds?: readonly number[]
+  }[]
   readonly rounds: number
   readonly dictionaryVersion?: string
   /**

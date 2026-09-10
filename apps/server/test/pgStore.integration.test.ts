@@ -6,6 +6,7 @@ import { runMigrations } from '../src/migrate.js'
 import { pgStore } from '../src/pgStore.js'
 import { DATABASE_SCHEMA } from '../src/schema.js'
 import type { DatabaseConfig } from '../src/config.js'
+import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
 /*
@@ -156,7 +157,6 @@ describe('keeping games', () => {
     chargeFullRound: false,
     wildChance: 0.02,
     replaceChance: 0.5,
-    letters: ['A', 'B', 'C'],
     score,
     wordsCount: 1,
     roundsPlayed: 6,
@@ -166,16 +166,17 @@ describe('keeping games', () => {
     finishedAt: at,
   })
 
-  it('writes a game and its words together, and lists it newest first', async () => {
+  const detailFor = (word: string): GameDetail => ({
+    boards: ['A B C', 'A B D'],
+    words: [{ word, tiles: 5, points: 20, round: 0, flips: 8, tick: 42, wilds: [1] }],
+  })
+
+  it('writes a game and its document together, and lists it newest first', async () => {
     const { userId } = await account()
     const older = new Date(Date.now() - 100_000)
     const newer = new Date(Date.now() - 1000)
-    await theStore().insertGame(gameFor(userId, older, 12), [
-      { ordinal: 0, word: 'HOUSE', tiles: 5, points: 12 },
-    ])
-    await theStore().insertGame(gameFor(userId, newer, 20), [
-      { ordinal: 0, word: 'RIVER', tiles: 5, points: 20 },
-    ])
+    await theStore().insertGame(gameFor(userId, older, 12), detailFor('HOUSE'))
+    await theStore().insertGame(gameFor(userId, newer, 20), detailFor('RIVER'))
 
     const listed = await theStore().gamesOf(userId, 10)
     expect(listed.map((game) => game.score)).toEqual([20, 12])
@@ -183,11 +184,51 @@ describe('keeping games', () => {
     // Bookkeeping stays in the column and off the wire: a listing has no use for it, and a
     // field nothing renders is one somebody renders later.
     expect(listed[0]).not.toHaveProperty('imported')
+    // And the document is not in the listing either. It is fetched whole, by id, or not at all.
+    expect(listed[0]).not.toHaveProperty('detail')
+  })
+
+  it('round-trips the document through jsonb unchanged', async () => {
+    const { userId } = await account()
+    const at = new Date(Date.now() - 1000)
+    const detail = detailFor('KESTREL')
+    await theStore().insertGame(gameFor(userId, at, 20), detail)
+    const found = await theStore().gameFor(userId, gameFor(userId, at, 20).id)
+    // Numbers, nested arrays and the optional field all survive, which is the only thing a
+    // fake could not have told us: jsonb canonicalizes, and this is what it does to our shape.
+    expect(found?.detail).toEqual(detail)
+    expect(found?.summary.score).toBe(20)
+  })
+
+  it('will not hand a game to anybody but its owner', async () => {
+    const mine = await account()
+    const theirs = await account()
+    const at = new Date(Date.now() - 1000)
+    await theStore().insertGame(gameFor(mine.userId, at, 5), detailFor('OTTER'))
+    const id = gameFor(mine.userId, at, 5).id
+    expect(await theStore().gameFor(mine.userId, id)).not.toBeNull()
+    // Scoped in the query rather than filtered afterwards, because a filter a caller can forget
+    // is a filter a caller will forget.
+    expect(await theStore().gameFor(theirs.userId, id)).toBeNull()
+  })
+
+  it('cascades the document away with the game', async () => {
+    const { userId } = await account()
+    const at = new Date(Date.now() - 1000)
+    await theStore().insertGame(gameFor(userId, at, 7), detailFor('SPARROW'))
+    await (open as NonNullable<typeof open>).db.execute(
+      sql`delete from ${sql.identifier(DATABASE_SCHEMA)}.games where id = ${gameFor(userId, at, 7).id}`,
+    )
+    const [row] = await (open as NonNullable<typeof open>).db.execute<{ n: number }>(
+      sql`select count(*)::int as n from ${sql.identifier(DATABASE_SCHEMA)}.game_detail
+          where game_id = ${gameFor(userId, at, 7).id}`,
+    )
+    expect(row?.n).toBe(0)
   })
 
   it('keeps a game that found nothing', async () => {
     const { userId } = await account()
-    await theStore().insertGame(gameFor(userId, new Date(), 0), [])
+    await theStore().insertGame(gameFor(userId, new Date(), 0), { boards: ['A B C'], words: [] })
     expect(await theStore().gamesOf(userId, 10)).toHaveLength(1)
   })
 
@@ -195,7 +236,10 @@ describe('keeping games', () => {
     const mine = await account()
     const theirs = await account()
     for (let i = 0; i < 3; i += 1) {
-      await theStore().insertGame(gameFor(mine.userId, new Date(Date.now() - i * 1000), i), [])
+      await theStore().insertGame(gameFor(mine.userId, new Date(Date.now() - i * 1000), i), {
+        boards: ['A B C'],
+        words: [],
+      })
     }
     expect(await theStore().gamesOf(mine.userId, 2)).toHaveLength(2)
     expect(await theStore().gamesOf(theirs.userId, 10)).toEqual([])
@@ -204,7 +248,7 @@ describe('keeping games', () => {
   it('leaves a hidden game out, including from the person who set it', async () => {
     const { userId } = await account()
     const at = new Date()
-    await theStore().insertGame(gameFor(userId, at, 99), [])
+    await theStore().insertGame(gameFor(userId, at, 99), { boards: ['A B C'], words: [] })
     await (open as NonNullable<typeof open>).db.execute(
       sql`update ${sql.identifier(DATABASE_SCHEMA)}.games set hidden = true
           where id = ${gameFor(userId, at, 99).id}`,

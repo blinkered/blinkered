@@ -309,7 +309,7 @@ function Session({
   }
 
   const onFinish = useCallback(
-    (state: GameState, seed: number, letters: readonly string[]): void => {
+    (state: GameState, seed: number, boards: readonly string[]): void => {
       const result: GameResult = {
         score: state.score,
         words: state.wordsFound.length,
@@ -349,8 +349,17 @@ function Session({
           // been retuned once already -- and a row carrying its own numbers stays explainable
           // after the next retune.
           config,
-          letters,
-          words: state.wordsFound.map((found) => found.word),
+          boards,
+          // Everything the engine already knew about each word. It costs nothing to send -- the
+          // reducer computed all of it during play -- and it is what turns a history from a
+          // receipt into something worth opening twice.
+          words: state.wordsFound.map((found) => ({
+            word: found.word,
+            round: found.roundIndex,
+            flips: found.flips,
+            tick: found.tick,
+            ...(found.wilds.length === 0 ? {} : { wilds: found.wilds }),
+          })),
           rounds: result.rounds,
           ...(dictionary === null ? {} : { dictionaryVersion: dictionary.digest }),
         },
@@ -677,7 +686,7 @@ function Playing({
   messages: Messages
   onRestart: () => void
   onQuit: () => void
-  onFinish: (state: GameState, seed: number, letters: readonly string[]) => void
+  onFinish: (state: GameState, seed: number, boards: readonly string[]) => void
   /**
    * True while the in-app rules cover the game, which only happens in the native shell. Reading
    * the rules must not cost flips, and the clock lives in here rather than in Session, so Session
@@ -702,13 +711,30 @@ function Playing({
   // Reported once the reducer says so; the parent then takes over and unmounts this.
   const finalState = game.state
   const { seed } = spec
-  // The board as first dealt, which only this component ever holds. Not the board at the end:
-  // from 0.3.0 a letter can be replaced at any deal, so those are different things and only one
-  // of them is a fact about how the game started.
-  const dealt = game.board.letters
+
+  /*
+   * The board at the start of each round, which only this component ever sees.
+   *
+   * Not the first deal alone. From 0.3.0 a letter can be replaced at any deal, and under `spend`
+   * a completed word takes its letters off, so a game has several boards and only the first is a
+   * fact about how it started. Snapshotting at each boundary is what makes "which words on which
+   * board" answerable without keeping an event log, which docs/ACCOUNTS.md rejected.
+   *
+   * A ref, because nothing renders from it, and indexed by round rather than pushed, so a
+   * re-render inside the same round cannot record the board twice.
+   */
+  const boards = useRef<string[]>([])
+  const round = game.state.roundIndex
+  const tiles = game.state.tiles
   useEffect(() => {
-    if (over) onFinish(finalState, seed, dealt)
-  }, [over, finalState, seed, dealt, onFinish])
+    // `letter`, not what the tile is showing: a wild is a mask over a letter that is still
+    // underneath, so recording the mask would claim the board held a card it never held.
+    boards.current[round] = tiles.map((tile) => tile.letter).join(' ')
+  }, [round, tiles])
+
+  useEffect(() => {
+    if (over) onFinish(finalState, seed, [...boards.current])
+  }, [over, finalState, seed, onFinish])
 
   return (
     <>

@@ -365,10 +365,10 @@ games             id, user_id, seed, status, source (web|ios), imported,
                   difficulty, language, canonical, n, speed_multiplier, initial_flips,
                   w_min, min_word_len, word_complete_mode, flip_economy,
                   charge_full_round, wild_chance, replace_chance,
-                  letters, score, words_count, flips_used, rounds_played,
+                  score, words_count, rounds_played,
                   engine_version, dictionary_version,
                   leaderboard_eligible, hidden, started_at, finished_at
-game_words        game_id, word, tiles, points, round_index
+game_detail       game_id, version, detail (jsonb: boards[], words[])
 words             language, word          (optional; only if found words are shown publicly)
 reports           reporter_user_id, subject_user_id, field, reason, created_at, resolved_at
 ```
@@ -380,10 +380,60 @@ obviously a lie stops being on the board, and the game it came from stays in its
 where it can do no harm. Reversible, which a delete is not.
 
 `words` is the dictionary if it is wanted at all; see "Whether to check the words are real".
-`game_words` holds tiles rather than characters, because that is what scores.
 
 `started_at` is written when the server deals the game, not when the client says so, which is
 what makes the elapsed-clock check mean anything.
+
+### The detail document, and why it is not three tables
+
+`game_detail` was a `game_words` table in the first draft of this document, and would have wanted
+a `game_rounds` table beside it once the board per round was worth keeping. It is one versioned
+`jsonb` column instead, because **the split that matters here is by access pattern rather than by
+entity shape.**
+
+Nothing queries a found word. The leaderboard sorts scalars on `games`; My Games sorts scalars on
+`games`; moderation reads a scalar. The words and the boards are written once, read whole, and
+never partially updated, which is the definition of a document rather than a table.
+
+The arithmetic agreed, and by more than expected. As rows, fourteen words came to about 1.7KB of
+which **fifty-seven percent was tuple headers and index entries** rather than game: 68 bytes of
+Postgres bookkeeping to hold a five-letter word and three small integers. The same content as
+`jsonb` is smaller before compression and roughly a third after it, since consecutive boards
+differ by one letter and the keys repeat once per word.
+
+| per game        | as tables | as a document |
+| --------------- | --------- | ------------- |
+| rows            | 16        | 2             |
+| stored          | ~2.3 KB   | ~0.9 KB       |
+| write-ahead log | ~6 KB     | ~2 KB         |
+
+The last row is the one that matters, because the write-ahead log is what point-in-time recovery
+actually stores. At a hundred thousand daily players the difference is about 2GB a day of archive
+against 700MB.
+
+**A table of its own rather than a column on `games`**, for two reasons that outlive the byte
+count. `games` is what the leaderboard scans, and it cannot do an index-only scan because it needs
+`user_id` to reach a username, so a detail column would ride along on every page; TOAST usually
+prevents that, but a document this size sits right at the 2KB threshold and would be inline for
+short games and out of line for long ones, which is worse than either. And retention here is a
+`delete`, which gives space back, rather than an `update ... set detail = null`, which bloats the
+table it is trying to shrink.
+
+**`version` is a column, not a key inside the document**, so "how many rows are still on version
+1" is a query rather than a scan. The discipline that goes with it, and it has to be chosen rather
+than drifted into: **a migration rewrites old documents; readers do not accumulate.** The
+alternative leaves a reader for every shape ever written and nobody willing to delete one.
+
+What is deliberately not in it is an event log. The board changes mid-game, so "which board" is
+really "which of the several boards this game had", and reconstructing all of them means full
+replay, which this document rejects above for the score check and rejects here for the same
+reason. The board at each round boundary plus the round each word was found in answers the
+question at a fraction of the cost.
+
+One consequence for later: cross-game word analytics — "you have found STRAIGHTEN four times" —
+is a scan rather than an index lookup. That is the right shape anyway. Nobody would run a
+`group by word` over millions of live rows; it wants a derived table, fed from the document, and
+the document does not block it.
 
 **The leaderboard index has to mirror `compareResults` exactly.** That function is score
 descending, then rounds ascending, then timestamp ascending, and any `ORDER BY` that differs from

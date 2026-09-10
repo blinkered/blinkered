@@ -49,7 +49,6 @@ export interface GameRow {
   readonly chargeFullRound: boolean
   readonly wildChance: number
   readonly replaceChance: number
-  readonly letters: readonly string[]
   readonly score: number
   readonly wordsCount: number
   readonly roundsPlayed: number
@@ -59,12 +58,52 @@ export interface GameRow {
   readonly finishedAt: Date
 }
 
-/** What a game found, one row each. `tiles` rather than characters, because that is what scores. */
-export interface GameWordRow {
-  readonly ordinal: number
+/**
+ * The shape `game_detail.detail` is in, and the number in `game_detail.version`.
+ *
+ * Bumped whenever a field is added, removed or reinterpreted. The discipline the schema comment
+ * states: a migration rewrites old documents, so there is exactly one reader.
+ */
+export const DETAIL_VERSION = 1
+
+/** A word, with everything the engine already knew about it when it was found. */
+export interface DetailWord {
   readonly word: string
+  /** Tiles rather than characters, because that is what scores. Croatian LJ is one. */
   readonly tiles: number
   readonly points: number
+  /** Which round it was found in, counting from zero. What "which words on which board" needs. */
+  readonly round: number
+  /** Flips it paid back. Under `fibonacci` this is the whole economy of the game. */
+  readonly flips: number
+  /** Ticks since the game began, which is what gives a game its pacing. */
+  readonly tick: number
+  /**
+   * Which of its letters came from a wild, by index.
+   *
+   * Absent rather than empty for an ordinary word. Most words have no wilds, and an empty JSON
+   * array costs bytes in every one of them to say nothing.
+   */
+  readonly wilds?: readonly number[]
+}
+
+/**
+ * Everything about a game that nothing queries.
+ *
+ * `boards` is the board as it stood at the start of each round, tiles joined by a space, in tile
+ * order. One per round rather than only the first, because from 0.3.0 a letter can be replaced at
+ * any deal and under `spend` a completed word takes its letters off, so "which board" is really
+ * "which of the several boards this game had". A space is safe as the separator: a tile face is a
+ * letter or a digraph and never contains one.
+ *
+ * What is deliberately **not** here is an event log. Reconstructing every intermediate state
+ * means full replay, which docs/ACCOUNTS.md rejected and which this does not need: the board at
+ * each round boundary plus the round each word was found in answers the question at a fraction of
+ * the cost.
+ */
+export interface GameDetail {
+  readonly boards: readonly string[]
+  readonly words: readonly DetailWord[]
 }
 
 /**
@@ -104,8 +143,23 @@ export interface AccountStore {
    * server stored instead of what it hoped it stored.
    */
   updateProfile(userId: string, patch: ProfilePatch): Promise<Profile | null>
-  /** Writes a game and its words together, or neither. */
-  insertGame(row: GameRow, words: readonly GameWordRow[]): Promise<void>
+  /** Writes a game and its detail together, or neither. */
+  insertGame(row: GameRow, detail: GameDetail): Promise<void>
   /** Somebody's games, most recently finished first. */
   gamesOf(userId: string, limit: number): Promise<readonly GameSummary[]>
+  /**
+   * One game in full, or null.
+   *
+   * Scoped by owner rather than filtered afterwards, so there is no arrangement in which a
+   * caller forgets: a game id is guessable in principle and this is the only route that returns
+   * somebody's words.
+   *
+   * Null also covers a game whose detail was pruned by a retention policy that does not exist
+   * yet. When it does, the summary row outlives the document by design, and a reader that
+   * treated a missing document as a missing game would make the history shorter than it is.
+   */
+  gameFor(
+    userId: string,
+    gameId: string,
+  ): Promise<{ summary: GameSummary; detail: GameDetail | null } | null>
 }

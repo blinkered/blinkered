@@ -4,8 +4,8 @@ import {
   doublePrecision,
   index,
   integer,
+  jsonb,
   pgSchema,
-  primaryKey,
   smallint,
   text,
   timestamp,
@@ -186,11 +186,6 @@ export const games = blinkered.table(
     wildChance: doublePrecision('wild_chance').notNull(),
     replaceChance: doublePrecision('replace_chance').notNull(),
 
-    /** The board as first dealt, in deal order. Not the board at the end: from 0.3.0 a letter
-     * can be replaced at any deal, so those are different things and only one is a fact about
-     * how the game started. */
-    letters: text('letters').array().notNull(),
-
     score: integer('score').notNull().default(0),
     wordsCount: integer('words_count').notNull().default(0),
     roundsPlayed: integer('rounds_played').notNull().default(0),
@@ -228,20 +223,50 @@ export const games = blinkered.table(
   ],
 )
 
-/** What a game found. `tiles`, not characters, because that is what scores. */
-export const gameWords = blinkered.table(
-  'game_words',
-  {
-    gameId: text('game_id')
-      .notNull()
-      .references(() => games.id, { onDelete: 'cascade' }),
-    ordinal: smallint('ordinal').notNull(),
-    word: text('word').notNull(),
-    tiles: smallint('tiles').notNull(),
-    points: integer('points').notNull(),
-  },
-  (table) => [primaryKey({ columns: [table.gameId, table.ordinal] })],
-)
+/**
+ * Everything about a game that nothing ever queries: the words it found, and the board as it
+ * stood at the start of each round.
+ *
+ * One versioned document rather than a `game_words` table and a `game_rounds` table, and the
+ * reason is that the split here is by **access pattern** rather than by entity shape. Nothing
+ * filters, sorts, joins or aggregates on a found word. The leaderboard sorts scalars on `games`;
+ * My Games sorts scalars on `games`; moderation reads a scalar. This is written once, read whole,
+ * and never partially updated, which is what a document is for.
+ *
+ * The arithmetic agreed. As rows, fourteen words cost about 1.7KB of which **fifty-seven percent
+ * was tuple headers and index entries** rather than game: 68 bytes of bookkeeping to hold a
+ * five-letter word and three small integers. The same content as jsonb is smaller before
+ * compression and roughly a third of the size after it, because consecutive boards differ by one
+ * letter and the keys repeat once per word. Fifteen rows per game become one, and the write-ahead
+ * log -- which is what point-in-time recovery actually stores -- falls with them.
+ *
+ * A table of its own rather than a column on `games`, for two reasons that outlive the byte
+ * count. `games` is what the leaderboard scans, and it cannot do an index-only scan because it
+ * needs `user_id` to reach a username, so a detail column would ride along on every page; TOAST
+ * would usually prevent that, but a document this size sits right at the threshold and would be
+ * inline for short games and out of line for long ones. And retention here is a `delete`, which
+ * gives space back, rather than an `update ... set detail = null`, which bloats the table it is
+ * trying to shrink.
+ *
+ * `jsonb` rather than `bytea` or compressed text, deliberately, and the cost is a canonicalizing
+ * parse on write. What it buys is `detail -> 'words'` in psql at two in the morning when somebody
+ * disputes a score, which is the only time anybody will ever look at this column by hand.
+ */
+export const gameDetail = blinkered.table('game_detail', {
+  gameId: text('game_id')
+    .primaryKey()
+    .references(() => games.id, { onDelete: 'cascade' }),
+  /**
+   * Which shape `detail` is in.
+   *
+   * A column rather than a key inside the document, so that "how many rows are still on version
+   * 1" is a query rather than a scan. The rule that goes with it, and it has to be written down
+   * somewhere: **a migration rewrites old documents; readers do not accumulate.** The alternative
+   * leaves a reader for every shape ever written and nobody willing to delete one.
+   */
+  version: smallint('version').notNull(),
+  detail: jsonb('detail').notNull(),
+})
 
 /** Somebody objecting to a username, a bio, or a score. The other half of moderation. */
 export const reports = blinkered.table(
@@ -270,11 +295,11 @@ export const usersRelations = relations(users, ({ many }) => ({
   games: many(games),
 }))
 
-export const gamesRelations = relations(games, ({ one, many }) => ({
+export const gamesRelations = relations(games, ({ one }) => ({
   user: one(users, { fields: [games.userId], references: [users.id] }),
-  words: many(gameWords),
+  detail: one(gameDetail, { fields: [games.id], references: [gameDetail.gameId] }),
 }))
 
-export const gameWordsRelations = relations(gameWords, ({ one }) => ({
-  game: one(games, { fields: [gameWords.gameId], references: [games.id] }),
+export const gameDetailRelations = relations(gameDetail, ({ one }) => ({
+  game: one(games, { fields: [gameDetail.gameId], references: [games.id] }),
 }))

@@ -55,7 +55,7 @@ describe('the migration', () => {
     expect(rows.map((row) => row.table_name)).toEqual([
       '__drizzle_migrations',
       'auth_identities',
-      'game_words',
+      'game_detail',
       'games',
       'login_codes',
       'reports',
@@ -104,31 +104,28 @@ describe('the schema', () => {
     // What makes "keep this score" at the end of a guest's game better than a promise: the row
     // already exists and is claimed at sign-up, rather than being taken on trust afterwards.
     const id = `game-${String(Date.now())}`
-    await database()
-      .insert(games)
-      .values({
-        id,
-        userId: null,
-        seed: 42,
-        status: 'over',
-        source: 'web',
-        difficulty: 'medium',
-        language: 'en',
-        canonical: true,
-        n: 12,
-        speedMultiplier: 1.5,
-        holdTicks: 4,
-        initialFlips: 144,
-        wMin: 25,
-        minWordLength: 3,
-        wordCompleteMode: 'spend',
-        flipEconomy: 'fibonacci',
-        chargeFullRound: false,
-        wildChance: 0.02,
-        replaceChance: 0.25,
-        letters: ['A', 'B', 'C'],
-        engineVersion: '0.3.0',
-      })
+    await database().insert(games).values({
+      id,
+      userId: null,
+      seed: 42,
+      status: 'over',
+      source: 'web',
+      difficulty: 'medium',
+      language: 'en',
+      canonical: true,
+      n: 12,
+      speedMultiplier: 1.5,
+      holdTicks: 4,
+      initialFlips: 144,
+      wMin: 25,
+      minWordLength: 3,
+      wordCompleteMode: 'spend',
+      flipEconomy: 'fibonacci',
+      chargeFullRound: false,
+      wildChance: 0.02,
+      replaceChance: 0.25,
+      engineVersion: '0.3.0',
+    })
     const [stored] = await database()
       .select()
       .from(games)
@@ -174,7 +171,6 @@ describe('the schema', () => {
         chargeFullRound: false,
         wildChance: 0.02,
         replaceChance: 0,
-        letters: ['A'],
         engineVersion: '0.3.0',
       })
 

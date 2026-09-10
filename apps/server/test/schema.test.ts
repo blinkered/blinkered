@@ -3,7 +3,7 @@ import { getTableConfig } from 'drizzle-orm/pg-core'
 import {
   DATABASE_SCHEMA,
   authIdentities,
-  gameWords,
+  gameDetail,
   games,
   loginCodes,
   reports,
@@ -11,7 +11,7 @@ import {
   users,
 } from '../src/schema.js'
 
-const TABLES = { users, authIdentities, sessions, loginCodes, games, gameWords, reports }
+const TABLES = { users, authIdentities, sessions, loginCodes, games, gameDetail, reports }
 
 describe('the schema', () => {
   it('puts every table in the one schema the migrations name', () => {
@@ -51,6 +51,20 @@ describe('the schema', () => {
     ]) {
       expect(columns, rule).toContain(rule)
     }
+  })
+
+  it('keeps out of `games` everything that only the detail document needs', () => {
+    // The split is by access pattern rather than by entity shape. `games` is what the leaderboard
+    // and My Games scan, so anything nothing filters, sorts or joins on belongs in the document:
+    // as rows, fourteen words cost more in tuple headers and index entries than in game.
+    const columns = getTableConfig(games).columns.map((column) => column.name)
+    expect(columns).not.toContain('letters')
+
+    const detail = new Map(getTableConfig(gameDetail).columns.map((c) => [c.name, c]))
+    // A column rather than a key inside the document, so "how many rows are still on version 1"
+    // is a query rather than a scan.
+    expect(detail.get('version')?.notNull).toBe(true)
+    expect(detail.get('detail')?.notNull).toBe(true)
   })
 
   it('lets a game have no owner, and insists a user has a name', () => {

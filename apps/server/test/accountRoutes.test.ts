@@ -8,6 +8,8 @@ import { capturingMailer, fakeStore } from './fake.js'
 
 const JSON_HEADERS = { 'content-type': 'application/json' }
 const CONFIG = configFor('medium', { language: 'en' })
+/** Twelve tiles, joined by a space, which is what a board looks like in a detail document. */
+const BOARD = 'A B C D E F G H I J K L'
 
 describe('the account surface', () => {
   let store: ReturnType<typeof fakeStore>
@@ -194,8 +196,11 @@ describe('the account surface', () => {
       difficulty: 'medium',
       source: 'web',
       config: { ...CONFIG },
-      letters: 'ABCDEFGHIJKL'.split(''),
-      words: ['HOUSE', 'RIVER'],
+      boards: [BOARD, BOARD],
+      words: [
+        { word: 'HOUSE', round: 0, flips: 8, tick: 42 },
+        { word: 'RIVER', round: 1, flips: 8, tick: 96, wilds: [2] },
+      ],
       rounds: 8,
       ...changes,
     })
@@ -208,9 +213,32 @@ describe('the account surface', () => {
 
       const stored = store.games[0]
       expect(stored?.row.score).toBe(kept.score)
-      expect(stored?.words.map((word) => word.word)).toEqual(['HOUSE', 'RIVER'])
+      expect(stored?.detail.words.map((word) => word.word)).toEqual(['HOUSE', 'RIVER'])
       // Tiles, not characters, because that is what scores.
-      expect(stored?.words[0]?.tiles).toBe(5)
+      expect(stored?.detail.words[0]?.tiles).toBe(5)
+      expect(stored?.detail.boards).toEqual([BOARD, BOARD])
+    })
+
+    it('keeps what the engine already knew about each word', () => {
+      // `roundIndex`, `wilds`, `flips` and `tick` were computed during play and thrown away at
+      // the door. In a document they cost a version bump rather than a migration, which is most
+      // of the argument for the document.
+      return send('POST', '/v1/games/import', game()).then(() => {
+        expect(store.games[0]?.detail.words[1]).toMatchObject({
+          word: 'RIVER',
+          round: 1,
+          flips: 8,
+          tick: 96,
+          wilds: [2],
+        })
+      })
+    })
+
+    it('leaves wilds out of an ordinary word rather than writing an empty list', () => {
+      // Most words have no wilds, and an empty array costs bytes in every one of them to say so.
+      return send('POST', '/v1/games/import', game()).then(() => {
+        expect(store.games[0]?.detail.words[0]).not.toHaveProperty('wilds')
+      })
     })
 
     it('never marks any game as one for a leaderboard', async () => {
@@ -236,16 +264,21 @@ describe('the account surface', () => {
       await send(
         'POST',
         '/v1/games/import',
-        game({ config: { ...hr }, words: ['LJUDI'], letters: 'ABCDEFGHIJKL'.split('') }),
+        game({
+          config: { ...hr },
+          words: [{ word: 'LJUDI', round: 0, flips: 4, tick: 10 }],
+        }),
       )
-      expect(store.games.at(-1)?.words[0]?.tiles).toBe(4)
+      expect(store.games.at(-1)?.detail.words[0]?.tiles).toBe(4)
     })
 
     it('keeps a game that found nothing, because a game is still a game', async () => {
       const response = await send('POST', '/v1/games/import', game({ words: [] }))
       expect(response.status).toBe(201)
       expect(store.games[0]?.row.score).toBe(0)
-      expect(store.games[0]?.words).toEqual([])
+      expect(store.games[0]?.detail.words).toEqual([])
+      // A game with no words still had a board, and the board is the interesting half.
+      expect(store.games[0]?.detail.boards).not.toEqual([])
     })
 
     it('says what was wrong with a game it will not take', async () => {
@@ -266,6 +299,18 @@ describe('the account surface', () => {
       expect(response.status).toBe(201)
     })
 
+    it('refuses a board that is not the board the ruleset describes', async () => {
+      for (const boards of [
+        [],
+        ['A B C'],
+        [BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD],
+        'ABC',
+      ]) {
+        const response = await send('POST', '/v1/games/import', game({ boards }))
+        expect(response.status).toBe(400)
+      }
+    })
+
     it('is 401 signed out, since a game has to belong to somebody', async () => {
       expect((await send('POST', '/v1/games/import', game(), {})).status).toBe(401)
     })
@@ -280,8 +325,8 @@ describe('the account surface', () => {
         difficulty: 'medium',
         source: 'web',
         config: { ...CONFIG },
-        letters: 'ABCDEFGHIJKL'.split(''),
-        words: ['HOUSE'],
+        boards: [BOARD],
+        words: [{ word: 'HOUSE', round: 0, flips: 8, tick: 12 }],
         rounds: 4,
       })
     }
@@ -319,6 +364,55 @@ describe('the account surface', () => {
 
     it('is 401 signed out', async () => {
       expect((await get('/v1/me/games', {})).status).toBe(401)
+    })
+  })
+
+  describe('one game in full', () => {
+    const keep = async (): Promise<string> => {
+      const response = await send('POST', '/v1/games/import', {
+        startedAt: clock.getTime() - 120_000,
+        finishedAt: clock.getTime() - 1000,
+        seed: 4821,
+        difficulty: 'medium',
+        source: 'web',
+        config: { ...CONFIG },
+        boards: [BOARD, BOARD],
+        words: [{ word: 'HOUSE', round: 0, flips: 8, tick: 42 }],
+        rounds: 6,
+      })
+      return ((await response.json()) as { id: string }).id
+    }
+
+    it('hands back the summary and the document together', async () => {
+      const id = await keep()
+      const response = await get(`/v1/me/games/${id}`)
+      expect(response.status).toBe(200)
+      expect(await response.json()).toMatchObject({
+        id,
+        language: 'en',
+        difficulty: 'medium',
+        detail: {
+          boards: [BOARD, BOARD],
+          words: [{ word: 'HOUSE', tiles: 5, round: 0, flips: 8, tick: 42 }],
+        },
+      })
+    })
+
+    it('is 404 for somebody else’s game, not 403', async () => {
+      // The two are distinguishable only to whoever is guessing at ids, and telling them apart
+      // is how this endpoint starts reporting which games exist.
+      const id = await keep()
+      const other = await signIn('other@example.com')
+      expect((await get(`/v1/me/games/${id}`, { cookie: other })).status).toBe(404)
+    })
+
+    it('is 404 for a game that is not there at all', async () => {
+      expect((await get('/v1/me/games/made-up')).status).toBe(404)
+    })
+
+    it('is 401 signed out', async () => {
+      const id = await keep()
+      expect((await get(`/v1/me/games/${id}`, {})).status).toBe(401)
     })
   })
 

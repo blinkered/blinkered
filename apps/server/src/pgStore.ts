@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto'
 import { and, count, desc, eq, gte, isNotNull, isNull, sql } from 'drizzle-orm'
-import type { ProfilePatch } from './account/types.js'
+import { DETAIL_VERSION } from './account/types.js'
+import type { GameDetail, ProfilePatch } from './account/types.js'
 import { normalizeUsername } from './auth/usernames.js'
 import type { Database } from './db.js'
-import { authIdentities, gameWords, games, loginCodes, sessions, users } from './schema.js'
+import { authIdentities, gameDetail, games, loginCodes, sessions, users } from './schema.js'
 import type { Store } from './types.js'
 
 /**
@@ -180,14 +181,19 @@ export function pgStore(db: Database): Store {
       }
     },
 
-    insertGame: async (row, words) => {
-      // One transaction: a game with no words, or words belonging to no game, are both worse
-      // than a failed import that can be retried.
+    insertGame: async (row, detail) => {
+      // One transaction: a game with no detail, or a document belonging to no game, are both
+      // worse than a failed import that can be retried.
+      //
+      // The version is stamped here rather than by the caller, so there is one place that decides
+      // what shape was written and no arrangement in which a route forgets to say.
       await db.transaction(async (tx) => {
-        await tx.insert(games).values({ ...row, status: 'over', letters: [...row.letters] })
-        if (words.length > 0) {
-          await tx.insert(gameWords).values(words.map((word) => ({ ...word, gameId: row.id })))
-        }
+        await tx.insert(games).values({ ...row, status: 'over' })
+        await tx.insert(gameDetail).values({
+          gameId: row.id,
+          version: DETAIL_VERSION,
+          detail,
+        })
       })
     },
 
@@ -212,6 +218,47 @@ export function pgStore(db: Database): Store {
         .orderBy(desc(games.finishedAt))
         .limit(limit)
       return rows.map((row) => ({ ...row, finishedAt: row.finishedAt as Date }))
+    },
+
+    gameFor: async (userId, gameId) => {
+      // Left join, because a game whose document has been pruned is still a game. The owner is
+      // in the where clause rather than checked afterwards: this is the only route that returns
+      // somebody's words, and a filter a caller can forget is a filter a caller will forget.
+      const [row] = await db
+        .select({
+          id: games.id,
+          language: games.language,
+          difficulty: games.difficulty,
+          canonical: games.canonical,
+          score: games.score,
+          words: games.wordsCount,
+          rounds: games.roundsPlayed,
+          engineVersion: games.engineVersion,
+          finishedAt: games.finishedAt,
+          version: gameDetail.version,
+          detail: gameDetail.detail,
+        })
+        .from(games)
+        .leftJoin(gameDetail, eq(gameDetail.gameId, games.id))
+        .where(
+          and(
+            eq(games.id, gameId),
+            eq(games.userId, userId),
+            isNotNull(games.finishedAt),
+            eq(games.hidden, false),
+          ),
+        )
+        .limit(1)
+      if (row === undefined) return null
+
+      const { version, detail, ...summary } = row
+      return {
+        summary: { ...summary, finishedAt: summary.finishedAt as Date },
+        // One reader, because a migration rewrites old documents rather than leaving a reader
+        // behind for every shape ever written. A version this build does not know is a bug that
+        // should be loud, and withholding the detail is the loudest thing that is still safe.
+        detail: detail !== null && version === DETAIL_VERSION ? (detail as GameDetail) : null,
+      }
     },
   }
 }

@@ -4,6 +4,7 @@ import { parseImport } from '../src/account/importing.js'
 
 const NOW = new Date('2026-09-04T12:00:00Z')
 const CONFIG = configFor('medium', { language: 'en' })
+const BOARD = 'A B C D E F G H I J K L'
 
 /** A game that could have been played, as the browser would send it. */
 function body(changes: Record<string, unknown> = {}): Record<string, unknown> {
@@ -14,11 +15,19 @@ function body(changes: Record<string, unknown> = {}): Record<string, unknown> {
     difficulty: 'medium',
     source: 'web',
     config: { ...CONFIG },
-    letters: 'ABCDEFGHIJKL'.split(''),
-    words: ['HOUSE', 'RIVER'],
+    boards: [BOARD, BOARD],
+    words: [
+      { word: 'HOUSE', round: 0, flips: 8, tick: 42 },
+      { word: 'RIVER', round: 1, flips: 8, tick: 96 },
+    ],
     rounds: 8,
     ...changes,
   }
+}
+
+/** The words a body carries, as claims, for the cases that vary only in the word list. */
+function said(...words: string[]): Record<string, unknown>[] {
+  return words.map((word, at) => ({ word, round: at, flips: 1, tick: at + 1 }))
 }
 
 describe('reading a game a browser played before there was an account', () => {
@@ -30,7 +39,9 @@ describe('reading a game a browser played before there was an account', () => {
     if (!parsed.ok) return
     expect(parsed.game.score).toBeGreaterThan(0)
     expect(parsed.game.score).toBeLessThan(100)
-    expect(parsed.game.words).toEqual(['HOUSE', 'RIVER'])
+    expect(parsed.game.words.map((one) => one.word)).toEqual(['HOUSE', 'RIVER'])
+    // Scored here, from the tile count, and never read from the body.
+    expect(parsed.game.words[0]).toMatchObject({ tiles: 5, round: 0, flips: 8, tick: 42 })
     expect(parsed.game.finishedAt.getTime()).toBe(NOW.getTime() - 1000)
   })
 
@@ -108,7 +119,7 @@ describe('reading a game a browser played before there was an account', () => {
       { ...CONFIG, language: '' },
       { ...CONFIG, language: 7 },
     ]) {
-      expect(parseImport(body({ config, letters: lettersFor(config) }), NOW)).toEqual({
+      expect(parseImport(body({ config, boards: boardsFor(config) }), NOW)).toEqual({
         ok: false,
         problem: 'bad-config',
       })
@@ -125,15 +136,65 @@ describe('reading a game a browser played before there was an account', () => {
     expect(guessed.ok && guessed.game.config.engineVersion).toBe(ENGINE_VERSION)
   })
 
-  it('refuses a board that is not the board the ruleset describes', () => {
-    for (const letters of ['ABC', ['A'], [...'ABCDEFGHIJKL', 'M'], [...'ABCDEFGHIJK', 5]]) {
-      expect(parseImport(body({ letters }), NOW)).toEqual({ ok: false, problem: 'bad-letters' })
+  it('refuses boards that are not the board the ruleset describes', () => {
+    for (const boards of [
+      'A B C',
+      [],
+      ['A B C'],
+      [BOARD, 'A B C D E F G H I J K L M'],
+      [BOARD, 42],
+      // More boards than there were rounds: a game cannot have started a tenth round of eight.
+      Array.from({ length: 9 }, () => BOARD),
+    ]) {
+      expect(parseImport(body({ boards }), NOW)).toEqual({ ok: false, problem: 'bad-boards' })
     }
   })
 
+  it('takes fewer boards than rounds, so one missed snapshot does not cost the game', () => {
+    // The import is silent on failure by design, so strictness here would cost somebody their
+    // score in order to report a client bug they cannot see.
+    expect(parseImport(body({ boards: [BOARD] }), NOW).ok).toBe(true)
+  })
+
   it('refuses words that are not words', () => {
-    for (const words of ['HOUSE', [42], [''], ['x'.repeat(65)]]) {
+    for (const words of [
+      'HOUSE',
+      [42],
+      [{ word: '' }],
+      [{ word: 'x'.repeat(65), round: 0, flips: 1, tick: 1 }],
+      [{ word: 'HOUSE' }],
+      [{ word: 'HOUSE', round: -1, flips: 1, tick: 1 }],
+      [{ word: 'HOUSE', round: 0.5, flips: 1, tick: 1 }],
+      [{ word: 'HOUSE', round: 0, flips: 'lots', tick: 1 }],
+      [{ word: 'HOUSE', round: 0, flips: 1, tick: null }],
+    ]) {
       expect(parseImport(body({ words }), NOW)).toEqual({ ok: false, problem: 'bad-words' })
+    }
+  })
+
+  it('takes wilds only as positions inside the word', () => {
+    const ok = parseImport(
+      body({ words: [{ word: 'HOUSE', round: 0, flips: 1, tick: 1, wilds: [0, 4] }] }),
+      NOW,
+    )
+    expect(ok.ok && ok.game.words[0]?.wilds).toEqual([0, 4])
+
+    for (const wilds of [[5], [-1], [1.5], ['a'], [0, 1, 2, 3, 4, 5], 'none']) {
+      const parsed = parseImport(
+        body({ words: [{ word: 'HOUSE', round: 0, flips: 1, tick: 1, wilds }] }),
+        NOW,
+      )
+      expect(parsed).toEqual({ ok: false, problem: 'bad-words' })
+    }
+  })
+
+  it('leaves wilds off an ordinary word rather than writing an empty list', () => {
+    for (const wilds of [undefined, null, []]) {
+      const parsed = parseImport(
+        body({ words: [{ word: 'HOUSE', round: 0, flips: 1, tick: 1, wilds }] }),
+        NOW,
+      )
+      expect(parsed.ok && parsed.game.words[0]).not.toHaveProperty('wilds')
     }
   })
 
@@ -147,16 +208,21 @@ describe('reading a game a browser played before there was an account', () => {
       ok: false,
       problem: 'impossible-rounds',
     })
-    expect(parseImport(body({ words: ['HOUSE', 'HOUSE'] }), NOW)).toEqual({
+    expect(parseImport(body({ words: said('HOUSE', 'HOUSE') }), NOW)).toEqual({
       ok: false,
       problem: 'duplicate',
     })
-    expect(parseImport(body({ words: ['AB'] }), NOW)).toEqual({ ok: false, problem: 'too-short' })
-    // Under `spend` a round deals `n` tiles, so a game cannot have spent more than it dealt.
-    expect(parseImport(body({ rounds: 1, words: ['HOUSE', 'RIVER', 'PLANET'] }), NOW)).toEqual({
+    expect(parseImport(body({ words: said('AB') }), NOW)).toEqual({
       ok: false,
-      problem: 'impossible-tiles',
+      problem: 'too-short',
     })
+    // Under `spend` a round deals `n` tiles, so a game cannot have spent more than it dealt.
+    expect(
+      parseImport(
+        body({ rounds: 1, boards: [BOARD], words: said('HOUSE', 'RIVER', 'PLANET') }),
+        NOW,
+      ),
+    ).toEqual({ ok: false, problem: 'impossible-tiles' })
   })
 
   it('takes the game as a guest game only when told so, and never guesses', () => {
@@ -187,9 +253,9 @@ describe('reading a game a browser played before there was an account', () => {
   })
 })
 
-/** Letters sized to whatever `n` the malformed config claims, so the board is never what fails. */
-function lettersFor(config: unknown): string[] {
+/** Boards sized to whatever `n` the malformed config claims, so the board is never what fails. */
+function boardsFor(config: unknown): string[] {
   const n = typeof config === 'object' && config !== null ? (config as { n?: unknown }).n : 12
   const size = typeof n === 'number' && Number.isInteger(n) && n > 0 && n < 400 ? n : 12
-  return Array.from({ length: size }, (_, at) => String.fromCharCode(65 + (at % 26)))
+  return [Array.from({ length: size }, (_, at) => String.fromCharCode(65 + (at % 26))).join(' ')]
 }

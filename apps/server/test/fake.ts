@@ -1,4 +1,4 @@
-import type { GameRow, GameSummary, GameWordRow } from '../src/account/types.js'
+import type { GameDetail, GameRow, GameSummary } from '../src/account/types.js'
 import type { Profile, StoredCode } from '../src/auth/types.js'
 import { normalizeUsername } from '../src/auth/usernames.js'
 import type { Store } from '../src/types.js'
@@ -27,7 +27,7 @@ export interface FakeStore extends Store {
   sessions: Map<string, { userId: string; expiresAt: Date; revokedAt: Date | null }>
   issued: { id: string; email: string; at: Date }[]
   takenUsernames: Set<string>
-  games: { row: GameRow; words: readonly GameWordRow[] }[]
+  games: { row: GameRow; detail: GameDetail }[]
 }
 
 export function fakeStore(): FakeStore {
@@ -36,7 +36,7 @@ export function fakeStore(): FakeStore {
   const sessions = new Map<string, { userId: string; expiresAt: Date; revokedAt: Date | null }>()
   const issued: { id: string; email: string; at: Date }[] = []
   const takenUsernames = new Set<string>()
-  const games: { row: GameRow; words: readonly GameWordRow[] }[] = []
+  const games: { row: GameRow; detail: GameDetail }[] = []
 
   const profileOf = (user: FakeUser): Profile => ({
     userId: user.userId,
@@ -140,27 +140,37 @@ export function fakeStore(): FakeStore {
       users.set(userId, updated)
       return Promise.resolve(profileOf(updated))
     },
-    insertGame: (row, words) => {
-      games.push({ row, words })
+    insertGame: (row, detail) => {
+      games.push({ row, detail })
       return Promise.resolve()
     },
     gamesOf: (userId, limit) => {
       const mine: GameSummary[] = games
         .filter((g) => g.row.userId === userId)
-        .map((g) => ({
-          id: g.row.id,
-          language: g.row.language,
-          difficulty: g.row.difficulty,
-          canonical: g.row.canonical,
-          score: g.row.score,
-          words: g.row.wordsCount,
-          rounds: g.row.roundsPlayed,
-          engineVersion: g.row.engineVersion,
-          finishedAt: g.row.finishedAt,
-        }))
+        .map((g) => summaryOf(g.row))
         .sort((a, b) => b.finishedAt.getTime() - a.finishedAt.getTime())
       return Promise.resolve(mine.slice(0, limit))
     },
+    gameFor: (userId, gameId) => {
+      const kept = games.find((one) => one.row.id === gameId && one.row.userId === userId)
+      if (kept === undefined) return Promise.resolve(null)
+      return Promise.resolve({ summary: summaryOf(kept.row), detail: kept.detail })
+    },
+  }
+}
+
+/** One game as a listing shows it. Named once, because two methods have to agree about it. */
+function summaryOf(row: GameRow): GameSummary {
+  return {
+    id: row.id,
+    language: row.language,
+    difficulty: row.difficulty,
+    canonical: row.canonical,
+    score: row.score,
+    words: row.wordsCount,
+    rounds: row.roundsPlayed,
+    engineVersion: row.engineVersion,
+    finishedAt: row.finishedAt,
   }
 }
 
