@@ -1,0 +1,52 @@
+# Blinkered on tl-prod, namespace blinkered-prod.
+#
+# Overrides only; everything unset inherits values.yaml beside this file.
+#
+#   helm upgrade --install blinkered deploy/helm/blinkered \
+#     -n blinkered-prod --create-namespace \
+#     -f deploy/helm/blinkered/values-prod.yaml
+#
+# This file is short, and that is the point: values.yaml already describes production. The
+# hostnames, the www redirect, the `public` ingress class and two replicas of each are the
+# defaults, because production is the case the chart was written for and dev is the deviation.
+# Three things are genuinely site-specific, and they are the three below.
+#
+# TLS is not this chart's problem here either, for a different reason than on dev. There is no
+# cert-manager on tl-prod; certificates come from Traefik's own ACME resolver keyed on the Host
+# rules in the ingress, which is why `spec.tls[].secretName` on the hand-applied manifests this
+# replaces was vestigial -- no such secret ever existed and TLS worked anyway. So the chart emits
+# no `tls:` block and the certificate follows the Host rules. See docs/DEPLOY.md.
+#
+# Cloudflare proxies playblinkered.com, with its own certificate at the edge and Traefik's at the
+# origin. It declines to cache anything it is not told to; the one rule that exists is for the
+# word lists and is described in docs/DEPLOY.md. `/v1` carries a session cookie and comes back
+# `DYNAMIC`, which is Cloudflare refusing to cache, which is what we want.
+
+image:
+  # One tag for both images: release.yml builds the Dockerfile's `serve` and `api` targets in the
+  # same run and pushes `blinkered` and `blinkered-api` with the same tag set, so this names a
+  # commit rather than an image.
+  #
+  # Both verified anonymously pullable before installing. GHCR does not always inherit the
+  # repository's visibility, and a private package is an ImagePullBackOff with no useful message.
+  tag: sha-0baa0bc
+
+api:
+  smtp:
+    # Measured rather than assumed: tl-prod egresses as 66.186.179.148, which is the same address
+    # tl-dev leaves from and is therefore already allowlisted for the Workspace relay. That check
+    # is the one that matters here, because the IP test happens at MAIL FROM rather than at the
+    # banner -- a cluster that has not been allowlisted reaches the server, advertises STARTTLS,
+    # and is refused only once it tries to send.
+    #
+    # `smtp-relay.gmail.com`, not `smtp.google.com`: the latter resolves, because Google owns the
+    # name, and nothing answers on 587.
+    host: smtp-relay.gmail.com
+
+postgres:
+  persistence:
+    # Retain, so that deleting the release or the PVC leaves the volume and its data behind. The
+    # default class on tl-prod is `standard-disposable`, whose reclaim policy is Delete: a
+    # `helm uninstall` there would take the database with it, which is the wrong default for the
+    # only thing in this stack that cannot be rebuilt from the repository.
+    storageClass: standard-retain
