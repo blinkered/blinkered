@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
+import { GameDetail } from './GameDetail.js'
 import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { checkName, myGames, saveProfile } from './account.js'
 import { countriesIn } from './countries.js'
 import type { Account, PlayedGame } from './account.js'
 import type { CatalogueEntry } from './dictionary.js'
+import type { TieredIndex } from '@blinkered/words'
 import type { Destination } from './AccountMenu.js'
 
 /**
@@ -57,6 +59,7 @@ export function AccountScreen({
   at,
   catalogue,
   readIn,
+  dictionary,
   onAccount,
   onTab,
   onClose,
@@ -66,6 +69,8 @@ export function AccountScreen({
   readonly catalogue: readonly CatalogueEntry[]
   /** The interface language, which is what the country and language lists are read in. */
   readonly readIn: string
+  /** The dictionary in hand, passed through to a game detail that may be able to use it. */
+  readonly dictionary: TieredIndex | null
   readonly onAccount: (account: Account) => void
   readonly onTab: (at: Destination) => void
   readonly onClose: () => void
@@ -107,7 +112,7 @@ export function AccountScreen({
         {at === 'profile' ? (
           <Profile account={account} catalogue={catalogue} readIn={readIn} onAccount={onAccount} />
         ) : (
-          <Games />
+          <Games dictionary={dictionary} />
         )}
       </div>
     </div>
@@ -305,9 +310,17 @@ function Profile({
   )
 }
 
-function Games(): React.JSX.Element {
+function Games({ dictionary }: { readonly dictionary: TieredIndex | null }): React.JSX.Element {
   const [games, setGames] = useState<readonly PlayedGame[] | null>(null)
   const [failed, setFailed] = useState(false)
+  /**
+   * Which game is open, by id.
+   *
+   * The listing stays mounted underneath rather than being replaced, so closing a game returns to
+   * the list where it was rather than refetching it. The same rule the rules overlay and the
+   * sign-in dialog follow, and for the same reason.
+   */
+  const [open, setOpen] = useState<string | null>(null)
 
   useEffect(() => {
     let live = true
@@ -343,6 +356,18 @@ function Games(): React.JSX.Element {
     )
   }
 
+  if (open !== null) {
+    return (
+      <GameDetail
+        id={open}
+        dictionary={dictionary}
+        onBack={() => {
+          setOpen(null)
+        }}
+      />
+    )
+  }
+
   return (
     <table className="account-games">
       <thead>
@@ -357,7 +382,22 @@ function Games(): React.JSX.Element {
       <tbody>
         {games.map((game) => (
           <tr key={game.id}>
-            <td>{new Date(game.finishedAt).toLocaleDateString()}</td>
+            {/*
+              The whole row opens the game, and the button is in the first cell rather than
+              wrapping the row: a `<tr>` cannot hold a button, and making the row itself clickable
+              would mean inventing keyboard and focus behaviour that a button already has.
+            */}
+            <td>
+              <button
+                type="button"
+                className="game-open"
+                onClick={() => {
+                  setOpen(game.id)
+                }}
+              >
+                {new Date(game.finishedAt).toLocaleDateString()}
+              </button>
+            </td>
             <td>
               {game.language} · {game.difficulty}
             </td>

@@ -38,6 +38,8 @@ export interface PlayedGame {
   readonly language: string
   readonly difficulty: string
   readonly canonical: boolean
+  /** Real seconds per tick, which is what turns a word's `tick` into a readable time. */
+  readonly speedMultiplier: number
   readonly score: number
   readonly words: number
   readonly rounds: number

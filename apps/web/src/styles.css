@@ -2625,3 +2625,161 @@ kbd {
 .account-games td:last-child {
   padding-inline-end: 0;
 }
+
+/* ---------- one game, round by round ---------- */
+/*
+ * The listing opens from its first cell. A `<tr>` cannot hold a button, and making the row itself
+ * clickable would mean reinventing the keyboard and focus behaviour a button already has, so the
+ * date is the control and it is styled to look like the text it replaced.
+ */
+.game-open {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sel);
+  font: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+@media (hover: hover) {
+  .game-open:hover {
+    text-decoration: underline;
+  }
+}
+
+.game-detail {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+}
+.game-back {
+  min-height: auto;
+  padding: 0;
+  text-decoration: none;
+}
+.game-head {
+  display: grid;
+  gap: 0.2rem;
+}
+.game-when {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+.game-what {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.game-score {
+  margin: 0;
+}
+.game-score strong {
+  font-size: 1.6rem;
+}
+.game-detail h2 {
+  margin: 0 0 0.6rem;
+}
+.game-detail section {
+  width: 100%;
+}
+
+/*
+ * A tile face, drawn small and static.
+ *
+ * Not the game's `.tile`, which carries reveal, spend and wild state and is sized from the board
+ * container. This is the same visual language at a size that belongs in a paragraph: enough to
+ * read as a tile, not enough to pretend it is playable.
+ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  background: var(--panel);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+/* The face that went away. Struck rather than only dimmed, because dim alone reads as
+   "less important" and this one reads as "no longer there". */
+.chip.is-gone {
+  color: var(--dim);
+  text-decoration: line-through;
+  background: none;
+}
+.board-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.rounds {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.round {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+/* Fixed width, so the words start on one line however many rounds a game ran to. */
+.round-number {
+  flex: none;
+  width: 1.75rem;
+  color: var(--dim);
+  font-size: 0.75rem;
+  text-align: end;
+}
+.round-body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.round-change {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.round-word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+  margin: 0;
+}
+.round-word .found-word {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.round-nothing {
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+/*
+ * The four numbers behind a word. One row that wraps, rather than columns: a Croatian word and an
+ * English one are different widths and a column layout would leave the short ones stranded.
+ */
+.round-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+}
+.round-points {
+  color: var(--good);
+  font-weight: 600;
+}

@@ -1,11 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { sql } from 'drizzle-orm'
-import { databaseConfig } from '../src/config.js'
-import { client, connect } from '../src/db.js'
+import { connect } from '../src/db.js'
 import { runMigrations } from '../src/migrate.js'
+import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { pgStore } from '../src/pgStore.js'
 import { DATABASE_SCHEMA } from '../src/schema.js'
-import type { DatabaseConfig } from '../src/config.js'
 import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
@@ -18,23 +17,13 @@ import type { Store } from '../src/types.js'
  * and that the store reports losing it as `null` rather than as a 500, that a revoked session
  * stops resolving, and that a game and its words are written together or not at all.
  */
-const config: DatabaseConfig = databaseConfig({
-  BLINKERED_DB_HOST: process.env.BLINKERED_DB_HOST ?? 'localhost',
-  BLINKERED_DB_PORT: process.env.BLINKERED_DB_PORT ?? '55432',
-  BLINKERED_DB_TLS: process.env.BLINKERED_DB_TLS ?? 'false',
-  BLINKERED_DB_USER: process.env.BLINKERED_DB_USER ?? 'blinkered',
-  BLINKERED_DB_PASSWORD: process.env.BLINKERED_DB_PASSWORD ?? 'testpass',
-  BLINKERED_DB_NAME: process.env.BLINKERED_DB_NAME ?? 'blinkered',
-  BLINKERED_DB_SCHEMA: process.env.BLINKERED_DB_SCHEMA ?? DATABASE_SCHEMA,
-})
+const config = integrationConfig
 
 let open: ReturnType<typeof connect> | undefined
 let store: Store | undefined
 
 beforeAll(async () => {
-  const bare = client({ ...config, schema: 'public' })
-  await bare.unsafe(`drop schema if exists "${DATABASE_SCHEMA}" cascade`)
-  await bare.end({ timeout: 5 })
+  await freshDatabase()
   await runMigrations(config)
   open = connect(config)
   store = pgStore(open.db)

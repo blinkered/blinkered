@@ -31,6 +31,7 @@ import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
 import type { Account, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
 import { isPersonalBest, recordScore, standingOf } from './scores.js'
+import { spellingFor } from './spelling.js'
 import type { Standing } from './scores.js'
 import {
   configOf,
@@ -465,6 +466,7 @@ function Session({
           at={visiting}
           catalogue={catalogue}
           readIn={settings.uiLanguage}
+          dictionary={dictionary}
           onAccount={adopt}
           onTab={setVisiting}
           onClose={() => {
@@ -966,30 +968,9 @@ function FoundWords({
     return <p className="found dim">{messages.noWordsYet}</p>
   }
   const alphabet = alphabetFor(language)
-  // Two different jobs wear this name. The dictionary restores what only a lookup can find —
-  // Vietnamese CHÂU CHẤU ĐÁ XE is four words the fold ran together — and `display` restores
-  // what a rule can, which is Hebrew's five final forms. Everywhere else both are identity.
-  const spell = (word: string): string =>
-    dictionary?.spell(word) ?? alphabet.display?.(word) ?? word
-  /**
-   * The written word, with each character told which tile it came from.
-   *
-   * The two stopped being the same string the moment a spelling could be longer than what was
-   * tiled: CHÂU CHẤU ĐÁ XE is sixteen characters over twelve tiles. `wilds` indexes tiles, so
-   * marking by character position would mark the wrong letters, and `--len` measured on the
-   * tiles would size the rail for a shorter word than it is about to draw.
-   *
-   * A character belongs to a tile when the fold keeps it. The separators the fold eats — the
-   * space and the hyphen Vietnamese writes its compounds with — belong to no tile and are
-   * what pushes the two apart in the first place.
-   */
-  const laid = (word: string): { letter: string; tile: number }[] => {
-    let tile = 0
-    return [...spell(word)].map((letter) => {
-      const at = alphabet.fold(letter) === '' ? -1 : tile++
-      return { letter, tile: at }
-    })
-  }
+  // Shared with the history screen, which marks the same wilds on the same words. See
+  // `spelling.ts` for why `wilds` cannot be applied by character position.
+  const { spell, laid } = spellingFor(language, dictionary)
 
   return (
     <ul className="found">

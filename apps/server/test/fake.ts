@@ -166,6 +166,7 @@ function summaryOf(row: GameRow): GameSummary {
     language: row.language,
     difficulty: row.difficulty,
     canonical: row.canonical,
+    speedMultiplier: row.speedMultiplier,
     score: row.score,
     words: row.wordsCount,
     rounds: row.roundsPlayed,

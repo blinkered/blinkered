@@ -119,6 +119,14 @@ export interface GameSummary {
   readonly language: string
   readonly difficulty: string
   readonly canonical: boolean
+  /**
+   * Real seconds per tick, which is what turns a word's `tick` into a time somebody can read.
+   *
+   * On the summary rather than in the document because it is a scalar on `games` that the
+   * detail screen needs in order to render the document at all, and a screen that had to fetch
+   * two things to show one game would be fetching twice for eight bytes.
+   */
+  readonly speedMultiplier: number
   readonly score: number
   readonly words: number
   readonly rounds: number
