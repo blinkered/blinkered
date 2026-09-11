@@ -368,7 +368,7 @@ games             id, user_id, seed, status, source (web|ios), imported,
                   score, words_count, rounds_played,
                   engine_version, dictionary_version,
                   leaderboard_eligible, hidden, started_at, finished_at
-game_detail       game_id, version, detail (jsonb: boards[], words[])
+game_detail       game_id, version, detail (jsonb: boards[{tiles, wilds}], words[])
 words             language, word          (optional; only if found words are shown publicly)
 reports           reporter_user_id, subject_user_id, field, reason, created_at, resolved_at
 ```
@@ -418,6 +418,14 @@ prevents that, but a document this size sits right at the 2KB threshold and woul
 short games and out of line for long ones, which is worse than either. And retention here is a
 `delete`, which gives space back, rather than an `update ... set detail = null`, which bloats the
 table it is trying to shrink.
+
+**`boards` is one entry per round, carrying the faces and any wilds that round was showing.** The
+wild mask is kept beside the letters rather than written into them, because a wild is a mask and
+the letter is still underneath: flatten the two and the history forgets the board the round went
+back to. The detail screen draws the whole board for any round that differs from the one before
+it — a replacement or a card arriving or leaving — rather than only the delta, since asking a
+reader to rebuild the board in their head from the opening deal is the thing keeping a board per
+round was meant to spare them.
 
 **`version` is a column, not a key inside the document**, so "how many rows are still on version
 1" is a query rather than a scan. The discipline that goes with it, and it has to be chosen rather

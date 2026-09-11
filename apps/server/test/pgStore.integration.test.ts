@@ -156,7 +156,7 @@ describe('keeping games', () => {
   })
 
   const detailFor = (word: string): GameDetail => ({
-    boards: ['A B C', 'A B D'],
+    boards: [{ tiles: 'A B C' }, { tiles: 'A B D', wilds: [1] }],
     words: [{ word, tiles: 5, points: 20, round: 0, flips: 8, tick: 42, wilds: [1] }],
   })
 
@@ -217,7 +217,10 @@ describe('keeping games', () => {
 
   it('keeps a game that found nothing', async () => {
     const { userId } = await account()
-    await theStore().insertGame(gameFor(userId, new Date(), 0), { boards: ['A B C'], words: [] })
+    await theStore().insertGame(gameFor(userId, new Date(), 0), {
+      boards: [{ tiles: 'A B C' }],
+      words: [],
+    })
     expect(await theStore().gamesOf(userId, 10)).toHaveLength(1)
   })
 
@@ -226,7 +229,7 @@ describe('keeping games', () => {
     const theirs = await account()
     for (let i = 0; i < 3; i += 1) {
       await theStore().insertGame(gameFor(mine.userId, new Date(Date.now() - i * 1000), i), {
-        boards: ['A B C'],
+        boards: [{ tiles: 'A B C' }],
         words: [],
       })
     }
@@ -237,7 +240,10 @@ describe('keeping games', () => {
   it('leaves a hidden game out, including from the person who set it', async () => {
     const { userId } = await account()
     const at = new Date()
-    await theStore().insertGame(gameFor(userId, at, 99), { boards: ['A B C'], words: [] })
+    await theStore().insertGame(gameFor(userId, at, 99), {
+      boards: [{ tiles: 'A B C' }],
+      words: [],
+    })
     await (open as NonNullable<typeof open>).db.execute(
       sql`update ${sql.identifier(DATABASE_SCHEMA)}.games set hidden = true
           where id = ${gameFor(userId, at, 99).id}`,

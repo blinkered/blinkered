@@ -13,10 +13,16 @@ import type { DatabaseConfig } from '../src/config.js'
  * it -- and it did, twice, while somebody had the app open in a browser. The failure is quiet and
  * looks like being mysteriously signed out.
  *
- * So the default database name is `blinkered_test`, created on demand, and the development one is
- * left alone. `BLINKERED_DB_NAME` still overrides, for CI or for anybody who wants otherwise.
+ * So the database is `blinkered_test`, created on demand, and the development one is left alone.
+ *
+ * Pinned here rather than read from `BLINKERED_DB_NAME`, which is the part that matters: the
+ * repository's own `.envrc` sets that variable to the development database, so honouring it would
+ * mean the safe default applied to everybody except the people actually working in the repo.
+ * Where a connection is made is still environmental -- host, port, user, password all come from
+ * the environment, so a CI service container works -- and only *which database* is the suite's
+ * own business. `BLINKERED_TEST_DB_NAME` is there for the case that turns out to be wrong.
  */
-const TEST_DATABASE = 'blinkered_test'
+const TEST_DATABASE = process.env.BLINKERED_TEST_DB_NAME ?? 'blinkered_test'
 
 export const integrationConfig: DatabaseConfig = databaseConfig({
   BLINKERED_DB_HOST: process.env.BLINKERED_DB_HOST ?? 'localhost',
@@ -24,7 +30,7 @@ export const integrationConfig: DatabaseConfig = databaseConfig({
   BLINKERED_DB_TLS: process.env.BLINKERED_DB_TLS ?? 'false',
   BLINKERED_DB_USER: process.env.BLINKERED_DB_USER ?? 'blinkered',
   BLINKERED_DB_PASSWORD: process.env.BLINKERED_DB_PASSWORD ?? 'testpass',
-  BLINKERED_DB_NAME: process.env.BLINKERED_DB_NAME ?? TEST_DATABASE,
+  BLINKERED_DB_NAME: TEST_DATABASE,
   BLINKERED_DB_SCHEMA: process.env.BLINKERED_DB_SCHEMA ?? DATABASE_SCHEMA,
 })
 

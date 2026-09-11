@@ -2710,6 +2710,17 @@ kbd {
   text-decoration: line-through;
   background: none;
 }
+/* The one slot that is not what it was. Outlined rather than filled, so a board with a change on
+   it still reads as a board rather than as a board with a button on it. */
+.chip.is-changed {
+  border-color: var(--sel);
+  box-shadow: 0 0 0 1px var(--sel);
+}
+/* The wild, in the one colour the game uses for it everywhere. */
+.chip.is-wild {
+  border-color: var(--wild);
+  color: var(--wild);
+}
 .board-strip {
   display: flex;
   flex-wrap: wrap;
@@ -2745,13 +2756,22 @@ kbd {
   display: grid;
   gap: 0.35rem;
 }
+/*
+ * The caption under a changed board. It stays even though the board is now drawn in full, because
+ * the board can only show what a slot became and not what it was.
+ */
 .round-change {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.35rem 1rem;
   align-items: center;
   margin: 0;
   font-size: 0.8rem;
+}
+.round-delta {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
 }
 .round-word {
   display: flex;

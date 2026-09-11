@@ -64,7 +64,7 @@ export interface GameRow {
  * Bumped whenever a field is added, removed or reinterpreted. The discipline the schema comment
  * states: a migration rewrites old documents, so there is exactly one reader.
  */
-export const DETAIL_VERSION = 1
+export const DETAIL_VERSION = 2
 
 /** A word, with everything the engine already knew about it when it was found. */
 export interface DetailWord {
@@ -87,22 +87,33 @@ export interface DetailWord {
   readonly wilds?: readonly number[]
 }
 
+/** The board as one round had it. */
+export interface BoardAtRound {
+  /** Tile faces in tile order, joined by a space, which no face ever contains. */
+  readonly tiles: string
+  /**
+   * Slots that were showing as a wild, by position. Absent for none, which is most rounds.
+   *
+   * Separate from `tiles` rather than written into it, because a wild is a mask and the letter is
+   * still underneath: `Tile.wild` is a boolean beside `Tile.letter`, and flattening the two here
+   * would lose the letter the board went back to next round.
+   */
+  readonly wilds?: readonly number[]
+}
+
 /**
  * Everything about a game that nothing queries.
  *
- * `boards` is the board as it stood at the start of each round, tiles joined by a space, in tile
- * order. One per round rather than only the first, because from 0.3.0 a letter can be replaced at
- * any deal and under `spend` a completed word takes its letters off, so "which board" is really
- * "which of the several boards this game had". A space is safe as the separator: a tile face is a
- * letter or a digraph and never contains one.
+ * `boards` is one entry per round. Not only the first, because from 0.3.0 a letter can be
+ * replaced at any deal and a wild can mask one for a round, so "which board" is really "which of
+ * the several boards this game had".
  *
  * What is deliberately **not** here is an event log. Reconstructing every intermediate state
- * means full replay, which docs/ACCOUNTS.md rejected and which this does not need: the board at
- * each round boundary plus the round each word was found in answers the question at a fraction of
- * the cost.
+ * means full replay, which docs/ACCOUNTS.md rejected and which this does not need: the board each
+ * round had plus the round each word was found in answers the question at a fraction of the cost.
  */
 export interface GameDetail {
-  readonly boards: readonly string[]
+  readonly boards: readonly BoardAtRound[]
   readonly words: readonly DetailWord[]
 }
 

@@ -168,6 +168,19 @@ export async function checkName(
   return getting(`usernames/${encodeURIComponent(name)}`)
 }
 
+/** The board as one round had it. */
+export interface BoardAtRound {
+  /** Tile faces in tile order, joined by a space. */
+  readonly tiles: string
+  /**
+   * Slots showing as a wild that round, by position. Absent for none.
+   *
+   * Separate from the faces because a wild is a mask: the letter is still underneath and comes
+   * back next round, so writing the card into the string would lose the board.
+   */
+  readonly wilds?: readonly number[]
+}
+
 /** A word, with everything the engine knew about it when it was found. */
 export interface PlayedWord {
   readonly word: string
@@ -189,8 +202,7 @@ export interface PlayedWord {
  */
 export interface PlayedGameDetail extends PlayedGame {
   readonly detail: {
-    /** The board at the start of each round, tiles joined by a space. */
-    readonly boards: readonly string[]
+    readonly boards: readonly BoardAtRound[]
     readonly words: readonly PlayedWord[]
   } | null
 }
@@ -220,8 +232,8 @@ export interface GameToKeep {
   readonly difficulty: string
   readonly source: 'web' | 'ios'
   readonly config: unknown
-  /** The board at the start of each round, tiles joined by a space. */
-  readonly boards: readonly string[]
+  /** The board each round had, with any wilds it was showing. */
+  readonly boards: readonly BoardAtRound[]
   /**
    * Every word, with what the engine knew about it when it was found.
    *

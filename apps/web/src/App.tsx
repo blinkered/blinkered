@@ -28,7 +28,7 @@ import type { Destination } from './AccountMenu.js'
 import { AccountScreen } from './AccountScreen.js'
 import { SignInDialog } from './SignInDialog.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
-import type { Account, GameToKeep } from './account.js'
+import type { Account, BoardAtRound, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
 import { isPersonalBest, recordScore, standingOf } from './scores.js'
 import { spellingFor } from './spelling.js'
@@ -310,7 +310,7 @@ function Session({
   }
 
   const onFinish = useCallback(
-    (state: GameState, seed: number, boards: readonly string[]): void => {
+    (state: GameState, seed: number, boards: readonly BoardAtRound[]): void => {
       const result: GameResult = {
         score: state.score,
         words: state.wordsFound.length,
@@ -688,7 +688,11 @@ function Playing({
   messages: Messages
   onRestart: () => void
   onQuit: () => void
-  onFinish: (state: GameState, seed: number, boards: readonly string[]) => void
+  onFinish: (
+    state: GameState,
+    seed: number,
+    boards: readonly { tiles: string; wilds?: readonly number[] }[],
+  ) => void
   /**
    * True while the in-app rules cover the game, which only happens in the native shell. Reading
    * the rules must not cost flips, and the clock lives in here rather than in Session, so Session
@@ -725,13 +729,21 @@ function Playing({
    * A ref, because nothing renders from it, and indexed by round rather than pushed, so a
    * re-render inside the same round cannot record the board twice.
    */
-  const boards = useRef<string[]>([])
+  const boards = useRef<{ tiles: string; wilds?: readonly number[] }[]>([])
   const round = game.state.roundIndex
   const tiles = game.state.tiles
   useEffect(() => {
-    // `letter`, not what the tile is showing: a wild is a mask over a letter that is still
-    // underneath, so recording the mask would claim the board held a card it never held.
-    boards.current[round] = tiles.map((tile) => tile.letter).join(' ')
+    // Letters and the wild mask separately, because that is what they are: a wild is showing over
+    // a letter that is still underneath and comes back next round. Written into one string they
+    // would be one or the other, and the history would either forget the card or forget the
+    // board.
+    //
+    // Rewritten on every change within the round rather than only at its start, so what is kept
+    // is the round as it ended -- every tile turned over, and any wild that appeared partway
+    // through. A snapshot taken at the boundary would miss most of them.
+    const wilds = tiles.flatMap((tile, at) => (tile.wild ? [at] : []))
+    const faces = tiles.map((tile) => tile.letter).join(' ')
+    boards.current[round] = wilds.length === 0 ? { tiles: faces } : { tiles: faces, wilds }
   }, [round, tiles])
 
   useEffect(() => {

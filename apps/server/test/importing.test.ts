@@ -4,7 +4,8 @@ import { parseImport } from '../src/account/importing.js'
 
 const NOW = new Date('2026-09-04T12:00:00Z')
 const CONFIG = configFor('medium', { language: 'en' })
-const BOARD = 'A B C D E F G H I J K L'
+const FACES = 'A B C D E F G H I J K L'
+const BOARD = { tiles: FACES }
 
 /** A game that could have been played, as the browser would send it. */
 function body(changes: Record<string, unknown> = {}): Record<string, unknown> {
@@ -140,13 +141,44 @@ describe('reading a game a browser played before there was an account', () => {
     for (const boards of [
       'A B C',
       [],
-      ['A B C'],
-      [BOARD, 'A B C D E F G H I J K L M'],
+      [{ tiles: 'A B C' }],
+      [BOARD, { tiles: 'A B C D E F G H I J K L M' }],
       [BOARD, 42],
+      // A face that is not a face, with the board still the right number of slots: an empty one,
+      // and one longer than any tile the game deals.
+      [{ tiles: 'A B C D E F G H I J K ' }],
+      [{ tiles: 'ABCDEFGHI B C D E F G H I J K L' }],
+      // And a string too long to be a board of this size at all, refused before it is split.
+      [{ tiles: 'AB '.repeat(60).trim() }],
+      [BOARD, { tiles: FACES, wilds: [12] }],
+      [BOARD, { tiles: FACES, wilds: ['a'] }],
+      [FACES],
       // More boards than there were rounds: a game cannot have started a tenth round of eight.
       Array.from({ length: 9 }, () => BOARD),
     ]) {
       expect(parseImport(body({ boards }), NOW)).toEqual({ ok: false, problem: 'bad-boards' })
+    }
+  })
+
+  it('keeps the wilds a board was showing, and leaves them off a board with none', () => {
+    // A wild is a mask over a letter that is still underneath, so the two are kept apart: writing
+    // the card into the faces would lose the board it goes back to next round.
+    const parsed = parseImport(body({ boards: [{ tiles: FACES, wilds: [0, 11] }, BOARD] }), NOW)
+    expect(parsed.ok && parsed.game.boards).toEqual([{ tiles: FACES, wilds: [0, 11] }, BOARD])
+
+    for (const wilds of [undefined, null, []]) {
+      const plain = parseImport(body({ boards: [{ tiles: FACES, wilds }] }), NOW)
+      expect(plain.ok && plain.game.boards[0]).not.toHaveProperty('wilds')
+    }
+  })
+
+  it('refuses a wild in a slot the board does not have', () => {
+    // Bounded by the board rather than by a word, which is the other thing `wilds` indexes.
+    for (const wilds of [[12], [-1], [1.5], 'all', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]]) {
+      expect(parseImport(body({ boards: [{ tiles: FACES, wilds }] }), NOW)).toEqual({
+        ok: false,
+        problem: 'bad-boards',
+      })
     }
   })
 
@@ -254,8 +286,12 @@ describe('reading a game a browser played before there was an account', () => {
 })
 
 /** Boards sized to whatever `n` the malformed config claims, so the board is never what fails. */
-function boardsFor(config: unknown): string[] {
+function boardsFor(config: unknown): { tiles: string }[] {
   const n = typeof config === 'object' && config !== null ? (config as { n?: unknown }).n : 12
   const size = typeof n === 'number' && Number.isInteger(n) && n > 0 && n < 400 ? n : 12
-  return [Array.from({ length: size }, (_, at) => String.fromCharCode(65 + (at % 26))).join(' ')]
+  return [
+    {
+      tiles: Array.from({ length: size }, (_, at) => String.fromCharCode(65 + (at % 26))).join(' '),
+    },
+  ]
 }

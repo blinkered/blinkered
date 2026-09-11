@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { alphabetFor } from '@blinkered/engine'
+import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import type { TieredIndex } from '@blinkered/words'
 import { gameDetail } from './account.js'
-import type { PlayedGameDetail, PlayedWord } from './account.js'
+import type { BoardAtRound, PlayedGameDetail, PlayedWord } from './account.js'
 import { spellingFor } from './spelling.js'
 
 /**
@@ -11,12 +11,15 @@ import { spellingFor } from './spelling.js'
  * The listing answers "what did I score"; this answers the two questions a listing cannot. What
  * words did I find, and what was in front of me when I found them.
  *
- * **Boards are shown by change rather than one per round**, which is the whole layout decision.
- * A fifteen-round game stores fifteen boards and thirteen of them are usually identical, so
- * drawing them all is a wall of the same twelve letters with the interesting thing buried in it.
- * What a player remembers is the board they had and the moment it moved under them, so the
- * opening deal is drawn once and every later round says only what changed. A game where nothing
- * was replaced then reads as one board and a list of words, which is what it was.
+ * **A round that changed shows its whole board.** The first version showed only the delta -- `Y`
+ * struck through, an arrow, `O` -- which was compact and asked the reader to rebuild the board in
+ * their head from the opening deal and every change since. The point of keeping a board per round
+ * was to spare them exactly that. So any round whose board differs from the one before it draws
+ * the board as that round had it, with the slots that moved marked, and the delta stays as a
+ * caption underneath because the board alone cannot say what *was* there.
+ *
+ * Rounds that changed nothing draw no board, which is most of them, and a game where nothing was
+ * ever replaced reads as one board and a list of words -- which is what it was.
  *
  * English, like the rest of the account surface, and for the reason recorded in `SignInDialog`.
  */
@@ -29,19 +32,51 @@ function elapsed(tick: number, secondsPerTick: number): string {
 }
 
 /**
- * What changed between two boards, as the letters that moved.
+ * How each kind of change reads.
+ *
+ * A replacement and a card are not the same event and should not share a sentence: one is a
+ * letter gone for good, the other a letter hidden for a round and coming back.
+ */
+const WORDING: Readonly<Record<Change['kind'], string>> = {
+  replaced: 'replaced in',
+  'wild-on': 'wild card in',
+  'wild-off': 'card gone from',
+}
+
+/** One slot that is not what it was, and what happened to it. */
+interface Change {
+  readonly at: number
+  readonly kind: 'replaced' | 'wild-on' | 'wild-off'
+  readonly from: string
+  readonly to: string
+}
+
+/**
+ * What changed between two rounds, slot by slot.
  *
  * Positional rather than a set difference, because a replacement is one tile changing face and
  * the position is half of what makes it recognisable: `V` becoming `O` in the eleventh slot is a
  * different memory from a `V` vanishing somewhere.
+ *
+ * Wilds count as changes in both directions. A card arriving is the board becoming easier for a
+ * round and is the thing a player remembers about that round; a card leaving is the letter coming
+ * back, which is why the mask is kept beside the letters rather than written over them.
  */
-function changes(before: string, after: string): { at: number; from: string; to: string }[] {
-  const was = before.split(' ')
-  const now = after.split(' ')
-  const moved: { at: number; from: string; to: string }[] = []
+function changes(before: BoardAtRound, after: BoardAtRound): Change[] {
+  const was = before.tiles.split(' ')
+  const now = after.tiles.split(' ')
+  const wasWild = new Set(before.wilds ?? [])
+  const nowWild = new Set(after.wilds ?? [])
+  const moved: Change[] = []
   now.forEach((face, at) => {
     const old = was[at]
-    if (old !== undefined && old !== face) moved.push({ at, from: old, to: face })
+    if (old === undefined) return
+    if (old !== face) moved.push({ at, kind: 'replaced', from: old, to: face })
+    else if (!wasWild.has(at) && nowWild.has(at)) {
+      moved.push({ at, kind: 'wild-on', from: face, to: WILD_GLYPH })
+    } else if (wasWild.has(at) && !nowWild.has(at)) {
+      moved.push({ at, kind: 'wild-off', from: WILD_GLYPH, to: face })
+    }
   })
   return moved
 }
@@ -156,7 +191,8 @@ export function GameDetail({
             <h2 lang="en">Round by round</h2>
             <ol className="rounds">
               {boards.map((board, round) => {
-                const moved = round === 0 ? [] : changes(boards[round - 1] as string, board)
+                const before = boards[round - 1]
+                const moved = before === undefined ? [] : changes(before, board)
                 const found = byRound.get(round) ?? []
                 return (
                   <li key={round} className="round">
@@ -164,16 +200,35 @@ export function GameDetail({
                       {round + 1}
                     </span>
                     <div className="round-body">
-                      {/* The change, above the word, because it happened first: the board moved
-                          and then the player found something on what was left. */}
-                      {moved.map((change) => (
-                        <p key={change.at} className="round-change" lang="en">
-                          <span className="chip is-gone">{change.from}</span>
-                          <span aria-hidden="true">→</span>
-                          <span className="chip">{change.to}</span>
-                          <span className="dim"> replaced in slot {change.at + 1}</span>
-                        </p>
-                      ))}
+                      {/* The board, above the words, because it came first: the board moved and
+                          then the player found something on what it had become. Drawn only when
+                          it is not the board already shown above, so the common round is a word
+                          and nothing else. */}
+                      {moved.length === 0 ? null : (
+                        <>
+                          <Board
+                            board={board}
+                            direction={alphabet.direction}
+                            marked={new Set(moved.map((change) => change.at))}
+                          />
+                          <p className="round-change dim" lang="en">
+                            {moved.map((change) => (
+                              <span key={change.at} className="round-delta">
+                                <span className="chip is-gone">{change.from}</span>
+                                <span aria-hidden="true">→</span>
+                                <span
+                                  className={`chip${change.to === WILD_GLYPH ? ' is-wild' : ''}`}
+                                >
+                                  {change.to}
+                                </span>
+                                <span>
+                                  {WORDING[change.kind]} slot {change.at + 1}
+                                </span>
+                              </span>
+                            ))}
+                          </p>
+                        </>
+                      )}
                       {found.length === 0 && moved.length === 0 ? (
                         <p className="round-nothing dim" lang="en">
                           nothing found
@@ -227,21 +282,36 @@ function BackLink({ onBack }: { readonly onBack: () => void }): React.JSX.Elemen
   )
 }
 
-/** Twelve faces in a row, drawn as the tiles they were rather than as a string. */
+/**
+ * The board, drawn as the tiles it was rather than as a string.
+ *
+ * A slot showing a wild draws the card rather than the letter, because that is what the player
+ * was looking at: the letter underneath was not knowable at the time, and it is on the boards
+ * either side of this one for anybody curious in hindsight.
+ */
 function Board({
   board,
   direction,
+  marked,
 }: {
-  readonly board: string
+  readonly board: BoardAtRound
   readonly direction: 'ltr' | 'rtl'
+  /** Slots that are not what they were last round, so the eye goes to them first. */
+  readonly marked?: ReadonlySet<number>
 }): React.JSX.Element {
+  const wilds = new Set(board.wilds ?? [])
   return (
     <p className="board-strip" dir={direction}>
-      {board.split(' ').map((face, at) => (
-        <span key={`${String(at)}-${face}`} className="chip">
-          {face}
-        </span>
-      ))}
+      {board.tiles.split(' ').map((face, at) => {
+        const classes = ['chip']
+        if (wilds.has(at)) classes.push('is-wild')
+        if (marked?.has(at) === true) classes.push('is-changed')
+        return (
+          <span key={`${String(at)}-${face}`} className={classes.join(' ')}>
+            {wilds.has(at) ? WILD_GLYPH : face}
+          </span>
+        )
+      })}
     </p>
   )
 }

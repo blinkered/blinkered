@@ -8,8 +8,9 @@ import { capturingMailer, fakeStore } from './fake.js'
 
 const JSON_HEADERS = { 'content-type': 'application/json' }
 const CONFIG = configFor('medium', { language: 'en' })
-/** Twelve tiles, joined by a space, which is what a board looks like in a detail document. */
-const BOARD = 'A B C D E F G H I J K L'
+/** Twelve tiles, which is what a board looks like in a detail document. */
+const FACES = 'A B C D E F G H I J K L'
+const BOARD = { tiles: FACES }
 
 describe('the account surface', () => {
   let store: ReturnType<typeof fakeStore>
@@ -302,7 +303,7 @@ describe('the account surface', () => {
     it('refuses a board that is not the board the ruleset describes', async () => {
       for (const boards of [
         [],
-        ['A B C'],
+        [{ tiles: 'A B C' }],
         [BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD, BOARD],
         'ABC',
       ]) {

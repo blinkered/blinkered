@@ -2,7 +2,7 @@ import { ENGINE_VERSION, alphabetFor, configFor, isCanonical, wordScore } from '
 import type { Difficulty, FlipEconomy, GameConfig, WordCompleteMode } from '@blinkered/engine'
 import type { Rejection } from '../submission.js'
 import { scoreSubmission } from '../submission.js'
-import type { DetailWord } from './types.js'
+import type { BoardAtRound, DetailWord } from './types.js'
 
 /**
  * Reading a game a browser played before anybody was signed in.
@@ -49,8 +49,8 @@ export interface ImportedGame {
    * ranking, and it is false for both of these regardless.
    */
   readonly imported: boolean
-  /** The board at the start of each round, tiles joined by a space. See `GameDetail`. */
-  readonly boards: readonly string[]
+  /** The board each round had, with any wilds it was showing. See `GameDetail`. */
+  readonly boards: readonly BoardAtRound[]
   /** Every word, with what the engine knew about it. Scored here, never read from the body. */
   readonly words: readonly DetailWord[]
   readonly rounds: number
@@ -272,7 +272,7 @@ function bounded(
 }
 
 /**
- * The board at the start of each round, one string per round.
+ * The board each round had, one entry per round.
  *
  * At least one and never more than the rounds claimed, rather than exactly the rounds claimed. A
  * client that failed to snapshot a boundary should lose a board and not the whole game: the
@@ -282,15 +282,22 @@ function bounded(
  * Each board is exactly `n` faces joined by a space, which is checked, because a board of the
  * wrong size is a board the ruleset says did not happen.
  */
-function parseBoards(value: unknown, n: number, rounds: number): readonly string[] | null {
+function parseBoards(value: unknown, n: number, rounds: number): readonly BoardAtRound[] | null {
   if (!Array.isArray(value) || value.length === 0 || value.length > rounds) return null
-  const boards = value as unknown[]
-  const usable = (board: unknown): boolean => {
-    if (typeof board !== 'string' || board.length > n * (LETTER_MAX + 1)) return false
-    const faces = board.split(' ')
-    return faces.length === n && faces.every((face) => face !== '' && face.length <= LETTER_MAX)
+  const boards: BoardAtRound[] = []
+  for (const entry of value as unknown[]) {
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return null
+    const tiles = (entry as Record<string, unknown>).tiles
+    if (typeof tiles !== 'string' || tiles.length > n * (LETTER_MAX + 1)) return null
+    const faces = tiles.split(' ')
+    if (faces.length !== n) return null
+    if (!faces.every((face) => face !== '' && face.length <= LETTER_MAX)) return null
+    // Slots, so bounded by the board rather than by a word. Absent and empty both mean none.
+    const wilds = parseWilds((entry as Record<string, unknown>).wilds, n)
+    if (wilds === null) return null
+    boards.push(wilds.length === 0 ? { tiles } : { tiles, wilds })
   }
-  return boards.every(usable) ? (boards as readonly string[]) : null
+  return boards
 }
 
 /** What the client claims about one found word, before this file scores it. */
@@ -328,7 +335,13 @@ function parseWords(value: unknown): readonly FoundClaim[] | null {
   return claims
 }
 
-/** Letter positions a wild stood in. Absent is none, which is what almost every word says. */
+/**
+ * Positions a wild stood in, bounded by whatever is being indexed.
+ *
+ * Shared by the two things that count wilds, which index different spaces: a word's `wilds` are
+ * letter positions within that word, and a board's are slots on the board. Absent is none, which
+ * is what almost every one of either says.
+ */
 function parseWilds(value: unknown, length: number): readonly number[] | null {
   if (value === undefined || value === null) return []
   if (!Array.isArray(value) || value.length > length) return null

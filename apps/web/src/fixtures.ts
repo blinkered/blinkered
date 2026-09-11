@@ -37,8 +37,18 @@ export interface Fixture {
   readonly letters: readonly string[]
 }
 
-/** A board the canned words could plausibly have come from. */
-const LETTERS = [...'STRAIGHENMVY']
+/**
+ * A board the canned words actually come from, checked rather than assumed.
+ *
+ * The first version claimed this and was not: it dealt `STRAIGHENMVY` and then found STRAIGHTEN
+ * on it, which needs two T, along with four words using an F the board never held. Nothing caught
+ * it, because the server checks length, duplicates and the tile budget rather than spellability,
+ * and no screen drew the board beside the words. The game-detail page now does, so an impossible
+ * fixture is visibly impossible.
+ *
+ * Every word below is spellable from these twelve tiles, consuming one per letter.
+ */
+const LETTERS = [...'AUTHORISEDNG']
 
 /**
  * Long enough to exercise the rail's shrinking, short enough to be plausible.
@@ -46,24 +56,27 @@ const LETTERS = [...'STRAIGHENMVY']
  * Three of them carry wilds, because the marking is the part of a found word most easily got
  * wrong and least easily reached by playing: at the real 0.02 a wild turns up about once every
  * four rounds, and one that resolves into a word the player then submits is rarer still. The
- * three cover the cases that differ. `STRAIGHTEN` is the longest word here, so it is drawn at the
- * smallest size the rail allows: whatever marks a wild has to survive that. `SEEM` carries two,
- * which is the cap and so the most a word can hold. `FIE` is the shortest, where the mark is
+ * three cover the cases that differ. `HEADSTRONG` is the longest word here, so it is drawn at the
+ * smallest size the rail allows: whatever marks a wild has to survive that. `DOSE` carries two,
+ * which is the cap and so the most a word can hold. `AGE` is the shortest, where the mark is
  * drawn at full size and has nowhere to hide.
+ *
+ * The points are `wordScore` of the length rather than numbers somebody liked: 2, 3, 5, 8, 13,
+ * 21, 34, 55 for three tiles up to ten.
  */
 const WORDS: readonly { word: string; points: number; wilds?: readonly number[] }[] = [
-  { word: 'STRAIGHTEN', points: 13, wilds: [4] },
-  { word: 'MARRIES', points: 5 },
-  { word: 'SENATOR', points: 5 },
-  { word: 'FEVERS', points: 3 },
-  { word: 'SAVER', points: 3 },
-  { word: 'MERRY', points: 3 },
-  { word: 'SEEM', points: 2, wilds: [0, 3] },
-  { word: 'RIME', points: 2 },
-  { word: 'FRAY', points: 2 },
-  { word: 'VARY', points: 2 },
-  { word: 'FIE', points: 1, wilds: [1] },
-  { word: 'FRY', points: 1 },
+  { word: 'HEADSTRONG', points: 55, wilds: [4] },
+  { word: 'DAUGHTERS', points: 34 },
+  { word: 'DINOSAUR', points: 21 },
+  { word: 'DROUGHT', points: 13 },
+  { word: 'ASHORE', points: 8 },
+  { word: 'ARGUE', points: 5 },
+  { word: 'DOSE', points: 3, wilds: [0, 3] },
+  { word: 'ANTE', points: 3 },
+  { word: 'HUGS', points: 3 },
+  { word: 'RIDE', points: 3 },
+  { word: 'AGE', points: 2, wilds: [1] },
+  { word: 'OUT', points: 2 },
 ]
 
 const DIFFICULTIES: readonly Difficulty[] = ['easy', 'medium', 'hard', 'insane']
