@@ -1,4 +1,4 @@
-import type { GameDetail, GameRow, GameSummary } from '../src/account/types.js'
+import type { GameDetail, GameRow, GameSummary, PublicProfile } from '../src/account/types.js'
 import type { Profile, StoredCode } from '../src/auth/types.js'
 import { normalizeUsername } from '../src/auth/usernames.js'
 import type { Store } from '../src/types.js'
@@ -151,11 +151,35 @@ export function fakeStore(): FakeStore {
         .sort((a, b) => b.finishedAt.getTime() - a.finishedAt.getTime())
       return Promise.resolve(mine.slice(0, limit))
     },
-    gameFor: (userId, gameId) => {
-      const kept = games.find((one) => one.row.id === gameId && one.row.userId === userId)
+    gameById: (gameId) => {
+      const kept = games.find((one) => one.row.id === gameId)
       if (kept === undefined) return Promise.resolve(null)
-      return Promise.resolve({ summary: summaryOf(kept.row), detail: kept.detail })
+      // An unclaimed guest game has nobody to attribute it to and is nobody's to show.
+      const owner = users.get(kept.row.userId)
+      if (owner === undefined) return Promise.resolve(null)
+      return Promise.resolve({
+        summary: summaryOf(kept.row),
+        detail: kept.detail,
+        owner: publicOf(owner),
+      })
     },
+    profileByUsername: (normalized) => {
+      const found = [...users.values()].find(
+        (user) => normalizeUsername(user.username) === normalized,
+      )
+      return Promise.resolve(found === undefined ? null : publicOf(found))
+    },
+  }
+}
+
+/** A person as a stranger sees them: never the email, never anything `Profile` gains later. */
+function publicOf(user: FakeUser): PublicProfile {
+  return {
+    userId: user.userId,
+    username: user.username,
+    avatarSeed: user.avatarSeed,
+    country: user.country,
+    bio: user.bio,
   }
 }
 

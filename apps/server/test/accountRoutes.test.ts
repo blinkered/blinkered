@@ -242,6 +242,15 @@ describe('the account surface', () => {
       })
     })
 
+    it('gives a game an id short enough to live in a link', async () => {
+      // Eleven characters, not the twenty-two every other row gets. This one is read by people:
+      // it is the whole of a shared permalink after `/g/`. See `newGameId` for why not eight.
+      const response = await send('POST', '/v1/games/import', game())
+      const { id } = (await response.json()) as { id: string }
+      expect(id).toHaveLength(11)
+      expect(id).toMatch(/^[A-Za-z0-9_-]+$/)
+    })
+
     it('never marks any game as one for a leaderboard', async () => {
       await send('POST', '/v1/games/import', game())
       // The row never mentions eligibility at all, so the column's `false` default is the only
@@ -384,14 +393,17 @@ describe('the account surface', () => {
       return ((await response.json()) as { id: string }).id
     }
 
-    it('hands back the summary and the document together', async () => {
+    it('hands back the summary, the document and who played it', async () => {
       const id = await keep()
-      const response = await get(`/v1/me/games/${id}`)
+      const response = await get(`/v1/games/${id}`)
       expect(response.status).toBe(200)
-      expect(await response.json()).toMatchObject({
+      const game = (await response.json()) as { owner: { username: string } }
+      // The generated name, asserted on its own rather than through a matcher: `stringMatching`
+      // is typed `any`, and a lint rule rightly refuses to let one into a typed comparison.
+      expect(game.owner.username).toMatch(/^[a-z]+-[a-z]+-\d{4}$/)
+      expect(game).toMatchObject({
         id,
         language: 'en',
-        difficulty: 'medium',
         detail: {
           boards: [BOARD, BOARD],
           words: [{ word: 'HOUSE', tiles: 5, round: 0, flips: 8, tick: 42 }],
@@ -399,21 +411,92 @@ describe('the account surface', () => {
       })
     })
 
-    it('is 404 for somebody else’s game, not 403', async () => {
-      // The two are distinguishable only to whoever is guessing at ids, and telling them apart
-      // is how this endpoint starts reporting which games exist.
+    it('shows it to a stranger, and to nobody signed in at all', async () => {
+      // Games are public. This route used to be owner-scoped and answer 404 to everybody else;
+      // sharing a permalink is what reversed that.
       const id = await keep()
       const other = await signIn('other@example.com')
-      expect((await get(`/v1/me/games/${id}`, { cookie: other })).status).toBe(404)
+      expect((await get(`/v1/games/${id}`, { cookie: other })).status).toBe(200)
+      expect((await get(`/v1/games/${id}`, {})).status).toBe(200)
+    })
+
+    it('never puts an address on a public game', async () => {
+      const id = await keep()
+      const body = await (await get(`/v1/games/${id}`, {})).text()
+      expect(body).not.toContain('nick@example.com')
+      expect(body).not.toContain('email')
     })
 
     it('is 404 for a game that is not there at all', async () => {
-      expect((await get('/v1/me/games/made-up')).status).toBe(404)
+      expect((await get('/v1/games/made-up', {})).status).toBe(404)
+    })
+  })
+
+  describe('somebody else’s profile', () => {
+    it('is readable by anyone, under any casing of the name', async () => {
+      await send('PATCH', '/v1/me', { username: 'Trout', bio: 'fly fishing', country: 'us' })
+      for (const name of ['Trout', 'trout', 'TROUT']) {
+        const response = await get(`/v1/users/${name}`, {})
+        expect(response.status).toBe(200)
+        expect(await response.json()).toMatchObject({
+          username: 'Trout',
+          bio: 'fly fishing',
+          country: 'US',
+        })
+      }
     })
 
-    it('is 401 signed out', async () => {
-      const id = await keep()
-      expect((await get(`/v1/me/games/${id}`, {})).status).toBe(401)
+    it('carries the picture but never the address', async () => {
+      await send('PATCH', '/v1/me', { username: 'kestrel' })
+      const body = await (await get('/v1/users/kestrel', {})).text()
+      expect(body).toContain('avatarSeed')
+      expect(body).not.toContain('nick@example.com')
+    })
+
+    it('lists their games, newest first', async () => {
+      await send('PATCH', '/v1/me', { username: 'heron' })
+      await send('POST', '/v1/games/import', {
+        startedAt: clock.getTime() - 120_000,
+        finishedAt: clock.getTime() - 1000,
+        seed: 1,
+        difficulty: 'medium',
+        source: 'web',
+        config: { ...CONFIG },
+        boards: [BOARD],
+        words: [],
+        rounds: 3,
+      })
+      const { games } = (await (await get('/v1/users/heron/games', {})).json()) as {
+        games: unknown[]
+      }
+      expect(games).toHaveLength(1)
+    })
+
+    it('honours a limit on the public listing too', async () => {
+      await send('PATCH', '/v1/me', { username: 'wren' })
+      for (let i = 0; i < 3; i += 1) {
+        await send('POST', '/v1/games/import', {
+          startedAt: clock.getTime() - 120_000,
+          finishedAt: clock.getTime() - 1000 * (i + 1),
+          seed: i,
+          difficulty: 'medium',
+          source: 'web',
+          config: { ...CONFIG },
+          boards: [BOARD],
+          words: [],
+          rounds: 3,
+        })
+      }
+      const count = async (query: string): Promise<number> =>
+        ((await (await get(`/v1/users/wren/games${query}`, {})).json()) as { games: unknown[] })
+          .games.length
+      expect(await count('?limit=2')).toBe(2)
+      expect(await count('?limit=nonsense')).toBe(3)
+    })
+
+    it('is 404 for a name nobody has', async () => {
+      expect((await get('/v1/users/nobody-at-all', {})).status).toBe(404)
+      expect((await get('/v1/users/nobody-at-all/games', {})).status).toBe(404)
     })
   })
 

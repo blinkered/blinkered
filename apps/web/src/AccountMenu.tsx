@@ -29,11 +29,14 @@ export function AccountMenu({
   account,
   onSignIn,
   onGo,
+  onPublicProfile,
   onSignOut,
 }: {
   readonly account: Account | null
   readonly onSignIn: () => void
   readonly onGo: (destination: Destination) => void
+  /** Opens the page everybody else sees, which is the only way to check what it says. */
+  readonly onPublicProfile: (username: string) => void
   readonly onSignOut: () => void
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -120,6 +123,18 @@ export function AccountMenu({
               {item.label}
             </button>
           ))}
+          <button
+            type="button"
+            role="menuitem"
+            className="account-item"
+            lang="en"
+            onClick={() => {
+              close()
+              onPublicProfile(account.username)
+            }}
+          >
+            My public page
+          </button>
           <button
             type="button"
             role="menuitem"

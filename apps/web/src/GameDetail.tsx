@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import type { TieredIndex } from '@blinkered/words'
+import { Avatar } from './Avatar.js'
 import { gameDetail } from './account.js'
+import { goTo } from './route.js'
 import type { BoardAtRound, PlayedGameDetail, PlayedWord } from './account.js'
 import { spellingFor } from './spelling.js'
 
@@ -95,7 +97,14 @@ export function GameDetail({
    * megabytes to restore a handful of Vietnamese spaces. See `spelling.ts`.
    */
   readonly dictionary: TieredIndex | null
-  readonly onBack: () => void
+  /**
+   * Where "all games" goes, or absent on a permalink.
+   *
+   * A game reached from somebody's own list has a list to go back to; one reached from a shared
+   * link does not, and drawing a back button that lands on a stranger's history would be a lie
+   * about where they came from.
+   */
+  readonly onBack: (() => void) | undefined
 }): React.JSX.Element {
   const [game, setGame] = useState<PlayedGameDetail | null>(null)
   const [failed, setFailed] = useState(false)
@@ -150,6 +159,18 @@ export function GameDetail({
       <BackLink onBack={onBack} />
 
       <header className="game-head">
+        {/* Whose game this is, first, because on a shared permalink that is the question the
+            reader arrives with. A link, so a game is a way into a profile and back. */}
+        <button
+          type="button"
+          className="game-owner"
+          onClick={() => {
+            goTo({ at: 'player', username: game.owner.username })
+          }}
+        >
+          <Avatar seed={game.owner.avatarSeed} size={24} />
+          <span>{game.owner.username}</span>
+        </button>
         <p className="game-when" lang="en">
           {new Date(game.finishedAt).toLocaleString(undefined, {
             dateStyle: 'full',
@@ -274,7 +295,12 @@ export function GameDetail({
   )
 }
 
-function BackLink({ onBack }: { readonly onBack: () => void }): React.JSX.Element {
+function BackLink({
+  onBack,
+}: {
+  readonly onBack: (() => void) | undefined
+}): React.JSX.Element | null {
+  if (onBack === undefined) return null
   return (
     <button type="button" className="signin-again game-back" onClick={onBack} lang="en">
       ← All games

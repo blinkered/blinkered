@@ -25,9 +25,31 @@ export interface AccountDeps extends SessionDeps {
 const GAMES_LIMIT = 50
 const GAMES_MAX = 200
 
-/** Row ids, matching `auth/routes.ts`: random, so nothing about the table is inferable from one. */
-function newId(): string {
-  return randomBytes(16).toString('base64url')
+/**
+ * A game id, which is also a URL.
+ *
+ * Eight bytes rather than the sixteen every other row gets, because this one is read by people:
+ * `/g/bU-E2lFFzcG2zv6yGevoMg` is twenty-two characters of noise in a shared link and
+ * `/g/bU-E2lFFzcG` is eleven. Nothing else in the schema appears in an address bar, so nothing
+ * else is shortened -- a session token is 256 bits and stays that way.
+ *
+ * Sixty-four bits is still random rather than sequential, which is the property that matters:
+ * an id says nothing about how many games there are or what order they arrived in.
+ *
+ * It is also enough. Collisions are a birthday problem, and the arithmetic decides the size:
+ *
+ * | games       | 6 bytes (8 chars) | 8 bytes (11 chars) |
+ * | ----------- | ----------------- | ------------------ |
+ * | 1 million   | 1 in 560          | 1 in 37 million    |
+ * | 11 million  | 1 in 5            | 1 in 300,000       |
+ * | 100 million | certain           | 1 in 3,700         |
+ *
+ * Eleven million is about a year at ten thousand daily players. Eight characters would have been
+ * prettier and would have needed a retry loop around the insert, where a collision costs somebody
+ * the game they just finished; eleven needs none, so there is no such path to get wrong.
+ */
+function newGameId(): string {
+  return randomBytes(8).toString('base64url')
 }
 
 export function accountRoutes(deps: AccountDeps): Hono {
@@ -98,9 +120,7 @@ export function accountRoutes(deps: AccountDeps): Hono {
   routes.get('/me/games', async (context) => {
     const user = await currentUser(deps, context)
     if (user === null) return context.json({ error: 'signed-out' }, 401)
-    const asked = Number(context.req.query('limit') ?? GAMES_LIMIT)
-    const limit = Number.isInteger(asked) && asked > 0 ? Math.min(asked, GAMES_MAX) : GAMES_LIMIT
-    const games = await deps.store.gamesOf(user.userId, limit)
+    const games = await deps.store.gamesOf(user.userId, limitFrom(context.req.query('limit')))
     return context.json({ games })
   })
 
@@ -125,7 +145,7 @@ export function accountRoutes(deps: AccountDeps): Hono {
     if (!parsed.ok) return context.json({ error: 'bad-game', problem: parsed.problem }, 400)
     const { game } = parsed
 
-    const id = newId()
+    const id = newGameId()
     await deps.store.insertGame(
       {
         id,
@@ -164,28 +184,60 @@ export function accountRoutes(deps: AccountDeps): Hono {
   })
 
   /*
-   * One game, in full.
+   * One game, in full, to anybody who has the link.
    *
-   * The only route that reads a detail document, and the reason the document is a document: it is
-   * fetched whole, by primary key, and never filtered or aggregated.
+   * Games are public, so this is not scoped to an owner and the account screen reads it too:
+   * one route rather than a public one and a private one that could drift about what a game is.
+   * It replaced an owner-scoped `/me/games/:id`, and that was a real reversal -- the old one
+   * answered 404 to everybody else on purpose.
    *
-   * Scoped to the owner in the query rather than checked after it. A 404 rather than a 403 for
-   * somebody else's game, because the two are distinguishable only to whoever is guessing at ids,
-   * and telling them apart is how this endpoint reports which games exist.
-   *
-   * `detail` can be null for a game whose document a retention policy has pruned. There is no
-   * such policy yet; the summary is still a game, and a reader that treated the missing document
-   * as a missing game would make somebody's history shorter than it is.
+   * Still 404, and for the same reason it was then, for a game that is not there, never
+   * finished, nobody has claimed, is `hidden`, or belongs to a deleted account. Those are all
+   * "no such game" to a stranger, and telling them apart is how an endpoint starts reporting
+   * which games exist.
    */
-  routes.get('/me/games/:id', async (context) => {
-    const user = await currentUser(deps, context)
-    if (user === null) return context.json({ error: 'signed-out' }, 401)
-    const found = await deps.store.gameFor(user.userId, context.req.param('id'))
+  routes.get('/games/:id', async (context) => {
+    const found = await deps.store.gameById(context.req.param('id'))
     if (found === null) return context.json({ error: 'no-game' }, 404)
-    return context.json({ ...found.summary, detail: found.detail })
+    return context.json({ ...found.summary, owner: found.owner, detail: found.detail })
+  })
+
+  /*
+   * Somebody's profile, by the name in the URL.
+   *
+   * Looked up on the normalized form, because that is what uniqueness is on: `/u/Trout` and
+   * `/u/trout` are one person, and a link that only worked in the case it was typed in would be
+   * a link that breaks when somebody retypes it.
+   *
+   * A username can change, so these are the links that rot. That is the ordinary web contract
+   * and it is the right side of the trade -- the links worth keeping are game permalinks, and
+   * those carry an id that never moves.
+   */
+  routes.get('/users/:username', async (context) => {
+    const found = await deps.store.profileByUsername(
+      normalizeUsername(context.req.param('username')),
+    )
+    if (found === null) return context.json({ error: 'no-user' }, 404)
+    return context.json(found)
+  })
+
+  /* What they have played, newest first. Public, like the profile it hangs off. */
+  routes.get('/users/:username/games', async (context) => {
+    const found = await deps.store.profileByUsername(
+      normalizeUsername(context.req.param('username')),
+    )
+    if (found === null) return context.json({ error: 'no-user' }, 404)
+    const games = await deps.store.gamesOf(found.userId, limitFrom(context.req.query('limit')))
+    return context.json({ games })
   })
 
   return routes
+}
+
+/** How many games a listing hands back. Shared, so the two listings cannot disagree. */
+function limitFrom(asked: string | undefined): number {
+  const wanted = Number(asked ?? GAMES_LIMIT)
+  return Number.isInteger(wanted) && wanted > 0 ? Math.min(wanted, GAMES_MAX) : GAMES_LIMIT
 }
 
 /** As in `auth/routes.ts`: the body is whatever somebody posted, so it is typed as that. */

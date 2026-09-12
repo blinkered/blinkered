@@ -182,23 +182,45 @@ describe('keeping games', () => {
     const at = new Date(Date.now() - 1000)
     const detail = detailFor('KESTREL')
     await theStore().insertGame(gameFor(userId, at, 20), detail)
-    const found = await theStore().gameFor(userId, gameFor(userId, at, 20).id)
+    const found = await theStore().gameById(gameFor(userId, at, 20).id)
     // Numbers, nested arrays and the optional field all survive, which is the only thing a
     // fake could not have told us: jsonb canonicalizes, and this is what it does to our shape.
     expect(found?.detail).toEqual(detail)
     expect(found?.summary.score).toBe(20)
   })
 
-  it('will not hand a game to anybody but its owner', async () => {
-    const mine = await account()
-    const theirs = await account()
+  it('hands a game to anybody, with who played it attached', async () => {
+    // Games are public. This used to be scoped to the owner and answer null to everybody else;
+    // see the note on `gameById`.
+    const mine = await account('otter-keeper')
     const at = new Date(Date.now() - 1000)
     await theStore().insertGame(gameFor(mine.userId, at, 5), detailFor('OTTER'))
-    const id = gameFor(mine.userId, at, 5).id
-    expect(await theStore().gameFor(mine.userId, id)).not.toBeNull()
-    // Scoped in the query rather than filtered afterwards, because a filter a caller can forget
-    // is a filter a caller will forget.
-    expect(await theStore().gameFor(theirs.userId, id)).toBeNull()
+    const found = await theStore().gameById(gameFor(mine.userId, at, 5).id)
+    expect(found?.owner).toMatchObject({ username: 'otter-keeper', avatarSeed: mine.userId })
+    // Never the address it signs in with, whatever else a profile grows.
+    expect(found?.owner).not.toHaveProperty('email')
+  })
+
+  it('finds a profile by any casing of the name, and not a deleted one', async () => {
+    const { userId } = await account('Heron-Watcher')
+    expect((await theStore().profileByUsername('heron-watcher'))?.userId).toBe(userId)
+    await (open as NonNullable<typeof open>).db.execute(
+      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set deleted_at = now() where id = ${userId}`,
+    )
+    // Same answer as a name nobody has: telling them apart would report who used to be here.
+    expect(await theStore().profileByUsername('heron-watcher')).toBeNull()
+  })
+
+  it('will not show a game whose owner is deleted, nor an unclaimed one', async () => {
+    const { userId } = await account()
+    const at = new Date(Date.now() - 1000)
+    await theStore().insertGame(gameFor(userId, at, 9), detailFor('WREN'))
+    const id = gameFor(userId, at, 9).id
+    expect(await theStore().gameById(id)).not.toBeNull()
+    await (open as NonNullable<typeof open>).db.execute(
+      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set deleted_at = now() where id = ${userId}`,
+    )
+    expect(await theStore().gameById(id)).toBeNull()
   })
 
   it('cascades the document away with the game', async () => {

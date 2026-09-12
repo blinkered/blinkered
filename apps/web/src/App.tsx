@@ -30,6 +30,9 @@ import { SignInDialog } from './SignInDialog.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
 import type { Account, BoardAtRound, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
+import { PlayedGamePage, PlayerPage } from './PlayerPage.js'
+import { goTo, routeOf, urlOf } from './route.js'
+import type { Route } from './route.js'
 import { isPersonalBest, recordScore, standingOf } from './scores.js'
 import { spellingFor } from './spelling.js'
 import type { Standing } from './scores.js'
@@ -186,6 +189,24 @@ function Session({
   /** Open, and why. The reason is shown in the dialog; `null` means it is not open. */
   const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
   const [visiting, setVisiting] = useState<Destination | null>(null)
+
+  /*
+   * Where the address bar points.
+   *
+   * Two public shapes, `/g/<id>` and `/u/<name>`, and everything else is the game. Read from
+   * `location` on arrival and kept in step with Back and Forward through `popstate`, which
+   * `goTo` also fires so that a link inside the app moves the page without a reload.
+   */
+  const [route, setRoute] = useState<Route>(() => routeOf(globalThis.location.pathname))
+  useEffect(() => {
+    const onPop = (): void => {
+      setRoute(routeOf(globalThis.location.pathname))
+    }
+    globalThis.addEventListener('popstate', onPop)
+    return () => {
+      globalThis.removeEventListener('popstate', onPop)
+    }
+  }, [])
 
   /*
    * Taking an account on, which is more than remembering it.
@@ -382,14 +403,25 @@ function Session({
    * too while the one already sent is not sent twice.
    */
   const kept = useRef<GameToKeep | null>(null)
+  /**
+   * The id the server gave this game, once it has one.
+   *
+   * What makes Share a permalink rather than an advertisement. Null for a guest, because a
+   * guest's game is not on the server and there is nothing to link to -- the Keep this game
+   * button beside it is the offer to change that.
+   */
+  const [keptId, setKeptId] = useState<string | null>(null)
   useEffect(() => {
     const keepable = finished?.keepable
     if (account === null || keepable === undefined || kept.current === keepable) return
     kept.current = keepable
+    setKeptId(null)
     // Nothing is shown if this fails. The game is in `localStorage` either way, which is where
     // it would have been with no account at all, and an error about a background upload on top
     // of somebody's final score is noise at the worst moment.
-    void keepGame(keepable)
+    void keepGame(keepable).then((saved) => {
+      if (saved !== null) setKeptId(saved.id)
+    })
   }, [account, finished])
 
   const setup = (startLabel: string): React.JSX.Element => (
@@ -424,7 +456,12 @@ function Session({
        * for a screen reader, and over it so the setup screen is already there when it closes:
        * finishing the tour should reveal the choice it just described, not navigate to it.
        */}
-      {!settings.tutorialSeen && !tourDone && phase === 'setup' ? (
+      {/*
+        `route.at === 'game'` is not decoration. Somebody following a shared permalink is in
+        `setup` too -- they have not started a game, because they did not come to play one -- so
+        without it the welcome tour opens on top of the game they were sent to look at.
+      */}
+      {!settings.tutorialSeen && !tourDone && phase === 'setup' && route.at === 'game' ? (
         <Tutorial
           messages={messages}
           language={language}
@@ -473,6 +510,35 @@ function Session({
             setVisiting(null)
           }}
         />
+      )}
+
+      {/*
+        A permalink, over everything.
+        
+        Over rather than instead of, like the rules and the account screen, and for the reason
+        App.tsx already gives about both: React unmounts what it replaces, and the game
+        underneath has to still be there when this closes. Arriving directly at one of these is
+        the common case, and then there is nothing underneath yet, which costs nothing.
+      */}
+      {route.at === 'game' ? null : (
+        <div className="rules-overlay account-screen">
+          {route.at === 'player' ? (
+            <PlayerPage
+              username={route.username}
+              onHome={() => {
+                setRoute({ at: 'game' })
+              }}
+            />
+          ) : (
+            <PlayedGamePage
+              id={route.id}
+              dictionary={dictionary}
+              onHome={() => {
+                setRoute({ at: 'game' })
+              }}
+            />
+          )}
+        </div>
       )}
 
       {readingRules ? (
@@ -563,6 +629,10 @@ function Session({
               setSigningIn({})
             }}
             onGo={setVisiting}
+            onPublicProfile={(username) => {
+              goTo({ at: 'player', username })
+              setRoute({ at: 'player', username })
+            }}
             onSignOut={() => {
               setVisiting(null)
               // The interface signs out immediately and the request goes on its own; the server
@@ -604,6 +674,7 @@ function Session({
                   result={finished.result}
                   personalBest={isPersonalBest(finished.standing)}
                   messages={messages}
+                  permalink={keptId === null ? undefined : urlOf({ at: 'played-game', id: keptId })}
                 />
                 {/*
                   Keep this game.

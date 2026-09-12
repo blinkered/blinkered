@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
 import { GameDetail } from './GameDetail.js'
+import { GamesTable } from './GamesTable.js'
 import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { checkName, myGames, saveProfile } from './account.js'
@@ -368,45 +369,5 @@ function Games({ dictionary }: { readonly dictionary: TieredIndex | null }): Rea
     )
   }
 
-  return (
-    <table className="account-games">
-      <thead>
-        <tr lang="en">
-          <th scope="col">When</th>
-          <th scope="col">Game</th>
-          <th scope="col">Score</th>
-          <th scope="col">Words</th>
-          <th scope="col">Rounds</th>
-        </tr>
-      </thead>
-      <tbody>
-        {games.map((game) => (
-          <tr key={game.id}>
-            {/*
-              The whole row opens the game, and the button is in the first cell rather than
-              wrapping the row: a `<tr>` cannot hold a button, and making the row itself clickable
-              would mean inventing keyboard and focus behaviour that a button already has.
-            */}
-            <td>
-              <button
-                type="button"
-                className="game-open"
-                onClick={() => {
-                  setOpen(game.id)
-                }}
-              >
-                {new Date(game.finishedAt).toLocaleDateString()}
-              </button>
-            </td>
-            <td>
-              {game.language} · {game.difficulty}
-            </td>
-            <td>{game.score}</td>
-            <td>{game.words}</td>
-            <td>{game.rounds}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
+  return <GamesTable games={games} onOpen={setOpen} />
 }

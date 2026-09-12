@@ -4,7 +4,13 @@ import { shareText } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { withoutStealingFocus } from './focus.js'
 
-/** Where the synopsis points. The domain the game is played on, not the one it is served from. */
+/**
+ * Where the synopsis points when the game itself cannot be linked to.
+ *
+ * The domain the game is played on, not the one it is served from: this one is an advertisement
+ * rather than a location, so it names the real home even from a dev host. A permalink is the
+ * opposite and is built from the page's own origin; see `route.ts`.
+ */
 const HOME = 'https://playblinkered.com'
 
 /** How long "Copied." stays up. Long enough to read, short enough not to need dismissing. */
@@ -15,6 +21,14 @@ interface ShareProps {
   /** Whether the leaderboard called this a personal best, so the two cannot disagree. */
   readonly personalBest: boolean
   readonly messages: Messages
+  /**
+   * A link to this game, when it is on the server and can be looked at.
+   *
+   * Undefined for a guest, whose game exists only in their own browser: there is nothing at the
+   * other end of a link to it, and sharing one would be an invitation to a 404. The synopsis
+   * then names the game instead, which is what it always did.
+   */
+  readonly permalink: string | undefined
 }
 
 /**
@@ -32,9 +46,15 @@ interface ShareProps {
  *
  * A canceled share sheet is not an error and says nothing. The player closed it on purpose.
  */
-export function Share({ result, personalBest, messages }: ShareProps): React.JSX.Element {
+export function Share({
+  result,
+  personalBest,
+  messages,
+  permalink,
+}: ShareProps): React.JSX.Element {
   const [state, setState] = useState<'idle' | 'copied' | 'manual'>('idle')
-  const text = shareText(messages, result, { personalBest, url: HOME })
+  // The game itself when there is one to point at, and the game's home when there is not.
+  const text = shareText(messages, result, { personalBest, url: permalink ?? HOME })
 
   // The confirmation clears itself. Held in a ref so a second tap restarts the clock rather than
   // inheriting the first tap's remaining time.

@@ -181,6 +181,20 @@ export interface BoardAtRound {
   readonly wilds?: readonly number[]
 }
 
+/**
+ * A person as a stranger sees them.
+ *
+ * Not `Account`, which is what you see of yourself. The two differ by little today and the
+ * separate type is the point: whatever `Account` gains next is not automatically public.
+ */
+export interface PublicProfile {
+  readonly userId: string
+  readonly username: string
+  readonly avatarSeed: string
+  readonly country: string | null
+  readonly bio: string | null
+}
+
 /** A word, with everything the engine knew about it when it was found. */
 export interface PlayedWord {
   readonly word: string
@@ -201,15 +215,35 @@ export interface PlayedWord {
  * missing document as a missing game would make somebody's history shorter than it is.
  */
 export interface PlayedGameDetail extends PlayedGame {
+  /** Who played it. Always present: a game nobody has claimed is not shown at all. */
+  readonly owner: PublicProfile
   readonly detail: {
     readonly boards: readonly BoardAtRound[]
     readonly words: readonly PlayedWord[]
   } | null
 }
 
-/** One game, whole. Null for somebody else's, a missing one, and a server that did not answer. */
+/**
+ * One game, whole, whoever played it.
+ *
+ * Public: this is what a shared permalink resolves to. Null for a game that is not there, is
+ * hidden, was never claimed, or whose owner is gone -- all of which are one answer on purpose.
+ */
 export async function gameDetail(id: string): Promise<PlayedGameDetail | null> {
-  return getting(`me/games/${encodeURIComponent(id)}`)
+  return getting(`games/${encodeURIComponent(id)}`)
+}
+
+/** Somebody's public profile, by name. Null for a name nobody has. */
+export async function playerProfile(username: string): Promise<PublicProfile | null> {
+  return getting(`users/${encodeURIComponent(username)}`)
+}
+
+/** What they have played. Null when the name is unknown or the server did not answer. */
+export async function playerGames(username: string): Promise<readonly PlayedGame[] | null> {
+  const answered = await getting<{ games: readonly PlayedGame[] }>(
+    `users/${encodeURIComponent(username)}/games`,
+  )
+  return answered === null ? null : answered.games
 }
 
 /** Somebody's own games, newest first. Null when the question could not be asked. */

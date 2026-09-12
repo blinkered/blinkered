@@ -145,6 +145,27 @@ export interface GameSummary {
   readonly finishedAt: Date
 }
 
+/**
+ * A person as a stranger sees them.
+ *
+ * Deliberately not `Profile`, which is what *you* see of yourself. The two differ by one field
+ * today and the point of the separate type is that they go on differing: `Profile` is where
+ * anything private lands as the account grows, and a public route that returned it would leak
+ * whatever was added next. Nothing here has ever been private -- a username, a picture, a
+ * country and a bio are what a profile page is for.
+ *
+ * `userId` is here because `avatarSeed` is the id, so withholding one while returning the other
+ * would be a gesture rather than a boundary. Ids are random rather than sequential, so it
+ * publishes nothing about how many accounts there are or what order they arrived in.
+ */
+export interface PublicProfile {
+  readonly userId: string
+  readonly username: string
+  readonly avatarSeed: string
+  readonly country: string | null
+  readonly bio: string | null
+}
+
 export interface AccountStore {
   /**
    * Whether a normalized name already belongs to somebody.
@@ -177,8 +198,22 @@ export interface AccountStore {
    * yet. When it does, the summary row outlives the document by design, and a reader that
    * treated a missing document as a missing game would make the history shorter than it is.
    */
-  gameFor(
-    userId: string,
-    gameId: string,
-  ): Promise<{ summary: GameSummary; detail: GameDetail | null } | null>
+  /**
+   * One game and who played it, for anybody at all.
+   *
+   * Not scoped to an owner. Games are public, so this is the only reader of a detail document
+   * and the account screen goes through it too -- one route rather than a public one and a
+   * private one that could drift about what a game is.
+   *
+   * Null for a game that is not there, one that never finished, one an owner has not claimed,
+   * a `hidden` one, and one belonging to a deleted account. Those are all "no such game" to a
+   * stranger, and the distinctions are exactly what a 404 exists to withhold.
+   */
+  gameById(gameId: string): Promise<{
+    summary: GameSummary
+    detail: GameDetail | null
+    owner: PublicProfile
+  } | null>
+  /** Somebody else's profile, by the name in the URL. Null for unknown and for deleted. */
+  profileByUsername(normalized: string): Promise<PublicProfile | null>
 }

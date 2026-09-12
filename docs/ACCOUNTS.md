@@ -650,6 +650,9 @@ All four are built. What follows is what they are, rather than what they were go
 | `GET /v1/usernames/:name`                   | availability while typing, behind a session     |
 | `POST /v1/games/import`                     | keeping a game played before there was a person |
 | `GET /v1/me/games`                          | My Games                                        |
+| `GET /v1/games/:id`                         | one game, public, what a permalink resolves to  |
+| `GET /v1/users/:name`                       | somebody's profile, public                      |
+| `GET /v1/users/:name/games`                 | what they have played, public                   |
 | `GET /v1/auth/apple`, `GET /v1/auth/google` | 501, so a stub is not mistaken for a 404        |
 
 Three decisions taken while building them, none of which the plan above had settled.
@@ -680,6 +683,51 @@ existed when the game **began**, not when it was sent. Signing up on the game-ov
 whole point of that panel, so by the time the game is posted the account always exists. It is a
 claim, and it is allowed to be, on the same footing as scores in phase A: a personal history is a
 diary and nobody forges a diary. Nothing is granted by it.
+
+### Profiles and games are public, and two earlier decisions are reversed
+
+A game is worth sharing, so a game has a permalink and anybody who follows one can read it.
+That means profiles are public too, since a game has to be able to say who played it.
+
+```
+/g/<id>         one finished game
+/u/<username>   one player
+```
+
+**What this reverses, plainly.** `GET /v1/me/games/:id` was scoped to its owner and answered 404
+to everybody else, with a test asserting exactly that. It is gone; `GET /v1/games/:id` replaces
+it and the account screen reads it too, so there is one reader rather than a public one and a
+private one that could drift about what a game is.
+
+**And it makes the session gate on `/v1/usernames/:name` pointless.** That gate exists three
+sections up because an availability endpoint enumerates. `GET /v1/users/:name` now answers 404
+for a name nobody has, publicly, which is the same oracle with a nicer URL. The gate is left in
+place because it costs nothing, but the reason written down for it is no longer true, and a
+rate limit in front of the public route is the thing that would actually help.
+
+**What stays private is the boundary, not the page.** `PublicProfile` is a separate type from
+`Profile` rather than a subset computed at the call site, and that is the whole mechanism: the
+address an account signs in with has never been on a profile, and whatever `Profile` gains next
+is not public by default. A `hidden` game, an unclaimed one, and one belonging to a deleted
+account are all 404 — the same answer, because telling them apart is how an endpoint starts
+reporting what exists.
+
+**Usernames rot and game ids do not.** `/u/trout` breaks when trout renames, which is the
+ordinary contract everywhere on the web and the right side of the trade: the link worth keeping
+is the game permalink, and that carries an id that never moves.
+
+**A game id is eight bytes, not sixteen.** Eleven characters rather than twenty-two, because
+this is the one id a person reads. Collisions are a birthday problem and the arithmetic picked
+the size: at eleven million games — about a year at ten thousand daily players — eight bytes
+collide with probability 3 in a million and six bytes with probability 1 in 5. The shorter one
+would have needed a retry loop around the insert, where a collision costs somebody the game they
+just finished. Existing ids are untouched and still resolve; an id is opaque text.
+
+**The SPA fallback is scoped to those two prefixes and nothing else.** `deploy/nginx.shared.conf`
+refuses a blanket one, and the comment there is still right: a fallback that catches everything
+is what once made a missing word list arrive as `index.html` and parse as HTML. `/g/` and `/u/`
+hold nothing on disk, so nothing real can be masked by them. Checked against real nginx rather
+than reasoned about — `/words/missing.txt` still 404s.
 
 **The store is one object behind two ports.** `AuthStore` proves who somebody is, `AccountStore`
 says what they have, and `Store` is both. One Postgres implementation, one fake in the test

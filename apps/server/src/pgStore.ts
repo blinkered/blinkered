@@ -221,10 +221,20 @@ export function pgStore(db: Database): Store {
       return rows.map((row) => ({ ...row, finishedAt: row.finishedAt as Date }))
     },
 
-    gameFor: async (userId, gameId) => {
-      // Left join, because a game whose document has been pruned is still a game. The owner is
-      // in the where clause rather than checked afterwards: this is the only route that returns
-      // somebody's words, and a filter a caller can forget is a filter a caller will forget.
+    profileByUsername: async (normalized) => {
+      const [row] = await db
+        .select(PUBLIC_PROFILE)
+        .from(users)
+        // A deleted account is not a profile. Same answer as a name nobody has, deliberately:
+        // telling the two apart would make this endpoint report who used to be here.
+        .where(and(eq(users.usernameNormalized, normalized), isNull(users.deletedAt)))
+        .limit(1)
+      return row ?? null
+    },
+
+    gameById: async (gameId) => {
+      // An inner join on `users`, so a game with no owner cannot come back: an unclaimed guest
+      // game has nobody to attribute it to and is nobody's to show.
       const [row] = await db
         .select({
           id: games.id,
@@ -239,27 +249,31 @@ export function pgStore(db: Database): Store {
           finishedAt: games.finishedAt,
           version: gameDetail.version,
           detail: gameDetail.detail,
+          ownerId: users.id,
+          username: users.username,
+          avatarSeed: users.avatarSeed,
+          country: users.country,
+          bio: users.bio,
         })
         .from(games)
+        .innerJoin(users, eq(users.id, games.userId))
         .leftJoin(gameDetail, eq(gameDetail.gameId, games.id))
         .where(
           and(
             eq(games.id, gameId),
-            eq(games.userId, userId),
             isNotNull(games.finishedAt),
             eq(games.hidden, false),
+            isNull(users.deletedAt),
           ),
         )
         .limit(1)
       if (row === undefined) return null
 
-      const { version, detail, ...summary } = row
+      const { version, detail, ownerId, username, avatarSeed, country, bio, ...summary } = row
       return {
         summary: { ...summary, finishedAt: summary.finishedAt as Date },
-        // One reader, because a migration rewrites old documents rather than leaving a reader
-        // behind for every shape ever written. A version this build does not know is a bug that
-        // should be loud, and withholding the detail is the loudest thing that is still safe.
         detail: detail !== null && version === DETAIL_VERSION ? (detail as GameDetail) : null,
+        owner: { userId: ownerId, username, avatarSeed, country, bio },
       }
     },
   }
@@ -272,6 +286,18 @@ export function pgStore(db: Database): Store {
  * answered with fewer fields than `updateProfile` would make the interface change shape
  * depending on which route the client had just called.
  */
+/**
+ * The profile a stranger gets. Named beside `PROFILE` so the difference is visible in one place
+ * rather than discovered when a private field turns up on a public page.
+ */
+const PUBLIC_PROFILE = {
+  userId: users.id,
+  username: users.username,
+  avatarSeed: users.avatarSeed,
+  country: users.country,
+  bio: users.bio,
+} as const
+
 const PROFILE = {
   userId: users.id,
   username: users.username,

@@ -2803,3 +2803,47 @@ kbd {
   color: var(--good);
   font-weight: 600;
 }
+
+/* ---------- public pages ---------- */
+/*
+ * Whose game this is, at the top of a game page.
+ *
+ * A button that reads as a name rather than as a control: on a shared permalink this is the
+ * first thing somebody looks at, and a rectangle with a border would make the person look like
+ * a toolbar. The underline on hover is what says it goes somewhere.
+ */
+.game-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .game-owner:hover span {
+    text-decoration: underline;
+  }
+}
+.game-owner .avatar {
+  flex: none;
+}
+
+/*
+ * Somebody's own words about themselves. Text, and only ever text: React escapes by default and
+ * nothing parses this looking for links, which is the rule docs/ACCOUNTS.md sets for the bio.
+ */
+.player-bio {
+  margin: 0;
+  max-width: 34rem;
+  /* Somebody else's text in somebody else's script, and it may have no spaces in it at all. */
+  overflow-wrap: anywhere;
+}
+/* The public pages reuse `.account-page`, which is a grid; its headings need the same rhythm. */
+.account-page h2 {
+  margin: 0.5rem 0 0;
+}
