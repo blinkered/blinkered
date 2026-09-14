@@ -147,6 +147,40 @@ header. Belt and braces, and the belt costs nothing.
 A stale word list is caught by the app rather than being served as gibberish: the file's first
 line has to parse as a Blinkered header, and anything else is refused with a clear message.
 
+## Deploying, and the one flag that hangs it
+
+```
+deploy/deploy.sh dev
+deploy/deploy.sh prod
+```
+
+Use the script rather than `helm upgrade` by hand, for one reason: **Helm 4 changed what a bare
+`--wait` means.** It now selects the `watcher` strategy where Helm 3 polled, and with `watcher`
+an upgrade of this chart hangs indefinitely.
+
+The mechanism is worth knowing, because the symptom does not look like the cause. Helm deletes
+the pre-upgrade migrate Job before creating it — even when no such Job exists — and then waits
+for that deletion to be observed. The watcher is waiting for an event that has already gone by,
+or that will never come. So it sits until the timeout and never creates the Job at all:
+
+```
+starting delete resource   name=blinkered-migrate kind=Job
+ignoring delete failure    error="jobs.batch \"blinkered-migrate\" not found"
+waiting for resources to be deleted   count=1   timeout=10m0s
+```
+
+What you see from outside is a release stuck in `pending-upgrade`, **no migrate Job in the
+namespace**, and the Deployments untouched. That reads like a slow migration and is the opposite:
+nothing has started. `--wait=legacy` polls, sees the object is absent, and carries on — the same
+upgrade goes from an eight-minute hang to thirteen seconds.
+
+**A red herring, recorded so nobody chases it twice.** Helm prints
+`unable to decode an event from the watch stream: INTERNAL_ERROR; received from peer` throughout
+these hangs, on a tidy sixty-second cycle, and it is not the cause. A `kubectl get jobs --watch`
+against the same cluster through the same Rancher proxy survives indefinitely with zero errors,
+with and without HTTP/2 — measured, both ways, before believing it. Two deployments were lost to
+that explanation before anyone asked why a _flaky_ watch would produce an _indefinite_ hang.
+
 ## Cloudflare in front, and the one rule it needed
 
 playblinkered.com is proxied by Cloudflare. Two certificates, Cloudflare's at the edge and

@@ -29,7 +29,7 @@ image:
   #
   # Both verified anonymously pullable before installing. GHCR does not always inherit the
   # repository's visibility, and a private package is an ImagePullBackOff with no useful message.
-  tag: sha-0baa0bc
+  tag: sha-238e8f4
 
 api:
   smtp:
