@@ -40,10 +40,26 @@ before the shell can reach the API at all.
 Cheap, and cheap for one specific reason worth protecting.
 
 **Scopes are `openid`, `email`, `profile` and nothing else.** Those are non-sensitive, so the app
-does not enter Google's verification process. Ask for one more scope than that, anything touching
+does not enter Google's **app** verification, the review with the security questionnaire attached. Ask for one more scope than that, anything touching
 Drive or contacts or a person's calendar, and publishing turns into a review with a security
 questionnaire attached. There is no reason a word game needs a fourth scope; the point is to
-notice if one ever gets added by accident.
+notice if one ever gets added by accident. `google.test.ts` asserts the scope string, so an
+accidental fourth is a failing test rather than a discovery made during a review.
+
+**Brand verification is a different thing, and tame scopes do not exempt you from it.** It is
+lighter, and it decides one thing: whether the consent screen shows your name and logo or just
+the registrable domain from the authorized domains list. Uploading a logo is what raises the
+banner reading "Your app requires verification", which appears next to a publishing status of
+**In production** and reads like a contradiction. It is not:
+
+- **Publishing status** decides who may sign in. In production means anybody, with no 100-user
+  cap and no unverified-app warning screen.
+- **Brand verification** decides what the consent screen is allowed to call you.
+
+Ignoring it costs nothing functional: sign-in works for everybody either way. Clearing it needs
+the authorized domains proven in Google Search Console, which means `tightlinesoftware.com` as
+well as `playblinkered.com`, since the first is only in the list so the dev client works at all.
+The logo to upload is `brand/logo-512.png`.
 
 ### Consent screen, once
 
