@@ -39,7 +39,7 @@ image:
   # Both verified anonymously pullable at this tag, which is worth checking for a
   # newly created package: GHCR does not always inherit the repository's
   # visibility, and a private one is an ImagePullBackOff with no useful message.
-  tag: sha-238e8f4
+  tag: sha-e308df9
 
 web:
   # One is enough for dev. Production runs two.
@@ -67,12 +67,12 @@ api:
     # missing `secretKeyRef` stops the pod, so this is set only after checking.
     existingSecret: blinkered-apple
   google:
-    # Empty until the OAuth client exists in the Google Cloud console and its secret is in this
-    # namespace. Leaving it empty is not a degraded sign-in: the route is not mounted, answers
-    # 501, and the game serves exactly as before.
-    clientId: ''
+    # Public: this travels in every authorize URL. The secret it pairs with is in the namespace,
+    # verified present at 35 bytes before this was set, because naming a secret that is absent
+    # stops the pod rather than degrading sign-in.
+    clientId: 437058042105-up4h0nd2nm40vieftobaatcocqmlpus4.apps.googleusercontent.com
     redirectUri: https://blinkered.devapps.tightlinesoftware.com/v1/auth/google/callback
-    existingSecret: ''
+    existingSecret: blinkered-google
 
 # The chart's own StatefulSet rather than a managed database. Defaults otherwise:
 # `password: ''` generates one on first install and preserves it across upgrades by

@@ -29,7 +29,7 @@ image:
   #
   # Both verified anonymously pullable before installing. GHCR does not always inherit the
   # repository's visibility, and a private package is an ImagePullBackOff with no useful message.
-  tag: sha-238e8f4
+  tag: sha-e308df9
 
 api:
   smtp:
@@ -48,12 +48,12 @@ api:
     # See values-dev.yaml. Verified present here too, same single key.
     existingSecret: blinkered-apple
   google:
-    # Empty until the OAuth client exists in the Google Cloud console and its secret is in this
-    # namespace. Leaving it empty is not a degraded sign-in: the route is not mounted, answers
-    # 501, and the game serves exactly as before.
-    clientId: ''
+    # Public: this travels in every authorize URL. The secret it pairs with is in the namespace,
+    # verified present at 35 bytes before this was set, because naming a secret that is absent
+    # stops the pod rather than degrading sign-in.
+    clientId: 437058042105-6mb4pfsosad87eifq15v02pnrm7qt4id.apps.googleusercontent.com
     redirectUri: https://playblinkered.com/v1/auth/google/callback
-    existingSecret: ''
+    existingSecret: blinkered-google
 
 postgres:
   persistence:
