@@ -3,8 +3,11 @@ import { createApp } from '../app.js'
 import { consoleMailer } from '../auth/mail.js'
 import { pgStore } from '../pgStore.js'
 import { smtpMailer } from '../auth/smtp.js'
-import { appleClient } from '../auth/apple.js'
-import { appleConfig, databaseConfig, smtpConfig } from '../config.js'
+import { appleProvider } from '../auth/apple.js'
+import { googleProvider } from '../auth/google.js'
+import { oidcClient } from '../auth/oidc.js'
+import type { OidcProvider } from '../auth/oidc.js'
+import { appleConfig, databaseConfig, googleConfig, smtpConfig } from '../config.js'
 import { connect } from '../db.js'
 
 /**
@@ -36,6 +39,20 @@ const mailer =
       : null
 
 const apple = appleConfig(process.env)
+const google = googleConfig(process.env)
+
+/*
+ * The third-party providers this deployment can actually offer.
+ *
+ * Built from whatever credentials are present rather than from a list of what exists, so a
+ * missing key is a provider that is not mounted rather than a process that will not start. A
+ * laptop usually has neither and serves the game perfectly well.
+ */
+const providers: OidcProvider[] = [
+  ...(apple === null ? [] : [appleProvider(apple)]),
+  ...(google === null ? [] : [googleProvider(google)]),
+]
+
 const app = createApp(
   mailer === null
     ? {}
@@ -43,14 +60,15 @@ const app = createApp(
         auth: {
           store: pgStore(db),
           mailer,
-          ...(apple === null
-            ? {}
-            : { apple: { config: apple, client: appleClient(apple, fetch) } }),
+          oidc: providers.map((provider) => ({ provider, client: oidcClient(provider, fetch) })),
         },
       },
 )
-if (apple === null) {
-  console.warn('no BLINKERED_APPLE_PRIVATE_KEY: Sign in with Apple is not mounted')
+for (const [name, config] of [
+  ['BLINKERED_APPLE_PRIVATE_KEY', apple],
+  ['BLINKERED_GOOGLE_CLIENT_SECRET', google],
+] as const) {
+  if (config === null) console.warn(`no ${name}: that provider is not mounted`)
 }
 if (mailer === null) {
   console.warn('no BLINKERED_SMTP_HOST and no BLINKERED_MAIL_CONSOLE: sign-in is not mounted')

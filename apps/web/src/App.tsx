@@ -27,7 +27,7 @@ import { AccountMenu } from './AccountMenu.js'
 import type { Destination } from './AccountMenu.js'
 import { AccountScreen } from './AccountScreen.js'
 import { SignInDialog } from './SignInDialog.js'
-import { appleProblem, clearSignInParam, returnedFromApple } from './appleSignIn.js'
+import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
 import type { Account, BoardAtRound, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -191,7 +191,7 @@ function Session({
   const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
 
   /*
-   * Coming back from Apple.
+   * Coming back from Apple or Google.
    *
    * The callback is a server redirect to `/?signin=<reason>`, so this runs on an ordinary page
    * load and has to be harmless on every load that is not one. Success needs nothing done to it:
@@ -203,10 +203,10 @@ function Session({
    * not return to something that looks like a second attempt.
    */
   useEffect(() => {
-    const returned = returnedFromApple(globalThis.location.search)
+    const returned = returnedFromSso(globalThis.location.search)
     if (returned === null) return
     clearSignInParam()
-    if (!returned.ok) setSigningIn({ reason: appleProblem(returned.reason) })
+    if (!returned.ok) setSigningIn({ reason: ssoProblem(returned.reason) })
   }, [])
   const [visiting, setVisiting] = useState<Destination | null>(null)
 

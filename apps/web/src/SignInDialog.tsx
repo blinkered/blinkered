@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { requestCode, submitCode, whoAmI } from './account.js'
 import type { Account, SignInResult } from './account.js'
-import { APPLE_START } from './appleSignIn.js'
+import { startUrl } from './sso.js'
 
 /**
  * Signing in, as a dialog reached from somewhere that explains why.
@@ -69,14 +69,14 @@ function forget(): void {
 }
 
 /**
- * The two buttons above the email form.
+ * The two buttons above the email form. Both leave the page for a server route.
  *
- * Apple is built and leaves the page. Google is not, and says so rather than pretending: the
- * route behind it answers 501, so the client's path is real and only the provider is missing.
+ * Apple first, deliberately. It is the one iOS requires under App Store guideline 4.8 once any
+ * other third-party sign-in exists, and putting the required one first costs nothing.
  */
 const PROVIDERS = [
-  { id: 'apple', label: 'Continue with Apple', ready: true },
-  { id: 'google', label: 'Continue with Google', ready: false },
+  { id: 'apple', label: 'Continue with Apple' },
+  { id: 'google', label: 'Continue with Google' },
 ] as const
 
 export function SignInDialog({
@@ -103,7 +103,6 @@ export function SignInDialog({
   const [sent, setSent] = useState(() => remembered() !== null)
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<SignInResult | null>(null)
-  const [provider, setProvider] = useState<string | null>(null)
   const card = useRef<HTMLDivElement>(null)
 
   // Escape closes, which is what every dialog on the web does and what the game's own
@@ -191,22 +190,15 @@ export function SignInDialog({
               lang="en"
               onClick={() => {
                 // A whole navigation rather than a fetch. The handshake has to happen in the
-                // address bar: Apple shows its own sheet on its own origin, and the session
-                // cookie it results in is set by our server on the way back.
-                if (option.ready) globalThis.location.assign(APPLE_START)
-                else setProvider(option.id)
+                // address bar: the provider shows its own sheet on its own origin, and the
+                // session cookie it results in is set by our server on the way back.
+                globalThis.location.assign(startUrl(option.id))
               }}
             >
               {option.label}
             </button>
           ))}
         </div>
-        {provider === null ? null : (
-          <p className="signin-note is-bad" role="alert" lang="en">
-            Sign in with Google is not ready yet. Use Apple or your email for now.
-          </p>
-        )}
-
         <p className="signin-or" lang="en">
           or
         </p>

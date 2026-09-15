@@ -70,6 +70,17 @@ spec:
               valueFrom:
                 secretKeyRef: { name: {{ .Values.api.apple.existingSecret }}, key: private-key }
             {{- end }}
+            # Sign in with Google, mounted only when a secret was named. Its client id and
+            # redirect URI are per environment; see the comment in values.yaml.
+            {{- if .Values.api.google.existingSecret }}
+            - name: BLINKERED_GOOGLE_CLIENT_ID
+              value: {{ .Values.api.google.clientId | quote }}
+            - name: BLINKERED_GOOGLE_REDIRECT_URI
+              value: {{ .Values.api.google.redirectUri | quote }}
+            - name: BLINKERED_GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef: { name: {{ .Values.api.google.existingSecret }}, key: client-secret }
+            {{- end }}
             # The seven keys, from whichever secret is in play. Identical whether the database
             # is this chart's StatefulSet or a managed one somewhere else.
             {{- $secret := include "blinkered.databaseSecret" . }}

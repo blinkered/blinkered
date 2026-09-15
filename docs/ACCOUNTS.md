@@ -607,7 +607,7 @@ One dialog, three ways in, reached from both entry points:
 
 ```
 Continue with Apple      <- built
-Continue with Google     <- stub
+Continue with Google     <- built
 or
 Email                    <- built
   -> six-digit code
@@ -628,8 +628,8 @@ All four are built. What follows is what they are, rather than what they were go
    out, the generated avatar and a menu when signed in. Account state is lifted into `Session`,
    so one `whoAmI()` on arrival serves every consumer. `Avatar.tsx` draws the identicon.
 2. **The dialog.** `SignInDialog` holds the two-step email flow; the standalone panel is gone.
-   Apple leaves the page for `/v1/auth/apple`; Google still says it is not ready, and the route
-   behind it answers 501, so the client path is real and only the provider is missing.
+   Both third-party buttons leave the page for a server route. A provider the deployment has no
+   credentials for is not mounted and answers 501, so the client path is real either way.
 3. **Game over.** A **Keep this game** button opens the dialog over the panel, never in place of
    it, and one effect in `Session` sends the game the moment there is an account to attach it to.
    That one effect is why signing in _on_ the game-over screen keeps the score that is still on

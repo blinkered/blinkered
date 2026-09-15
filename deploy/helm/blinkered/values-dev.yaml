@@ -66,6 +66,13 @@ api:
     # that is absent is a CreateContainerConfigError rather than a degraded sign-in, because a
     # missing `secretKeyRef` stops the pod, so this is set only after checking.
     existingSecret: blinkered-apple
+  google:
+    # Empty until the OAuth client exists in the Google Cloud console and its secret is in this
+    # namespace. Leaving it empty is not a degraded sign-in: the route is not mounted, answers
+    # 501, and the game serves exactly as before.
+    clientId: ''
+    redirectUri: https://blinkered.devapps.tightlinesoftware.com/v1/auth/google/callback
+    existingSecret: ''
 
 # The chart's own StatefulSet rather than a managed database. Defaults otherwise:
 # `password: ''` generates one on first install and preserves it across upgrades by

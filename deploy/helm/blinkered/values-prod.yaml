@@ -47,6 +47,13 @@ api:
     redirectUri: https://playblinkered.com/v1/auth/apple/callback
     # See values-dev.yaml. Verified present here too, same single key.
     existingSecret: blinkered-apple
+  google:
+    # Empty until the OAuth client exists in the Google Cloud console and its secret is in this
+    # namespace. Leaving it empty is not a degraded sign-in: the route is not mounted, answers
+    # 501, and the game serves exactly as before.
+    clientId: ''
+    redirectUri: https://playblinkered.com/v1/auth/google/callback
+    existingSecret: ''
 
 postgres:
   persistence:

@@ -1,7 +1,9 @@
 import { generateKeyPairSync, sign, verify } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
-import { appleClient, authorizeUrl, clientSecret } from '../src/auth/apple.js'
-import type { AppleClient, AppleConfig, Fetcher } from '../src/auth/apple.js'
+import { appleProvider, clientSecret } from '../src/auth/apple.js'
+import type { AppleConfig } from '../src/auth/apple.js'
+import { authorizeUrl, oidcClient } from '../src/auth/oidc.js'
+import type { Fetcher, OidcClient } from '../src/auth/oidc.js'
 
 /**
  * A throwaway P-256 pair, generated per run rather than checked in. A fixture key in a repository
@@ -151,7 +153,7 @@ function fakeFetch(answers: { ok?: boolean; body?: unknown }[]): Fetcher & { cal
 const keysBody = { keys: [publicJwk] }
 
 describe('the authorize URL', () => {
-  const url = new URL(authorizeUrl(config, { state: 'st', nonce: 'no' }))
+  const url = new URL(authorizeUrl(appleProvider(config), { state: 'st', nonce: 'no' }))
 
   it('goes to Apple with the Services ID as the client', () => {
     expect(url.origin + url.pathname).toBe('https://appleid.apple.com/auth/authorize')
@@ -175,30 +177,31 @@ describe('the authorize URL', () => {
 describe('exchanging the code', () => {
   it('posts the minted secret and returns the id_token', async () => {
     const fetcher = fakeFetch([{ body: { id_token: 'an.id.token' } }])
-    expect(await appleClient(config, fetcher).exchange('the-code', AT)).toBe('an.id.token')
+    expect(await oidcClient(appleProvider(config), fetcher).exchange('the-code', AT)).toBe(
+      'an.id.token',
+    )
     expect(fetcher.calls).toEqual(['https://appleid.apple.com/auth/token'])
   })
 
   it('fails when Apple refuses', async () => {
-    const client = appleClient(config, fakeFetch([{ ok: false }]))
+    const client = oidcClient(appleProvider(config), fakeFetch([{ ok: false }]))
     await expect(client.exchange('the-code', AT)).rejects.toThrow('exchange-failed')
   })
 
   it('fails when the body is not an object at all', async () => {
-    const client = appleClient(config, fakeFetch([{ body: 'nope' }]))
+    const client = oidcClient(appleProvider(config), fakeFetch([{ body: 'nope' }]))
     await expect(client.exchange('the-code', AT)).rejects.toThrow('exchange-failed')
   })
 
   it('fails when there is no id_token in it', async () => {
-    const client = appleClient(config, fakeFetch([{ body: { access_token: 'x' } }]))
+    const client = oidcClient(appleProvider(config), fakeFetch([{ body: { access_token: 'x' } }]))
     await expect(client.exchange('the-code', AT)).rejects.toThrow('no-id-token')
   })
 })
 
 describe('verifying the id_token', () => {
-  const client = (
-    answers: { ok?: boolean; body?: unknown }[] = [{ body: keysBody }],
-  ): AppleClient => appleClient(config, fakeFetch(answers))
+  const client = (answers: { ok?: boolean; body?: unknown }[] = [{ body: keysBody }]): OidcClient =>
+    oidcClient(appleProvider(config), fakeFetch(answers))
 
   it('accepts a good token and reports who it is about', async () => {
     const identity = await client().verify(
@@ -260,7 +263,7 @@ describe('verifying the id_token', () => {
 
   it('fetches the keys once and caches them', async () => {
     const fetcher = fakeFetch([{ body: keysBody }])
-    const cached = appleClient(config, fetcher)
+    const cached = oidcClient(appleProvider(config), fetcher)
     await cached.verify(idToken({}), 'the-nonce', AT)
     await cached.verify(idToken({}), 'the-nonce', AT)
     expect(fetcher.calls).toEqual(['https://appleid.apple.com/auth/keys'])

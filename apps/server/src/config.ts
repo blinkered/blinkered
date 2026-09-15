@@ -1,4 +1,5 @@
 import type { AppleConfig } from './auth/apple.js'
+import type { GoogleConfig } from './auth/google.js'
 
 /**
  * The database connection, assembled from the seven keys the deployment secret carries.
@@ -195,4 +196,51 @@ export function appleConfig(env: Environment): AppleConfig | null {
 
   if (problems.length > 0) throw new ConfigError(problems)
   return { teamId, keyId, servicesId, redirectUri, privateKey }
+}
+
+/**
+ * Sign in with Google, or nothing.
+ *
+ * Optional as a whole, exactly as Apple and the mailer are: a deployment with no client secret
+ * serves the game, answers its probes, and offers no Google button.
+ *
+ * Both values are per environment here, where Apple's Services ID is shared. That is not an
+ * inconsistency, it is the difference between the two providers: Google issues a real secret per
+ * OAuth client, so production and development hold different ones and a leaked development
+ * secret is not a production incident. The client id is public -- it travels in every authorize
+ * URL -- and is in the chart beside the redirect URI for the same reason Apple's ids are.
+ */
+export function googleConfig(env: Environment): GoogleConfig | null {
+  const clientSecret = env.BLINKERED_GOOGLE_CLIENT_SECRET
+  if (clientSecret === undefined || clientSecret === '') return null
+
+  const problems: string[] = []
+  const read = (key: string): string => {
+    const value = env[key]
+    if (value === undefined || value.trim() === '') {
+      problems.push(`${key} is missing`)
+      return ''
+    }
+    return value.trim()
+  }
+
+  const clientId = read('BLINKERED_GOOGLE_CLIENT_ID')
+  const redirectUri = read('BLINKERED_GOOGLE_REDIRECT_URI')
+
+  /*
+   * Google exempts `http://localhost` and nothing else, which is the one place it is more
+   * forgiving than Apple. Anything that is neither localhost nor HTTPS is refused by Google at
+   * the authorize step with an error that names the field but not the reason, so it is worth
+   * catching here where the message can say what is actually wrong.
+   */
+  if (
+    redirectUri !== '' &&
+    !redirectUri.startsWith('https://') &&
+    !redirectUri.startsWith('http://localhost')
+  ) {
+    problems.push(`BLINKERED_GOOGLE_REDIRECT_URI is neither https nor localhost: ${redirectUri}`)
+  }
+
+  if (problems.length > 0) throw new ConfigError(problems)
+  return { clientId, clientSecret, redirectUri }
 }

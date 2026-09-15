@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { authRoutes } from '../src/auth/routes.js'
 import type { AuthDeps } from '../src/auth/routes.js'
-import { AppleError } from '../src/auth/apple.js'
-import type { AppleClient, AppleConfig, AppleIdentity } from '../src/auth/apple.js'
+import { appleProvider } from '../src/auth/apple.js'
+import type { AppleConfig } from '../src/auth/apple.js'
+import { OidcError } from '../src/auth/oidc.js'
+import type { OidcClient, OidcIdentity } from '../src/auth/oidc.js'
 import { capturingMailer, fakeStore } from './fake.js'
 
 /**
@@ -22,14 +24,14 @@ const config: AppleConfig = {
 }
 
 /** What Apple would have said, or what it would have failed with. */
-function scripted(answer: AppleIdentity | AppleError): AppleClient {
+function scripted(answer: OidcIdentity | OidcError): OidcClient {
   return {
-    exchange: () => (answer instanceof AppleError ? Promise.reject(answer) : Promise.resolve('t')),
-    verify: () => (answer instanceof AppleError ? Promise.reject(answer) : Promise.resolve(answer)),
+    exchange: () => (answer instanceof OidcError ? Promise.reject(answer) : Promise.resolve('t')),
+    verify: () => (answer instanceof OidcError ? Promise.reject(answer) : Promise.resolve(answer)),
   }
 }
 
-const SOMEBODY: AppleIdentity = {
+const SOMEBODY: OidcIdentity = {
   sub: '001234.abcdef.5678',
   email: 'player@example.com',
   emailVerified: true,
@@ -49,7 +51,7 @@ function cookiesFrom(response: Response): Map<string, string> {
 describe('signing in with Apple', () => {
   let store: ReturnType<typeof fakeStore>
   let app: ReturnType<typeof authRoutes>
-  let client: AppleClient
+  let client: OidcClient
   const clock = new Date('2026-09-15T12:00:00Z')
 
   const build = (): void => {
@@ -58,7 +60,7 @@ describe('signing in with Apple', () => {
       mailer: capturingMailer(),
       now: () => clock,
       secureCookies: false,
-      apple: { config, client },
+      oidc: [{ provider: appleProvider(config), client }],
     }
     app = authRoutes(deps)
   }
@@ -259,7 +261,7 @@ describe('signing in with Apple', () => {
     })
 
     it('surfaces the reason an Apple error carries', async () => {
-      client = scripted(new AppleError('bad-signature'))
+      client = scripted(new OidcError('bad-signature'))
       build()
       expect(reasonOf(await round())).toBe('bad-signature')
     })

@@ -78,8 +78,27 @@ the **development** client, not production.
 No "authorized JavaScript origins" are needed. That field is for the browser-side Google Identity
 Services library, and this is a server-side redirect flow: the browser never holds a Google token.
 
-What comes out is a client ID and a client secret per environment. The secret goes in a
-Kubernetes secret and nowhere else.
+What comes out is a client ID and a client secret per environment. The client ID is public, so
+it sits in `values-dev.yaml` and `values-prod.yaml` beside the redirect URI; only the secret is a
+Kubernetes secret:
+
+```
+kubectl --context tl-dev -n blinkered-dev create secret generic blinkered-google \
+  --from-literal=client-secret=...
+```
+
+Then set `api.google.clientId` and `api.google.existingSecret` for that environment. Both empty
+is a deployment with no Google button and a 501 behind it, which is the state of the repository
+as it stands.
+
+**Two differences from Apple worth carrying in your head**, both handled in `google.ts`:
+
+- Google mints `id_token`s with `iss` as either `https://accounts.google.com` or the bare
+  `accounts.google.com`, interchangeably. Accepting only the documented one rejects real tokens
+  intermittently.
+- Google's callback is an ordinary redirect rather than a form post, so its state cookie is
+  `SameSite=Lax` where Apple's must be `None`. Lax is the stricter setting; do not "tidy" the two
+  into agreement.
 
 ## Apple
 
@@ -285,7 +304,8 @@ anything here. [DEPLOY.md](DEPLOY.md) has it.
 2. **Email**, because Apple's relay registration depends on the sending domain existing with SPF
    on it, and because the code flow is the one sign-in method with no third party in it.
 3. **Apple**, once the enrolment is through and the domains are registered.
-4. **Google**, which is an afternoon: consent screen, two clients, done.
+4. **Google**, which is an afternoon: consent screen, two clients, done. The code is built and
+   waiting on exactly that; until a client secret exists the route answers 501.
 
 **Apple before Google, and the earlier ordering here was wrong.** It put Google third on the
 grounds that it is cheap and Apple is slow, which is true and is not the question. The phone is

@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { Hono } from 'hono'
+import type { Context } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import type { Mailer } from './mail.js'
 import {
@@ -18,9 +19,9 @@ import {
   newCode,
   newSessionToken,
 } from './secrets.js'
-import { AppleError, authorizeUrl } from './apple.js'
-import type { AppleClient, AppleConfig, AppleIdentity } from './apple.js'
-import type { AuthStore, NewIdentity, Profile } from './types.js'
+import { OidcError, authorizeUrl } from './oidc.js'
+import type { OidcClient, OidcIdentity, OidcProvider } from './oidc.js'
+import type { AuthStore, NewIdentity, Profile, Provider } from './types.js'
 import { generateUsername } from './usernames.js'
 
 /** The cookie the session travels in. Named once, because three places have to agree about it. */
@@ -31,10 +32,6 @@ const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
 
 /** Tries before giving up on finding an unused generated name. Ten million names; two is plenty. */
 const USERNAME_TRIES = 5
-
-/** The two halves of the Apple handshake, in flight. Scoped to the path that reads them. */
-const STATE_COOKIE = 'blinkered_apple_state'
-const NONCE_COOKIE = 'blinkered_apple_nonce'
 
 /** How long somebody has to get through Apple's sheet. Generous for a person, short for a token. */
 const HANDSHAKE_SECONDS = 10 * 60
@@ -74,11 +71,11 @@ export interface AuthDeps extends SessionDeps {
   /** False in development over plain HTTP, where a `Secure` cookie is never sent back. */
   readonly secureCookies?: boolean
   /**
-   * Absent when the deployment has no Apple key, which is the ordinary state of a laptop. The
-   * routes are then not mounted and `/v1/auth/apple` answers 501 exactly as it did before any of
-   * this was built.
+   * The third-party providers this deployment has credentials for, which on a laptop is none.
+   * A provider that is absent here is not mounted and answers 501, exactly as both did before
+   * either was built.
    */
-  readonly apple?: { readonly config: AppleConfig; readonly client: AppleClient }
+  readonly oidc?: readonly { readonly provider: OidcProvider; readonly client: OidcClient }[]
 }
 
 /**
@@ -214,112 +211,26 @@ export function authRoutes(deps: AuthDeps): Hono {
   })
 
   /*
-   * Sign in with Apple, in two halves.
+   * Sign in with Apple and Sign in with Google.
    *
-   * The shape is unusual and the reason is `response_mode=form_post`: asking Apple for any scope
-   * at all means the callback is a **POST from appleid.apple.com**, not a redirect back with a
-   * query string. Everything awkward below follows from that one fact.
+   * One implementation, because they are one protocol. The differences that reach this far are
+   * two, and both come from `response_mode`:
+   *
+   * **Apple's callback is a POST.** Asking Apple for any scope at all requires
+   * `response_mode=form_post`, so appleid.apple.com submits a form to us rather than redirecting
+   * the browser back with a query string. Google does the ordinary thing.
+   *
+   * **Which means the cookies differ.** A `Lax` cookie is sent on a cross-site *navigation* and
+   * not on a cross-site *POST*, so Apple's state cookie has to be `SameSite=None` or it is
+   * simply absent when the callback arrives -- and the failure reads as a forged state, which
+   * sends you debugging state generation rather than cookie attributes. Google's callback is a
+   * navigation, so it keeps `Lax`, which is the stricter setting and the one to prefer wherever
+   * the flow allows it.
    */
-  const apple = deps.apple
-  if (apple !== undefined) {
-    /*
-     * Send the browser to Apple.
-     *
-     * `state` and `nonce` are separate on purpose and do different jobs. `state` comes back in the
-     * form post and is compared against a cookie, which is what stops somebody feeding us a
-     * callback we never started. `nonce` is carried inside the `id_token` Apple signs, which is
-     * what stops a token minted for a different session being replayed into this one. Either
-     * alone leaves a hole the other covers.
-     */
-    routes.get('/apple', (context) => {
-      const state = newId()
-      const nonce = newId()
-      for (const [name, value] of [
-        [STATE_COOKIE, state],
-        [NONCE_COOKIE, nonce],
-      ] as const) {
-        setCookie(context, name, value, {
-          httpOnly: true,
-          /*
-           * `None`, and therefore `Secure`, and this is the detail that costs an afternoon.
-           *
-           * The callback is a cross-site POST: the browser is on appleid.apple.com and submits a
-           * form to us. A `Lax` cookie is sent on a cross-site *navigation* but **not** on a
-           * cross-site POST, so a `Lax` state cookie is simply absent when the callback arrives.
-           * The failure then looks exactly like a forged or expired state, which sends you
-           * looking at the state generation rather than at the cookie attributes.
-           *
-           * `Secure` is not a configuration question here the way it is for the session cookie:
-           * `SameSite=None` requires it, and Apple refuses plain HTTP anyway, so there is no
-           * arrangement in which this flow runs without TLS.
-           */
-          secure: true,
-          sameSite: 'None',
-          path: '/v1/auth/apple',
-          // Minutes, not months. This is a handshake in progress, not a session.
-          maxAge: HANDSHAKE_SECONDS,
-        })
-      }
-      return context.redirect(authorizeUrl(apple.config, { state, nonce }), 302)
-    })
-
-    /*
-     * Apple posts back here.
-     *
-     * Every failure ends in a redirect rather than a status code, because the thing on the other
-     * end of this request is a browser that just followed a form post: a 400 with a JSON body is
-     * a blank page with some punctuation on it. The app reads `?signin=` and says something.
-     */
-    routes.post('/apple/callback', async (context) => {
-      const failed = (reason: string): Response => {
-        deleteCookie(context, STATE_COOKIE, { path: '/v1/auth/apple', secure: true })
-        deleteCookie(context, NONCE_COOKIE, { path: '/v1/auth/apple', secure: true })
-        return context.redirect(`/?signin=${reason}`, 302)
-      }
-
-      // Typed as unknown fields rather than as the shape the route wants, for the reason
-      // `bodyOf` gives above: this is whatever somebody posted, and `form.code` is a string only
-      // if the sender felt like sending one.
-      const form: Record<string, unknown> = await context.req.parseBody().catch(() => ({}))
-      const state = getCookie(context, STATE_COOKIE)
-      const nonce = getCookie(context, NONCE_COOKIE)
-      // Apple sends `error=user_cancelled_authorize` when somebody backs out, which is not a
-      // fault and should not look like one.
-      if (typeof form.error === 'string') return failed('cancelled')
-      if (state === undefined || nonce === undefined) return failed('expired')
-      if (form.state !== state) return failed('bad-state')
-      // Empty counts as absent. `typeof '' === 'string'` is the reason this is spelled out:
-      // an empty code would otherwise reach the exchange and come back as an Apple error,
-      // reported as a provider fault when it was a malformed callback.
-      if (typeof form.code !== 'string' || form.code === '') return failed('bad-state')
-
-      const now = clock()
-      const identity = await apple.client
-        .exchange(form.code, now)
-        .then((token) => apple.client.verify(token, nonce, now))
-        .catch((failure: unknown) => {
-          if (failure instanceof AppleError) return failure
-          throw failure
-        })
-      if (identity instanceof AppleError) return failed(identity.reason)
-
-      const userId = await accountFor(deps, identity)
-      if (userId === null) return failed('no-username')
-
-      const { token, hash } = newSessionToken()
-      const expiresAt = new Date(now.getTime() + SESSION_LIFETIME_MS)
-      await deps.store.createSession({ id: hash, userId, kind: 'cookie', expiresAt })
-      setCookie(context, SESSION_COOKIE, token, {
-        httpOnly: true,
-        secure: deps.secureCookies !== false,
-        sameSite: 'Lax',
-        path: '/',
-        expires: expiresAt,
-      })
-      deleteCookie(context, STATE_COOKIE, { path: '/v1/auth/apple', secure: true })
-      deleteCookie(context, NONCE_COOKIE, { path: '/v1/auth/apple', secure: true })
-      return context.redirect('/?signin=ok', 302)
-    })
+  const mounted = new Set<string>()
+  for (const entry of deps.oidc ?? []) {
+    mounted.add(entry.provider.name)
+    mountProvider(routes, deps, entry, clock)
   }
 
   /*
@@ -328,10 +239,11 @@ export function authRoutes(deps: AuthDeps): Hono {
    * 501 rather than 404, because the difference is the whole point: the client's path is real --
    * a button, a redirect, a failure it can show -- and only the provider is missing. A 404 would
    * be indistinguishable from a routing mistake, which is the bug this is most likely to be
-   * confused with. Apple joins this list when the deployment has no key configured.
+   * confused with. A provider joins this list whenever the deployment has no credentials for it,
+   * which is the ordinary state of a laptop.
    */
-  const stubs = apple === undefined ? (['apple', 'google'] as const) : (['google'] as const)
-  for (const provider of stubs) {
+  for (const provider of ['apple', 'google'] as const) {
+    if (mounted.has(provider)) continue
     routes.get(`/${provider}`, (context) =>
       context.json({ error: 'not-implemented', provider }, 501),
     )
@@ -363,8 +275,122 @@ export async function currentUser(
  * The retry is against the unique index rather than a lookup, because a check followed by an
  * insert is a race and the index is not. Ten million names make this loop run once.
  */
+
 /**
- * Which account an Apple sign-in belongs to, creating or linking as needed.
+ * The two routes one provider needs.
+ *
+ * Written once for both, with the shape of the callback taken from the provider rather than
+ * branched on its name: a provider that wants a form post gets a POST callback and a
+ * `SameSite=None` state cookie, and one that does not gets a GET and `Lax`. Adding a third
+ * provider is a descriptor, not another copy of this.
+ */
+function mountProvider(
+  routes: Hono,
+  deps: AuthDeps,
+  entry: { provider: OidcProvider; client: OidcClient },
+  clock: () => Date,
+): void {
+  const { provider, client } = entry
+  const name = provider.name
+  const base = `/${name}`
+  const formPost = provider.authorizeExtras?.response_mode === 'form_post'
+  const stateCookie = `blinkered_${name}_state`
+  const nonceCookie = `blinkered_${name}_nonce`
+  // Scoped to the path that reads them, so they are not sent with every request to the site.
+  const attributes = {
+    httpOnly: true,
+    // `SameSite=None` requires `Secure`, and both providers refuse plain HTTP anyway, so there
+    // is no arrangement in which this flow runs without TLS. Not a configuration question the
+    // way the session cookie's is.
+    secure: true,
+    sameSite: formPost ? ('None' as const) : ('Lax' as const),
+    path: `/v1/auth${base}`,
+    // Minutes, not months. This is a handshake in progress, not a session.
+    maxAge: HANDSHAKE_SECONDS,
+  }
+
+  routes.get(base, (context) => {
+    const state = newId()
+    const nonce = newId()
+    /*
+     * Two values, two jobs. `state` comes back in the callback and is compared against a cookie,
+     * which is what stops somebody feeding us a callback we never started. `nonce` is carried
+     * inside the `id_token` the provider signs, which is what stops a token minted for a
+     * different session being replayed into this one. Either alone leaves a hole the other covers.
+     */
+    setCookie(context, stateCookie, state, attributes)
+    setCookie(context, nonceCookie, nonce, attributes)
+    return context.redirect(authorizeUrl(provider, { state, nonce }), 302)
+  })
+
+  const callback = async (context: Context, sent: Record<string, unknown>): Promise<Response> => {
+    const forget = (): void => {
+      deleteCookie(context, stateCookie, { path: `/v1/auth${base}`, secure: true })
+      deleteCookie(context, nonceCookie, { path: `/v1/auth${base}`, secure: true })
+    }
+    /*
+     * Every failure ends in a redirect rather than a status code, because the thing on the other
+     * end of this request is a browser that just followed a provider: a 400 with a JSON body is
+     * a blank page with some punctuation on it. The app reads `?signin=` and says something.
+     */
+    const failed = (reason: string): Response => {
+      forget()
+      return context.redirect(`/?signin=${reason}`, 302)
+    }
+
+    const state = getCookie(context, stateCookie)
+    const nonce = getCookie(context, nonceCookie)
+    // Both providers report a refusal this way: Apple as `user_cancelled_authorize`, Google as
+    // `access_denied`. Somebody changing their mind is not a fault and should not look like one.
+    if (typeof sent.error === 'string') return failed('cancelled')
+    if (state === undefined || nonce === undefined) return failed('expired')
+    if (sent.state !== state) return failed('bad-state')
+    // Empty counts as absent. `typeof '' === 'string'` is the reason this is spelled out: an
+    // empty code would otherwise reach the exchange and come back as a provider error, reported
+    // as their fault when it was a malformed callback.
+    if (typeof sent.code !== 'string' || sent.code === '') return failed('bad-state')
+
+    const now = clock()
+    const identity = await client
+      .exchange(sent.code, now)
+      .then((token) => client.verify(token, nonce, now))
+      .catch((failure: unknown) => {
+        // Anything that is not the provider's fault -- a dead network, a database that is down --
+        // keeps going up. Catching it into `?signin=try-again` would hide an outage behind a
+        // message telling the player it is their problem.
+        if (failure instanceof OidcError) return failure
+        throw failure
+      })
+    if (identity instanceof OidcError) return failed(identity.reason)
+
+    const userId = await accountFor(deps, name, identity)
+    if (userId === null) return failed('no-username')
+
+    const { token, hash } = newSessionToken()
+    const expiresAt = new Date(now.getTime() + SESSION_LIFETIME_MS)
+    await deps.store.createSession({ id: hash, userId, kind: 'cookie', expiresAt })
+    setCookie(context, SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: deps.secureCookies !== false,
+      sameSite: 'Lax',
+      path: '/',
+      expires: expiresAt,
+    })
+    forget()
+    return context.redirect('/?signin=ok', 302)
+  }
+
+  if (formPost) {
+    routes.post(`${base}/callback`, async (context) =>
+      callback(context, await context.req.parseBody().catch(() => ({}))),
+    )
+  } else {
+    routes.get(`${base}/callback`, (context) => callback(context, context.req.query()))
+  }
+}
+
+/**
+ * Which account a provider sign-in belongs to, creating or linking as needed.
  *
  * Three questions in order, and the order is the design:
  *
@@ -386,12 +412,16 @@ export async function currentUser(
  * at their real address gets two accounts, and nothing here can prevent that, because we are
  * never told the real address. The remedy is an explicit link in settings, which is not built.
  */
-async function accountFor(deps: AuthDeps, identity: AppleIdentity): Promise<string | null> {
-  const existing = await deps.store.userIdForIdentity('apple', identity.sub)
+async function accountFor(
+  deps: AuthDeps,
+  provider: Provider,
+  identity: OidcIdentity,
+): Promise<string | null> {
+  const existing = await deps.store.userIdForIdentity(provider, identity.sub)
   if (existing !== null) return existing
 
   const record: NewIdentity = {
-    provider: 'apple',
+    provider,
     providerAccountId: identity.sub,
     email: identity.email,
     emailVerified: identity.emailVerified,

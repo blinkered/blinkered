@@ -19,8 +19,8 @@ export interface StoredCode extends CodeRow {
   readonly id: string
 }
 
-/** The ways in. `google` is registered in the schema and not yet built. */
-export type Provider = 'email' | 'apple'
+/** The ways in. */
+export type Provider = 'email' | 'apple' | 'google'
 
 /**
  * One way of signing in, as it is about to be written down.

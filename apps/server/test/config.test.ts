@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { ConfigError, appleConfig, databaseConfig, smtpConfig } from '../src/config.js'
+import {
+  ConfigError,
+  appleConfig,
+  databaseConfig,
+  googleConfig,
+  smtpConfig,
+} from '../src/config.js'
 
 const complete = {
   BLINKERED_DB_HOST: 'db.example.com',
@@ -218,5 +224,55 @@ describe('the Apple configuration', () => {
     expect(() =>
       appleConfig({ ...complete, BLINKERED_APPLE_REDIRECT_URI: 'http://localhost:8080/cb' }),
     ).toThrow(ConfigError)
+  })
+})
+
+describe('the Google configuration', () => {
+  const complete = {
+    BLINKERED_GOOGLE_CLIENT_SECRET: 'a-real-secret',
+    BLINKERED_GOOGLE_CLIENT_ID: '1234.apps.googleusercontent.com',
+    BLINKERED_GOOGLE_REDIRECT_URI: 'https://playblinkered.com/v1/auth/google/callback',
+  }
+
+  it('reads a complete environment', () => {
+    expect(googleConfig(complete)).toEqual({
+      clientId: '1234.apps.googleusercontent.com',
+      clientSecret: 'a-real-secret',
+      redirectUri: 'https://playblinkered.com/v1/auth/google/callback',
+    })
+  })
+
+  it('is absent rather than broken when there is no secret', () => {
+    expect(googleConfig({})).toBeNull()
+    expect(googleConfig({ ...complete, BLINKERED_GOOGLE_CLIENT_SECRET: '' })).toBeNull()
+  })
+
+  it('reports every missing key at once', () => {
+    const { BLINKERED_GOOGLE_CLIENT_SECRET } = complete
+    try {
+      googleConfig({ BLINKERED_GOOGLE_CLIENT_SECRET })
+      expect.unreachable('should have thrown')
+    } catch (failure) {
+      expect((failure as ConfigError).problems).toHaveLength(2)
+    }
+  })
+
+  it('allows localhost, which Google exempts and Apple does not', () => {
+    // The one place Google is more forgiving. Worth a test because the asymmetry between the two
+    // providers is exactly the kind of thing a later tidy-up would "fix" into consistency.
+    expect(
+      googleConfig({ ...complete, BLINKERED_GOOGLE_REDIRECT_URI: 'http://localhost:8080/cb' })
+        ?.redirectUri,
+    ).toBe('http://localhost:8080/cb')
+  })
+
+  it('refuses plain http anywhere else', () => {
+    expect(() =>
+      googleConfig({ ...complete, BLINKERED_GOOGLE_REDIRECT_URI: 'http://playblinkered.com/cb' }),
+    ).toThrow(ConfigError)
+  })
+
+  it('trims what it keeps', () => {
+    expect(googleConfig({ ...complete, BLINKERED_GOOGLE_CLIENT_ID: ' abc ' })?.clientId).toBe('abc')
   })
 })
