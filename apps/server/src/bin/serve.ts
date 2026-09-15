@@ -7,7 +7,7 @@ import { appleProvider } from '../auth/apple.js'
 import { googleProvider } from '../auth/google.js'
 import { oidcClient } from '../auth/oidc.js'
 import type { OidcProvider } from '../auth/oidc.js'
-import { appleConfig, databaseConfig, googleConfig, smtpConfig } from '../config.js'
+import { appleConfig, databaseConfig, googleConfig, smtpConfig, trustsProxy } from '../config.js'
 import { connect } from '../db.js'
 
 /**
@@ -38,6 +38,16 @@ const mailer =
       ? consoleMailer()
       : null
 
+/*
+ * The public profile routes are limited only where a caller can be identified, which is a fact
+ * about what sits in front of this process rather than about the process. `rateLimit.ts` argues
+ * the case for no limiter at all over a limiter that cannot attribute a request.
+ */
+const publicLimit = trustsProxy(process.env) ? { limit: 60, windowMs: 60_000 } : undefined
+if (publicLimit === undefined) {
+  console.warn('BLINKERED_TRUST_PROXY is not set: the public profile routes are not rate limited')
+}
+
 const apple = appleConfig(process.env)
 const google = googleConfig(process.env)
 
@@ -60,6 +70,7 @@ const app = createApp(
         auth: {
           store: pgStore(db),
           mailer,
+          ...(publicLimit === undefined ? {} : { publicLimit }),
           oidc: providers.map((provider) => ({ provider, client: oidcClient(provider, fetch) })),
         },
       },

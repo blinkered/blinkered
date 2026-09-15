@@ -3,6 +3,8 @@ import { Hono } from 'hono'
 import { currentUser } from '../auth/routes.js'
 import type { SessionDeps } from '../auth/routes.js'
 import { normalizeUsername } from '../auth/usernames.js'
+import { rateLimit } from '../rateLimit.js'
+import type { LimitOptions } from '../rateLimit.js'
 import type { Store } from '../types.js'
 import { parseImport } from './importing.js'
 import { parsePatch } from './profile.js'
@@ -19,6 +21,11 @@ import { parsePatch } from './profile.js'
 
 export interface AccountDeps extends SessionDeps {
   readonly store: Store
+  /**
+   * Absent where the deployment cannot identify a caller, and then there is no limiter at all.
+   * See `rateLimit.ts` for why that is the honest answer rather than a weaker limit.
+   */
+  readonly publicLimit?: LimitOptions
 }
 
 /** Most games one request will hand back, and the default when nobody says. */
@@ -213,6 +220,14 @@ export function accountRoutes(deps: AccountDeps): Hono {
    * and it is the right side of the trade -- the links worth keeping are game permalinks, and
    * those carry an id that never moves.
    */
+  /*
+   * The two public routes, behind a limit where the deployment can identify a caller.
+   *
+   * Applied as middleware on the path rather than inside each handler, so a third public route
+   * added later inherits it by sitting under the same prefix rather than by somebody remembering.
+   */
+  if (deps.publicLimit !== undefined) routes.use('/users/*', rateLimit(deps.publicLimit))
+
   routes.get('/users/:username', async (context) => {
     const found = await deps.store.profileByUsername(
       normalizeUsername(context.req.param('username')),

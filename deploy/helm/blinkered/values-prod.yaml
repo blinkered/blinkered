@@ -32,6 +32,9 @@ image:
   tag: sha-e308df9
 
 api:
+  # Cloudflare then Traefik, both of which rewrite the forwarded headers, so a client IP arriving
+  # here is believable and the public profile routes are rate limited.
+  trustProxy: true
   smtp:
     # Measured rather than assumed: tl-prod egresses as 66.186.179.148, which is the same address
     # tl-dev leaves from and is therefore already allowlisted for the Workspace relay. That check

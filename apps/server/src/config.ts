@@ -244,3 +244,25 @@ export function googleConfig(env: Environment): GoogleConfig | null {
   if (problems.length > 0) throw new ConfigError(problems)
   return { clientId, clientSecret, redirectUri }
 }
+
+/**
+ * Whether something in front of this rewrites `X-Forwarded-For`.
+ *
+ * A deployment statement rather than a guess, and strict about the spelling for the reason the
+ * database's TLS flag already gives: a security setting that fails open on a typo is worse than
+ * one that refuses to start. Getting it wrong in either direction is a real fault. Say true where
+ * nothing trustworthy is in front and any client can forge a client IP, so the rate limit is
+ * bypassed by setting a header. Say false where a proxy does rewrite it and every request is
+ * attributed to the proxy, so one bucket serves the whole internet.
+ *
+ * Production is behind Cloudflare and Traefik, which is why it is true there. The dev host is
+ * not: values-dev.yaml explains that Caddy declares trusted proxies only for the
+ * Cloudflare-proxied production block, so a client IP arriving there is not believed.
+ */
+export function trustsProxy(env: Environment): boolean {
+  const raw = (env.BLINKERED_TRUST_PROXY ?? '').trim().toLowerCase()
+  if (raw === '') return false
+  if (TRUE.has(raw)) return true
+  if (FALSE.has(raw)) return false
+  throw new ConfigError([`BLINKERED_TRUST_PROXY is not a yes or a no: ${raw}`])
+}

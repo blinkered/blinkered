@@ -655,15 +655,39 @@ All four are built. What follows is what they are, rather than what they were go
 | `GET /v1/users/:name/games`    | what they have played, public                    |
 | `GET /v1/auth/apple`           | redirects to Apple; 501 with no key configured   |
 | `POST /v1/auth/apple/callback` | Apple's form post, and the session it results in |
-| `GET /v1/auth/google`          | 501, so a stub is not mistaken for a 404         |
+| `GET /v1/auth/google`          | redirects to Google; 501 with no secret          |
+| `GET /v1/auth/google/callback` | Google's redirect, and the session it follows    |
 
 Three decisions taken while building them, none of which the plan above had settled.
 
-**The availability check is behind the session cookie.** This document asks for a rate limit on
-it, and rightly: `/v1/usernames/:name` enumerates. There is no rate limiter yet, and requiring a
-session turns "anyone can walk the namespace" into "anyone with an account can" — a smaller
-problem, and free. The rate limit is still owed, and it belongs in front of the API rather than
-in it.
+**The availability check is behind the session cookie.** `/v1/usernames/:name` enumerates, and
+requiring a session turns "anyone can walk the namespace" into "anyone with an account can"; a
+smaller problem, and free.
+
+**The public profile routes are rate limited, where a caller can be identified.** `/v1/users/:name`
+and its games listing are public and addressable by name, so walking the namespace is a request
+away. Sixty per minute per client, fixed window, in `rateLimit.ts`.
+
+Two things about it are deliberate and would otherwise look like defects. It is **per pod**, so
+production's two replicas allow up to twice the configured number; a shared counter would mean a
+write to Postgres on every public profile view, which is the wrong trade for a limit whose job is
+to make bulk collection slow rather than exact. And it is **mounted only where the deployment
+says something in front rewrites `X-Forwarded-For`**, which is `api.trustProxy` in the chart:
+true in production behind Cloudflare, false on the dev host, whose own values file already
+explains that a client IP arriving there is not believed. Rate limiting without a believable
+client key is theatre, and the two ways to fake it are worse than not pretending: one shared
+bucket lets a single caller exhaust everybody's quota, and trusting a forgeable header means the
+limit is bypassed by setting it.
+
+**Account deletion is owed, and so is the thing it should be built with.** `DELETE /v1/me` is
+designed above and does not exist; the privacy policy says so plainly and gives an address
+instead. It becomes a hard blocker before any native build, because the App Store requires in-app
+deletion from anything offering account creation.
+
+The shape it should take is not a lone endpoint. What is actually wanted is an `is_admin` on
+`users` and an admin panel behind it: delete and modify accounts, curate leaderboards, resolve
+the `reports` rows that already have a table and nothing reading them. A moderation queue with no
+way to act on it is the current state, and one delete route would not change that.
 
 **A game played while signed in goes through the same route, and is not marked `imported`.**
 Phase A issues no seeds, so every game is finished on the client whoever was signed in, and one

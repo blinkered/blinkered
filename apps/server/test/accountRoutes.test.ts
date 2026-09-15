@@ -533,3 +533,50 @@ describe('the account surface', () => {
     })
   })
 })
+
+describe('the public routes under a rate limit', () => {
+  /*
+   * The wiring rather than the limiter, which `rateLimit.test.ts` covers on its own. What is
+   * worth asserting here is that the limit is attached to the public prefix and not to anything
+   * else: a limit that also caught `/v1/me` would throttle somebody using their own account.
+   */
+  it('refuses a caller past the limit, and leaves the signed-in routes alone', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const clock = new Date('2026-09-15T00:00:00Z')
+    const app = createApp({
+      auth: {
+        store,
+        mailer,
+        now: () => clock,
+        secureCookies: false,
+        publicLimit: { limit: 2, windowMs: 60_000 },
+      },
+    })
+    const caller = { headers: { 'x-forwarded-for': '203.0.113.7' } }
+
+    // Unknown names, so these are 404s: the limit counts requests rather than successes, which
+    // is the point when the thing being slowed down is somebody guessing names.
+    expect((await app.request('/v1/users/nobody', caller)).status).toBe(404)
+    expect((await app.request('/v1/users/nobody-else', caller)).status).toBe(404)
+    expect((await app.request('/v1/users/a-third', caller)).status).toBe(429)
+
+    // Nothing outside the public prefix is affected.
+    expect((await app.request('/v1/me', caller)).status).toBe(401)
+  })
+
+  it('is absent when the deployment cannot identify a caller', async () => {
+    const app = createApp({
+      auth: {
+        store: fakeStore(),
+        mailer: capturingMailer(),
+        now: () => new Date('2026-09-15T00:00:00Z'),
+        secureCookies: false,
+      },
+    })
+    const caller = { headers: { 'x-forwarded-for': '203.0.113.7' } }
+    for (let n = 0; n < 5; n += 1) {
+      expect((await app.request('/v1/users/nobody', caller)).status).toBe(404)
+    }
+  })
+})

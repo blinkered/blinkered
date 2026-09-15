@@ -56,6 +56,16 @@ api:
   env:
     LOG_LEVEL: info
 
+  # Whether something in front of this rewrites `X-Forwarded-For`, which decides whether the
+  # public profile routes can be rate limited at all.
+  #
+  # A deployment statement rather than a guess, and wrong in either direction is a real fault.
+  # True where nothing trustworthy is in front means any client forges a client IP and the limit
+  # is bypassed by setting a header; false where a proxy does rewrite it means every request is
+  # attributed to the proxy and one bucket serves the whole internet. False here, so an
+  # environment that has not thought about it gets no limiter instead of a bad one.
+  trustProxy: false
+
   # Where login codes are sent. Plain values rather than a secret, because there is nothing
   # secret here: Google Workspace's relay authorizes by **sender IP**, not by credentials, which
   # is why its EHLO advertises STARTTLS and no AUTH at all. The cluster's egress address has to

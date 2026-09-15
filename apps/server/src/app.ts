@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { accountRoutes } from './account/routes.js'
 import { authRoutes } from './auth/routes.js'
 import type { AuthDeps } from './auth/routes.js'
+import type { LimitOptions } from './rateLimit.js'
 import type { Store } from './types.js'
 
 /**
@@ -13,6 +14,8 @@ import type { Store } from './types.js'
  */
 export interface ApiDeps extends AuthDeps {
   readonly store: Store
+  /** Passed through to the public profile routes. See `rateLimit.ts`. */
+  readonly publicLimit?: LimitOptions
 }
 
 /**

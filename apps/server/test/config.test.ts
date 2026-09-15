@@ -5,6 +5,7 @@ import {
   databaseConfig,
   googleConfig,
   smtpConfig,
+  trustsProxy,
 } from '../src/config.js'
 
 const complete = {
@@ -274,5 +275,29 @@ describe('the Google configuration', () => {
 
   it('trims what it keeps', () => {
     expect(googleConfig({ ...complete, BLINKERED_GOOGLE_CLIENT_ID: ' abc ' })?.clientId).toBe('abc')
+  })
+})
+
+describe('trusting the proxy', () => {
+  it('is false when nobody says otherwise', () => {
+    // The safe direction. A deployment that has not thought about it gets no rate limiter rather
+    // than a limiter keyed on a header any client can forge.
+    expect(trustsProxy({})).toBe(false)
+    expect(trustsProxy({ BLINKERED_TRUST_PROXY: '   ' })).toBe(false)
+  })
+
+  it('takes the spellings a YAML file actually produces', () => {
+    for (const yes of ['true', 'yes', 'on', '1', 'TRUE']) {
+      expect(trustsProxy({ BLINKERED_TRUST_PROXY: yes })).toBe(true)
+    }
+    for (const no of ['false', 'no', 'off', '0']) {
+      expect(trustsProxy({ BLINKERED_TRUST_PROXY: no })).toBe(false)
+    }
+  })
+
+  it('refuses a typo rather than reading it as no', () => {
+    // A security setting that fails open on a typo is worse than one that refuses to start; the
+    // database TLS flag already argues this and it applies here for the same reason.
+    expect(() => trustsProxy({ BLINKERED_TRUST_PROXY: 'ture' })).toThrow(ConfigError)
   })
 })

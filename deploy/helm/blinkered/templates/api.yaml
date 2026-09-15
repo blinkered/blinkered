@@ -83,6 +83,8 @@ spec:
             {{- end }}
             # The seven keys, from whichever secret is in play. Identical whether the database
             # is this chart's StatefulSet or a managed one somewhere else.
+            - name: BLINKERED_TRUST_PROXY
+              value: {{ .Values.api.trustProxy | quote }}
             {{- $secret := include "blinkered.databaseSecret" . }}
             - name: BLINKERED_DB_HOST
               valueFrom: { secretKeyRef: { name: {{ $secret }}, key: host } }
