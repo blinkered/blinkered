@@ -6,11 +6,11 @@ both environments.
 
 Two environments, and they are not symmetrical:
 
-|             | host                                      | notes                                     |
-| ----------- | ----------------------------------------- | ----------------------------------------- |
-| production  | `playblinkered.com`                       | live, proxied by Cloudflare               |
-| development | `blinkered.devapps.tightlinesoftware.com` | does not exist yet, and Apple needs it to |
-| local       | `http://localhost`                        | Google will accept it. Apple will not     |
+|             | host                                      | notes                                 |
+| ----------- | ----------------------------------------- | ------------------------------------- |
+| production  | `playblinkered.com`                       | live, proxied by Cloudflare           |
+| development | `blinkered.devapps.tightlinesoftware.com` | live, behind basic auth in Caddy      |
+| local       | `http://localhost`                        | Google will accept it. Apple will not |
 
 ## The shape of the flow, which decides most of the settings
 
@@ -102,33 +102,50 @@ Identifiers, type **Services IDs**. Something like `com.tightlinesoftware.blinke
 This is the `client_id` for web sign-in. It is a different string from the App ID, and using the
 App ID here is the most common way to get `invalid_client` back later.
 
-Configure it, associate it with the App ID above, and fill in two lists whose formats disagree
-with each other:
+Configure it, associate it with the App ID above, and fill in the Website URLs section. Three
+traps live in that one form.
+
+**Every field is comma-delimited, including the domains.** It is a textarea, so one entry per
+line looks right and is quietly rejected: the value is read as a single malformed domain and the
+error names only the last host typed, which sends you looking at that host rather than at the
+separator. Commas, not newlines.
+
+**Domains carry no scheme; return URLs do.**
 
 ```
-Domains and Subdomains   playblinkered.com
-                         blinkered.devapps.tightlinesoftware.com      <- no scheme
+Domains and Subdomains   playblinkered.com, blinkered.devapps.tightlinesoftware.com
 
-Return URLs              https://playblinkered.com/v1/auth/apple/callback
+Return URLs              https://playblinkered.com/v1/auth/apple/callback,
                          https://blinkered.devapps.tightlinesoftware.com/v1/auth/apple/callback
 ```
 
-Domains without `https://`, return URLs with it. That asymmetry is undocumented in the form
-itself and is a standing source of `invalid redirect_uri`.
+That asymmetry is undocumented in the form itself and is a standing source of
+`invalid redirect_uri`.
+
+**Leave `www` out.** Apple treats it as a separate host, and ours answers 301 to the apex on
+every path, so the browser is already on the apex before any sign-in begins. A `www` row is
+never an origin the flow can start from.
 
 **No localhost, and no plain HTTP.** Apple refuses both, so local development cannot use Sign in
 with Apple at all. Use the dev host, or a tunnel with a real HTTPS name. Google's localhost
 exemption has no equivalent here.
 
-### 3. Verify the domains, which means the dev host has to exist
+### 3. There is no file to host, and there used to be
 
-Apple hands over an `apple-developer-domain-association.txt` and expects it at
-`https://<domain>/.well-known/apple-developer-domain-association.txt` for **each** domain listed.
+Nothing to do. The domains are registered the moment the form saves.
 
-So `blinkered.devapps.tightlinesoftware.com` has to be live and serving HTTPS before its half of
-Apple sign-in can be configured. That makes the dev environment a prerequisite for this work
-rather than a convenience alongside it, which is the one piece of sequencing in this document
-worth planning around.
+This keeps a heading of its own because most writing on the subject describes a different flow:
+Apple used to hand over an `apple-developer-domain-association.txt` to be served from
+`/.well-known/` on each domain, with a Download button per row and a Verify button beside it.
+Both are gone. Apple's own help page now says so in one line: "You don't need to upload a file on
+your server to complete the registration process for domains and subdomains."
+([Configure Sign in with Apple for the web](https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web))
+A missing Download button is the current design, not a broken portal, which is still what the
+forum threads conclude.
+
+The consequence is the sequencing: Apple never fetches these hosts, so a domain can be registered
+before it exists, before it serves HTTPS, and from behind whatever authentication you like. The
+dev host was never a gate on any of this.
 
 ### 4. A key, downloadable exactly once
 
@@ -219,17 +236,40 @@ that live outside the app.
 
 ## What goes where
 
-Nothing below is in the repo. All of it is a Kubernetes secret per environment.
+Secrets, one per environment:
 
 ```
-GOOGLE_CLIENT_ID          per environment
 GOOGLE_CLIENT_SECRET      per environment
-APPLE_TEAM_ID             one, the account's
-APPLE_KEY_ID              one per key
-APPLE_SERVICES_ID         the Services ID, shared by both environments
 APPLE_PRIVATE_KEY         the .p8, and never a generated six-month secret
 EMAIL_API_KEY             the transactional provider
 SESSION_SECRET            for signing the cookie
+```
+
+**Three of Apple's four values are in the chart rather than in a secret**, which the earlier
+version of this document got wrong by listing everything together. The Team ID is the prefix on
+every App ID the account owns, the Key ID is sent to Apple in the `kid` header of every token
+exchange, and the Services ID is the public `client_id` in the authorize URL. None of them
+authenticates anything without the key, and treating them as secrets means a deployment cannot be
+reproduced from the repo for no gain. They live in `deploy/helm/blinkered/values.yaml`:
+
+```
+api.apple.teamId          ZJ3A78KXA4
+api.apple.keyId           85Z9WXC2Q9
+api.apple.servicesId      com.tightlinesoftware.blinkered.signin
+api.apple.redirectUri     per environment, and byte-identical to a registered Return URL
+api.apple.existingSecret  names the secret holding the .p8; empty leaves Apple unmounted
+```
+
+`GOOGLE_CLIENT_ID` is the same shape of thing and belongs in the chart too when Google is built.
+
+The Apple block is gated on `existingSecret` the way sign-in is gated on `smtp.host`: with it
+empty the deployment serves the game and offers no Apple button. Set it only once the secret is
+actually in the namespace, because a `secretKeyRef` to a missing secret stops the pod rather than
+degrading it.
+
+```
+kubectl --context tl-dev -n blinkered-dev create secret generic blinkered-apple \
+  --from-file=private-key=AuthKey_85Z9WXC2Q9.p8
 ```
 
 The database is a secret of its own with a different shape, seven keys rather than environment
@@ -239,17 +279,18 @@ anything here. [DEPLOY.md](DEPLOY.md) has it.
 ## The order to do it in
 
 1. ~~**Stand up the dev host.**~~ Done. `blinkered.devapps.tightlinesoftware.com` serves the
-   game, the API and Postgres, behind basic auth in Caddy. It gated everything Apple, because
-   Apple's domain verification needs a live HTTPS host to fetch a file from.
+   game, the API and Postgres, behind basic auth in Caddy. It was long believed to gate
+   everything Apple. It does not, and never did once the association file went away: Apple
+   fetches nothing from the domains it registers.
 2. **Email**, because Apple's relay registration depends on the sending domain existing with SPF
    on it, and because the code flow is the one sign-in method with no third party in it.
-3. **Apple**, once the enrolment is through and the two domains verify.
+3. **Apple**, once the enrolment is through and the domains are registered.
 4. **Google**, which is an afternoon: consent screen, two clients, done.
 
 **Apple before Google, and the earlier ordering here was wrong.** It put Google third on the
 grounds that it is cheap and Apple is slow, which is true and is not the question. The phone is
 the platform this is being built for, iOS is where sign-in has to feel native, and Sign in with
-Apple is mandatory on iOS the moment any other third-party sign-in exists — App Store guideline
+Apple is mandatory on iOS the moment any other third-party sign-in exists; App Store guideline
 4.8, already noted in ACCOUNTS.md. Shipping Google first would mean either shipping an app that
 cannot pass review or holding Google back until Apple caught up. Do the constrained one first
 and let the afternoon's work be the afternoon's work.

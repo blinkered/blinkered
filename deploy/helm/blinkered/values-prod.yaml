@@ -43,6 +43,11 @@ api:
     # name, and nothing answers on 587.
     host: smtp-relay.gmail.com
 
+  apple:
+    redirectUri: https://playblinkered.com/v1/auth/apple/callback
+    # See values-dev.yaml. Verified present here too, same single key.
+    existingSecret: blinkered-apple
+
 postgres:
   persistence:
     # Retain, so that deleting the release or the PVC leaves the volume and its data behind. The

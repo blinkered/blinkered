@@ -55,6 +55,21 @@ spec:
             - name: BLINKERED_MAIL_FROM
               value: {{ .Values.api.smtp.from | quote }}
             {{- end }}
+            # Sign in with Apple, mounted only when a key secret was named. Three plain values
+            # and one secret key: see the comment in values.yaml for why the split falls there.
+            {{- if .Values.api.apple.existingSecret }}
+            - name: BLINKERED_APPLE_TEAM_ID
+              value: {{ .Values.api.apple.teamId | quote }}
+            - name: BLINKERED_APPLE_KEY_ID
+              value: {{ .Values.api.apple.keyId | quote }}
+            - name: BLINKERED_APPLE_SERVICES_ID
+              value: {{ .Values.api.apple.servicesId | quote }}
+            - name: BLINKERED_APPLE_REDIRECT_URI
+              value: {{ .Values.api.apple.redirectUri | quote }}
+            - name: BLINKERED_APPLE_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef: { name: {{ .Values.api.apple.existingSecret }}, key: private-key }
+            {{- end }}
             # The seven keys, from whichever secret is in play. Identical whether the database
             # is this chart's StatefulSet or a managed one somewhere else.
             {{- $secret := include "blinkered.databaseSecret" . }}

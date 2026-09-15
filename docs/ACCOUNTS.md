@@ -606,7 +606,7 @@ eager invalidation.
 One dialog, three ways in, reached from both entry points:
 
 ```
-Continue with Apple      <- stub
+Continue with Apple      <- built
 Continue with Google     <- stub
 or
 Email                    <- built
@@ -628,8 +628,8 @@ All four are built. What follows is what they are, rather than what they were go
    out, the generated avatar and a menu when signed in. Account state is lifted into `Session`,
    so one `whoAmI()` on arrival serves every consumer. `Avatar.tsx` draws the identicon.
 2. **The dialog.** `SignInDialog` holds the two-step email flow; the standalone panel is gone.
-   Apple and Google are buttons that say they are not ready — the routes behind them answer 501,
-   so the client path is real and only the provider is missing.
+   Apple leaves the page for `/v1/auth/apple`; Google still says it is not ready, and the route
+   behind it answers 501, so the client path is real and only the provider is missing.
 3. **Game over.** A **Keep this game** button opens the dialog over the panel, never in place of
    it, and one effect in `Session` sends the game the moment there is an account to attach it to.
    That one effect is why signing in _on_ the game-over screen keeps the score that is still on
@@ -642,18 +642,20 @@ All four are built. What follows is what they are, rather than what they were go
 
 ### Server work it needed
 
-| route                                       | for                                             |
-| ------------------------------------------- | ----------------------------------------------- |
-| `POST /v1/auth/signout`                     | the menu item, revoking rather than forgetting  |
-| `GET /v1/me`                                | the whole profile, avatar seed and all          |
-| `PATCH /v1/me`                              | the profile screen                              |
-| `GET /v1/usernames/:name`                   | availability while typing, behind a session     |
-| `POST /v1/games/import`                     | keeping a game played before there was a person |
-| `GET /v1/me/games`                          | My Games                                        |
-| `GET /v1/games/:id`                         | one game, public, what a permalink resolves to  |
-| `GET /v1/users/:name`                       | somebody's profile, public                      |
-| `GET /v1/users/:name/games`                 | what they have played, public                   |
-| `GET /v1/auth/apple`, `GET /v1/auth/google` | 501, so a stub is not mistaken for a 404        |
+| route                          | for                                              |
+| ------------------------------ | ------------------------------------------------ |
+| `POST /v1/auth/signout`        | the menu item, revoking rather than forgetting   |
+| `GET /v1/me`                   | the whole profile, avatar seed and all           |
+| `PATCH /v1/me`                 | the profile screen                               |
+| `GET /v1/usernames/:name`      | availability while typing, behind a session      |
+| `POST /v1/games/import`        | keeping a game played before there was a person  |
+| `GET /v1/me/games`             | My Games                                         |
+| `GET /v1/games/:id`            | one game, public, what a permalink resolves to   |
+| `GET /v1/users/:name`          | somebody's profile, public                       |
+| `GET /v1/users/:name/games`    | what they have played, public                    |
+| `GET /v1/auth/apple`           | redirects to Apple; 501 with no key configured   |
+| `POST /v1/auth/apple/callback` | Apple's form post, and the session it results in |
+| `GET /v1/auth/google`          | 501, so a stub is not mistaken for a 404         |
 
 Three decisions taken while building them, none of which the plan above had settled.
 
