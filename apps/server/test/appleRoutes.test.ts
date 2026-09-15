@@ -197,6 +197,27 @@ describe('signing in with Apple', () => {
       expect(store.users.size).toBe(2)
     })
 
+    it('finds the Apple account when the code flow arrives second', async () => {
+      /*
+       * The direction that used to make two accounts. Signing in with Apple and then typing the
+       * same address into the email form is one person pressing two buttons, and which one they
+       * pressed first should not decide how many accounts they end up with.
+       */
+      await round()
+      expect(store.users.size).toBe(1)
+      const [account] = [...store.users.values()]
+      expect(await store.userIdForVerifiedEmail('player@example.com')).toBe(account?.userId)
+    })
+
+    it('will not match an address no provider has verified', async () => {
+      client = scripted({ ...SOMEBODY, emailVerified: false })
+      build()
+      await round()
+      // Recorded against the account, but not something another sign-in may link to: an address
+      // a provider passed along is a claim, and linking on a claim hands over the account.
+      expect(await store.userIdForVerifiedEmail('player@example.com')).toBeNull()
+    })
+
     it('makes a new account when nothing matches', async () => {
       await withEmail('somebody-else@example.com')
       await round()

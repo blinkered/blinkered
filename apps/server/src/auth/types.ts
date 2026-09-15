@@ -92,6 +92,22 @@ export interface AuthStore {
    */
   userIdForIdentity(provider: Provider, accountId: string): Promise<string | null>
   /**
+   * The account holding this address, under **any** provider, where the provider checked it.
+   *
+   * Separate from `userIdForIdentity` because an address is not an identity: two providers can
+   * both vouch for one mailbox, and the person behind it is the same person either way. This is
+   * what makes sign-in order stop mattering. Without it, code-then-Apple links and
+   * Apple-then-code does not, which is one account or two depending on which button somebody
+   * happened to press first.
+   *
+   * Verified only. An address a provider merely passed along is a claim, not a fact, and linking
+   * on a claim hands the account to whoever made it.
+   *
+   * Oldest first when there is more than one, so the account somebody has been using is the one
+   * that wins rather than whichever row the planner reached first.
+   */
+  userIdForVerifiedEmail(email: string): Promise<string | null>
+  /**
    * Attaches another way of signing in to an account that exists.
    *
    * This is the whole of account linking. It is called when somebody who already signed up with

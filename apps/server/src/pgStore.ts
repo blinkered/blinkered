@@ -113,6 +113,16 @@ export function pgStore(db: Database): Store {
       return row?.userId ?? null
     },
 
+    userIdForVerifiedEmail: async (email) => {
+      const [row] = await db
+        .select({ userId: authIdentities.userId })
+        .from(authIdentities)
+        .where(and(eq(authIdentities.email, email), isNotNull(authIdentities.emailVerifiedAt)))
+        .orderBy(authIdentities.createdAt)
+        .limit(1)
+      return row?.userId ?? null
+    },
+
     linkIdentity: async ({ id, userId, identity }) => {
       await db.insert(authIdentities).values(identityRow(id, userId, identity))
     },

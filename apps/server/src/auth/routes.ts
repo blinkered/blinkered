@@ -170,8 +170,11 @@ export function authRoutes(deps: AuthDeps): Hono {
       // The whole point of the flow that got here: the address answered.
       emailVerified: true,
     }
+    // Any provider that has verified this address, not just a previous code sign-in. Somebody
+    // who arrived through Apple first and types the same address here is the same person, and
+    // the order they pressed the buttons in should not decide whether they get one account.
     const userId =
-      (await deps.store.userIdForIdentity('email', email)) ?? (await createAccount(deps, identity))
+      (await deps.store.userIdForVerifiedEmail(email)) ?? (await createAccount(deps, identity))
     if (userId === null) return context.json({ error: 'no-username' }, 503)
 
     const { token, hash } = newSessionToken()
@@ -395,7 +398,7 @@ async function accountFor(deps: AuthDeps, identity: AppleIdentity): Promise<stri
   }
 
   if (identity.email !== null && identity.emailVerified && !identity.isPrivateRelay) {
-    const linked = await deps.store.userIdForIdentity('email', identity.email)
+    const linked = await deps.store.userIdForVerifiedEmail(identity.email)
     if (linked !== null) {
       await deps.store.linkIdentity({ id: newId(), userId: linked, identity: record })
       return linked

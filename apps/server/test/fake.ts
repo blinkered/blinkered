@@ -93,6 +93,10 @@ export function fakeStore(): FakeStore {
       )
       return Promise.resolve(found?.userId ?? null)
     },
+    userIdForVerifiedEmail: (email) => {
+      const found = identities.find((i) => i.email === email && i.emailVerified)
+      return Promise.resolve(found?.userId ?? null)
+    },
     linkIdentity: ({ userId, identity }) => {
       identities.push({ userId, ...identity })
       return Promise.resolve()

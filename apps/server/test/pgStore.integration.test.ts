@@ -349,6 +349,62 @@ describe('identities', () => {
     ).rejects.toThrow()
   })
 
+  it('finds an account by a verified address whatever provider vouched for it', async () => {
+    const { userId } = await account()
+    const shared = `shared-${userId}@example.com`
+    await theStore().linkIdentity({
+      id: `apple-shared-${userId}`,
+      userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: `shared-sub-${userId}`,
+        email: shared,
+        emailVerified: true,
+      },
+    })
+    // Apple vouched for it and there is no email identity holding it at all. A code sign-in at
+    // this address has to find this account rather than start another one.
+    expect(await theStore().userIdForIdentity('email', shared)).toBeNull()
+    expect(await theStore().userIdForVerifiedEmail(shared)).toBe(userId)
+  })
+
+  it('ignores an address nobody verified', async () => {
+    const { userId } = await account()
+    const claimed = `claimed-${userId}@example.com`
+    await theStore().linkIdentity({
+      id: `apple-claimed-${userId}`,
+      userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: `claimed-sub-${userId}`,
+        email: claimed,
+        emailVerified: false,
+      },
+    })
+    expect(await theStore().userIdForVerifiedEmail(claimed)).toBeNull()
+  })
+
+  it('prefers the oldest account when two hold the same verified address', async () => {
+    // Possible where one was made before this rule existed. The account somebody has been using
+    // is the older one, so that is the one a later sign-in should arrive at.
+    const first = await account()
+    const second = await account()
+    const shared = `contested-${first.userId}@example.com`
+    for (const [at, who] of [first, second].entries()) {
+      await theStore().linkIdentity({
+        id: `dup-${who.userId}`,
+        userId: who.userId,
+        identity: {
+          provider: 'apple',
+          providerAccountId: `dup-sub-${String(at)}-${who.userId}`,
+          email: shared,
+          emailVerified: true,
+        },
+      })
+    }
+    expect(await theStore().userIdForVerifiedEmail(shared)).toBe(first.userId)
+  })
+
   it('records an unverified address without a verification timestamp', async () => {
     const { userId } = await account()
     await theStore().linkIdentity({
