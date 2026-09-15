@@ -221,10 +221,13 @@ no other door.
 
 Worth doing, and not as the sending path.
 
-What it buys is a real mailbox at the domain, which is needed anyway and is currently missing:
-Apple asks for a support contact, a privacy policy has to name somewhere to write to, and a game
-with a leaderboard will eventually need somewhere for "that name is impersonating me" to arrive.
-`hello@playblinkered.com` and `support@playblinkered.com` want to exist and want to reach a human.
+What it buys is a real mailbox at the domain, which is needed anyway: Apple asks for a support
+contact, a privacy policy has to name somewhere to write to, and a game with a leaderboard will
+eventually need somewhere for "that name is impersonating me" to arrive.
+
+**`help@playblinkered.com` is that mailbox, and it is now load-bearing.** Both legal pages name
+it, the privacy policy makes it the route for deletion and for data requests, and Google's
+consent screen points at those pages. It has to reach a human.
 
 What it does not buy is transactional sending. Workspace is built for mail that people type:
 
