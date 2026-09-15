@@ -1,5 +1,5 @@
 import type { GameDetail, GameRow, GameSummary, PublicProfile } from '../src/account/types.js'
-import type { Profile, StoredCode } from '../src/auth/types.js'
+import type { NewIdentity, Profile, StoredCode } from '../src/auth/types.js'
 import { normalizeUsername } from '../src/auth/usernames.js'
 import type { Store } from '../src/types.js'
 import type { LoginMail, Mailer } from '../src/auth/mail.js'
@@ -28,6 +28,8 @@ export interface FakeStore extends Store {
   issued: { id: string; email: string; at: Date }[]
   takenUsernames: Set<string>
   games: { row: GameRow; detail: GameDetail }[]
+  /** Every way in that has been recorded, so a test can assert that linking linked. */
+  identities: (NewIdentity & { userId: string })[]
 }
 
 export function fakeStore(): FakeStore {
@@ -37,6 +39,7 @@ export function fakeStore(): FakeStore {
   const issued: { id: string; email: string; at: Date }[] = []
   const takenUsernames = new Set<string>()
   const games: { row: GameRow; detail: GameDetail }[] = []
+  const identities: (NewIdentity & { userId: string })[] = []
 
   const profileOf = (user: FakeUser): Profile => ({
     userId: user.userId,
@@ -55,6 +58,7 @@ export function fakeStore(): FakeStore {
     issued,
     takenUsernames,
     games,
+    identities,
 
     countCodesSince: (email, since) =>
       Promise.resolve(issued.filter((i) => i.email === email && i.at >= since).length),
@@ -83,16 +87,23 @@ export function fakeStore(): FakeStore {
       if (row !== undefined) codes.set(id, { ...row, consumedAt: at })
       return Promise.resolve()
     },
-    userIdForEmail: (email) => {
-      const found = [...users.values()].find((u) => u.email === email)
+    userIdForIdentity: (provider, accountId) => {
+      const found = identities.find(
+        (i) => i.provider === provider && i.providerAccountId === accountId,
+      )
       return Promise.resolve(found?.userId ?? null)
     },
-    createUser: ({ id, email, username }) => {
+    linkIdentity: ({ userId, identity }) => {
+      identities.push({ userId, ...identity })
+      return Promise.resolve()
+    },
+    createUser: ({ id, username, identity }) => {
       if (takenUsernames.has(normalizeUsername(username))) return Promise.resolve(null)
       takenUsernames.add(normalizeUsername(username))
+      identities.push({ userId: id, ...identity })
       users.set(id, {
         userId: id,
-        email,
+        email: identity.email ?? '',
         username,
         // The Postgres store seeds the avatar from the row id, and so does this: the picture has
         // to be the same one everywhere without anything being stored to make it so.

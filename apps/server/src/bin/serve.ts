@@ -3,7 +3,8 @@ import { createApp } from '../app.js'
 import { consoleMailer } from '../auth/mail.js'
 import { pgStore } from '../pgStore.js'
 import { smtpMailer } from '../auth/smtp.js'
-import { databaseConfig, smtpConfig } from '../config.js'
+import { appleClient } from '../auth/apple.js'
+import { appleConfig, databaseConfig, smtpConfig } from '../config.js'
 import { connect } from '../db.js'
 
 /**
@@ -34,7 +35,23 @@ const mailer =
       ? consoleMailer()
       : null
 
-const app = createApp(mailer === null ? {} : { auth: { store: pgStore(db), mailer } })
+const apple = appleConfig(process.env)
+const app = createApp(
+  mailer === null
+    ? {}
+    : {
+        auth: {
+          store: pgStore(db),
+          mailer,
+          ...(apple === null
+            ? {}
+            : { apple: { config: apple, client: appleClient(apple, fetch) } }),
+        },
+      },
+)
+if (apple === null) {
+  console.warn('no BLINKERED_APPLE_PRIVATE_KEY: Sign in with Apple is not mounted')
+}
 if (mailer === null) {
   console.warn('no BLINKERED_SMTP_HOST and no BLINKERED_MAIL_CONSOLE: sign-in is not mounted')
 }

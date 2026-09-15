@@ -5,6 +5,7 @@ import type { GameDetail, ProfilePatch } from './account/types.js'
 import { normalizeUsername } from './auth/usernames.js'
 import type { Database } from './db.js'
 import { authIdentities, gameDetail, games, loginCodes, sessions, users } from './schema.js'
+import type { NewIdentity } from './auth/types.js'
 import type { Store } from './types.js'
 
 /**
@@ -20,6 +21,29 @@ import type { Store } from './types.js'
  * signs in with sits beside the Apple and Google identities rather than above them. A person who
  * signs in with a code today and adds Apple tomorrow gets a second row, not a second account.
  */
+/**
+ * One `auth_identities` row, from the identity the caller has in hand.
+ *
+ * Shared by `createUser` and `linkIdentity` so the two cannot disagree about what a verified
+ * address looks like. `emailVerifiedAt` is a timestamp rather than a boolean because "when" is
+ * the question asked later -- an address verified two years ago and one verified in this request
+ * are different facts, and a boolean throws that away.
+ */
+function identityRow(
+  id: string,
+  userId: string,
+  identity: NewIdentity,
+): typeof authIdentities.$inferInsert {
+  return {
+    id,
+    userId,
+    provider: identity.provider,
+    providerAccountId: identity.providerAccountId,
+    email: identity.email,
+    emailVerifiedAt: identity.emailVerified ? new Date() : null,
+  }
+}
+
 export function pgStore(db: Database): Store {
   return {
     countCodesSince: async (email, since) => {
@@ -75,18 +99,25 @@ export function pgStore(db: Database): Store {
         .where(and(eq(loginCodes.id, id), isNull(loginCodes.consumedAt)))
     },
 
-    userIdForEmail: async (email) => {
+    userIdForIdentity: async (provider, accountId) => {
       const [row] = await db
         .select({ userId: authIdentities.userId })
         .from(authIdentities)
         .where(
-          and(eq(authIdentities.provider, 'email'), eq(authIdentities.providerAccountId, email)),
+          and(
+            eq(authIdentities.provider, provider),
+            eq(authIdentities.providerAccountId, accountId),
+          ),
         )
         .limit(1)
       return row?.userId ?? null
     },
 
-    createUser: async ({ id, email, username }) => {
+    linkIdentity: async ({ id, userId, identity }) => {
+      await db.insert(authIdentities).values(identityRow(id, userId, identity))
+    },
+
+    createUser: async ({ id, username, identity }) => {
       // One transaction: an account with no way to sign in, or an identity pointing at nothing,
       // are both worse than no account.
       return db.transaction(async (tx) => {
@@ -104,16 +135,9 @@ export function pgStore(db: Database): Store {
           .returning({ id: users.id })
         if (inserted[0] === undefined) return null
 
-        await tx.insert(authIdentities).values({
-          id: randomBytes(16).toString('base64url'),
-          userId: id,
-          provider: 'email',
-          providerAccountId: email,
-          email,
-          // The whole point of the flow that got here: the address answered. Recording it means
-          // Apple's "Hide My Email" relay addresses later carry the same fact in the same place.
-          emailVerifiedAt: new Date(),
-        })
+        await tx
+          .insert(authIdentities)
+          .values(identityRow(randomBytes(16).toString('base64url'), id, identity))
         return id
       })
     },

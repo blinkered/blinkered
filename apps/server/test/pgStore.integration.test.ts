@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { connect } from '../src/db.js'
 import { runMigrations } from '../src/migrate.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { pgStore } from '../src/pgStore.js'
-import { DATABASE_SCHEMA } from '../src/schema.js'
+import { DATABASE_SCHEMA, authIdentities } from '../src/schema.js'
 import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
@@ -38,6 +38,12 @@ function theStore(): Store {
   return store
 }
 
+/** The connection itself, for the few assertions that are about a column rather than the store. */
+function theDb(): NonNullable<typeof open>['db'] {
+  if (open === undefined) throw new Error('the database was never opened')
+  return open.db
+}
+
 let counter = 0
 /** A signed-in account, made the way the sign-in route makes one. */
 async function account(username?: string): Promise<{ userId: string; token: string }> {
@@ -45,8 +51,13 @@ async function account(username?: string): Promise<{ userId: string; token: stri
   const userId = `user-${String(counter)}-${String(Date.now())}`
   const created = await theStore().createUser({
     id: userId,
-    email: `${userId}@example.com`,
     username: username ?? `person-${String(counter)}-${String(Date.now())}`,
+    identity: {
+      provider: 'email',
+      providerAccountId: `${userId}@example.com`,
+      email: `${userId}@example.com`,
+      emailVerified: true,
+    },
   })
   expect(created).toBe(userId)
   const token = `session-${userId}`
@@ -273,5 +284,90 @@ describe('keeping games', () => {
     // A score removed from a board that still sits at the top of a personal page has been removed
     // from nowhere the person who set it can see.
     expect(await theStore().gamesOf(userId, 10)).toEqual([])
+  })
+})
+
+describe('identities', () => {
+  /*
+   * The Apple half of `auth_identities`, against real SQL.
+   *
+   * These are here rather than in the unit suite because the facts being checked belong to the
+   * database: that the unique index on `(provider, provider_account_id)` is the thing deciding
+   * whether a `sub` is already spoken for, and that two providers can name the same person
+   * without colliding. A Map-backed fake agrees with any answer you write into it.
+   */
+  const APPLE_SUB = '001234.abcdef.5678'
+
+  it('finds an account by provider and id, and not by the other provider', async () => {
+    const { userId } = await account()
+    await theStore().linkIdentity({
+      id: `apple-${userId}`,
+      userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: APPLE_SUB,
+        email: 'player@example.com',
+        emailVerified: true,
+      },
+    })
+    expect(await theStore().userIdForIdentity('apple', APPLE_SUB)).toBe(userId)
+    // The same string under the other provider is a different identity, not the same one.
+    expect(await theStore().userIdForIdentity('email', APPLE_SUB)).toBeNull()
+  })
+
+  it('lets one account hold both an email and an Apple identity, which is what linking is', async () => {
+    const { userId } = await account()
+    const email = await theStore().userIdForIdentity('email', `${userId}@example.com`)
+    await theStore().linkIdentity({
+      id: `apple-both-${userId}`,
+      userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: `sub-${userId}`,
+        email: `${userId}@example.com`,
+        emailVerified: true,
+      },
+    })
+    expect(email).toBe(userId)
+    expect(await theStore().userIdForIdentity('apple', `sub-${userId}`)).toBe(userId)
+  })
+
+  it('refuses to hand one Apple sub to two accounts', async () => {
+    // The unique index is the authority. Without it a race in the callback could attach the same
+    // person to two accounts, and the second one would be silently unreachable afterwards.
+    const first = await account()
+    const second = await account()
+    const identity = {
+      provider: 'apple' as const,
+      providerAccountId: `contested-${first.userId}`,
+      email: null,
+      emailVerified: false,
+    }
+    await theStore().linkIdentity({ id: `a-${first.userId}`, userId: first.userId, identity })
+    await expect(
+      theStore().linkIdentity({ id: `b-${second.userId}`, userId: second.userId, identity }),
+    ).rejects.toThrow()
+  })
+
+  it('records an unverified address without a verification timestamp', async () => {
+    const { userId } = await account()
+    await theStore().linkIdentity({
+      id: `unverified-${userId}`,
+      userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: `unverified-sub-${userId}`,
+        email: 'maybe@example.com',
+        emailVerified: false,
+      },
+    })
+    const [row] = await theDb()
+      .select({ verifiedAt: authIdentities.emailVerifiedAt, email: authIdentities.email })
+      .from(authIdentities)
+      .where(eq(authIdentities.id, `unverified-${userId}`))
+    expect(row?.email).toBe('maybe@example.com')
+    // Null rather than now(). "We were told an address" and "we know it answered" are different
+    // facts, and the linking rule turns on the second one.
+    expect(row?.verifiedAt).toBeNull()
   })
 })

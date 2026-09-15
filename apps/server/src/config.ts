@@ -1,3 +1,5 @@
+import type { AppleConfig } from './auth/apple.js'
+
 /**
  * The database connection, assembled from the seven keys the deployment secret carries.
  *
@@ -147,4 +149,50 @@ export function smtpConfig(env: Environment): SmtpEnv | null {
     ...(user === undefined || user === '' ? {} : { auth: { user, password: password as string } }),
     from: from as string,
   }
+}
+
+/**
+ * Sign in with Apple, or nothing.
+ *
+ * Optional as a whole, like the mailer above and for the same reason: a deployment without a key
+ * serves the game, answers probes, and offers no Apple button. A laptop is that deployment, and
+ * so is any environment whose `.p8` has not been put in place yet.
+ *
+ * All-or-nothing rather than per-key defaults. Four values that only work together, where three
+ * of them are public and the fourth is a signing key, is exactly the shape where a partial
+ * configuration produces `invalid_client` at sign-in instead of an error at boot. The Team ID,
+ * Key ID, Services ID and redirect URI come from the chart; only the key is a secret.
+ */
+export function appleConfig(env: Environment): AppleConfig | null {
+  const privateKey = env.BLINKERED_APPLE_PRIVATE_KEY
+  if (privateKey === undefined || privateKey === '') return null
+
+  const problems: string[] = []
+  const read = (key: string): string => {
+    const value = env[key]
+    if (value === undefined || value.trim() === '') {
+      problems.push(`${key} is missing`)
+      return ''
+    }
+    return value.trim()
+  }
+
+  const teamId = read('BLINKERED_APPLE_TEAM_ID')
+  const keyId = read('BLINKERED_APPLE_KEY_ID')
+  const servicesId = read('BLINKERED_APPLE_SERVICES_ID')
+  const redirectUri = read('BLINKERED_APPLE_REDIRECT_URI')
+
+  /*
+   * Apple refuses a redirect URI that is not HTTPS, with no localhost exemption of the kind
+   * Google offers. Catching it here rather than at sign-in matters because the error Apple gives
+   * back names neither the field nor the reason, and because the value has to match what is
+   * registered in the portal byte for byte -- which is why it is configuration rather than
+   * something assembled from request headers, where `X-Forwarded-Proto` would decide it.
+   */
+  if (redirectUri !== '' && !redirectUri.startsWith('https://')) {
+    problems.push(`BLINKERED_APPLE_REDIRECT_URI is not https: ${redirectUri}`)
+  }
+
+  if (problems.length > 0) throw new ConfigError(problems)
+  return { teamId, keyId, servicesId, redirectUri, privateKey }
 }

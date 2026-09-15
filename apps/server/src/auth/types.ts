@@ -19,6 +19,24 @@ export interface StoredCode extends CodeRow {
   readonly id: string
 }
 
+/** The ways in. `google` is registered in the schema and not yet built. */
+export type Provider = 'email' | 'apple'
+
+/**
+ * One way of signing in, as it is about to be written down.
+ *
+ * `email` is nullable because Apple's relay users can revoke forwarding, and because a provider
+ * is under no obligation to tell us an address at all. `providerAccountId` is the identity;
+ * `email` is a contact detail that happens to be useful for linking.
+ */
+export interface NewIdentity {
+  readonly provider: Provider
+  readonly providerAccountId: string
+  readonly email: string | null
+  /** Whether the provider says it checked. Never assume it: see `linkIdentity`. */
+  readonly emailVerified: boolean
+}
+
 /**
  * A person, as every authenticated route wants them.
  *
@@ -63,8 +81,26 @@ export interface AuthStore {
   recordAttempt(id: string): Promise<void>
   /** Spends a code. After this it is dead whatever else is true of it. */
   consumeCode(id: string, at: Date): Promise<void>
-  /** The account this address already belongs to, if any. */
-  userIdForEmail(email: string): Promise<string | null>
+  /**
+   * The account a provider identity already belongs to, if any.
+   *
+   * Provider-generic rather than one method per provider, because the question is the same one
+   * every time and `auth_identities` already has the unique index that answers it. For `email`
+   * the account id is the address; for `apple` it is the `sub`, which is the only durable handle
+   * Apple gives out -- a person who hides their address can drop the relay, so the address is
+   * not an identity and must never be treated as one.
+   */
+  userIdForIdentity(provider: Provider, accountId: string): Promise<string | null>
+  /**
+   * Attaches another way of signing in to an account that exists.
+   *
+   * This is the whole of account linking. It is called when somebody who already signed up with
+   * a code arrives through Apple carrying the same **verified** address: same person, same
+   * account, one more door. The verification is the load-bearing part and it is checked by the
+   * caller, not here -- linking on an unverified claim means anybody who can assert an address
+   * can walk into the account that owns it.
+   */
+  linkIdentity(input: { id: string; userId: string; identity: NewIdentity }): Promise<void>
   /**
    * Creates an account with this address and this name.
    *
@@ -72,7 +108,7 @@ export interface AuthStore {
    * rather than the store deciding a name on its behalf. Uniqueness is the database's to enforce
    * — a check followed by an insert is a race, and the unique index is not.
    */
-  createUser(input: { id: string; email: string; username: string }): Promise<string | null>
+  createUser(input: { id: string; username: string; identity: NewIdentity }): Promise<string | null>
   /**
    * Who a session token belongs to, or null.
    *

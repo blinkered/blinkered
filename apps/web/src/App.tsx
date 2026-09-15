@@ -27,6 +27,7 @@ import { AccountMenu } from './AccountMenu.js'
 import type { Destination } from './AccountMenu.js'
 import { AccountScreen } from './AccountScreen.js'
 import { SignInDialog } from './SignInDialog.js'
+import { appleProblem, clearSignInParam, returnedFromApple } from './appleSignIn.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
 import type { Account, BoardAtRound, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -188,6 +189,25 @@ function Session({
   const [account, setAccount] = useState<Account | null>(null)
   /** Open, and why. The reason is shown in the dialog; `null` means it is not open. */
   const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
+
+  /*
+   * Coming back from Apple.
+   *
+   * The callback is a server redirect to `/?signin=<reason>`, so this runs on an ordinary page
+   * load and has to be harmless on every load that is not one. Success needs nothing done to it:
+   * the session cookie is already set, and the `whoAmI()` on arrival finds the account the same
+   * way it does after a reload. Only a failure has anything to say, and it says it by reopening
+   * the dialog the person was last looking at.
+   *
+   * The parameter is stripped either way, so a refresh does not repeat the message and Back does
+   * not return to something that looks like a second attempt.
+   */
+  useEffect(() => {
+    const returned = returnedFromApple(globalThis.location.search)
+    if (returned === null) return
+    clearSignInParam()
+    if (!returned.ok) setSigningIn({ reason: appleProblem(returned.reason) })
+  }, [])
   const [visiting, setVisiting] = useState<Destination | null>(null)
 
   /*

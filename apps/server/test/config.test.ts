@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ConfigError, databaseConfig, smtpConfig } from '../src/config.js'
+import { ConfigError, appleConfig, databaseConfig, smtpConfig } from '../src/config.js'
 
 const complete = {
   BLINKERED_DB_HOST: 'db.example.com',
@@ -165,5 +165,58 @@ describe('smtpConfig', () => {
     } catch (error) {
       expect((error as ConfigError).problems).toHaveLength(3)
     }
+  })
+})
+
+describe('the Apple configuration', () => {
+  const complete = {
+    BLINKERED_APPLE_PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nxx\n-----END PRIVATE KEY-----',
+    BLINKERED_APPLE_TEAM_ID: 'ZJ3A78KXA4',
+    BLINKERED_APPLE_KEY_ID: '85Z9WXC2Q9',
+    BLINKERED_APPLE_SERVICES_ID: 'com.tightlinesoftware.blinkered.signin',
+    BLINKERED_APPLE_REDIRECT_URI: 'https://playblinkered.com/v1/auth/apple/callback',
+  }
+
+  it('reads a complete environment', () => {
+    expect(appleConfig(complete)).toEqual({
+      teamId: 'ZJ3A78KXA4',
+      keyId: '85Z9WXC2Q9',
+      servicesId: 'com.tightlinesoftware.blinkered.signin',
+      redirectUri: 'https://playblinkered.com/v1/auth/apple/callback',
+      privateKey: complete.BLINKERED_APPLE_PRIVATE_KEY,
+    })
+  })
+
+  it('is absent rather than broken when there is no key', () => {
+    // A laptop, and any environment whose .p8 is not in place. The game serves, the probes pass,
+    // and there is no Apple button. Refusing to start would be a worse answer to the same fact.
+    expect(appleConfig({})).toBeNull()
+    expect(appleConfig({ ...complete, BLINKERED_APPLE_PRIVATE_KEY: '' })).toBeNull()
+  })
+
+  it('reports every missing key at once rather than one per deployment', () => {
+    const { BLINKERED_APPLE_PRIVATE_KEY } = complete
+    expect(() => appleConfig({ BLINKERED_APPLE_PRIVATE_KEY })).toThrow(ConfigError)
+    try {
+      appleConfig({ BLINKERED_APPLE_PRIVATE_KEY })
+    } catch (failure) {
+      expect((failure as ConfigError).problems).toHaveLength(4)
+    }
+  })
+
+  it('treats whitespace as missing, and trims what it keeps', () => {
+    expect(() => appleConfig({ ...complete, BLINKERED_APPLE_TEAM_ID: '   ' })).toThrow(ConfigError)
+    expect(appleConfig({ ...complete, BLINKERED_APPLE_KEY_ID: ' 85Z9WXC2Q9 ' })?.keyId).toBe(
+      '85Z9WXC2Q9',
+    )
+  })
+
+  it('refuses a redirect URI that is not https', () => {
+    // Apple has no localhost exemption of the kind Google offers, and the error it returns names
+    // neither the field nor the reason. Catching it at boot is the difference between a bad
+    // deployment and an afternoon.
+    expect(() =>
+      appleConfig({ ...complete, BLINKERED_APPLE_REDIRECT_URI: 'http://localhost:8080/cb' }),
+    ).toThrow(ConfigError)
   })
 })
