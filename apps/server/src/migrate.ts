@@ -1,10 +1,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { client } from './db.js'
-import { journalEntries, planLines, planMigrations, refusal } from './migrationReport.js'
+import { namesForStamps, planLines, planMigrations } from './migrationReport.js'
 import type { MigrationPlan } from './migrationReport.js'
 import { DATABASE_SCHEMA } from './schema.js'
 import type { DatabaseConfig } from './config.js'
@@ -68,20 +68,11 @@ export async function runMigrations(
      * fails halfway has already said which one it was. A report assembled after the fact says
      * nothing at all in the case where somebody most wants to read it.
      */
-    const plan = planMigrations(journal(), await appliedStamps(connection))
+    const local = localMigrations()
+    const plan = planMigrations(local, await appliedNames(connection, local))
     for (const line of planLines(plan)) say(line)
 
-    /*
-     * Refused before anything is applied, so a build carrying a migration drizzle would silently
-     * skip does not half-migrate and then roll.
-     *
-     * The Job exits non-zero, Helm aborts the upgrade, and the old pods keep serving the schema
-     * they were written for. That is the whole reason migrations run as a pre-upgrade hook.
-     */
-    const refused = refusal(plan)
-    if (refused !== null) throw new Error(refused)
-
-    await migrate(drizzle(connection), {
+    await migrate(drizzle({ client: connection }), {
       migrationsFolder: MIGRATIONS,
       // Drizzle's own bookkeeping goes in our schema too, so a database holding more than this
       // application does not collect a stray `__drizzle_migrations` in `public`.
@@ -94,31 +85,60 @@ export async function runMigrations(
   }
 }
 
-/** The journal drizzle wrote, which is the list of migrations this build carries. */
-function journal(): readonly { tag: string; when: number }[] {
-  const path = join(MIGRATIONS, 'meta', '_journal.json')
-  return journalEntries(JSON.parse(readFileSync(path, 'utf8')))
+/**
+ * The migrations this build carries, by folder name, in the order drizzle applies them.
+ *
+ * Read off the directory rather than out of a journal, because drizzle 1.0 does not write one --
+ * that is the whole point of the format change, since a shared `_journal.json` was a file two
+ * branches conflicted in every time. The folder name carries its own timestamp, so sorting the
+ * names is sorting by age.
+ */
+function localMigrations(): readonly string[] {
+  return readdirSync(MIGRATIONS, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort()
 }
 
 /**
- * The stamps already recorded, or none at all.
+ * The names already recorded, or none at all.
  *
  * The table is created by the migrator, so on a first install it is not there yet and that is
  * the ordinary case rather than an error. Asked of `information_schema` rather than by catching
  * the failure of a select, because "does this relation exist" is a question with an answer and
  * matching on an error code would be reading a message to find out.
+ *
+ * **A 0.45-format table is read by its timestamps rather than reported as empty.** Every row
+ * there has a null `name`, because the column does not exist yet, and taking that at face value
+ * made the upgrade deployment print "applied 5 migrations" while the migrator applied none. That
+ * is one deployment per database and it is the one somebody is watching, so it is worth the
+ * fourteen lines: the stamps are matched to folder names the way drizzle's own `upgradeIfNeeded`
+ * matches them, and the plan comes out saying five already applied and nothing to do.
  */
-async function appliedStamps(connection: ReturnType<typeof client>): Promise<readonly number[]> {
-  const present = await connection`
-    select 1 from information_schema.tables
+async function appliedNames(
+  connection: ReturnType<typeof client>,
+  local: readonly string[],
+): Promise<readonly string[]> {
+  const columns = await connection`
+    select column_name from information_schema.columns
     where table_schema = ${DATABASE_SCHEMA} and table_name = '__drizzle_migrations'
   `
-  if (present.length === 0) return []
+  if (columns.length === 0) return []
+  const table = connection(DATABASE_SCHEMA)
+
+  if (!columns.some((column) => column.column_name === 'name')) {
+    const legacy = await connection`
+      select created_at from ${table}.__drizzle_migrations order by created_at
+    `
+    // `bigint` arrives as a string from postgres.js, which is right in general and wrong here.
+    return namesForStamps(
+      local,
+      legacy.map((row) => Number(row.created_at)),
+    )
+  }
+
   const rows = await connection`
-    select created_at from ${connection(DATABASE_SCHEMA)}.__drizzle_migrations
-    order by created_at
+    select name from ${table}.__drizzle_migrations where name is not null order by name
   `
-  // `bigint` arrives as a string from postgres.js, which is right in general and wrong here:
-  // these are millisecond stamps and the comparison against the journal is numeric.
-  return rows.map((row) => Number(row.created_at))
+  return rows.map((row) => String(row.name))
 }

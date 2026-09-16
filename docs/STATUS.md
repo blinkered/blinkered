@@ -168,30 +168,38 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 ## Known and accepted
 
-- **Drizzle's migrator assumes one line of history, and 0.45 is the version that does.** It
-  applies every migration whose timestamp is newer than the newest row in
-  `__drizzle_migrations`, rather than every migration that table is missing, so a file stamped
-  earlier than something already applied is skipped **in silence, for good**. Two branches each
-  generating a migration, with the older one merging second, is all it takes — which is a thing a
-  team does routinely rather than an exotic case.
+- **Drizzle is on `1.0.0-rc.4`, a release candidate, and that was a decision.** The stable line
+  is 0.45, whose migrator applies every migration newer than the newest applied row rather than
+  every migration the table is missing — so a file stamped earlier than something already applied
+  was skipped **in silence, for good**. Two branches each generating a migration, older one
+  merging second, is all it took, which is a thing a team does routinely rather than an exotic
+  case. It was [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316) and
+  [#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769); 1.0 matches by folder name and
+  set membership, which is what Rails has always done.
 
-  Drizzle agrees it is wrong: [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316)
-  and [#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769), with the 1.0 line
-  replacing the rule with "apply every missing migration, whatever its stamp" — there is a
-  dist-tag called `update/migrator-strategy` for the work. Rails and Liquibase have always
-  worked that way; Django builds a dependency graph and makes you merge branches explicitly.
+  A release candidate for the component holding other people's data is not a small thing to run,
+  and the argument for it is that the alternative was worse: a known silent-data-corruption path
+  in the migrator against a product with no users yet, where an RC is the cheapest it will ever be
+  to adopt. The upgrade surface turned out to be small because this repository barely uses the
+  ORM: no relational queries anywhere, so `relations()` was three declarations nothing called, and
+  every read in `pgStore.ts` is an explicit `select` with its own join.
 
-  **What is built instead is a refusal.** `migrationReport.ts` reimplements drizzle's rule,
-  detects a migration that would be stranded, and fails the migration Job before anything is
-  applied, so Helm aborts the upgrade and the old pods keep serving the schema they match. That
-  turns a silent wrong schema into a blocked deploy with instructions in the log. It is a guard,
-  not a fix.
+  What it cost: `drizzle({ client })` instead of `drizzle(sql, { schema })`, the three unused
+  relation declarations deleted, the migration folder converted by `drizzle-kit up`, and
+  `migrationReport.ts` rewritten around names instead of timestamps — which mostly meant deleting
+  the guard that existed for the bug. Verified against a real Postgres: the full integration
+  suite, the one-time table upgrade on a copy of dev's state, and the two-branch case actually
+  applying.
 
-  **The open question is whether to move to `drizzle-orm@1.0.0-rc`.** For: it is the actual fix,
-  and nothing has shipped, so a release candidate under a product with no users is a much smaller
-  bet than it would be later. Against: it is a major version with API changes across the ORM, so
-  it is a day of work and a re-read of every query rather than a version bump. Not taken yet, and
-  worth taking before there is a second person generating migrations.
+  **Revisit when 1.0 goes stable**, which should be a version bump and nothing else.
+
+- **`drizzle-kit push` asks to drop `__drizzle_migrations` and the schema with it.** The
+  bookkeeping table lives in `blinkered` because `migrationsSchema` is `DATABASE_SCHEMA`, push
+  diffs declared tables against the database, and that table is not declared. It refuses rather
+  than proceeding, and nothing in the repository runs push — `dev-schema.ts` and the compose
+  `schema` service both generate and then migrate. The hazard predates 1.0; removing `--strict`
+  is only what made it visible. Moving the table to its own schema would settle it and is a
+  separate change against two live databases.
 
 - **Twenty languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
   them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German, Hebrew, Icelandic,

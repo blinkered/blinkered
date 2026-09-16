@@ -8,119 +8,105 @@
  * integration suite it points at measures no coverage at all. Logic put in there is logic nothing
  * checks. So the logic is here.
  *
- * ## Whose rule this is
+ * ## This file used to carry a guard, and drizzle 1.0 made it unnecessary
  *
- * The ordering rule below is **drizzle's, not a choice made here**, and it is worth saying
- * plainly because it is a bad one: it applies every migration newer than the newest row in
- * `__drizzle_migrations` rather than every migration that table is missing, so anything stamped
- * earlier is skipped in silence. That assumes one line of history, which is an assumption a team
- * violates the first time two branches each generate a migration.
+ * Under 0.45 the migrator applied every migration **newer than the newest row** in
+ * `__drizzle_migrations` rather than every migration that table was missing. That assumed one
+ * line of history: two branches each generating a migration, with the older one merging second,
+ * left the older one stranded and skipped in silence, for good. This module detected that and
+ * refused the deployment, because the alternative was an API pod serving traffic against a schema
+ * missing a column its code expected.
  *
- * Drizzle agrees it is wrong. It is filed as drizzle-team/drizzle-orm#5316 and #5769, and the
- * 1.0 line replaces it with "apply every missing migration, whatever its stamp" -- there is a
- * dist-tag called `update/migrator-strategy` for the work. That fix is in `1.0.0-rc`, and this
- * repository is on the latest **stable**, 0.45.2, which still has the old behaviour. Upgrading
- * is a major version with an API change and is a decision rather than a detail; until it is
- * taken, the behaviour is what it is and the job of this module is to refuse to deploy on top
- * of it.
+ * 1.0 replaced the rule with set membership by name -- `getMigrationsToRun` is
+ * `localMigrations.filter((lm) => !dbNamesSet.has(lm.name))`, which is what Rails has always
+ * done -- so a migration cannot be stranded by ordering any more and the guard has nothing left
+ * to guard. It is deleted rather than kept: a check that cannot fire is a check that will be
+ * trusted for the wrong reason later. drizzle-team/drizzle-orm#5316 is the history.
+ *
+ * What is still worth reporting is what actually ran, and the one asymmetry the new rule leaves.
  *
  * ## There is no rollback, and this cannot invent one
  *
  * `drizzle-kit generate` writes forward SQL and nothing else -- there are no down migrations in
  * the repository and no `migrate down` to run. So a report cannot say "rolling back 0004",
- * because that never happens.
+ * because that never happens. Undoing a change means writing another migration.
  *
- * What does happen, and what this does report, is the shape a rollback actually takes in this
- * deployment: an older image is deployed against a database that is further ahead than its
- * journal. Drizzle's rule is to apply everything newer than the newest row in
- * `__drizzle_migrations` and say nothing about the rest, so today that arrives as
- * "migrations are up to date" and looks like success. It is worth a line that says the database
- * is ahead of the code.
+ * What does happen is an older image against a database that has moved on, which is the shape a
+ * rollback takes here. After the migrations table has been upgraded to the 1.0 format, drizzle
+ * simply ignores rows it does not recognise, so that arrives silently. It is worth a line saying
+ * the database is ahead of the code.
  */
 
-/** One entry in `drizzle/meta/_journal.json`. `when` is the millisecond stamp drizzle keys on. */
-export interface JournalEntry {
-  readonly tag: string
-  readonly when: number
+/**
+ * The folder name a 0.45-format row corresponds to, for each row, or null where none does.
+ *
+ * Needed for exactly one deployment per database: the one that upgrades from 0.45, where every
+ * row still has a null `name` and so looks like an empty table. Without this the report claims
+ * it is applying every migration and then the migrator applies none, which is a log that lies in
+ * the reassuring direction -- the fault this module exists to avoid.
+ *
+ * Matched the way drizzle's own `upgradeIfNeeded` matches: a stored `created_at` is milliseconds,
+ * a folder name begins with `YYYYMMDDHHMMSS`, and the two agree once the stamp is truncated to
+ * the second. `drizzle-kit up` derived those folder names from the same journal timestamps the
+ * rows were written from, which is what makes this exact rather than approximate.
+ */
+export function namesForStamps(
+  local: readonly string[],
+  stamps: readonly number[],
+): readonly string[] {
+  const byPrefix = new Map(local.map((name) => [name.slice(0, 14), name]))
+  return stamps
+    .map((stamp) => byPrefix.get(stampPrefix(stamp)))
+    .filter((name): name is string => name !== undefined)
+}
+
+/** A millisecond stamp as the fourteen digits a migration folder is named with, in UTC. */
+function stampPrefix(stamp: number): string {
+  const at = new Date(Math.floor(stamp / 1000) * 1000)
+  const pad = (n: number, width = 2): string => String(n).padStart(width, '0')
+  return (
+    pad(at.getUTCFullYear(), 4) +
+    pad(at.getUTCMonth() + 1) +
+    pad(at.getUTCDate()) +
+    pad(at.getUTCHours()) +
+    pad(at.getUTCMinutes()) +
+    pad(at.getUTCSeconds())
+  )
 }
 
 export interface MigrationPlan {
-  /** In the journal and in the database, in journal order. */
+  /** In the folder and in the database, in folder order. */
   readonly already: readonly string[]
   /** What this run will apply, in the order it will apply them. */
   readonly pending: readonly string[]
   /**
-   * In the journal, not in the database, and **drizzle will not apply them.**
+   * In the database, with no migration folder in this build.
    *
-   * Which makes this the one condition that stops a deployment: see `refusal`. The schema the
-   * code expects is not the schema it would get, and the whole point of running migrations
-   * before the rollout is that this is the moment to find out.
+   * Which is to say the database is ahead of the image: the normal cause is a deliberate rollback
+   * to an older build, and the other is a shared database somebody else has migrated further.
    */
-  readonly skipped: readonly string[]
-  /**
-   * In the database, with no entry in this build's journal.
-   *
-   * Which is to say the database is ahead of the image: the normal cause is a deliberate
-   * rollback to an older build, and the other cause is somebody running a newer branch's
-   * migrations against a shared database.
-   */
-  readonly ahead: readonly number[]
+  readonly ahead: readonly string[]
 }
 
 /**
- * Reads the journal, or says it could not.
+ * What will happen, worked out with drizzle's own rule.
  *
- * Validated rather than cast, because a journal that is not the shape drizzle writes would
- * otherwise produce a confident report about `undefined`. Entries are returned in journal order,
- * which is the order they are applied in.
- */
-export function journalEntries(raw: unknown): readonly JournalEntry[] {
-  if (typeof raw !== 'object' || raw === null)
-    throw new Error('the migration journal is not an object')
-  const entries = (raw as { entries?: unknown }).entries
-  if (!Array.isArray(entries)) throw new Error('the migration journal has no entries')
-  return entries.map((entry, at) => {
-    const fields = entry as { tag?: unknown; when?: unknown }
-    if (typeof fields.tag !== 'string' || typeof fields.when !== 'number') {
-      throw new Error(`migration journal entry ${String(at)} is missing a tag or a timestamp`)
-    }
-    return { tag: fields.tag, when: fields.when }
-  })
-}
-
-/**
- * What will happen, worked out with drizzle's own rule rather than a tidier one.
- *
- * The rule, from `pg-core/dialect.js`: read the single newest row of `__drizzle_migrations`, then
- * apply every migration whose folder stamp is greater than its `created_at`. Anything at or below
- * that line is left alone whether or not it is actually recorded.
- *
- * Reimplementing it here is the only way the report can be trusted, and the alternative is worse
- * than it sounds: a plan built from set difference would cheerfully announce it was applying a
- * file that drizzle then skipped, which is a log that lies in the direction of reassurance.
+ * The rule, from `migrator.utils.js`: every local migration whose folder name is not recorded in
+ * the table, in folder order. Reimplemented here rather than approximated, so the report cannot
+ * claim something the migrator will not do -- a log that lies in the reassuring direction is
+ * worse than the terse one this replaced.
  */
 export function planMigrations(
-  journal: readonly JournalEntry[],
-  applied: readonly number[],
+  local: readonly string[],
+  applied: readonly string[],
 ): MigrationPlan {
   const recorded = new Set(applied)
-  // -1 rather than -Infinity: a stamp is a millisecond count, so this is below every real one
-  // and is a number, which keeps the comparison the same shape on an empty database.
-  const newest = applied.length === 0 ? -1 : Math.max(...applied)
-
-  const already: string[] = []
-  const pending: string[] = []
-  const skipped: string[] = []
-  for (const entry of journal) {
-    if (entry.when > newest) pending.push(entry.tag)
-    else if (recorded.has(entry.when)) already.push(entry.tag)
-    else skipped.push(entry.tag)
+  const known = new Set(local)
+  return {
+    already: local.filter((name) => recorded.has(name)),
+    pending: local.filter((name) => !recorded.has(name)),
+    ahead: [...applied].filter((name) => !known.has(name)).sort(),
   }
-
-  const known = new Set(journal.map((entry) => entry.when))
-  const ahead = [...applied].filter((when) => !known.has(when)).sort((a, b) => a - b)
-
-  return { already, pending, skipped, ahead }
 }
 
 /**
@@ -131,32 +117,23 @@ export function planMigrations(
  */
 export function planLines(plan: MigrationPlan): readonly string[] {
   const lines: string[] = []
-  const total = plan.already.length + plan.pending.length + plan.skipped.length
+  const total = plan.already.length + plan.pending.length
   lines.push(
     `${count(total, 'migration')} in this build, ${String(plan.already.length)} already applied`,
   )
-  for (const tag of plan.pending) lines.push(`  applying ${tag}`)
+  for (const name of plan.pending) lines.push(`  applying ${name}`)
   if (plan.pending.length === 0) lines.push('  nothing to apply')
 
   /*
-   * The two anomalies, and only one of them stops the deployment.
+   * Not a failure, deliberately.
    *
-   * A **skipped** migration does, through `refusal` below. An earlier version of this file made
-   * it a warning, on the reasoning that failing would leave nothing to do but hand-edit the
-   * journal. That was wrong twice over: the fix is to regenerate the stranded migration so it
-   * gets a current stamp, which is one local command; and a warning is no protection at all
-   * against the thing it warns about, because what follows it is an API pod serving traffic
-   * against a schema that is missing a column its code expects.
-   *
-   * A database **ahead** of the image does not, and that asymmetry is deliberate. It is what a
-   * rollback looks like, and a Job that refused it would block the rollback -- the one operation
-   * that has to work when everything else has gone wrong.
+   * A database ahead of the image is what a rollback looks like, and a Job that refused it would
+   * block the rollback -- the one operation that has to work when everything else has gone wrong.
+   * Worth a line because drizzle says nothing about a row it does not recognise, so the case
+   * otherwise arrives as an ordinary success.
    */
-  for (const tag of plan.skipped) {
-    lines.push(`  WILL NOT APPLY ${tag}: its stamp is older than a migration already applied`)
-  }
-  for (const when of plan.ahead) {
-    lines.push(`  the database has a migration this build does not, stamped ${String(when)}`)
+  for (const name of plan.ahead) {
+    lines.push(`  the database has ${name}, which this build does not carry`)
   }
   return lines
 }
@@ -164,9 +141,8 @@ export function planLines(plan: MigrationPlan): readonly string[] {
 /**
  * The last line, and it is always last on purpose.
  *
- * `deploy/deploy.sh` tails this Job's log, so whatever matters most has to be at the end rather
- * than scrolled off the top. One line carrying every count means the tail is never the half of
- * the story that happens to be reassuring.
+ * `deploy/deploy.sh` prints this Job's log, and a reader scanning it wants one line that carries
+ * every count rather than an arithmetic exercise over the ones above.
  */
 export function doneLine(plan: MigrationPlan): string {
   const parts = [
@@ -175,40 +151,10 @@ export function doneLine(plan: MigrationPlan): string {
       : `applied ${count(plan.pending.length, 'migration')}: ${plan.pending.join(', ')}`,
     `${String(plan.already.length)} already there`,
   ]
-  if (plan.skipped.length > 0) {
-    parts.push(`SKIPPED ${String(plan.skipped.length)}: ${plan.skipped.join(', ')}`)
-  }
   if (plan.ahead.length > 0) {
-    parts.push(`DATABASE AHEAD by ${String(plan.ahead.length)}`)
+    parts.push(`DATABASE AHEAD by ${String(plan.ahead.length)}: ${plan.ahead.join(', ')}`)
   }
   return `done: ${parts.join('; ')}`
-}
-
-/**
- * Why this deployment must not proceed, or null when it may.
- *
- * Here rather than in `migrate.ts` so that the one condition which stops a rollout is decided by
- * tested code. Returned rather than thrown, because a pure function that throws is a pure
- * function nobody can ask a question of.
- *
- * Only `skipped` refuses. It means the journal carries a migration the database does not have and
- * this version of drizzle will never apply -- so the schema the code was written against is not
- * the schema it would run on, and every later deploy would inherit the same gap in the same
- * silence.
- */
-export function refusal(plan: MigrationPlan): string | null {
-  if (plan.skipped.length === 0) return null
-  return [
-    `${count(plan.skipped.length, 'migration')} in this build will never be applied by drizzle: ` +
-      plan.skipped.join(', '),
-    'Their stamps are older than a migration already applied, and drizzle applies only what is',
-    'newer than the newest row in __drizzle_migrations rather than what that table is missing.',
-    'That is drizzle-team/drizzle-orm#5316, fixed in the 1.0 line and not in 0.45.',
-    '',
-    'Regenerate them so they get a current stamp -- `pnpm exec drizzle-kit generate` after',
-    'dropping the stranded file -- and deploy again. Refusing here rather than starting the API',
-    'against a schema it was not written for.',
-  ].join('\n')
 }
 
 /** "1 migration", "3 migrations". English only; this is a deploy log, not a player's screen. */

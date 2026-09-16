@@ -1,6 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import * as schema from './schema.js'
 import type { DatabaseConfig } from './config.js'
 
 export type Database = ReturnType<typeof connect>['db']
@@ -23,8 +22,17 @@ export function connect(config: DatabaseConfig): {
   return { db: make(sql), close: () => sql.end({ timeout: 5 }) }
 }
 
-function make(sql: postgres.Sql): ReturnType<typeof drizzle<typeof schema>> {
-  return drizzle(sql, { schema })
+/**
+ * The query builder over an open pool.
+ *
+ * `drizzle({ client })` rather than `drizzle(sql, { schema })`, which is drizzle 1.0's shape: the
+ * positional client is gone and so is `schema`, which existed to register tables for relational
+ * queries. Nothing here uses those -- every read in `pgStore.ts` is an explicit `select` with its
+ * own join -- so the tables are imported where they are used and nowhere else. See the note in
+ * `schema.ts` about the relation declarations that went with them.
+ */
+function make(sql: postgres.Sql): ReturnType<typeof drizzle> {
+  return drizzle({ client: sql })
 }
 
 export function client(config: DatabaseConfig, options: ClientOptions = {}): postgres.Sql {

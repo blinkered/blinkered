@@ -1,10 +1,9 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { readdirSync } from 'node:fs'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { sql } from 'drizzle-orm'
 import { connect } from '../src/db.js'
 import { runMigrations, MIGRATIONS } from '../src/migrate.js'
-import { doneLine, journalEntries } from '../src/migrationReport.js'
+import { doneLine } from '../src/migrationReport.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { DATABASE_SCHEMA, games, users } from '../src/schema.js'
 
@@ -20,14 +19,17 @@ import { DATABASE_SCHEMA, games, users } from '../src/schema.js'
 const config = integrationConfig
 
 /**
- * Every migration this build carries, read off the journal rather than written out here.
+ * Every migration this build carries, read off the folder rather than written out here.
  *
  * A hard-coded list would be a second place to remember on the day somebody generates the next
- * one, and the test that would then fail is the one nobody suspects.
+ * one, and the test that would then fail is the one nobody suspects. Folder names rather than
+ * journal tags, because drizzle 1.0 has no journal -- removing that shared file is most of why
+ * the format changed, since two branches conflicted in it every time.
  */
-const JOURNAL_TAGS = journalEntries(
-  JSON.parse(readFileSync(join(MIGRATIONS, 'meta', '_journal.json'), 'utf8')),
-).map((entry) => entry.tag)
+const MIGRATION_NAMES = readdirSync(MIGRATIONS, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort()
 
 let db: ReturnType<typeof connect> | undefined
 
@@ -76,14 +78,13 @@ describe('the migration', () => {
     const said: string[] = []
     const plan = await runMigrations(config, (line) => said.push(line))
     expect(plan.pending).toEqual([])
-    expect(plan.skipped).toEqual([])
     expect(plan.ahead).toEqual([])
     expect(said).toContain('  nothing to apply')
     // Every committed migration, which is the half a fake cannot check: the journal on disk and
     // the rows in `__drizzle_migrations` have to agree about which files exist and ran.
-    expect(plan.already).toEqual(JOURNAL_TAGS)
+    expect(plan.already).toEqual(MIGRATION_NAMES)
     expect(doneLine(plan)).toBe(
-      `done: nothing to apply; ${String(JOURNAL_TAGS.length)} already there`,
+      `done: nothing to apply; ${String(MIGRATION_NAMES.length)} already there`,
     )
   })
 
@@ -96,9 +97,9 @@ describe('the migration', () => {
     const said: string[] = []
     const plan = await runMigrations(config, (line) => said.push(line))
     expect(plan.already).toEqual([])
-    expect(plan.pending).toEqual(JOURNAL_TAGS)
-    for (const tag of JOURNAL_TAGS) expect(said).toContain(`  applying ${tag}`)
-    expect(doneLine(plan)).toContain(`applied ${String(JOURNAL_TAGS.length)} migration`)
+    expect(plan.pending).toEqual(MIGRATION_NAMES)
+    for (const tag of MIGRATION_NAMES) expect(said).toContain(`  applying ${tag}`)
+    expect(doneLine(plan)).toContain(`applied ${String(MIGRATION_NAMES.length)} migration`)
 
     // And the schema is back, so the suites after this one have something to talk to.
     db = connect(config)

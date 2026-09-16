@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import {
   boolean,
   doublePrecision,
@@ -302,17 +302,16 @@ export const reports = blinkered.table(
   ],
 )
 
-export const usersRelations = relations(users, ({ many }) => ({
-  identities: many(authIdentities),
-  sessions: many(sessions),
-  games: many(games),
-}))
-
-export const gamesRelations = relations(games, ({ one }) => ({
-  user: one(users, { fields: [games.userId], references: [users.id] }),
-  detail: one(gameDetail, { fields: [games.id], references: [gameDetail.gameId] }),
-}))
-
-export const gameDetailRelations = relations(gameDetail, ({ one }) => ({
-  game: one(games, { fields: [gameDetail.gameId], references: [games.id] }),
-}))
+/*
+ * There are deliberately no relation declarations here.
+ *
+ * There were three -- `usersRelations`, `gamesRelations`, `gameDetailRelations` -- and nothing
+ * ever queried them: every read in `pgStore.ts` is an explicit `select` with its own join, which
+ * is what lets each one choose its columns and its `where`. The declarations existed so that
+ * `db.query.users.findMany({ with: … })` would work, and that call was never written.
+ *
+ * Drizzle 1.0 removed the API they were built on -- relational queries v1 -- and replaced it with
+ * `defineRelations()`. Porting them would have meant writing the new form of something with no
+ * callers, so they are gone instead. The foreign keys are on the columns, where they do the work;
+ * these were only ever a convenience for a query style this store does not use.
+ */

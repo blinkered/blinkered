@@ -323,36 +323,47 @@ summary with nothing above it on exactly the deploys that had done something.
 forward SQL only; there are no down migrations in the repository and no command to run them. A
 change that has to be undone is undone by writing another migration.
 
-Two lines are worth recognising, because both are conditions drizzle itself passes over in
-silence. **One of them fails the Job and the other does not**, and that asymmetry is the whole of
-it.
+One line is worth recognising, and it is a condition drizzle itself passes over in silence.
 
-**`DATABASE AHEAD by 1`** means the database holds a migration this image does not. The ordinary
-cause is a deliberate rollback to an older build, and the other is a shared database somebody else
-has migrated further. Not a failure, because refusing it would block the rollback — which is the
-one operation that has to work when everything else has gone wrong. Before this line existed the
-case arrived as `migrations are up to date`, which reads as success.
+**`DATABASE AHEAD by 1: <name>`** means the database holds a migration this image does not. The
+ordinary cause is a deliberate rollback to an older build, and the other is a shared database
+somebody else has migrated further. **Not a failure**, because refusing it would block the
+rollback — the one operation that has to work when everything else has gone wrong. Worth a line
+because drizzle ignores a row it does not recognise, so the case otherwise arrives as an ordinary
+success.
 
-**`WILL NOT APPLY <tag>` fails the Job**, before anything is applied, so Helm aborts the upgrade
-and the old pods keep serving the schema they were written for. It means a migration is in the
-journal, absent from the database, and drizzle will never apply it.
+**Nothing is ever rolled back, and the log will never say it was.** `drizzle-kit generate` writes
+forward SQL only; there are no down migrations in the repository and no command to run them. A
+change that has to be undone is undone by writing another migration.
 
-That follows from drizzle's rule, which is worth knowing because it is the surprising part: it
-applies every migration **newer than the newest row** in `__drizzle_migrations`, not every
-migration that table is missing. A file whose stamp lands before something already applied is
-therefore never picked up. Two branches each generating a migration, with the older one merging
-second, produces exactly that — which is to say **the rule assumes one line of history**, and a
-team violates that assumption routinely.
+### Migrations are matched by name, and that was not always true
 
-The fix on the day it happens is local and takes one command: drop the stranded migration file,
-`pnpm exec drizzle-kit generate` so it gets a current stamp, and deploy again.
+A migration is applied when its folder name is not in `__drizzle_migrations`. That is set
+membership — Rails has always worked this way — so **a migration cannot be stranded by ordering**:
+two branches each generating one, with the older merging second, is an ordinary pending migration.
 
-**This is drizzle's behaviour, not a choice made here, and drizzle considers it a bug.** It is
-filed as [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316) and
-[#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769), and the 1.0 line replaces it
-with "apply every missing migration, whatever its stamp". That fix is in `1.0.0-rc` only; this
-repository is on the latest stable, 0.45.2, which still has the old behaviour. See STATUS.md for
-the upgrade question, which is open.
+It is worth writing down because it was not true until drizzle 1.0. Under 0.45 the migrator
+applied every migration **newer than the newest row** in that table, so the older branch's file
+was skipped in silence, for good. That assumed one line of history, which is an assumption a team
+violates routinely. It was [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316) and
+[#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769), and this repository briefly
+carried a guard that detected the condition and refused the deployment. The guard is gone with
+the bug.
+
+The 1.0 folder format comes with it: **no `_journal.json`**, and one directory per migration
+holding `migration.sql` and `snapshot.json`. Removing the shared journal is most of the point —
+it was a file two branches conflicted in every single time.
+
+### The one-time upgrade of the migrations table
+
+A database migrated by 0.45 has a three-column `__drizzle_migrations`; 1.0 adds `name` and
+`applied_at` and backfills the names, in place, on the first run. Nothing is re-applied and no
+DDL is repeated. It matches existing rows against the local folders by timestamp, and **throws if
+a row matches nothing** — which is the database-ahead case arriving as a hard stop during the
+upgrade rather than as a warning afterwards.
+
+Checked against a copy of dev's exact migration state before it went anywhere near dev: five rows
+before, five rows after, all five named, and the users, games and reports untouched.
 
 ## Making the first admin
 
