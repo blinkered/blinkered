@@ -194,6 +194,20 @@ export const games = blinkered.table(
     source: text('source').notNull(),
     /** True for a game brought in from a browser's localStorage. Never leaderboard-eligible. */
     imported: boolean('imported').notNull().default(false),
+    /*
+     * The client's own id for this game, so sending it twice stores it once.
+     *
+     * A game finished with no network is queued on the device and posted when there is one, which
+     * means the same game can arrive more than once: a retry whose response was lost looks exactly
+     * like a second attempt. Without a key the only options are a duplicate row or a guess based
+     * on the timestamp, and a guess is how somebody's history grows a phantom game.
+     *
+     * Nullable, because every row written before the queue existed has no such key and a
+     * backfill would be inventing one. The unique index is partial for the same reason: two
+     * nulls do not collide in Postgres, but saying so in the predicate is clearer than relying
+     * on it.
+     */
+    clientKey: text('client_key'),
 
     difficulty: text('difficulty').notNull(),
     language: text('language').notNull(),
@@ -236,6 +250,17 @@ export const games = blinkered.table(
   },
   (table) => [
     index('games_user_finished_idx').on(table.userId, table.finishedAt.desc()),
+    /*
+     * One row per client key per person, which is what makes the upload queue safe to retry.
+     *
+     * Scoped to the user rather than global: the key is generated on a device with no
+     * coordination, so two people could in principle produce the same one, and a global unique
+     * would then let one player's upload block another's. Partial so the rows that predate the
+     * column do not all collide on null.
+     */
+    uniqueIndex('games_user_client_key_key')
+      .on(table.userId, table.clientKey)
+      .where(sql`${table.clientKey} is not null`),
     /*
      * The leaderboard, and the column order is not a matter of taste.
      *

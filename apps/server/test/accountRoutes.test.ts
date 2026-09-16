@@ -220,6 +220,44 @@ describe('the account surface', () => {
       expect(stored?.detail.boards).toEqual([BOARD, BOARD])
     })
 
+    /*
+     * The upload queue's guarantee, at the route.
+     *
+     * A device that finished a game with no network posts it later, and a retry whose response
+     * was lost is indistinguishable from a second attempt. Without the key the only outcomes are
+     * a duplicate row or a guess from the timestamp, and a guess is how a history grows a
+     * phantom game.
+     */
+    it('stores a retried game once, and says which of the two it did', async () => {
+      const queued = game({ clientKey: 'queued-1' })
+
+      const first = await send('POST', '/v1/games/import', queued)
+      expect(first.status).toBe(201)
+      const created = (await first.json()) as { id: string; score: number }
+
+      const again = await send('POST', '/v1/games/import', queued)
+      // 200 rather than 201: nothing was created, and this is not an error either. A device
+      // draining its queue needs to tell "you have this" from "I took this".
+      expect(again.status).toBe(200)
+      const echoed = (await again.json()) as { id: string; score: number }
+
+      expect(echoed).toEqual(created)
+      expect(store.games).toHaveLength(1)
+    })
+
+    it('keeps two different games that carry different keys', async () => {
+      await send('POST', '/v1/games/import', game({ clientKey: 'queued-1' }))
+      await send('POST', '/v1/games/import', game({ clientKey: 'queued-2' }))
+      expect(store.games).toHaveLength(2)
+    })
+
+    it('keeps every keyless game, because nulls do not collide', async () => {
+      // Every row written before the column existed has no key, and two of them are two games.
+      await send('POST', '/v1/games/import', game())
+      await send('POST', '/v1/games/import', game())
+      expect(store.games).toHaveLength(2)
+    })
+
     it('keeps what the engine already knew about each word', () => {
       // `roundIndex`, `wilds`, `flips` and `tick` were computed during play and thrown away at
       // the door. In a document they cost a version bump rather than a migration, which is most

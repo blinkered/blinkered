@@ -65,6 +65,49 @@ describe('reading a game a browser played before there was an account', () => {
     if (parsed.ok) expect(parsed.game.config.wildChance).toBe(0.5)
   })
 
+  /*
+   * The idempotency key, which is the one field the server never interprets.
+   *
+   * Permissive about what it is and strict about its size, because it reaches a unique index. A
+   * key that is not usable reads as "no key", so the game still stores and simply loses the
+   * protection against storing twice -- losing the guarantee beats losing somebody's game.
+   */
+  it('takes a client key as given', () => {
+    const parsed = parseImport(body({ clientKey: 'f7c1e0a2-queued-1' }), NOW)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.game.clientKey).toBe('f7c1e0a2-queued-1')
+  })
+
+  it('trims a client key, so whitespace cannot make two keys of one', () => {
+    const parsed = parseImport(body({ clientKey: '  queued-7  ' }), NOW)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.game.clientKey).toBe('queued-7')
+  })
+
+  it.each([
+    ['absent', undefined],
+    ['not a string', 4821],
+    ['null', null],
+    ['empty', ''],
+    ['nothing but whitespace', '   '],
+    ['longer than the column wants', 'k'.repeat(65)],
+  ])('stores the game with no key when the key is %s', (_what, clientKey) => {
+    const parsed = parseImport(body({ clientKey }), NOW)
+    // Still a game. This is the decisive half: an unusable key is not a bad game.
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.game.clientKey).toBeNull()
+  })
+
+  it('takes a key of exactly the maximum length', () => {
+    const parsed = parseImport(body({ clientKey: 'k'.repeat(64) }), NOW)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.game.clientKey).toHaveLength(64)
+  })
+
   it('refuses a body that is not an object', () => {
     for (const value of [null, 'a game', 42, []]) {
       expect(parseImport(value, NOW)).toEqual({ ok: false, problem: 'not-an-object' })

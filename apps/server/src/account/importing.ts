@@ -36,6 +36,15 @@ export interface ImportedGame {
   readonly difficulty: Difficulty
   /** Whether the ruleset is a published preset, decided here rather than taken from the body. */
   readonly canonical: boolean
+  /**
+   * The client's own id for this game, or null from a client that does not send one.
+   *
+   * Bounded and checked rather than passed through: it reaches a unique index, so an unbounded
+   * string is an unbounded index entry, and a client is free to send anything. Null for anything
+   * that is not a plausible key, which means such a game is stored without dedupe protection
+   * rather than refused -- losing the retry guarantee is better than losing the game.
+   */
+  readonly clientKey: string | null
   readonly seed: number
   readonly source: 'web' | 'ios'
   /**
@@ -180,6 +189,7 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
       canonical: isCanonical(config, difficulty),
       seed,
       source: fields.source === 'ios' ? 'ios' : 'web',
+      clientKey: parseKey(fields.clientKey),
       boards,
       // Absent reads as "not a guest game", which is the safer default of the two: it withholds
       // a label rather than inventing one about where somebody's game came from.
@@ -193,6 +203,22 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
       finishedAt: new Date(finishedAt),
     },
   }
+}
+
+/**
+ * A client-generated idempotency key, or null.
+ *
+ * Deliberately permissive about *what* the key is -- the client picks it and the server never
+ * interprets it -- and strict about its size, because it reaches a unique index. A key too long
+ * or empty reads as "no key", so the game still stores; it simply loses the protection against
+ * being stored twice, which is the right way round.
+ */
+const KEY_MAX = 64
+
+function parseKey(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim()
+  return trimmed.length === 0 || trimmed.length > KEY_MAX ? null : trimmed
 }
 
 /**

@@ -236,6 +236,53 @@ wrong:
   mistake. Cached identity makes it correct without a second rule, and the state is seeded
   synchronously at mount so a slow answer cannot open that window either.
 
+### A finished game is queued, not posted
+
+The second half of the offline design, and the half that needed a column.
+
+Before this the upload was one attempt at the moment the game ended, and `App.tsx` said so:
+"Nothing is shown if this fails. The game is in `localStorage` either way." Both clauses were
+true, and together they meant a game finished with no network stayed on the device forever,
+because nothing ever tried again.
+
+So a finished game now goes into a queue in `localStorage` (`pendingGames.ts`) **before** anything
+is sent, and a drain empties it. The drain runs at three moments, and all three are cheap because
+a drain with nothing waiting sends no requests:
+
+- when a game finishes,
+- on the `online` event, which is the closest thing a page gets to "a connection is restored",
+- and on mount, which covers the app being closed with games waiting and opened somewhere else.
+
+**`games.client_key` is what makes that safe.** A retry whose response was lost is
+indistinguishable from a second attempt, so without a key the only options are a duplicate row or
+a guess from the timestamp, and a guess is how a history grows a phantom game. The key is sixteen
+random bytes from the device, the server never interprets it, and a partial unique index on
+`(user_id, client_key)` decides. `insertGame` uses `on conflict do nothing` and then reads the
+existing row, rather than checking first and inserting second, because the check-then-insert
+version has a window that two tabs can both get through.
+
+The route answers **201** when it created a row and **200** when the game was already stored,
+both carrying the stored id. A draining device needs to tell "I took this" from "you have this"
+without either being an error.
+
+Four decisions in the queue that are not obvious:
+
+- **A 400 drops the entry.** Every other failure leaves it. A submission the server calls
+  `bad-game` will be called that identically forever, so retrying it at the head of the queue
+  blocks every good game behind it, and one lost game becomes all of them.
+- **Each entry carries the account it belongs to.** One device can be signed in as two people
+  over its life, and a queue drained without checking would post the first person's games to the
+  second person's account. Clearing the queue on sign-out would also prevent that, and would
+  throw away games that are nobody's to throw away.
+- **Serial, not parallel.** A phone that has just regained a flaky connection should not open two
+  hundred requests, and "stop at the first failure" only means something if there is a first.
+- **Two hundred entries, oldest dropped.** Lower than the 500 in `scores.ts`, because these hold
+  the whole submission rather than a summary. Reaching it means two hundred games finished
+  without ever regaining a connection.
+
+The scored history is unaffected: `scores.ts` still records every finished game the moment it
+ends, signed in or not, so the local leaderboard never depended on any of this.
+
 ### Account deletion is in the app, and the row goes with it
 
 App Store guideline 5.1.1(v) requires in-app account deletion for any app that offers account
@@ -516,7 +563,7 @@ DELETE /v1/me                   account deletion, in-app, required
 GET    /v1/me/games?cursor=
 POST   /v1/games                -> { gameId, seed, config }   the server picks the seed
 POST   /v1/games/:id/finish     -> { words, rounds }  scored by us, stored
-POST   /v1/games/import         the local store, on sign-up. History only, never eligible
+POST   /v1/games/import         the local store and the upload queue. Never eligible. 201 new, 200 already stored
 GET    /v1/leaderboards/:language/:difficulty/:period    phase C
 POST   /v1/reports
 ```

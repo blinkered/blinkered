@@ -215,8 +215,23 @@ export function fakeStore(): FakeStore {
       return Promise.resolve(profileOf(updated))
     },
     insertGame: (row, detail) => {
+      /*
+       * The unique index, in miniature: one row per client key per person.
+       *
+       * Modelled rather than skipped, because the route's behaviour on a duplicate is the whole
+       * point of the upload queue, and a fake that always inserts would let a regression there
+       * pass. A null key never collides, which is how every row written before the column
+       * existed stays legal.
+       */
+      const already =
+        row.clientKey === null
+          ? undefined
+          : games.find((g) => g.row.userId === row.userId && g.row.clientKey === row.clientKey)
+      if (already !== undefined) {
+        return Promise.resolve({ id: already.row.id, score: already.row.score })
+      }
       games.push({ row, detail })
-      return Promise.resolve()
+      return Promise.resolve({ id: row.id, score: row.score })
     },
     gamesOf: (userId, limit) => {
       const mine: GameSummary[] = games

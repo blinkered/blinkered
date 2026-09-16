@@ -36,6 +36,8 @@ export interface GameRow {
   readonly seed: number
   readonly source: string
   readonly imported: boolean
+  /** The client's own id for this game, or null. What makes a queued upload safe to retry. */
+  readonly clientKey: string | null
   readonly difficulty: string
   readonly language: string
   readonly canonical: boolean
@@ -191,8 +193,19 @@ export interface AccountStore extends ReportWriter {
    * server stored instead of what it hoped it stored.
    */
   updateProfile(userId: string, patch: ProfilePatch): Promise<Profile | null>
-  /** Writes a game and its detail together, or neither. */
-  insertGame(row: GameRow, detail: GameDetail): Promise<void>
+  /**
+   * Writes a game and its detail together, or neither, and says what is now stored.
+   *
+   * Returns the id and score of the row that holds this game, which is **not** always the row
+   * just written. A game carrying a `clientKey` this person has already used is one the device
+   * is retrying after a lost response, so the existing row is returned and nothing is inserted.
+   * That is what makes the upload queue safe to drain more than once.
+   *
+   * The score comes back rather than being assumed, because the caller's copy is the score it
+   * computed for *this* attempt: for a duplicate the stored one is authoritative, and handing
+   * back the fresh number would let a client show a total the database does not hold.
+   */
+  insertGame(row: GameRow, detail: GameDetail): Promise<{ id: string; score: number }>
   /** Somebody's games, most recently finished first. */
   gamesOf(userId: string, limit: number): Promise<readonly GameSummary[]>
   /**

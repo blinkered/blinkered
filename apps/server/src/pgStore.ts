@@ -240,18 +240,65 @@ export function pgStore(db: Database): Store {
     },
 
     insertGame: async (row, detail) => {
-      // One transaction: a game with no detail, or a document belonging to no game, are both
-      // worse than a failed import that can be retried.
-      //
-      // The version is stamped here rather than by the caller, so there is one place that decides
-      // what shape was written and no arrangement in which a route forgets to say.
-      await db.transaction(async (tx) => {
-        await tx.insert(games).values({ ...row, status: 'over' })
+      /*
+       * One transaction: a game with no detail, or a document belonging to no game, are both
+       * worse than a failed import that can be retried.
+       *
+       * The version is stamped here rather than by the caller, so there is one place that decides
+       * what shape was written and no arrangement in which a route forgets to say.
+       *
+       * **`onConflictDoNothing` rather than a read followed by a write**, which is the whole
+       * reason this returns a row. A device draining its upload queue can post the same game
+       * twice -- a retry after a lost response is indistinguishable from a second attempt -- and
+       * two tabs can do it at the same moment. Checking first and inserting second leaves a
+       * window between them that the unique index closes with a 500; letting the index decide
+       * has no window at all. An insert that hits the conflict returns no rows, and the existing
+       * row is then read inside the same transaction.
+       */
+      return db.transaction(async (tx) => {
+        const inserted = await tx
+          .insert(games)
+          .values({ ...row, status: 'over' })
+          /*
+           * No target, deliberately. Inferring a conflict from a column list has to match the
+           * index, and this one is **partial** (`where client_key is not null`), so Postgres
+           * would need the predicate repeated here to recognise it. A bare `do nothing` needs no
+           * inference at all, and the only unique things on this table are the primary key -- a
+           * fresh eight random bytes -- and that index, so a conflict is the client key in
+           * every practical case. The key being absent is handled below rather than assumed away.
+           */
+          .onConflictDoNothing()
+          .returning({ id: games.id, score: games.score })
+        const fresh = inserted[0]
+        if (fresh === undefined) {
+          /*
+           * A conflict with no key to look it up by. Unreachable through the partial index, so
+           * this is a primary-key collision: eight random bytes landing on an existing id. It
+           * throws, because the alternative is telling a client its game was stored when the
+           * row that exists is somebody else's game entirely.
+           */
+          if (row.clientKey === null) throw new Error('games: conflict with no client key')
+          // The conflict fired, so this game is already here under the same key. Hand back the
+          // row that holds it; the caller turns the difference into a 200 rather than a 201.
+          const [already] = await tx
+            .select({ id: games.id, score: games.score })
+            .from(games)
+            .where(and(eq(games.userId, row.userId), eq(games.clientKey, row.clientKey)))
+            .limit(1)
+          /*
+           * Defensive, and it should be unreachable: the only way to conflict on that index is
+           * for a row with this key to exist. Throwing rather than inventing an id, because a
+           * silent null here would be a client told its game was stored when nothing was.
+           */
+          if (already === undefined) throw new Error('games: conflict with no matching row')
+          return already
+        }
         await tx.insert(gameDetail).values({
           gameId: row.id,
           version: DETAIL_VERSION,
           detail,
         })
+        return fresh
       })
     },
 

@@ -170,13 +170,14 @@ export function accountRoutes(deps: AccountDeps): Hono {
     const { game } = parsed
 
     const id = newGameId()
-    await deps.store.insertGame(
+    const stored = await deps.store.insertGame(
       {
         id,
         userId: user.userId,
         seed: game.seed,
         source: game.source,
         imported: game.imported,
+        clientKey: game.clientKey,
         difficulty: game.difficulty,
         language: game.config.language,
         canonical: game.canonical,
@@ -202,9 +203,17 @@ export function accountRoutes(deps: AccountDeps): Hono {
       { boards: game.boards, words: game.words },
     )
 
-    // The score the server computed, not the one the client believed. A client showing a
-    // different number afterwards is a bug worth seeing rather than one worth hiding.
-    return context.json({ id, score: game.score }, 201)
+    /*
+     * The score the server computed, not the one the client believed. A client showing a
+     * different number afterwards is a bug worth seeing rather than one worth hiding.
+     *
+     * **201 only when a row was actually created.** A retry of a game already stored answers 200
+     * with the id it already has, so a device draining its queue can tell "you have this" from
+     * "I took this" without either being an error. Both carry the stored id, which is what the
+     * client needs for the permalink either way.
+     */
+    const created = stored.id === id
+    return context.json(stored, created ? 201 : 200)
   })
 
   /*

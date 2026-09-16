@@ -30,7 +30,8 @@ import { AdminScreen } from './AdminScreen.js'
 import { SignInDialog } from './SignInDialog.js'
 import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { draftKept, routeOfDraft } from './reportDraft.js'
-import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
+import { drainGames, saveProfile, signOut, whoAmI } from './account.js'
+import { enqueue } from './pendingGames.js'
 import { cached } from './identity.js'
 import type { Account, BoardAtRound, GameToKeep, Identity } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -500,18 +501,60 @@ function Session({
    * button beside it is the offer to change that.
    */
   const [keptId, setKeptId] = useState<string | null>(null)
+  /*
+   * Queue the finished game, then try to empty the queue.
+   *
+   * Two steps rather than one upload, and the order is the point: the game is on the device
+   * before anything is attempted, so a failed send is a game that waits rather than a game that
+   * is gone. This used to be a single `keepGame`, whose comment read "Nothing is shown if this
+   * fails. The game is in `localStorage` either way" -- true, and it stayed there forever,
+   * because nothing tried again.
+   *
+   * Still silent on failure, for the reason that comment gave: an error about a background upload
+   * on top of somebody's final score is noise at the worst moment. The difference is that it is
+   * now silent and pending rather than silent and lost.
+   *
+   * The drain sends everything waiting, not only this game, which is what makes "uploaded at the
+   * completion of the next connected game" true without a second mechanism.
+   */
   useEffect(() => {
     const keepable = finished?.keepable
     if (account === null || keepable === undefined || kept.current === keepable) return
     kept.current = keepable
     setKeptId(null)
-    // Nothing is shown if this fails. The game is in `localStorage` either way, which is where
-    // it would have been with no account at all, and an error about a background upload on top
-    // of somebody's final score is noise at the worst moment.
-    void keepGame(keepable).then((saved) => {
-      if (saved !== null) setKeptId(saved.id)
+    const mine = enqueue(account.userId, keepable)
+    void drainGames(account.userId).then((drained) => {
+      // Only this game's id reaches the screen. The others were queued on earlier visits and
+      // have nothing on screen to point at.
+      const id = drained.stored.get(mine.key)
+      if (id !== undefined) setKeptId(id)
     })
   }, [account, finished])
+
+  /*
+   * The other two moments a queue can empty, both of them cheap because a drain with nothing
+   * waiting sends no requests at all.
+   *
+   * `online` is the browser telling us the interface came back, which is the closest thing to
+   * "an internet connection is restored" that a page gets. It is not reliable on its own -- it
+   * fires for a connection that turns out to lead nowhere -- and it does not have to be, because
+   * an attempt that fails leaves the queue exactly as it was.
+   *
+   * On mount covers the case `online` cannot: the app was closed with games waiting and opened
+   * again somewhere with a connection, so there was never a transition to hear about.
+   */
+  useEffect(() => {
+    if (account === null) return undefined
+    const userId = account.userId
+    const flush = (): void => {
+      void drainGames(userId)
+    }
+    flush()
+    globalThis.addEventListener('online', flush)
+    return () => {
+      globalThis.removeEventListener('online', flush)
+    }
+  }, [account])
 
   const setup = (startLabel: string): React.JSX.Element => (
     <GameSetup

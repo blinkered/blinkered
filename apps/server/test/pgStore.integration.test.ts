@@ -143,6 +143,7 @@ describe('keeping games', () => {
     seed: 42,
     source: 'web',
     imported: true,
+    clientKey: null,
     difficulty: 'medium',
     language: 'en',
     canonical: true,
@@ -169,6 +170,63 @@ describe('keeping games', () => {
   const detailFor = (word: string): GameDetail => ({
     boards: [{ tiles: 'A B C' }, { tiles: 'A B D', wilds: [1] }],
     words: [{ word, tiles: 5, points: 20, round: 0, flips: 8, tick: 42, wilds: [1] }],
+  })
+
+  /*
+   * The dedupe, against the real partial unique index.
+   *
+   * The fake store models this and cannot prove it: what is under test here is that
+   * `onConflictDoNothing` with no inference target actually catches
+   * `games_user_client_key_key`, that the document is not written a second time, and that two
+   * nulls do not collide. Every one of those is a property of Postgres rather than of our code.
+   */
+  it('stores a game once per client key, and says which row holds it', async () => {
+    const { userId } = await account()
+    const at = new Date(Date.now() - 1000)
+    const queued = { ...gameFor(userId, at, 20), clientKey: 'queued-1' }
+
+    const first = await theStore().insertGame(queued, detailFor('HOUSE'))
+    expect(first).toEqual({ id: queued.id, score: 20 })
+
+    // The same game again, as a device retrying after a lost response. A different id and a
+    // different score, so the answer cannot accidentally be right.
+    const retried = { ...queued, id: `${queued.id}-again`, score: 999 }
+    const second = await theStore().insertGame(retried, detailFor('RIVER'))
+
+    // The original row, with the original score. Not the id just offered, and not 999.
+    expect(second).toEqual({ id: queued.id, score: 20 })
+    expect(await theStore().gamesOf(userId, 10)).toHaveLength(1)
+
+    // And the document was not rewritten: the second attempt's word never reached the store.
+    const found = await theStore().gameById(queued.id)
+    expect(found?.detail?.words.map((word) => word.word)).toEqual(['HOUSE'])
+  })
+
+  it('lets one key belong to each of two people', async () => {
+    const mine = await account()
+    const theirs = await account()
+    const at = new Date(Date.now() - 1000)
+    // The key is generated on a device with no coordination, so two people can produce the same
+    // one. The index is scoped to the user precisely so that one cannot block the other.
+    await theStore().insertGame(
+      { ...gameFor(mine.userId, at, 20), clientKey: 'same' },
+      detailFor('HOUSE'),
+    )
+    await theStore().insertGame(
+      { ...gameFor(theirs.userId, at, 30), clientKey: 'same' },
+      detailFor('RIVER'),
+    )
+    expect(await theStore().gamesOf(mine.userId, 10)).toHaveLength(1)
+    expect(await theStore().gamesOf(theirs.userId, 10)).toHaveLength(1)
+  })
+
+  it('keeps every keyless game, because two nulls never collide', async () => {
+    const { userId } = await account()
+    const older = new Date(Date.now() - 100_000)
+    const newer = new Date(Date.now() - 1000)
+    await theStore().insertGame(gameFor(userId, older, 12), detailFor('HOUSE'))
+    await theStore().insertGame(gameFor(userId, newer, 20), detailFor('RIVER'))
+    expect(await theStore().gamesOf(userId, 10)).toHaveLength(2)
   })
 
   it('writes a game and its document together, and lists it newest first', async () => {
@@ -448,6 +506,7 @@ describe('moderating', () => {
     seed: 42,
     source: 'web',
     imported: false,
+    clientKey: null,
     difficulty: 'medium',
     language: over.language ?? 'en',
     canonical: true,
@@ -838,6 +897,7 @@ describe('deleting an account', () => {
     seed: 11,
     source: 'web',
     imported: false,
+    clientKey: null,
     difficulty: 'medium',
     language: 'en',
     canonical: true,

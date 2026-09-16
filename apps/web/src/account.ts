@@ -12,6 +12,7 @@
  */
 
 import { cached, forget, remember } from './identity.js'
+import { queuedFor, settle } from './pendingGames.js'
 
 /** A person, as the server describes them. The same shape `GET /v1/me` returns. */
 export interface Account {
@@ -347,15 +348,64 @@ export interface GameToKeep {
   readonly guest: boolean
 }
 
-/** Keeps a guest game. Null when it could not be kept, which the caller has to be able to say. */
-export async function keepGame(game: GameToKeep): Promise<{ id: string; score: number } | null> {
-  try {
-    const response = await post('games/import', game)
-    if (!response.ok) return null
-    return (await response.json()) as { id: string; score: number }
-  } catch {
-    return null
+/**
+ * What emptying the queue achieved.
+ *
+ * `stored` maps the client key of each game that reached the server to the id the server holds it
+ * under, which is what a permalink needs. `left` is how many are still waiting, so a caller can
+ * tell "all done" from "stopped early" without inspecting the queue again.
+ */
+export interface Drained {
+  readonly stored: ReadonlyMap<string, string>
+  readonly left: number
+}
+
+/**
+ * Sends every queued game for this account, oldest first, and stops at the first sign of trouble.
+ *
+ * Replaces `keepGame`, which was one attempt at the moment a game ended and no attempt ever
+ * again. This is safe to call as often as anything likes -- on a finished game, on regaining a
+ * connection, on launch -- because the server dedupes on `clientKey` and a game already stored
+ * comes back 200 with the id it already has.
+ *
+ * **Serial rather than parallel**, which is deliberate for a queue of up to two hundred whole
+ * submissions: a phone that has just regained a flaky connection should not open two hundred
+ * requests, and stopping at the first failure is only meaningful if there is a first.
+ *
+ * Three ways an entry leaves the queue, and the middle one is the one worth stating:
+ *
+ * - **Stored**, on a 200 or a 201. Both mean the server has it.
+ * - **Refused for good**, on a 400. A submission the server calls `bad-game` will be called that
+ *   identically forever, so it is dropped rather than retried: one unparseable game at the head
+ *   of the queue would otherwise block every good game behind it, which turns one lost game into
+ *   all of them.
+ * - **Nothing yet**, on anything else. A 401 means the session ended, and a 5xx or a dead
+ *   connection means the server could not be asked. Both leave the entry where it is and stop the
+ *   drain, because whatever is wrong applies just as much to the next one.
+ */
+export async function drainGames(userId: string): Promise<Drained> {
+  const stored = new Map<string, string>()
+  const waiting = queuedFor(userId)
+  for (const [at, entry] of waiting.entries()) {
+    let response: Response
+    try {
+      response = await post('games/import', { ...entry.game, clientKey: entry.key })
+    } catch {
+      return { stored, left: waiting.length - at }
+    }
+    if (response.ok) {
+      const kept = (await response.json()) as { id: string; score: number }
+      stored.set(entry.key, kept.id)
+      settle(entry.key)
+      continue
+    }
+    if (response.status === 400) {
+      settle(entry.key)
+      continue
+    }
+    return { stored, left: waiting.length - at }
   }
+  return { stored, left: 0 }
 }
 
 /** Which part of somebody is being objected to. Three, because there are three free surfaces. */
