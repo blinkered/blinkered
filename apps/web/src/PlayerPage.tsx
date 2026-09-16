@@ -26,12 +26,15 @@ export function PlayerPage({
   messages,
   username,
   me,
+  onSignIn,
   onHome,
 }: {
   readonly messages: Messages
   readonly username: string
   /** Who is reading, or null. Decides only whether the report button is drawn; see `GameDetail`. */
   readonly me: string | null
+  /** Opens the sign-in dialog, for a stranger who wants to report this profile. */
+  readonly onSignIn: () => void
   readonly onHome: () => void
 }): React.JSX.Element {
   const [profile, setProfile] = useState<PublicProfile | null>(null)
@@ -97,6 +100,8 @@ export function PlayerPage({
           <ReportButton
             messages={messages}
             subject={{ kind: 'person', username: profile.username }}
+            signedIn={me !== null}
+            onSignIn={onSignIn}
           />
         )}
       </header>
@@ -127,19 +132,29 @@ export function PlayedGamePage({
   id,
   messages,
   me,
+  onSignIn,
   dictionary,
   onHome,
 }: {
   readonly id: string
   readonly messages: Messages
   readonly me: string | null
+  /** Opens the sign-in dialog, for a stranger who wants to report the score. */
+  readonly onSignIn: () => void
   readonly dictionary: TieredIndex | null
   readonly onHome: () => void
 }): React.JSX.Element {
   return (
     <div className="account-page">
       <HomeLink onHome={onHome} />
-      <GameDetail messages={messages} id={id} me={me} dictionary={dictionary} onBack={undefined} />
+      <GameDetail
+        messages={messages}
+        id={id}
+        me={me}
+        onSignIn={onSignIn}
+        dictionary={dictionary}
+        onBack={undefined}
+      />
     </div>
   )
 }

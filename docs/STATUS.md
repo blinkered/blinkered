@@ -62,7 +62,7 @@ next.
   `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
   believed. No database yet, so no other route exists: one that answered from nothing would be a
   fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
-- 1,614 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
+- 1,621 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
   CI on ubuntu and macos. Three of them are per-language sweeps rather than samples: every
   alphabet deals an accepted board over three seeds, every letter in every `weights` table
   appears in some shipped word, and every written form in every shipped list folds back onto the
@@ -77,6 +77,15 @@ next.
    a face-down tile. The WebKit device checks written for [IOS.md](IOS.md) belong here too —
    board geometry per viewport, a 44pt audit of every target, and a game played by touch alone.
    They exist and were run; they live in a scratchpad rather than the repo, which is the gap.
+
+   **`apps/web` now has exactly one test**, `test/reportDraft.test.ts`, and it is not a dent in
+   this item. It is there because that module parses a shape out of session storage and so has
+   to refuse one that is not the shape it wrote, which is branch logic rather than rendering.
+   `vitest.config.ts` runs `apps/web/test` and deliberately leaves it out of the coverage gate:
+   a percentage over a directory with one tested file in it would read as a claim about the
+   directory. The report dialog's own states — asked up front, asked again after a 401, restored
+   from a draft — were walked in a browser and are pinned by nothing, which is this item's job.
+
 2. **In-progress game surviving reload**, via localStorage. Nearly free: state is
    serializable and the reducer is pure.
 3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are

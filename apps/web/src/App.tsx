@@ -29,6 +29,7 @@ import { AccountScreen } from './AccountScreen.js'
 import { AdminScreen } from './AdminScreen.js'
 import { SignInDialog } from './SignInDialog.js'
 import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
+import { draftKept, routeOfDraft } from './reportDraft.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
 import type { Account, BoardAtRound, GameToKeep } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -207,7 +208,28 @@ function Session({
     const returned = returnedFromSso(globalThis.location.search)
     if (returned === null) return
     clearSignInParam()
-    if (!returned.ok) setSigningIn({ reason: ssoProblem(messages, returned.reason) })
+    if (!returned.ok) {
+      setSigningIn({ reason: ssoProblem(messages, returned.reason) })
+      return
+    }
+    /*
+     * Back to the page the sign-in was for, when it was for one.
+     *
+     * The callback redirects to `/?signin=ok` rather than to wherever the reader was, which is
+     * the server keeping its redirect simple and is the right call: a return path in a query
+     * parameter is an open redirect waiting to be written. So the thing that remembers is the
+     * half-written report itself, which knows its own subject and therefore its own address.
+     *
+     * Only for a report, deliberately. Signing in from somebody's profile for any other reason
+     * still lands on the game, which is a rougher edge than this one and a separate decision.
+     */
+    const draft = draftKept()
+    if (draft === null) return
+    const back = routeOfDraft(draft)
+    // Both, as every other in-app move does: `goTo` fires `popstate` for the address bar, and
+    // the listener that answers it is not attached until after this effect has run.
+    goTo(back)
+    setRoute(back)
   }, [])
   const [visiting, setVisiting] = useState<Destination | null>(null)
 
@@ -528,6 +550,9 @@ function Session({
           dictionary={dictionary}
           onAccount={adopt}
           onTab={setVisiting}
+          onSignIn={() => {
+            setSigningIn({})
+          }}
           onClose={() => {
             setVisiting(null)
           }}
@@ -566,6 +591,9 @@ function Session({
               messages={messages}
               username={route.username}
               me={account?.userId ?? null}
+              onSignIn={() => {
+                setSigningIn({})
+              }}
               onHome={() => {
                 setRoute({ at: 'game' })
               }}
@@ -575,6 +603,9 @@ function Session({
               messages={messages}
               id={route.id}
               me={account?.userId ?? null}
+              onSignIn={() => {
+                setSigningIn({})
+              }}
               dictionary={dictionary}
               onHome={() => {
                 setRoute({ at: 'game' })

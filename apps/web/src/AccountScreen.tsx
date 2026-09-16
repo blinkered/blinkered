@@ -79,6 +79,7 @@ export function AccountScreen({
   dictionary,
   onAccount,
   onTab,
+  onSignIn,
   onClose,
 }: {
   readonly account: Account
@@ -91,6 +92,16 @@ export function AccountScreen({
   readonly dictionary: TieredIndex | null
   readonly onAccount: (account: Account) => void
   readonly onTab: (at: Destination) => void
+  /**
+   * Opens the sign-in dialog.
+   *
+   * Threaded through to the game detail, which is the same component the public pages use and so
+   * carries the report button. Nothing here can reach it -- `GET /v1/me/games` returns only your
+   * own games, and the button is never drawn on your own -- and it is wired anyway, because the
+   * alternative is a component that renders a control with no handler behind it if that ever
+   * stops being true.
+   */
+  readonly onSignIn: () => void
   readonly onClose: () => void
 }): React.JSX.Element {
   return (
@@ -134,7 +145,12 @@ export function AccountScreen({
             onAccount={onAccount}
           />
         ) : (
-          <Games dictionary={dictionary} messages={messages} me={account.userId} />
+          <Games
+            dictionary={dictionary}
+            messages={messages}
+            me={account.userId}
+            onSignIn={onSignIn}
+          />
         )}
       </div>
     </div>
@@ -338,11 +354,13 @@ function Games({
   dictionary,
   messages,
   me,
+  onSignIn,
 }: {
   readonly dictionary: TieredIndex | null
   readonly messages: Messages
   /** Whose list this is, which is what keeps a report button off your own games. */
   readonly me: string
+  readonly onSignIn: () => void
 }): React.JSX.Element {
   const [games, setGames] = useState<readonly PlayedGame[] | null>(null)
   const [failed, setFailed] = useState(false)
@@ -383,6 +401,7 @@ function Games({
         messages={messages}
         id={open}
         me={me}
+        onSignIn={onSignIn}
         dictionary={dictionary}
         onBack={() => {
           setOpen(null)

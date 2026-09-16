@@ -948,6 +948,39 @@ duplicate rule is a check rather than a partial unique index over four nullable 
 that leaves costs the queue a duplicate row, and the index costs more than that to get right for
 the same outcome.
 
+**Being signed out is not a dead end, and the first version of it was.** The button is still
+offered to a stranger, because one invisible to everybody without an account teaches nobody the
+feature exists. What the first version then did was let them choose a field, write five hundred
+characters, press Send, and only then say "sign in to report something" — with the text gone,
+because there was nowhere for it to be and no way to sign in from inside the dialog. That
+punished exactly the reader who cared enough to explain.
+
+So the ask is up front, the form is still drawn underneath it so somebody can write while the
+thought is theirs, and pressing the button keeps what they wrote in `sessionStorage` before
+opening the sign-in dialog. Session rather than local storage, ten minutes, and the same choice
+`SignInDialog` already makes about a half-typed address — for the same reason, which is that Apple
+and Google are a whole navigation away and back, so component state cannot survive it.
+
+**The draft knows its own address, which is what makes the return trip work.** The callback
+redirects to `/?signin=ok` rather than to wherever the reader was, and that is the server keeping
+its redirect simple and is the right call: a return path in a query parameter is an open redirect
+waiting to be written. So the thing that remembers is the report, and it needs nothing stored to
+do it — a subject _is_ a page, `{ kind: 'person', username }` is `/u/<username>`, so `App` reads
+the waiting draft on return and goes there. The dialog reopens holding the field and the text.
+
+Two smaller decisions inside that:
+
+- **It restores while signed out but only opens itself once there is a session.** Restoring the
+  text costs nothing and they may press the button again; a modal opening unprompted on a cold
+  page load is intrusive.
+- **Cancel drops the draft.** Otherwise it reappears the next time somebody passes the same page,
+  which is not what pressing Cancel asked for. A session that dies _between_ opening the dialog
+  and pressing Send takes the other path: the text is kept and the same ask appears, because a
+  401 has to end somewhere a person can act rather than in an error they can do nothing about.
+
+Only a report restores the page this way. Signing in from somebody's profile for any other reason
+still lands on the game, which is a rougher edge than this one and a separate decision.
+
 A reported game carries **its owner as well as the game id**, because "has this person done this
 before" is a question a queue holding only game ids could not answer. Reporting yourself is 409; a
 subject that is not there is 404, through the same readers the public pages use, so there is one
@@ -1001,5 +1034,9 @@ have an address to leak.
 - **A rate limit on `POST /v1/reports`.** The duplicate rule stops somebody filing the same report
   twice; it does not stop them filing one about everybody. Behind a session, which makes it
   attributable, which is most of the defence.
+- **Any test of the report dialog itself.** `reportDraft.ts` has a suite, and it is the first
+  test in `apps/web`; the dialog's own states — asked up front, asked after a 401, restored from
+  a draft — were walked in a browser and are not pinned by anything. That is what the Playwright
+  suite on STATUS.md's list is for.
 - **An audit trail.** Who hid what, and when. The reports table records the objection and nothing
   records the answer beyond `resolved_at`. Wanted the first time two people moderate.

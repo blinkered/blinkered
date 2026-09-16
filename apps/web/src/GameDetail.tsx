@@ -98,6 +98,7 @@ export function GameDetail({
   id,
   messages,
   me,
+  onSignIn,
   dictionary,
   onBack,
 }: {
@@ -116,6 +117,8 @@ export function GameDetail({
    * to everybody who has not signed in yet.
    */
   readonly me: string | null
+  /** Opens the sign-in dialog, for a stranger who wants to report the score. */
+  readonly onSignIn: () => void
   /**
    * The dictionary in hand, or null.
    *
@@ -214,7 +217,12 @@ export function GameDetail({
         {game.canonical ? null : <p className="signin-note">{messages.gameNotRanked}</p>}
         {/* A score is the third thing there is to object to, and the only one that is not text. */}
         {me === game.owner.userId ? null : (
-          <ReportButton messages={messages} subject={{ kind: 'game', gameId: game.id }} />
+          <ReportButton
+            messages={messages}
+            subject={{ kind: 'game', gameId: game.id }}
+            signedIn={me !== null}
+            onSignIn={onSignIn}
+          />
         )}
       </header>
 
