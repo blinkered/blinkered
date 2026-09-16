@@ -197,6 +197,45 @@ tell which one they are editing.
 Guest play stays complete. Nobody is ever asked to sign in to play, and the local leaderboard
 does not go away when the global one arrives.
 
+### Only a 401 means signed out
+
+The third state the client needed, and it is a product decision rather than a caching one.
+
+`GET /v1/me` answering is how the app learns who it is talking to, and every way of that failing
+used to come back as the same `null`: signed out, refused, API not deployed, and no network at
+all. On the website that was a fair trade, because a browser with no network has no app to be
+signed in to. The native shell changes the premise -- the bundle is already on the device, so a
+player can sit with no network for a whole game -- and there `null` renders somebody as **signed
+out while their session is still perfectly good.** They would report it as the app losing their
+account, and they would be right.
+
+So `whoAmI()` answers three things instead of two:
+
+- **`signed-in`**, on a 200. The profile is cached in `localStorage` as a side effect.
+- **`signed-out`**, on a **401 and nothing else**, because only the server can know that. This is
+  the one case that clears the cache.
+- **`offline`**, for everything else that stops us finding out: no network, a 500, a 502, a build
+  served with no API behind it, or a body that will not parse. It carries the cached profile, or
+  null if this device has never seen one.
+
+Three consequences worth stating, because each one is a place the obvious implementation is
+wrong:
+
+- **The cache has no expiry.** A session's lifetime is the server's business and it already
+  enforces it: the credential stops working, `/v1/me` answers 401, the cache is dropped. A second
+  copy of that rule here would be wrong in the one direction that matters, signing somebody out
+  while they are offline. Staleness is bounded by the next request that gets through, so the
+  visible cost is a name edited on another device showing stale until this one can ask.
+- **Languages come down from the account on a live answer only.** An `offline` answer is not a
+  sign-in; it is this device remembering one, and those languages were adopted when it was live.
+  Applying them again would overwrite a language somebody picked while offline, which is the
+  device disagreeing with itself rather than with the account. The rule above is unchanged.
+- **It fixes `games.imported` for an offline player.** `beganAsGuest` is `account === null`, so
+  before this a signed-in player who lost the network had their game filed as a guest import --
+  untrue, and the exact mislabeling `account/importing.ts` records as the first version's
+  mistake. Cached identity makes it correct without a second rule, and the state is seeded
+  synchronously at mount so a slow answer cannot open that window either.
+
 ### Account deletion is in the app, and the row goes with it
 
 App Store guideline 5.1.1(v) requires in-app account deletion for any app that offers account

@@ -11,6 +11,8 @@
  * would be a poor trade for a feature nobody has to use.
  */
 
+import { cached, forget, remember } from './identity.js'
+
 /** A person, as the server describes them. The same shape `GET /v1/me` returns. */
 export interface Account {
   readonly userId: string
@@ -112,14 +114,44 @@ export async function submitCode(email: string, code: string): Promise<SignInRes
 }
 
 /**
- * Who the browser is, or null.
+ * Who the browser is, and whether the question could be asked at all.
  *
- * Null for every way of being signed out, including the API not being there at all. A build
- * served without one is still a game, and a game that refuses to start because it could not find
- * out whether nobody is signed in would be a poor trade.
+ * **Three answers rather than two, because the third one is visible to a player.** This used to
+ * return `Account | null`, with null meaning every way of not knowing: signed out, refused, API
+ * absent, and no network. On the website that was fair, because a browser with no network has no
+ * app to be signed in to. In the native shell the bundle is already on the device, so a player
+ * can sit in "no network" for a whole game, and answering `null` there renders them as *signed
+ * out* while their session is still perfectly good. They would report that as losing their
+ * account, and they would be right to.
+ *
+ * So only a **401** means signed out, because only the server can know that. Anything else that
+ * stops us finding out is `offline`, which carries the last account we were told about if there
+ * is one. See `identity.ts`.
  */
-export async function whoAmI(): Promise<Account | null> {
-  return getting<Account>('me')
+export type Identity =
+  | { readonly state: 'signed-in'; readonly account: Account }
+  | { readonly state: 'signed-out' }
+  /** The cached account, or null if this device has never seen one. */
+  | { readonly state: 'offline'; readonly account: Account | null }
+
+export async function whoAmI(): Promise<Identity> {
+  try {
+    const response = await fetch('/v1/me', { credentials: 'same-origin' })
+    // The one definite answer. `/v1/me` answers 401 `signed-out` and nothing else does.
+    if (response.status === 401) {
+      forget()
+      return { state: 'signed-out' }
+    }
+    // A 500, a 502, or a build served with no API behind it. We did not learn that nobody is
+    // signed in; we learned nothing, which is the same position as having no network.
+    if (!response.ok) return { state: 'offline', account: cached() }
+    const account = (await response.json()) as Account
+    remember(account)
+    return { state: 'signed-in', account }
+  } catch {
+    // No network, or a body that would not parse. Either way the question went unanswered.
+    return { state: 'offline', account: cached() }
+  }
 }
 
 /**
@@ -131,6 +163,9 @@ export async function whoAmI(): Promise<Account | null> {
  * somebody who pressed it is left looking at a page that says they are still here.
  */
 export async function signOut(): Promise<void> {
+  // Before the request, not after, and regardless of how it goes. The interface signs out either
+  // way, so a cache that outlived a lost request would re-adopt the account on the next load.
+  forget()
   try {
     await post('auth/signout', {})
   } catch {
@@ -147,7 +182,13 @@ export async function saveProfile(edit: ProfileEdit): Promise<SaveResult> {
       credentials: 'same-origin',
       body: JSON.stringify(edit),
     })
-    if (response.ok) return { ok: true, account: (await response.json()) as Account }
+    if (response.ok) {
+      const account = (await response.json()) as Account
+      // The server just described this person, so it is as good an answer as `whoAmI` gets. Not
+      // caching it here would leave an offline device showing the name from before the rename.
+      remember(account)
+      return { ok: true, account }
+    }
     if (response.status === 409) return { ok: false, field: 'username', problem: 'taken' }
     if (response.status === 400) {
       const said = (await response.json()) as { field?: unknown; problem?: unknown }

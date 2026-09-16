@@ -31,7 +31,8 @@ import { SignInDialog } from './SignInDialog.js'
 import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { draftKept, routeOfDraft } from './reportDraft.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
-import type { Account, BoardAtRound, GameToKeep } from './account.js'
+import { cached } from './identity.js'
+import type { Account, BoardAtRound, GameToKeep, Identity } from './account.js'
 import { isNativeApp } from './platform.js'
 import { PlayedGamePage, PlayerPage } from './PlayerPage.js'
 import { goTo, routeOf, urlOf } from './route.js'
@@ -189,7 +190,28 @@ function Session({
    * would be a poor trade. The panel below simply offers to sign in, and the offer fails
    * honestly if there is nothing behind it.
    */
-  const [account, setAccount] = useState<Account | null>(null)
+  /*
+   * Seeded from the cache, then confirmed or corrected by `whoAmI`.
+   *
+   * Starting at null and waiting would render every load as signed out for as long as the round
+   * trip takes, which on the website is a flicker and in the native shell with no network is
+   * however long the platform takes to give up on a connection -- long enough to start a game
+   * in. That window is also what decides `beganAsGuest` below, so a slow answer would file a
+   * signed-in player's game as a guest import.
+   *
+   * Optimistic, and safe because it is overwritten: a 401 clears both this and the cache.
+   */
+  const [account, setAccount] = useState<Account | null>(() => cached())
+  /**
+   * Whether the last attempt to reach the API went unanswered.
+   *
+   * Separate from `account` because the two are independent: somebody can be offline and signed
+   * in (the interesting case, and the one this exists for), offline and signed out, or online
+   * and either. Collapsing them is what made an offline session render as a sign-out.
+   *
+   * Only ever set from an `Identity`, so there is one place that decides it.
+   */
+  const [offline, setOffline] = useState(false)
   /** Open, and why. The reason is shown in the dialog; `null` means it is not open. */
   const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
 
@@ -272,11 +294,26 @@ function Session({
    * account does not reset the language somebody picked before they signed up.
    */
   const adopt = useCallback(
-    (found: Account | null): void => {
+    (identity: Identity): void => {
+      setOffline(identity.state === 'offline')
+      if (identity.state === 'signed-out') {
+        setAccount(null)
+        return
+      }
+      const found = identity.account
       setAccount(found)
-      if (found === null) return
-      const ui = found.uiLanguage
-      const game = found.gameLanguage
+      /*
+       * Languages come down from the account on a live answer only.
+       *
+       * The rule above is that the account wins on sign-in. An `offline` answer is not a sign-in:
+       * it is this device remembering one, and those languages were already adopted when it was
+       * live. Applying them again would overwrite a language somebody picked while offline with
+       * the one the cache happens to hold, which is the device disagreeing with itself rather
+       * than with the account.
+       */
+      if (identity.state !== 'signed-in') return
+      const ui = identity.account.uiLanguage
+      const game = identity.account.gameLanguage
       if (ui === null && game === null) return
       onChange({
         ...settings,
@@ -535,7 +572,7 @@ function Session({
           messages={messages}
           {...(signingIn.reason === undefined ? {} : { reason: signingIn.reason })}
           onSignedIn={(found) => {
-            adopt(found)
+            adopt({ state: 'signed-in', account: found })
             setSigningIn(null)
           }}
           onClose={() => {
@@ -557,7 +594,9 @@ function Session({
           catalogue={catalogue}
           readIn={settings.uiLanguage}
           dictionary={dictionary}
-          onAccount={adopt}
+          onAccount={(saved) => {
+            adopt({ state: 'signed-in', account: saved })
+          }}
           onDeleted={() => {
             /*
              * Noted rather than acted on, and that is not squeamishness -- it is that this screen
@@ -658,7 +697,19 @@ function Session({
         </div>
       ) : null}
 
-      <main className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}>
+      <main
+        className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}
+        /*
+         * The offline state, exposed but not yet spoken.
+         *
+         * A visible marker needs a word for "offline" in all fifty-one languages, which arrives
+         * with the rest of the offline wording. Putting the badge in first would mean either a
+         * picture with nothing for a screen reader to say, or one key translated and fifty not.
+         * So the state is here, where the stylesheet and a test can both see it, and the badge
+         * hangs off it rather than off a second source of truth.
+         */
+        data-offline={offline ? 'yes' : undefined}
+      >
         <div className="titlebar">
           <Title
             skip={hurried}
@@ -745,6 +796,9 @@ function Session({
             }}
             onSignOut={() => {
               setVisiting(null)
+              // A deliberate sign-out is not an offline state, and leaving the marker up would
+              // read as "we could not reach the server" rather than "you asked to leave".
+              setOffline(false)
               // The interface signs out immediately and the request goes on its own; the server
               // revokes so a copied token dies too, but nobody should watch a spinner for it.
               setAccount(null)

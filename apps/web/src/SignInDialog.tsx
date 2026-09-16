@@ -142,14 +142,17 @@ export function SignInDialog({
     // The cookie is set by the response. Asking who we are now is what turns it into something
     // the interface can show, and it proves the cookie survived the round trip rather than
     // assuming it did.
-    const account = await whoAmI()
+    const identity = await whoAmI()
     forget()
     setBusy(false)
-    if (account === null) {
+    // Only a live answer will do here. A code was just spent, so `offline` means the cookie may
+    // well be set and we cannot see it; saying "unavailable" is the honest report either way, and
+    // it is what the reader needs in order to try again rather than assume they are in.
+    if (identity.state !== 'signed-in') {
       setProblem('unavailable')
       return
     }
-    onSignedIn(account)
+    onSignedIn(identity.account)
   }
 
   const message =
