@@ -268,6 +268,18 @@ export const ru: Messages = {
   keepThisGame: 'Сохранить эту игру',
   savedToYourGames: 'Сохранено в ваших играх.',
 
+  reportThis: 'Пожаловаться',
+  reportHeading: 'Пожаловаться на это',
+  reportTheName: 'Имя',
+  reportTheBio: 'Описание',
+  reportTheScore: 'Очки',
+  reportWhy: 'Что с ним не так? Не обязательно.',
+  reportSend: 'Отправить жалобу',
+  reportSent: 'Спасибо. Кто-нибудь посмотрит.',
+  reportSignIn: 'Войдите, чтобы на что-то пожаловаться.',
+  reportGone: 'Этого больше нет.',
+  reportCancel: 'Отмена',
+
   plurals: {
     words: { one: '{n} слово', few: '{n} слова', many: '{n} слов', other: '{n} слова' },
     rounds: { one: '{n} раунд', few: '{n} раунда', many: '{n} раундов', other: '{n} раунда' },

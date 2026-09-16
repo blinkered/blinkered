@@ -271,6 +271,18 @@ export const en: Messages = {
   keepThisGame: 'Keep this game',
   savedToYourGames: 'Saved to your games.',
 
+  reportThis: 'Report',
+  reportHeading: 'Report this',
+  reportTheName: 'The name',
+  reportTheBio: 'The bio',
+  reportTheScore: 'The score',
+  reportWhy: 'What is wrong with it? Optional.',
+  reportSend: 'Send report',
+  reportSent: 'Thank you. Somebody will look at it.',
+  reportSignIn: 'Sign in to report something.',
+  reportGone: 'That is not there any more.',
+  reportCancel: 'Cancel',
+
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },

@@ -270,6 +270,18 @@ export const tr: Messages = {
   keepThisGame: 'Bu oyunu sakla',
   savedToYourGames: 'Oyunlarına kaydedildi.',
 
+  reportThis: 'Bildir',
+  reportHeading: 'Bunu bildir',
+  reportTheName: 'Ad',
+  reportTheBio: 'Tanıtım',
+  reportTheScore: 'Puan',
+  reportWhy: 'Nesi yanlış? İsteğe bağlı.',
+  reportSend: 'Bildirimi gönder',
+  reportSent: 'Teşekkürler. Biri buna bakacak.',
+  reportSignIn: 'Bir şey bildirmek için giriş yap.',
+  reportGone: 'O artık yok.',
+  reportCancel: 'Vazgeç',
+
   plurals: {
     words: { one: '{n} kelime', other: '{n} kelime' },
     rounds: { one: '{n} tur', other: '{n} tur' },

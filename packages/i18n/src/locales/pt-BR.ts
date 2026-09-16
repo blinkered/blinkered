@@ -267,6 +267,18 @@ export const ptBR: Messages = {
   keepThisGame: 'Guardar este jogo',
   savedToYourGames: 'Salvo nos seus jogos.',
 
+  reportThis: 'Denunciar',
+  reportHeading: 'Denunciar isto',
+  reportTheName: 'O nome',
+  reportTheBio: 'A descrição',
+  reportTheScore: 'A pontuação',
+  reportWhy: 'O que há de errado? Opcional.',
+  reportSend: 'Enviar denúncia',
+  reportSent: 'Obrigado. Alguém vai olhar.',
+  reportSignIn: 'Entre para denunciar algo.',
+  reportGone: 'Isso não está mais aí.',
+  reportCancel: 'Cancelar',
+
   plurals: {
     words: { one: '{n} palavra', other: '{n} palavras' },
     rounds: { one: '{n} rodada', other: '{n} rodadas' },

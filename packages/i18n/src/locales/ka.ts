@@ -273,6 +273,18 @@ export const ka: Messages = {
   keepThisGame: 'შეინახე ეს თამაში',
   savedToYourGames: 'შენახულია თქვენს თამაშებში.',
 
+  reportThis: 'მოხსენება',
+  reportHeading: 'ამის მოხსენება',
+  reportTheName: 'სახელი',
+  reportTheBio: 'აღწერა',
+  reportTheScore: 'ქულა',
+  reportWhy: 'რა არის მასში არასწორი? სურვილისამებრ.',
+  reportSend: 'მოხსენების გაგზავნა',
+  reportSent: 'გმადლობთ. ვინმე გადახედავს.',
+  reportSignIn: 'შედით, რომ რამე მოახსენოთ.',
+  reportGone: 'ეს აღარ არსებობს.',
+  reportCancel: 'გაუქმება',
+
   plurals: {
     words: { one: '{n} სიტყვა', other: '{n} სიტყვა' },
     rounds: { one: '{n} რაუნდი', other: '{n} რაუნდი' },

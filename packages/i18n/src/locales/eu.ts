@@ -274,6 +274,18 @@ export const eu: Messages = {
   keepThisGame: 'Gorde partida hau',
   savedToYourGames: 'Zure partidetan gordeta.',
 
+  reportThis: 'Salatu',
+  reportHeading: 'Hau salatu',
+  reportTheName: 'Izena',
+  reportTheBio: 'Aurkezpena',
+  reportTheScore: 'Puntuazioa',
+  reportWhy: 'Zer du txarra? Aukerakoa.',
+  reportSend: 'Bidali salaketa',
+  reportSent: 'Eskerrik asko. Norbaitek begiratuko dio.',
+  reportSignIn: 'Hasi saioa zerbait salatzeko.',
+  reportGone: 'Hori jada ez dago.',
+  reportCancel: 'Utzi',
+
   plurals: {
     words: { one: 'hitz {n}', other: '{n} hitz' },
     rounds: { one: 'txanda {n}', other: '{n} txanda' },

@@ -1,10 +1,34 @@
 import { randomBytes } from 'node:crypto'
-import { and, count, desc, eq, gte, isNotNull, isNull, sql } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  exists,
+  gte,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  or,
+  sql,
+} from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { DETAIL_VERSION } from './account/types.js'
 import type { GameDetail, ProfilePatch } from './account/types.js'
+import type { AdminGame, AdminPatch, AdminReport, AdminUser } from './admin/types.js'
 import { normalizeUsername } from './auth/usernames.js'
 import type { Database } from './db.js'
-import { authIdentities, gameDetail, games, loginCodes, sessions, users } from './schema.js'
+import {
+  authIdentities,
+  gameDetail,
+  games,
+  loginCodes,
+  reports,
+  sessions,
+  users,
+} from './schema.js'
 import type { NewIdentity } from './auth/types.js'
 import type { Store } from './types.js'
 
@@ -255,6 +279,255 @@ export function pgStore(db: Database): Store {
       return rows.map((row) => ({ ...row, finishedAt: row.finishedAt as Date }))
     },
 
+    /*
+     * Filing a report, unless this person already has an open one about the same thing.
+     *
+     * Checked rather than enforced by a partial unique index over four nullable columns, and the
+     * race that leaves is deliberate: losing it costs the queue a duplicate row, and getting an
+     * index over `(reporter, subject_user, subject_game, field) where resolved_at is null` right
+     * across three nullable subjects costs more than that for the same outcome.
+     */
+    insertReport: async (row) => {
+      const already = await db
+        .select({ id: reports.id })
+        .from(reports)
+        .where(
+          and(
+            eq(reports.reporterUserId, row.reporterUserId),
+            eq(reports.field, row.field),
+            isNull(reports.resolvedAt),
+            row.subjectGameId === null
+              ? isNull(reports.subjectGameId)
+              : eq(reports.subjectGameId, row.subjectGameId),
+            row.subjectUserId === null
+              ? isNull(reports.subjectUserId)
+              : eq(reports.subjectUserId, row.subjectUserId),
+          ),
+        )
+        .limit(1)
+      if (already[0] !== undefined) return false
+      await db.insert(reports).values(row)
+      return true
+    },
+
+    /*
+     * Accounts, by a search over names and sign-in addresses at once.
+     *
+     * `exists` on the identities rather than a join, because a join on a table with one row per
+     * provider returns the same person once per way they sign in, and the caller would have to
+     * collapse them. A subquery answers the question the search is actually asking -- does this
+     * account have an address like that -- and returns each account once.
+     *
+     * Deleted accounts are included. This is the surface that has to be able to see one in order
+     * to restore it, and it is the only surface where that is true: `profileByUsername` and
+     * `gameById` both exclude them, and should.
+     */
+    findUsers: async (text, limit) => {
+      const matching = text === null || text.trim() === '' ? null : `%${text.trim()}%`
+      const found = await db
+        .select(ADMIN_USER)
+        .from(users)
+        .where(
+          matching === null
+            ? undefined
+            : or(
+                ilike(users.username, matching),
+                exists(
+                  db
+                    .select({ one: sql`1` })
+                    .from(authIdentities)
+                    .where(
+                      and(
+                        eq(authIdentities.userId, users.id),
+                        ilike(authIdentities.email, matching),
+                      ),
+                    ),
+                ),
+              ),
+        )
+        // Newest first, so an empty search opens on the accounts most likely to be the reason
+        // somebody came here.
+        .orderBy(desc(users.createdAt))
+        .limit(limit)
+      return dressUsers(db, found)
+    },
+
+    adminUser: async (userId) => {
+      const found = await db.select(ADMIN_USER).from(users).where(eq(users.id, userId)).limit(1)
+      const dressed = await dressUsers(db, found)
+      return dressed[0] ?? null
+    },
+
+    /*
+     * Applying an admin's patch.
+     *
+     * No `isNull(users.deletedAt)` guard, unlike `updateProfile`, and that is the one deliberate
+     * difference: a marked account is still editable here, which is what lets an offensive name
+     * be fixed on an account that is on its way out. The row is still there until it is reaped,
+     * and until then it is still a name on a game somebody can open.
+     */
+    editUser: async (userId, patch) => {
+      const values = adminColumnsOf(patch)
+      if (Object.keys(values).length === 0) {
+        // An empty patch is a read, as it is on `updateProfile`: Drizzle refuses `set({})`, and a
+        // PATCH mentioning no field is a client asking for the row back.
+        const [row] = await db.select(ADMIN_USER).from(users).where(eq(users.id, userId)).limit(1)
+        if (row === undefined) return { ok: false, reason: 'no-user' }
+        return { ok: true, user: (await dressUsers(db, [row]))[0] as AdminUser }
+      }
+      try {
+        const written = await db
+          .update(users)
+          .set(values)
+          .where(eq(users.id, userId))
+          .returning(ADMIN_USER)
+        const row = written[0]
+        if (row === undefined) return { ok: false, reason: 'no-user' }
+        return { ok: true, user: (await dressUsers(db, [row]))[0] as AdminUser }
+      } catch (failure) {
+        // The unique index is the authority on whether a name is free, here as everywhere else.
+        if (isUniqueViolation(failure)) return { ok: false, reason: 'username-taken' }
+        throw failure
+      }
+    },
+
+    markUserDeleted: async (userId, at) => {
+      const written = await db
+        .update(users)
+        .set({ deletedAt: at })
+        .where(eq(users.id, userId))
+        .returning({ id: users.id })
+      return written[0] !== undefined
+    },
+
+    /*
+     * Games across everybody, in the order a board has them.
+     *
+     * Score descending, then rounds ascending, then the timestamp ascending -- which is
+     * `compareResults` in @blinkered/engine and is the order `games_leaderboard_idx` is built
+     * for. Deliberately the board's order rather than "newest first": the screen exists to look
+     * at what is at the top of a board and decide whether it belongs there, and a listing sorted
+     * differently from the board would not be showing the board.
+     *
+     * An inner join on `users`, so an unclaimed guest game cannot appear. There is nobody to
+     * moderate about one.
+     */
+    findGames: async (filter) => {
+      const rows = await db
+        .select({
+          id: games.id,
+          language: games.language,
+          difficulty: games.difficulty,
+          canonical: games.canonical,
+          speedMultiplier: games.speedMultiplier,
+          score: games.score,
+          words: games.wordsCount,
+          rounds: games.roundsPlayed,
+          engineVersion: games.engineVersion,
+          finishedAt: games.finishedAt,
+          hidden: games.hidden,
+          imported: games.imported,
+          leaderboardEligible: games.leaderboardEligible,
+          ownerId: users.id,
+          username: users.username,
+        })
+        .from(games)
+        .innerJoin(users, eq(users.id, games.userId))
+        .where(
+          and(
+            isNotNull(games.finishedAt),
+            filter.language === undefined ? undefined : eq(games.language, filter.language),
+            filter.difficulty === undefined ? undefined : eq(games.difficulty, filter.difficulty),
+            // Absent means both. A hidden game that could not be found again could never be
+            // un-hidden, so this is the one listing that shows them.
+            filter.hidden === undefined ? undefined : eq(games.hidden, filter.hidden),
+            filter.userId === undefined ? undefined : eq(games.userId, filter.userId),
+          ),
+        )
+        .orderBy(desc(games.score), asc(games.roundsPlayed), asc(games.finishedAt))
+        .limit(filter.limit)
+      return rows.map(({ ownerId, username, ...game }): AdminGame => ({
+        ...game,
+        finishedAt: game.finishedAt as Date,
+        owner: { userId: ownerId, username },
+      }))
+    },
+
+    setGameHidden: async (gameId, hidden) => {
+      const written = await db
+        .update(games)
+        .set({ hidden })
+        .where(eq(games.id, gameId))
+        .returning({ id: games.id })
+      return written[0] !== undefined
+    },
+
+    /*
+     * The queue, with both ends resolved to something readable.
+     *
+     * Three left joins and two of them to `users`, which is what `alias` is for: the reporter and
+     * the subject are both people and a single join cannot be both. Left rather than inner, every
+     * one of them, because the columns are nullable on purpose -- `reporter_user_id` is
+     * `on delete set null`, so a report outlives the account that filed it, and the objection is
+     * still worth reading after its author leaves.
+     *
+     * Unresolved first and oldest first inside that. `nulls first` is written out because
+     * Postgres puts nulls last under `asc`, and an unresolved report is exactly a null.
+     */
+    findReports: async (openOnly, limit) => {
+      const reporter = alias(users, 'reporter')
+      const subject = alias(users, 'subject')
+      const rows = await db
+        .select({
+          id: reports.id,
+          field: reports.field,
+          reason: reports.reason,
+          createdAt: reports.createdAt,
+          resolvedAt: reports.resolvedAt,
+          reporterId: reporter.id,
+          reporterName: reporter.username,
+          subjectId: subject.id,
+          subjectName: subject.username,
+          gameId: games.id,
+          gameScore: games.score,
+        })
+        .from(reports)
+        .leftJoin(reporter, eq(reporter.id, reports.reporterUserId))
+        .leftJoin(subject, eq(subject.id, reports.subjectUserId))
+        .leftJoin(games, eq(games.id, reports.subjectGameId))
+        .where(openOnly ? isNull(reports.resolvedAt) : undefined)
+        .orderBy(sql`${reports.resolvedAt} asc nulls first`, asc(reports.createdAt))
+        .limit(limit)
+      return rows.map((row): AdminReport => ({
+        id: row.id,
+        field: row.field,
+        reason: row.reason,
+        createdAt: row.createdAt,
+        resolvedAt: row.resolvedAt,
+        reporter:
+          row.reporterId === null || row.reporterName === null
+            ? null
+            : { userId: row.reporterId, username: row.reporterName },
+        subjectUser:
+          row.subjectId === null || row.subjectName === null
+            ? null
+            : { userId: row.subjectId, username: row.subjectName },
+        subjectGame:
+          row.gameId === null || row.gameScore === null
+            ? null
+            : { id: row.gameId, score: row.gameScore },
+      }))
+    },
+
+    setReportResolved: async (id, at) => {
+      const written = await db
+        .update(reports)
+        .set({ resolvedAt: at })
+        .where(eq(reports.id, id))
+        .returning({ id: reports.id })
+      return written[0] !== undefined
+    },
+
     profileByUsername: async (normalized) => {
       const [row] = await db
         .select(PUBLIC_PROFILE)
@@ -340,7 +613,100 @@ const PROFILE = {
   uiLanguage: users.uiLanguage,
   gameLanguage: users.gameLanguage,
   bio: users.bio,
+  isAdmin: users.isAdmin,
 } as const
+
+/**
+ * An account, as the panel wants it, minus the two things that need another query.
+ *
+ * Named beside `PROFILE` and `PUBLIC_PROFILE` so the three are visible together: this is the one
+ * that carries `is_admin` and `deleted_at`, and the reason the others do not is that they go to a
+ * browser belonging to somebody who is not moderating. `dressUsers` adds the identities and the
+ * game count.
+ */
+const ADMIN_USER = {
+  userId: users.id,
+  username: users.username,
+  avatarSeed: users.avatarSeed,
+  country: users.country,
+  uiLanguage: users.uiLanguage,
+  gameLanguage: users.gameLanguage,
+  bio: users.bio,
+  isAdmin: users.isAdmin,
+  createdAt: users.createdAt,
+  deletedAt: users.deletedAt,
+} as const
+
+/**
+ * Adds the identities and the game count to accounts already selected.
+ *
+ * Two extra queries for the whole page rather than two per row, which is the only reason this is
+ * a function instead of a join: `auth_identities` has one row per provider and `games` has one
+ * per game, so joining either would multiply the accounts and joining both would multiply them
+ * by each other.
+ *
+ * Shared by `findUsers`, `adminUser` and `editUser` so the three cannot disagree about what an
+ * account looks like -- the same reason `PROFILE` is a constant.
+ */
+async function dressUsers(
+  db: Database,
+  rows: readonly BareAdminUser[],
+): Promise<readonly AdminUser[]> {
+  if (rows.length === 0) return []
+  const ids = rows.map((row) => row.userId)
+
+  const identities = await db
+    .select({
+      userId: authIdentities.userId,
+      provider: authIdentities.provider,
+      email: authIdentities.email,
+      emailVerifiedAt: authIdentities.emailVerifiedAt,
+      createdAt: authIdentities.createdAt,
+    })
+    .from(authIdentities)
+    .where(inArray(authIdentities.userId, ids))
+    .orderBy(asc(authIdentities.createdAt))
+
+  // Finished games only, hidden ones included. The panel is the one place that should see a
+  // count disagreeing with what the person's own page shows them.
+  const counts = await db
+    .select({ userId: games.userId, n: count() })
+    .from(games)
+    .where(and(inArray(games.userId, ids), isNotNull(games.finishedAt)))
+    .groupBy(games.userId)
+
+  const played = new Map(counts.map((row) => [row.userId, row.n]))
+  return rows.map((row) => ({
+    ...row,
+    games: played.get(row.userId) ?? 0,
+    identities: identities
+      .filter((identity) => identity.userId === row.userId)
+      .map(({ provider, email, emailVerifiedAt, createdAt }) => ({
+        provider,
+        email,
+        // A timestamp in the column, a boolean on the wire. "When" is a question worth being able
+        // to ask of the database and not one this screen asks.
+        emailVerified: emailVerifiedAt !== null,
+        createdAt,
+      })),
+  }))
+}
+
+/** What `ADMIN_USER` selects, which is an `AdminUser` without the two assembled fields. */
+type BareAdminUser = Omit<AdminUser, 'games' | 'identities'>
+
+/**
+ * An admin patch as columns.
+ *
+ * `columnsOf` for everything an owner could also change, so there is one definition of what
+ * renaming somebody writes -- it is two columns, and a name changed without its normalized twin
+ * has quietly stopped being unique. Then the one field an owner has no business setting.
+ */
+function adminColumnsOf(patch: AdminPatch): Record<string, unknown> {
+  const values = columnsOf(patch)
+  if (patch.isAdmin !== undefined) values.isAdmin = patch.isAdmin
+  return values
+}
 
 /**
  * A patch as columns, with absent still meaning absent.

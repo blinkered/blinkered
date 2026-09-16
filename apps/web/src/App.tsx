@@ -26,6 +26,7 @@ import { Share } from './Share.js'
 import { AccountMenu } from './AccountMenu.js'
 import type { Destination } from './AccountMenu.js'
 import { AccountScreen } from './AccountScreen.js'
+import { AdminScreen } from './AdminScreen.js'
 import { SignInDialog } from './SignInDialog.js'
 import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { keepGame, saveProfile, signOut, whoAmI } from './account.js'
@@ -541,12 +542,30 @@ function Session({
         underneath has to still be there when this closes. Arriving directly at one of these is
         the common case, and then there is nothing underneath yet, which costs nothing.
       */}
-      {route.at === 'game' ? null : (
+      {/*
+        Moderation, which draws its own overlay rather than sharing the one below.
+        
+        Separate because it is wider than a profile and because it is not one of the two public
+        pages: those two are a pair, reached by a shared link, and pretending this is a third of
+        them would mean one component branching three ways on which audience it has.
+      */}
+      {route.at === 'admin' ? (
+        <AdminScreen
+          me={account?.userId ?? null}
+          onClose={() => {
+            goTo({ at: 'game' })
+            setRoute({ at: 'game' })
+          }}
+        />
+      ) : null}
+
+      {route.at === 'game' || route.at === 'admin' ? null : (
         <div className="rules-overlay account-screen">
           {route.at === 'player' ? (
             <PlayerPage
               messages={messages}
               username={route.username}
+              me={account?.userId ?? null}
               onHome={() => {
                 setRoute({ at: 'game' })
               }}
@@ -555,6 +574,7 @@ function Session({
             <PlayedGamePage
               messages={messages}
               id={route.id}
+              me={account?.userId ?? null}
               dictionary={dictionary}
               onHome={() => {
                 setRoute({ at: 'game' })
@@ -656,6 +676,12 @@ function Session({
             onPublicProfile={(username) => {
               goTo({ at: 'player', username })
               setRoute({ at: 'player', username })
+            }}
+            onModerate={() => {
+              // A route rather than an overlay flag, so the panel survives a reload -- which
+              // matters on the one screen somebody works in for twenty minutes at a time.
+              goTo({ at: 'admin' })
+              setRoute({ at: 'admin' })
             }}
             onSignOut={() => {
               setVisiting(null)

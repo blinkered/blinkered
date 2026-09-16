@@ -273,6 +273,18 @@ export const pcm: Messages = {
   keepThisGame: 'Keep dis game',
   savedToYourGames: 'Dem save am for your games.',
 
+  reportThis: 'Report',
+  reportHeading: 'Report dis one',
+  reportTheName: 'Di name',
+  reportTheBio: 'Di bio',
+  reportTheScore: 'Di score',
+  reportWhy: 'Wetin bad about am? You no need talk am.',
+  reportSend: 'Send di report',
+  reportSent: 'Thank you. Somebody go look am.',
+  reportSignIn: 'Sign in make you fit report something.',
+  reportGone: 'Dat one no dey again.',
+  reportCancel: 'Cancel',
+
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },

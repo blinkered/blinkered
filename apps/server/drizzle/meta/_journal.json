@@ -29,6 +29,13 @@
       "when": 1789139903315,
       "tag": "0003_boards_carry_wilds",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789520718608,
+      "tag": "0004_is_admin",
+      "breakpoints": true
     }
   ]
 }

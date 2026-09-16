@@ -270,6 +270,18 @@ export const ar: Messages = {
   keepThisGame: 'احتفظ بهذه اللعبة',
   savedToYourGames: 'حُفظت في ألعابك.',
 
+  reportThis: 'إبلاغ',
+  reportHeading: 'الإبلاغ عن هذا',
+  reportTheName: 'الاسم',
+  reportTheBio: 'النبذة',
+  reportTheScore: 'النتيجة',
+  reportWhy: 'ما الخطأ فيه؟ اختياري.',
+  reportSend: 'إرسال الإبلاغ',
+  reportSent: 'شكرًا لك. سيطّلع أحدهم عليه.',
+  reportSignIn: 'سجّل الدخول للإبلاغ عن شيء.',
+  reportGone: 'لم يعد هذا موجودًا.',
+  reportCancel: 'إلغاء',
+
   plurals: {
     words: {
       zero: '{n} كلمة',

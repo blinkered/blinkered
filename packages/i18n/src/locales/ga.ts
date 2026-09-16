@@ -277,6 +277,18 @@ export const ga: Messages = {
   keepThisGame: 'Coinnigh an cluiche seo',
   savedToYourGames: 'Sábháilte i do chluichí.',
 
+  reportThis: 'Tuairiscigh',
+  reportHeading: 'Tuairiscigh é seo',
+  reportTheName: 'An t-ainm',
+  reportTheBio: 'An cur síos',
+  reportTheScore: 'An scór',
+  reportWhy: 'Cad atá mícheart leis? Roghnach.',
+  reportSend: 'Seol an tuairisc',
+  reportSent: 'Go raibh maith agat. Breathnóidh duine air.',
+  reportSignIn: 'Sínigh isteach chun rud a thuairisciú.',
+  reportGone: 'Níl sé sin ann a thuilleadh.',
+  reportCancel: 'Cealaigh',
+
   plurals: {
     words: {
       one: '{n} fhocal',

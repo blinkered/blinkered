@@ -270,6 +270,18 @@ export const ro: Messages = {
   keepThisGame: 'Păstrează jocul',
   savedToYourGames: 'Salvat în jocurile tale.',
 
+  reportThis: 'Raportează',
+  reportHeading: 'Raportează asta',
+  reportTheName: 'Numele',
+  reportTheBio: 'Descrierea',
+  reportTheScore: 'Scorul',
+  reportWhy: 'Ce e greșit la el? Opțional.',
+  reportSend: 'Trimite raportul',
+  reportSent: 'Mulțumim. Cineva se va uita.',
+  reportSignIn: 'Conectează-te ca să raportezi ceva.',
+  reportGone: 'Asta nu mai există.',
+  reportCancel: 'Anulează',
+
   plurals: {
     words: { one: '{n} cuvânt', few: '{n} cuvinte', other: '{n} de cuvinte' },
     rounds: { one: '{n} rundă', few: '{n} runde', other: '{n} de runde' },

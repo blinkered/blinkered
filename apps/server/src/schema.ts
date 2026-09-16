@@ -62,6 +62,19 @@ export const users = blinkered.table(
     bio: text('bio'),
     /** The seed for the generated avatar. There are no uploads, so there is no URL. */
     avatarSeed: text('avatar_seed').notNull(),
+    /**
+     * Whether this person can moderate.
+     *
+     * A column on `users` rather than a roles table, because there is exactly one power and it
+     * is not going to grow into a permission system for a word game. The day it needs two, that
+     * is the day to build the table, and a boolean is a cheap thing to migrate off.
+     *
+     * Nobody can grant it to themselves: `POST /v1/auth/*` never writes it and the admin routes
+     * refuse to change the flag on the account making the request, so the first one is set by
+     * hand against the database. That is the correct amount of ceremony for the power to delete
+     * anybody's account, and it means an admin panel bug cannot mint an admin.
+     */
+    isAdmin: boolean('is_admin').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },

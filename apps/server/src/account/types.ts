@@ -1,3 +1,4 @@
+import type { ReportWriter } from '../admin/types.js'
 import type { Profile } from '../auth/types.js'
 
 /**
@@ -166,7 +167,14 @@ export interface PublicProfile {
   readonly bio: string | null
 }
 
-export interface AccountStore {
+/**
+ * Everything a signed-in person does, and `ReportWriter` is one of those things.
+ *
+ * Filing a report is an account action, so it sits here; reading the queue is moderation, so it
+ * sits on `AdminStore`. The ports follow the surfaces rather than the tables, which is what stops
+ * the moderation queue's reader being in reach of the report button.
+ */
+export interface AccountStore extends ReportWriter {
   /**
    * Whether a normalized name already belongs to somebody.
    *

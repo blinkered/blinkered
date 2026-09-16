@@ -21,7 +21,9 @@ import type { Destination } from './AccountMenu.js'
  * it, for the reason the rules overlay already gives in App.tsx: React unmounts what it replaces,
  * and a game underneath has to still be there when this closes.
  *
- * English throughout, like the sign-in dialog, and for the reason recorded there.
+ * Translated, like the rest of the game. This comment used to say the opposite and was left
+ * behind by the pass that translated these screens; the one surface still deliberately in English
+ * is the moderation panel, and `AdminScreen` records why.
  */
 
 /**
@@ -132,7 +134,7 @@ export function AccountScreen({
             onAccount={onAccount}
           />
         ) : (
-          <Games dictionary={dictionary} messages={messages} />
+          <Games dictionary={dictionary} messages={messages} me={account.userId} />
         )}
       </div>
     </div>
@@ -335,9 +337,12 @@ function Profile({
 function Games({
   dictionary,
   messages,
+  me,
 }: {
   readonly dictionary: TieredIndex | null
   readonly messages: Messages
+  /** Whose list this is, which is what keeps a report button off your own games. */
+  readonly me: string
 }): React.JSX.Element {
   const [games, setGames] = useState<readonly PlayedGame[] | null>(null)
   const [failed, setFailed] = useState(false)
@@ -377,6 +382,7 @@ function Games({
       <GameDetail
         messages={messages}
         id={open}
+        me={me}
         dictionary={dictionary}
         onBack={() => {
           setOpen(null)

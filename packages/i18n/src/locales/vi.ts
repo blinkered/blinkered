@@ -270,6 +270,18 @@ export const vi: Messages = {
   keepThisGame: 'Giữ ván này',
   savedToYourGames: 'Đã lưu vào các ván của bạn.',
 
+  reportThis: 'Báo cáo',
+  reportHeading: 'Báo cáo điều này',
+  reportTheName: 'Tên',
+  reportTheBio: 'Giới thiệu',
+  reportTheScore: 'Điểm',
+  reportWhy: 'Có gì sai với nó? Không bắt buộc.',
+  reportSend: 'Gửi báo cáo',
+  reportSent: 'Cảm ơn bạn. Sẽ có người xem.',
+  reportSignIn: 'Đăng nhập để báo cáo điều gì đó.',
+  reportGone: 'Cái đó không còn ở đó nữa.',
+  reportCancel: 'Huỷ',
+
   plurals: {
     words: { other: '{n} từ' },
     rounds: { other: '{n} vòng' },

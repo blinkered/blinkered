@@ -56,6 +56,20 @@ export interface Profile {
   readonly uiLanguage: string | null
   readonly gameLanguage: string | null
   readonly bio: string | null
+  /**
+   * Whether this person can moderate.
+   *
+   * Here rather than on a route of its own, for the same reason `avatarSeed` is: the session
+   * lookup already has the row, and the client needs it the moment it knows who anybody is --
+   * an admin item in the menu that appeared a round trip after the menu did would flicker.
+   *
+   * It is not on `PublicProfile` and must not be. Who moderates is nobody else's business, and
+   * a public field saying so would be a list of the accounts worth attacking.
+   *
+   * The client uses it to decide what to *show*. Every admin route checks the column itself, so
+   * a client that lies about this gets a menu item and 403s.
+   */
+  readonly isAdmin: boolean
 }
 
 export interface AuthStore {

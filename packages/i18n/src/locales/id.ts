@@ -269,6 +269,18 @@ export const id: Messages = {
   keepThisGame: 'Simpan permainan ini',
   savedToYourGames: 'Tersimpan di permainanmu.',
 
+  reportThis: 'Laporkan',
+  reportHeading: 'Laporkan ini',
+  reportTheName: 'Namanya',
+  reportTheBio: 'Bionya',
+  reportTheScore: 'Skornya',
+  reportWhy: 'Apa yang salah dengannya? Opsional.',
+  reportSend: 'Kirim laporan',
+  reportSent: 'Terima kasih. Seseorang akan memeriksanya.',
+  reportSignIn: 'Masuk untuk melaporkan sesuatu.',
+  reportGone: 'Itu sudah tidak ada.',
+  reportCancel: 'Batal',
+
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} putaran' },

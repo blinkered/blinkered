@@ -271,6 +271,18 @@ export const ca: Messages = {
   keepThisGame: 'Guarda aquesta partida',
   savedToYourGames: 'Desada a les teves partides.',
 
+  reportThis: 'Denuncia',
+  reportHeading: 'Denuncia això',
+  reportTheName: 'El nom',
+  reportTheBio: 'La descripció',
+  reportTheScore: 'La puntuació',
+  reportWhy: 'Què hi ha de dolent? Opcional.',
+  reportSend: 'Envia la denúncia',
+  reportSent: 'Gràcies. Algú s’ho mirarà.',
+  reportSignIn: 'Inicia la sessió per denunciar alguna cosa.',
+  reportGone: 'Això ja no hi és.',
+  reportCancel: 'Cancel·la',
+
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} ronda', other: '{n} rondes' },

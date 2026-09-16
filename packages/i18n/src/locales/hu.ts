@@ -270,6 +270,18 @@ export const hu: Messages = {
   keepThisGame: 'Játék megtartása',
   savedToYourGames: 'Elmentve a játékaid közé.',
 
+  reportThis: 'Jelentés',
+  reportHeading: 'Ennek jelentése',
+  reportTheName: 'A név',
+  reportTheBio: 'A bemutatkozás',
+  reportTheScore: 'A pontszám',
+  reportWhy: 'Mi a baj vele? Nem kötelező.',
+  reportSend: 'Jelentés küldése',
+  reportSent: 'Köszönjük. Valaki megnézi.',
+  reportSignIn: 'Jelentkezz be, hogy jelenthess valamit.',
+  reportGone: 'Ez már nincs meg.',
+  reportCancel: 'Mégse',
+
   plurals: {
     words: { one: '{n} szó', other: '{n} szó' },
     rounds: { one: '{n} kör', other: '{n} kör' },

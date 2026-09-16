@@ -268,6 +268,18 @@ export const bg: Messages = {
   keepThisGame: 'Запази тази игра',
   savedToYourGames: 'Запазено в игрите ти.',
 
+  reportThis: 'Докладвай',
+  reportHeading: 'Докладвай това',
+  reportTheName: 'Името',
+  reportTheBio: 'Описанието',
+  reportTheScore: 'Точките',
+  reportWhy: 'Какво не е наред с него? По желание.',
+  reportSend: 'Изпрати доклада',
+  reportSent: 'Благодарим. Някой ще го погледне.',
+  reportSignIn: 'Влез, за да докладваш нещо.',
+  reportGone: 'Това вече го няма.',
+  reportCancel: 'Отказ',
+
   plurals: {
     words: { one: '{n} дума', other: '{n} думи' },
     rounds: { one: '{n} рунд', other: '{n} рунда' },

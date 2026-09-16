@@ -268,6 +268,18 @@ export const fa: Messages = {
   keepThisGame: 'این بازی را نگه دار',
   savedToYourGames: 'در بازی‌هایتان ذخیره شد.',
 
+  reportThis: 'گزارش',
+  reportHeading: 'گزارش این',
+  reportTheName: 'نام',
+  reportTheBio: 'معرفی',
+  reportTheScore: 'امتیاز',
+  reportWhy: 'چه اشکالی دارد؟ اختیاری.',
+  reportSend: 'فرستادن گزارش',
+  reportSent: 'سپاسگزاریم. کسی به آن نگاه می‌کند.',
+  reportSignIn: 'برای گزارش چیزی وارد شوید.',
+  reportGone: 'آن دیگر آنجا نیست.',
+  reportCancel: 'لغو',
+
   plurals: {
     words: { one: '{n} واژه', other: '{n} واژه' },
     rounds: { one: '{n} دور', other: '{n} دور' },

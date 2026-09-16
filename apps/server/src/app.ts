@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { accountRoutes } from './account/routes.js'
+import { adminRoutes } from './admin/routes.js'
 import { authRoutes } from './auth/routes.js'
 import type { AuthDeps } from './auth/routes.js'
 import type { LimitOptions } from './rateLimit.js'
@@ -64,6 +65,15 @@ export function createApp(options: { auth?: ApiDeps } = {}): Hono {
      * API rather than a subsystem of it, and `/v1/account/me` would say the same word twice.
      */
     v1.route('/', accountRoutes(auth))
+    /*
+     * Moderation, under a prefix of its own, which is the opposite call from the one above.
+     *
+     * `/me` and `/games` are the nouns of the API and get no prefix. This is a subsystem: every
+     * route in it exists for one audience, they are all behind one gate, and the prefix is what
+     * makes that visible in an access log. It also means the gate can be middleware over a
+     * subtree rather than a check somebody has to remember per handler.
+     */
+    v1.route('/admin', adminRoutes(auth))
   }
 
   app.route('/v1', v1)

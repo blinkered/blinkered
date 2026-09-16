@@ -77,4 +77,13 @@ describe('the schema', () => {
     expect(userColumns.get('country')?.notNull).toBe(false)
     expect(userColumns.get('bio')?.notNull).toBe(false)
   })
+
+  it('makes nobody an admin by default', () => {
+    // The default is the security property, not a convenience. Every route under `/v1/admin`
+    // reads this column, and a nullable or absent default would make "not set" a third state
+    // that some expression somewhere would eventually read as true.
+    const column = new Map(getTableConfig(users).columns.map((c) => [c.name, c])).get('is_admin')
+    expect(column?.notNull).toBe(true)
+    expect(column?.default).toBe(false)
+  })
 })

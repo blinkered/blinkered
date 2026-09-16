@@ -268,6 +268,18 @@ export const da: Messages = {
   keepThisGame: 'Gem dette spil',
   savedToYourGames: 'Gemt blandt dine spil.',
 
+  reportThis: 'Anmeld',
+  reportHeading: 'Anmeld dette',
+  reportTheName: 'Navnet',
+  reportTheBio: 'Beskrivelsen',
+  reportTheScore: 'Scoren',
+  reportWhy: 'Hvad er der galt med det? Valgfrit.',
+  reportSend: 'Send anmeldelsen',
+  reportSent: 'Tak. Nogen ser på det.',
+  reportSignIn: 'Log ind for at anmelde noget.',
+  reportGone: 'Det er der ikke længere.',
+  reportCancel: 'Annuller',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },

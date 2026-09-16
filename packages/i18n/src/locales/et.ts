@@ -267,6 +267,18 @@ export const et: Messages = {
   keepThisGame: 'Hoia see mäng alles',
   savedToYourGames: 'Salvestatud sinu mängude hulka.',
 
+  reportThis: 'Teata',
+  reportHeading: 'Teata sellest',
+  reportTheName: 'Nimi',
+  reportTheBio: 'Tutvustus',
+  reportTheScore: 'Tulemus',
+  reportWhy: 'Mis sellega valesti on? Valikuline.',
+  reportSend: 'Saada teade',
+  reportSent: 'Aitäh. Keegi vaatab selle üle.',
+  reportSignIn: 'Logi sisse, et millestki teatada.',
+  reportGone: 'Seda enam ei ole.',
+  reportCancel: 'Tühista',
+
   plurals: {
     words: { one: '{n} sõna', other: '{n} sõna' },
     rounds: { one: '{n} voor', other: '{n} vooru' },

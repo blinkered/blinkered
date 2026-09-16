@@ -267,6 +267,18 @@ export const sl: Messages = {
   keepThisGame: 'Ohrani to igro',
   savedToYourGames: 'Shranjeno med tvoje igre.',
 
+  reportThis: 'Prijavi',
+  reportHeading: 'Prijavi to',
+  reportTheName: 'Ime',
+  reportTheBio: 'Opis',
+  reportTheScore: 'Rezultat',
+  reportWhy: 'Kaj je s tem narobe? Neobvezno.',
+  reportSend: 'Pošlji prijavo',
+  reportSent: 'Hvala. Nekdo si bo to ogledal.',
+  reportSignIn: 'Za to moraš biti prijavljen.',
+  reportGone: 'Tega ni več.',
+  reportCancel: 'Prekliči',
+
   plurals: {
     words: { one: '{n} beseda', two: '{n} besedi', few: '{n} besede', other: '{n} besed' },
     rounds: { one: '{n} krog', two: '{n} kroga', few: '{n} krogi', other: '{n} krogov' },

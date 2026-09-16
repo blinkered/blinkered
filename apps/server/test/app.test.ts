@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createApp } from '../src/app.js'
-import { capturingMailer, fakeStore } from './fake.js'
+import { capturingMailer, fakeStore, makeAdmin } from './fake.js'
+import type { FakeUser } from './fake.js'
 
 describe('the API', () => {
   it('answers /healthz without touching anything else', async () => {
@@ -49,5 +50,57 @@ describe('the auth routes, once the app is given what they need', () => {
       body: JSON.stringify({ email: 'nick@example.com' }),
     })
     expect(response.status).toBe(202)
+  })
+
+  it('mount moderation under /v1/admin, behind the session', async () => {
+    const app = createApp({ auth: { store: fakeStore(), mailer: capturingMailer() } })
+    // 401 rather than 404, which is the whole claim: the routes are there and the gate is in
+    // front of them.
+    expect((await app.request('/v1/admin/users')).status).toBe(401)
+    expect((await app.request('/v1/admin/reports')).status).toBe(401)
+  })
+
+  it('date a moderation action from the real clock when nothing injects one', async () => {
+    /*
+     * The deployed arrangement, which every other suite replaces with a fixed moment.
+     *
+     * Worth one test rather than none: `deps.now` is injected everywhere so that expiry can be
+     * moved without waiting, and the consequence is that the clock a deployment actually uses is
+     * the one code path no test takes. This takes it.
+     */
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const app = createApp({ auth: { store, mailer } })
+    const headers = { 'content-type': 'application/json' }
+
+    const signIn = async (email: string): Promise<string> => {
+      await app.request('/v1/auth/code', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email }),
+      })
+      const verified = await app.request('/v1/auth/code/verify', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email, code: mailer.sent.at(-1)?.code }),
+      })
+      return (verified.headers.get('set-cookie') ?? '').split(';')[0] as string
+    }
+
+    const theirs = await signIn('player@example.com')
+    const cookie = await signIn('nick@example.com')
+    const [them, me] = [...store.users.values()] as [FakeUser, FakeUser]
+    makeAdmin(store, me.userId)
+
+    const before = Date.now()
+    const response = await app.request(`/v1/admin/users/${them.userId}`, {
+      method: 'DELETE',
+      headers: { ...headers, cookie },
+    })
+    expect(response.status).toBe(200)
+    // The mark is a moment, and it is this moment rather than `undefined` or the epoch.
+    expect(store.users.get(them.userId)?.deletedAt?.getTime()).toBeGreaterThanOrEqual(before)
+    // And the account it was aimed at is signed out, which is what the mark is for.
+    expect((await app.request('/v1/me', { headers: { cookie: theirs } })).status).toBe(401)
   })
 })

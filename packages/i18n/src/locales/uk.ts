@@ -266,6 +266,18 @@ export const uk: Messages = {
   keepThisGame: 'Зберегти цю гру',
   savedToYourGames: 'Збережено у ваших іграх.',
 
+  reportThis: 'Поскаржитися',
+  reportHeading: 'Поскаржитися на це',
+  reportTheName: 'Ім’я',
+  reportTheBio: 'Опис',
+  reportTheScore: 'Рахунок',
+  reportWhy: 'Що з цим не так? Необов’язково.',
+  reportSend: 'Надіслати скаргу',
+  reportSent: 'Дякуємо. Хтось це перегляне.',
+  reportSignIn: 'Увійдіть, щоб на щось поскаржитися.',
+  reportGone: 'Цього більше немає.',
+  reportCancel: 'Скасувати',
+
   plurals: {
     words: { one: '{n} слово', few: '{n} слова', many: '{n} слів', other: '{n} слова' },
     rounds: { one: '{n} раунд', few: '{n} раунди', many: '{n} раундів', other: '{n} раунду' },

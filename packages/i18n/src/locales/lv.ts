@@ -269,6 +269,18 @@ export const lv: Messages = {
   keepThisGame: 'Saglabāt šo spēli',
   savedToYourGames: 'Saglabāts tavās spēlēs.',
 
+  reportThis: 'Ziņot',
+  reportHeading: 'Ziņot par šo',
+  reportTheName: 'Vārds',
+  reportTheBio: 'Apraksts',
+  reportTheScore: 'Rezultāts',
+  reportWhy: 'Kas ar to nav kārtībā? Pēc izvēles.',
+  reportSend: 'Nosūtīt ziņojumu',
+  reportSent: 'Paldies. Kāds to apskatīs.',
+  reportSignIn: 'Pieraksties, lai par kaut ko ziņotu.',
+  reportGone: 'Tā vairs nav.',
+  reportCancel: 'Atcelt',
+
   plurals: {
     words: { zero: '{n} vārdu', one: '{n} vārds', other: '{n} vārdi' },
     rounds: { zero: '{n} raundu', one: '{n} raunds', other: '{n} raundi' },

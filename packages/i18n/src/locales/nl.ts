@@ -264,6 +264,18 @@ export const nl: Messages = {
   keepThisGame: 'Dit spel bewaren',
   savedToYourGames: 'Bewaard bij je spellen.',
 
+  reportThis: 'Rapporteren',
+  reportHeading: 'Dit rapporteren',
+  reportTheName: 'De naam',
+  reportTheBio: 'De beschrijving',
+  reportTheScore: 'De score',
+  reportWhy: 'Wat is er mis mee? Optioneel.',
+  reportSend: 'Rapport versturen',
+  reportSent: 'Bedankt. Iemand kijkt ernaar.',
+  reportSignIn: 'Meld je aan om iets te rapporteren.',
+  reportGone: 'Dat is er niet meer.',
+  reportCancel: 'Annuleren',
+
   plurals: {
     words: { one: '{n} woord', other: '{n} woorden' },
     rounds: { one: '{n} ronde', other: '{n} rondes' },

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import type { TieredIndex } from '@blinkered/words'
 import { Avatar } from './Avatar.js'
 import { GameDetail } from './GameDetail.js'
+import { ReportButton } from './ReportDialog.js'
 import { GamesTable } from './GamesTable.js'
 import { playerGames, playerProfile } from './account.js'
 import type { PlayedGame, PublicProfile } from './account.js'
@@ -24,10 +25,13 @@ import { goTo } from './route.js'
 export function PlayerPage({
   messages,
   username,
+  me,
   onHome,
 }: {
   readonly messages: Messages
   readonly username: string
+  /** Who is reading, or null. Decides only whether the report button is drawn; see `GameDetail`. */
+  readonly me: string | null
   readonly onHome: () => void
 }): React.JSX.Element {
   const [profile, setProfile] = useState<PublicProfile | null>(null)
@@ -83,6 +87,18 @@ export function PlayerPage({
             <p className="dim">{countryName(profile.country, 'en')}</p>
           )}
         </div>
+        {/*
+          The two free-text surfaces a person has, reported from the page that shows them both.
+          
+          Never on your own page: the server refuses a self-report and a control that exists only
+          to be refused is worse than no control.
+        */}
+        {me === profile.userId ? null : (
+          <ReportButton
+            messages={messages}
+            subject={{ kind: 'person', username: profile.username }}
+          />
+        )}
       </header>
       {/* Text, and only ever text. React escapes by default and nothing here parses the string
           looking for links; see docs/ACCOUNTS.md on why the bio is never markup. */}
@@ -110,18 +126,20 @@ export function PlayerPage({
 export function PlayedGamePage({
   id,
   messages,
+  me,
   dictionary,
   onHome,
 }: {
   readonly id: string
   readonly messages: Messages
+  readonly me: string | null
   readonly dictionary: TieredIndex | null
   readonly onHome: () => void
 }): React.JSX.Element {
   return (
     <div className="account-page">
       <HomeLink onHome={onHome} />
-      <GameDetail messages={messages} id={id} dictionary={dictionary} onBack={undefined} />
+      <GameDetail messages={messages} id={id} me={me} dictionary={dictionary} onBack={undefined} />
     </div>
   )
 }

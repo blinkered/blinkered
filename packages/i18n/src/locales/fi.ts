@@ -267,6 +267,18 @@ export const fi: Messages = {
   keepThisGame: 'Säilytä tämä peli',
   savedToYourGames: 'Tallennettu peleihisi.',
 
+  reportThis: 'Ilmianna',
+  reportHeading: 'Ilmianna tämä',
+  reportTheName: 'Nimi',
+  reportTheBio: 'Esittely',
+  reportTheScore: 'Tulos',
+  reportWhy: 'Mikä siinä on vikana? Valinnainen.',
+  reportSend: 'Lähetä ilmianto',
+  reportSent: 'Kiitos. Joku katsoo sen.',
+  reportSignIn: 'Kirjaudu sisään ilmiantaaksesi jotain.',
+  reportGone: 'Sitä ei ole enää.',
+  reportCancel: 'Peruuta',
+
   plurals: {
     words: { one: '{n} sana', other: '{n} sanaa' },
     rounds: { one: '{n} kierros', other: '{n} kierrosta' },

@@ -305,6 +305,46 @@ The order that does not drop traffic: install the chart with `ingress.enabled=fa
 pods are healthy, then delete the old Ingress, then upgrade with the ingress on, then delete the
 old Deployment and Service. `deploy/k8s/` stays in the repo until that has been done once.
 
+## Making the first admin
+
+The moderation panel is behind `users.is_admin`, and **nothing in the application can set it the
+first time.** That is by design rather than an omission: the sign-in flow never writes the column,
+and `PATCH /v1/admin/users/:id` refuses to change the flag on the account making the request, so
+an admin panel cannot hand the power to itself and a bug in one cannot mint an admin. Every admin
+was therefore made by somebody who already was one, and the first by hand.
+
+By hand means one `update`, per environment. The account has to exist already, so sign in through
+the app first.
+
+```
+kubectl --context tl-dev -n blinkered-dev exec -it statefulset/blinkered-postgres -- \
+  psql -U "$(kubectl --context tl-dev -n blinkered-dev get secret blinkered-database \
+    -o jsonpath='{.data.username}' | base64 -d)" \
+  -d "$(kubectl --context tl-dev -n blinkered-dev get secret blinkered-database \
+    -o jsonpath='{.data.db}' | base64 -d)" \
+  -c "update blinkered.users set is_admin = true
+      where id = (select user_id from blinkered.auth_identities
+                  where email = 'somebody@example.com' order by created_at limit 1)
+      returning username, is_admin;"
+```
+
+**By address rather than by username**, through `auth_identities`, because that is the handle you
+have: a username is generated at sign-up and is a thing like `clever-beacon-1267` until somebody
+changes it. `order by created_at limit 1` because one person can have several identities on the
+same address once they have used more than one provider, and they all point at the same account.
+
+`returning` is not decoration. `update ... where` on a row that is not there is a successful
+statement that changed nothing, and an admin who cannot reach the panel afterwards then looks like
+a session problem. `UPDATE 0` is the answer to read.
+
+Check it from the app rather than from the table: `GET /v1/me` carries `isAdmin`, and the account
+menu grows a **Moderation** item. The panel is at `/admin`, which nginx answers with the app —
+`deploy/nginx.shared.conf` matches that one path exactly, and serving the bundle there grants
+nothing, since every route under `/v1/admin` checks the column on the session.
+
+Removing the flag is the same statement with `false`, and an admin can also do it to another
+admin from inside the panel. What neither can do is their own.
+
 ## Checking a deployment
 
 ```

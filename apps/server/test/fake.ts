@@ -1,4 +1,5 @@
 import type { GameDetail, GameRow, GameSummary, PublicProfile } from '../src/account/types.js'
+import type { AdminGame, AdminReport, AdminUser, NewReport } from '../src/admin/types.js'
 import type { NewIdentity, Profile, StoredCode } from '../src/auth/types.js'
 import { normalizeUsername } from '../src/auth/usernames.js'
 import type { Store } from '../src/types.js'
@@ -19,6 +20,8 @@ import type { LoginMail, Mailer } from '../src/auth/mail.js'
 
 export interface FakeUser extends Profile {
   email: string
+  createdAt: Date
+  deletedAt: Date | null
 }
 
 export interface FakeStore extends Store {
@@ -28,6 +31,9 @@ export interface FakeStore extends Store {
   issued: { id: string; email: string; at: Date }[]
   takenUsernames: Set<string>
   games: { row: GameRow; detail: GameDetail }[]
+  /** Which games are hidden, by id. A set rather than a column, because `GameRow` has none. */
+  hidden: Set<string>
+  reports: (NewReport & { createdAt: Date; resolvedAt: Date | null })[]
   /** Every way in that has been recorded, so a test can assert that linking linked. */
   identities: (NewIdentity & { userId: string })[]
 }
@@ -39,6 +45,8 @@ export function fakeStore(): FakeStore {
   const issued: { id: string; email: string; at: Date }[] = []
   const takenUsernames = new Set<string>()
   const games: { row: GameRow; detail: GameDetail }[] = []
+  const hidden = new Set<string>()
+  const reports: (NewReport & { createdAt: Date; resolvedAt: Date | null })[] = []
   const identities: (NewIdentity & { userId: string })[] = []
 
   const profileOf = (user: FakeUser): Profile => ({
@@ -49,6 +57,35 @@ export function fakeStore(): FakeStore {
     uiLanguage: user.uiLanguage,
     gameLanguage: user.gameLanguage,
     bio: user.bio,
+    isAdmin: user.isAdmin,
+  })
+
+  /**
+   * An account as the panel sees it, assembled the way the Postgres store assembles it.
+   *
+   * Including the count of finished games and the identities, addresses and all, because the
+   * point of the fake is that a route test exercises the same shape the real store returns.
+   */
+  const adminOf = (user: FakeUser): AdminUser => ({
+    userId: user.userId,
+    username: user.username,
+    avatarSeed: user.avatarSeed,
+    country: user.country,
+    uiLanguage: user.uiLanguage,
+    gameLanguage: user.gameLanguage,
+    bio: user.bio,
+    isAdmin: user.isAdmin,
+    createdAt: user.createdAt,
+    deletedAt: user.deletedAt,
+    games: games.filter((one) => one.row.userId === user.userId).length,
+    identities: identities
+      .filter((identity) => identity.userId === user.userId)
+      .map((identity) => ({
+        provider: identity.provider,
+        email: identity.email,
+        emailVerified: identity.emailVerified,
+        createdAt: user.createdAt,
+      })),
   })
 
   return {
@@ -58,6 +95,8 @@ export function fakeStore(): FakeStore {
     issued,
     takenUsernames,
     games,
+    hidden,
+    reports,
     identities,
 
     countCodesSince: (email, since) =>
@@ -116,6 +155,11 @@ export function fakeStore(): FakeStore {
         uiLanguage: null,
         gameLanguage: null,
         bio: null,
+        // Never on sign-up, in the fake as in the schema. Nothing in the auth flow writes this
+        // column, so the only way to become one is for another admin to say so.
+        isAdmin: false,
+        createdAt: new Date(),
+        deletedAt: null,
       })
       return Promise.resolve(id)
     },
@@ -125,7 +169,11 @@ export function fakeStore(): FakeStore {
         return Promise.resolve(null)
       }
       const user = users.get(row.userId)
-      return Promise.resolve(user === undefined ? null : profileOf(user))
+      // A marked account cannot sign in. The Postgres store gets this from the join in
+      // `findSession`; the fake has to say it out loud or a test of deletion would pass here
+      // and fail against a database.
+      if (user === undefined || user.deletedAt !== null) return Promise.resolve(null)
+      return Promise.resolve(profileOf(user))
     },
     createSession: (row) => {
       sessions.set(row.id, { userId: row.userId, expiresAt: row.expiresAt, revokedAt: null })
@@ -161,26 +209,182 @@ export function fakeStore(): FakeStore {
     },
     gamesOf: (userId, limit) => {
       const mine: GameSummary[] = games
-        .filter((g) => g.row.userId === userId)
+        // Hidden is hidden from its owner too: a score removed from a board that still sits at
+        // the top of a personal page has been removed from nowhere its setter can see.
+        .filter((g) => g.row.userId === userId && !hidden.has(g.row.id))
         .map((g) => summaryOf(g.row))
         .sort((a, b) => b.finishedAt.getTime() - a.finishedAt.getTime())
       return Promise.resolve(mine.slice(0, limit))
     },
     gameById: (gameId) => {
       const kept = games.find((one) => one.row.id === gameId)
-      if (kept === undefined) return Promise.resolve(null)
+      if (kept === undefined || hidden.has(gameId)) return Promise.resolve(null)
       // An unclaimed guest game has nobody to attribute it to and is nobody's to show.
       const owner = users.get(kept.row.userId)
-      if (owner === undefined) return Promise.resolve(null)
+      if (owner === undefined || owner.deletedAt !== null) return Promise.resolve(null)
       return Promise.resolve({
         summary: summaryOf(kept.row),
         detail: kept.detail,
         owner: publicOf(owner),
       })
     },
+    insertReport: (row) => {
+      // The same duplicate rule the Postgres store applies, said in one line rather than in a
+      // five-clause `where`: one open report per person per subject per field.
+      const already = reports.some(
+        (report) =>
+          report.resolvedAt === null &&
+          report.reporterUserId === row.reporterUserId &&
+          report.field === row.field &&
+          report.subjectUserId === row.subjectUserId &&
+          report.subjectGameId === row.subjectGameId,
+      )
+      if (already) return Promise.resolve(false)
+      reports.push({ ...row, createdAt: new Date(), resolvedAt: null })
+      return Promise.resolve(true)
+    },
+
+    findUsers: (text, limit) => {
+      const wanted = text === null ? null : text.trim().toLowerCase()
+      const found = [...users.values()]
+        // A username or a sign-in address, which is the one search box the panel has. Deleted
+        // accounts included: this is the surface that has to be able to restore one.
+        .filter(
+          (user) =>
+            wanted === null ||
+            wanted === '' ||
+            user.username.toLowerCase().includes(wanted) ||
+            identities.some(
+              (identity) =>
+                identity.userId === user.userId &&
+                (identity.email ?? '').toLowerCase().includes(wanted),
+            ),
+        )
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .slice(0, limit)
+        .map(adminOf)
+      return Promise.resolve(found)
+    },
+
+    adminUser: (userId) => {
+      const user = users.get(userId)
+      return Promise.resolve(user === undefined ? null : adminOf(user))
+    },
+
+    editUser: (userId, patch) => {
+      const user = users.get(userId)
+      if (user === undefined) return Promise.resolve({ ok: false, reason: 'no-user' as const })
+      if (patch.username !== undefined) {
+        const wanted = normalizeUsername(patch.username)
+        // The index's answer, the same shape `updateProfile` reports above.
+        if (wanted !== normalizeUsername(user.username) && takenUsernames.has(wanted)) {
+          return Promise.resolve({ ok: false, reason: 'username-taken' as const })
+        }
+        takenUsernames.delete(normalizeUsername(user.username))
+        takenUsernames.add(wanted)
+      }
+      // No `deletedAt` guard, as in the Postgres store: a marked account is still editable, which
+      // is what lets an offensive name be fixed on an account on its way out.
+      const updated: FakeUser = { ...user, ...patch }
+      users.set(userId, updated)
+      return Promise.resolve({ ok: true as const, user: adminOf(updated) })
+    },
+
+    markUserDeleted: (userId, at) => {
+      const user = users.get(userId)
+      if (user === undefined) return Promise.resolve(false)
+      users.set(userId, { ...user, deletedAt: at })
+      return Promise.resolve(true)
+    },
+
+    findGames: (filter) => {
+      const found = games
+        .filter((one) => users.has(one.row.userId))
+        .filter(
+          (one) =>
+            (filter.language === undefined || one.row.language === filter.language) &&
+            (filter.difficulty === undefined || one.row.difficulty === filter.difficulty) &&
+            (filter.userId === undefined || one.row.userId === filter.userId) &&
+            // Absent means both, which is the whole reason it is not a boolean with a default.
+            (filter.hidden === undefined || hidden.has(one.row.id) === filter.hidden),
+        )
+        // The board's order, which is `compareResults` in @blinkered/engine: score down, then
+        // rounds up, then the clock up. A listing sorted any other way would not be the board.
+        .sort(
+          (a, b) =>
+            b.row.score - a.row.score ||
+            a.row.roundsPlayed - b.row.roundsPlayed ||
+            a.row.finishedAt.getTime() - b.row.finishedAt.getTime(),
+        )
+        .slice(0, filter.limit)
+        .map((one): AdminGame => ({
+          ...summaryOf(one.row),
+          hidden: hidden.has(one.row.id),
+          imported: one.row.imported,
+          // Nothing is eligible in phase A, because the server issues no seeds. The column
+          // exists and says so; see docs/ACCOUNTS.md.
+          leaderboardEligible: false,
+          owner: {
+            userId: one.row.userId,
+            username: users.get(one.row.userId)?.username ?? '',
+          },
+        }))
+      return Promise.resolve(found)
+    },
+
+    setGameHidden: (gameId, wanted) => {
+      if (!games.some((one) => one.row.id === gameId)) return Promise.resolve(false)
+      if (wanted) hidden.add(gameId)
+      else hidden.delete(gameId)
+      return Promise.resolve(true)
+    },
+
+    findReports: (openOnly, limit) => {
+      const found = reports
+        .filter((report) => !openOnly || report.resolvedAt === null)
+        // Unresolved first, oldest first inside that, which is the order to work in.
+        .sort(
+          (a, b) =>
+            Number(a.resolvedAt !== null) - Number(b.resolvedAt !== null) ||
+            a.createdAt.getTime() - b.createdAt.getTime(),
+        )
+        .slice(0, limit)
+        .map((report): AdminReport => {
+          const reporter = users.get(report.reporterUserId)
+          const subject =
+            report.subjectUserId === null ? undefined : users.get(report.subjectUserId)
+          const game = games.find((one) => one.row.id === report.subjectGameId)
+          return {
+            id: report.id,
+            field: report.field,
+            reason: report.reason,
+            createdAt: report.createdAt,
+            resolvedAt: report.resolvedAt,
+            // Nullable because the columns are: a report outlives the account that filed it.
+            reporter:
+              reporter === undefined
+                ? null
+                : { userId: reporter.userId, username: reporter.username },
+            subjectUser:
+              subject === undefined ? null : { userId: subject.userId, username: subject.username },
+            subjectGame: game === undefined ? null : { id: game.row.id, score: game.row.score },
+          }
+        })
+      return Promise.resolve(found)
+    },
+
+    setReportResolved: (id, at) => {
+      const at_ = reports.findIndex((report) => report.id === id)
+      if (at_ === -1) return Promise.resolve(false)
+      const report = reports[at_] as (typeof reports)[number]
+      reports[at_] = { ...report, resolvedAt: at }
+      return Promise.resolve(true)
+    },
+
     profileByUsername: (normalized) => {
+      // A deleted account is not a profile, and gives the same answer as a name nobody has.
       const found = [...users.values()].find(
-        (user) => normalizeUsername(user.username) === normalized,
+        (user) => normalizeUsername(user.username) === normalized && user.deletedAt === null,
       )
       return Promise.resolve(found === undefined ? null : publicOf(found))
     },
@@ -223,4 +427,18 @@ export function capturingMailer(): Mailer & { sent: LoginMail[] } {
       return Promise.resolve()
     },
   }
+}
+
+/**
+ * Grants the admin flag directly.
+ *
+ * A function rather than a line inside a test, because it is a statement about the design: the
+ * auth flow never writes `is_admin` and the panel refuses to write it on the caller's own row, so
+ * somewhere there has to be a hand on a database. In a test the hand is this, and in a deployment
+ * it is a `psql`.
+ */
+export function makeAdmin(store: FakeStore, userId: string, isAdmin = true): void {
+  const user = store.users.get(userId)
+  if (user === undefined) throw new Error(`no such fake user: ${userId}`)
+  store.users.set(userId, { ...user, isAdmin })
 }

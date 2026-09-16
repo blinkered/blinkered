@@ -4,7 +4,7 @@ import { connect } from '../src/db.js'
 import { runMigrations } from '../src/migrate.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { pgStore } from '../src/pgStore.js'
-import { DATABASE_SCHEMA, authIdentities } from '../src/schema.js'
+import { DATABASE_SCHEMA, authIdentities, users } from '../src/schema.js'
 import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
@@ -425,5 +425,401 @@ describe('identities', () => {
     // Null rather than now(). "We were told an address" and "we know it answered" are different
     // facts, and the linking rule turns on the second one.
     expect(row?.verifiedAt).toBeNull()
+  })
+})
+
+/*
+ * Moderation, against a Postgres.
+ *
+ * Everything here is a fact a fake could not have told us. The search is `ilike` plus an `exists`
+ * subquery, and a join in its place would return one account per way it signs in. The taken-name
+ * refusal arrives as a driver error wrapped by Drizzle, which is the bug `isUniqueViolation` was
+ * written for. `nulls first` is in the query because Postgres sorts nulls last under `asc`. And
+ * `on delete set null` on a reporter is the database's behaviour, not ours.
+ */
+describe('moderating', () => {
+  const gameFor = (
+    userId: string,
+    at: Date,
+    over: { score: number; rounds?: number; language?: string },
+  ) => ({
+    id: `mod-game-${userId}-${String(at.getTime())}`,
+    userId,
+    seed: 42,
+    source: 'web',
+    imported: false,
+    difficulty: 'medium',
+    language: over.language ?? 'en',
+    canonical: true,
+    n: 12,
+    speedMultiplier: 1.4,
+    holdTicks: 4,
+    initialFlips: 168,
+    wMin: 25,
+    minWordLength: 4,
+    wordCompleteMode: 'spend',
+    flipEconomy: 'fibonacci',
+    chargeFullRound: false,
+    wildChance: 0.02,
+    replaceChance: 0.5,
+    score: over.score,
+    wordsCount: 1,
+    roundsPlayed: over.rounds ?? 6,
+    engineVersion: '0.3.0',
+    dictionaryVersion: 'abc123',
+    startedAt: new Date(at.getTime() - 60_000),
+    finishedAt: at,
+  })
+
+  const oneWord: GameDetail = {
+    boards: [{ tiles: 'A B C' }],
+    words: [{ word: 'OTTER', tiles: 5, points: 20, round: 0, flips: 8, tick: 42 }],
+  }
+
+  describe('finding an account', () => {
+    it('matches a username without caring about case', async () => {
+      const { userId } = await account(`Trout-${String(Date.now())}`)
+      const found = await theStore().findUsers('trout-', 50)
+      expect(found.map((user) => user.userId)).toContain(userId)
+    })
+
+    it('matches a sign-in address, which is the only place the API returns one', async () => {
+      const { userId } = await account()
+      const found = await theStore().findUsers(`${userId}@example.com`, 50)
+      expect(found).toHaveLength(1)
+      expect(found[0]?.identities.map((identity) => identity.email)).toEqual([
+        `${userId}@example.com`,
+      ])
+      expect(found[0]?.identities[0]?.emailVerified).toBe(true)
+    })
+
+    it('returns an account once however many ways it signs in', async () => {
+      // The reason the search is an `exists` subquery rather than a join: `auth_identities` has
+      // one row per provider, so a join would hand back this person twice and the caller would
+      // have to know to collapse them.
+      const { userId } = await account()
+      await theStore().linkIdentity({
+        id: `second-${userId}`,
+        userId,
+        identity: {
+          provider: 'apple',
+          providerAccountId: `sub-${userId}`,
+          email: `${userId}@example.com`,
+          emailVerified: true,
+        },
+      })
+      const found = await theStore().findUsers(`${userId}@example.com`, 50)
+      expect(found).toHaveLength(1)
+      expect(found[0]?.identities).toHaveLength(2)
+    })
+
+    it('counts games without multiplying the identities by them', async () => {
+      // The other half of the same trap. Joining `games` as well would have given this account
+      // one row per game per identity.
+      const { userId } = await account()
+      await theStore().linkIdentity({
+        id: `also-${userId}`,
+        userId,
+        identity: {
+          provider: 'google',
+          providerAccountId: `g-${userId}`,
+          email: `${userId}@example.com`,
+          emailVerified: true,
+        },
+      })
+      for (const ago of [1000, 2000]) {
+        const at = new Date(Date.now() - ago)
+        await theStore().insertGame(gameFor(userId, at, { score: 10 }), oneWord)
+      }
+      const found = await theStore().adminUser(userId)
+      expect(found?.games).toBe(2)
+      expect(found?.identities).toHaveLength(2)
+    })
+
+    it('finds nobody without pretending otherwise', async () => {
+      expect(await theStore().findUsers('nobody-at-all-here', 50)).toEqual([])
+      expect(await theStore().adminUser('no-such-user')).toBeNull()
+    })
+
+    it('treats an empty search as no search', async () => {
+      await account()
+      expect((await theStore().findUsers('   ', 50)).length).toBeGreaterThan(0)
+      expect((await theStore().findUsers(null, 50)).length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('editing an account', () => {
+    it('writes the normalized name with the name, or uniqueness quietly stops holding', async () => {
+      const { userId } = await account()
+      const result = await theStore().editUser(userId, { username: 'Angler' })
+      expect(result.ok && result.user.username).toBe('Angler')
+      // Which is to say the index moved with it: the lookup is on the normalized column.
+      expect(await theStore().profileByUsername('angler')).toMatchObject({ userId })
+    })
+
+    it('reports a taken name as an answer rather than as a 500', async () => {
+      // The bug this pins: Drizzle wraps the driver's error, so reading `failure.code` off the
+      // error in hand finds `undefined` and the rename comes back as a 500. `isUniqueViolation`
+      // walks the `cause` chain. No fake could have produced the wrapper.
+      const first = await account()
+      const second = await account()
+      await theStore().editUser(first.userId, { username: 'Contested' })
+      const result = await theStore().editUser(second.userId, { username: 'CONTESTED' })
+      expect(result).toEqual({ ok: false, reason: 'username-taken' })
+    })
+
+    it('says so when there is no such account, on a write and on a read', async () => {
+      expect(await theStore().editUser('no-such-user', { bio: 'hi' })).toEqual({
+        ok: false,
+        reason: 'no-user',
+      })
+      // An empty patch is a read, and it has to give the same answer.
+      expect(await theStore().editUser('no-such-user', {})).toEqual({
+        ok: false,
+        reason: 'no-user',
+      })
+    })
+
+    it('reads the account back when the patch mentions nothing', async () => {
+      const { userId } = await account()
+      const result = await theStore().editUser(userId, {})
+      expect(result.ok && result.user.userId).toBe(userId)
+    })
+
+    it('grants and removes the flag, and grants it to nobody by default', async () => {
+      const { userId } = await account()
+      expect((await theStore().adminUser(userId))?.isAdmin).toBe(false)
+      expect((await theStore().editUser(userId, { isAdmin: true })).ok).toBe(true)
+      expect((await theStore().adminUser(userId))?.isAdmin).toBe(true)
+      // And the session sees it, which is what `GET /v1/me` hands the browser.
+      const session = `admin-session-${userId}`
+      await theStore().createSession({
+        id: session,
+        userId,
+        kind: 'cookie',
+        expiresAt: new Date(Date.now() + 60_000),
+      })
+      expect((await theStore().findSession(session, new Date()))?.isAdmin).toBe(true)
+
+      await theStore().editUser(userId, { isAdmin: false })
+      expect((await theStore().findSession(session, new Date()))?.isAdmin).toBe(false)
+    })
+  })
+
+  describe('deleting an account', () => {
+    it('marks it, which ends every session and hides the profile', async () => {
+      const { userId, token } = await account(`going-${String(Date.now())}`)
+      const at = new Date()
+      await theStore().insertGame(gameFor(userId, at, { score: 10 }), oneWord)
+      const gameId = gameFor(userId, at, { score: 10 }).id
+
+      expect(await theStore().markUserDeleted(userId, new Date())).toBe(true)
+      // `findSession` joins `users` and checks the column, so this is a consequence rather than
+      // a second step -- and it is the reason the mark is enough to stop somebody.
+      expect(await theStore().findSession(token, new Date())).toBeNull()
+      expect(await theStore().profileByUsername(`going-${String(at.getTime())}`)).toBeNull()
+      // A game belonging to a marked account is no such game, the same answer as one that never
+      // existed. The inner join and the `isNull(users.deletedAt)` both say so.
+      expect(await theStore().gameById(gameId)).toBeNull()
+      // Still there for the panel, which is the one surface that has to see it.
+      expect((await theStore().adminUser(userId))?.deletedAt).toBeInstanceOf(Date)
+    })
+
+    it('brings one back', async () => {
+      const { userId, token } = await account()
+      await theStore().markUserDeleted(userId, new Date())
+      expect(await theStore().markUserDeleted(userId, null)).toBe(true)
+      expect(await theStore().findSession(token, new Date())).toMatchObject({ userId })
+    })
+
+    it('still edits a marked account, so a bad name can be fixed on the way out', async () => {
+      // The one deliberate difference from `updateProfile`, which guards on `deletedAt`: the row
+      // is still there until it is reaped, and until then the name is still on a game.
+      const { userId } = await account()
+      await theStore().markUserDeleted(userId, new Date())
+      const renamed = await theStore().editUser(userId, { username: `Reaped${String(Date.now())}` })
+      expect(renamed.ok).toBe(true)
+      // And `updateProfile` still refuses, which is the pair of behaviours worth pinning together.
+      expect(await theStore().updateProfile(userId, { bio: 'hello' })).toBeNull()
+    })
+
+    it('says so when there is no such account', async () => {
+      expect(await theStore().markUserDeleted('no-such-user', new Date())).toBe(false)
+    })
+  })
+
+  describe('curating a board', () => {
+    it('lists games in the order a board has them', async () => {
+      // Score down, rounds up, clock up -- `compareResults` in @blinkered/engine, and the column
+      // order `games_leaderboard_idx` is built for. A listing sorted any other way would not be
+      // showing the board it exists to judge.
+      const { userId } = await account()
+      const base = Date.now()
+      const rows = [
+        { at: new Date(base - 3000), score: 40, rounds: 9 },
+        { at: new Date(base - 2000), score: 40, rounds: 6 },
+        { at: new Date(base - 1000), score: 90, rounds: 6 },
+      ]
+      for (const row of rows) {
+        await theStore().insertGame(
+          gameFor(userId, row.at, { score: row.score, rounds: row.rounds }),
+          oneWord,
+        )
+      }
+      const listed = await theStore().findGames({ userId, limit: 50 })
+      expect(listed.map((game) => [game.score, game.rounds])).toEqual([
+        [90, 6],
+        [40, 6],
+        [40, 9],
+      ])
+      expect(listed[0]?.owner.userId).toBe(userId)
+      expect(listed[0]).toMatchObject({ hidden: false, leaderboardEligible: false })
+    })
+
+    it('filters on language and difficulty', async () => {
+      const { userId } = await account()
+      const base = Date.now()
+      await theStore().insertGame(
+        gameFor(userId, new Date(base - 5000), { score: 10, language: 'fi' }),
+        oneWord,
+      )
+      await theStore().insertGame(
+        gameFor(userId, new Date(base - 4000), { score: 10, language: 'en' }),
+        oneWord,
+      )
+      expect(await theStore().findGames({ userId, language: 'fi', limit: 50 })).toHaveLength(1)
+      expect(await theStore().findGames({ userId, difficulty: 'insane', limit: 50 })).toEqual([])
+      expect(await theStore().findGames({ userId, difficulty: 'medium', limit: 50 })).toHaveLength(
+        2,
+      )
+    })
+
+    it('hides a game from everywhere a player can see, and brings it back', async () => {
+      const { userId } = await account()
+      const at = new Date()
+      await theStore().insertGame(gameFor(userId, at, { score: 99 }), oneWord)
+      const gameId = gameFor(userId, at, { score: 99 }).id
+
+      expect(await theStore().setGameHidden(gameId, true)).toBe(true)
+      // Gone from the permalink and from its owner's own page. A score removed from a board that
+      // still sits at the top of a personal page has been removed from nowhere its setter looks.
+      expect(await theStore().gameById(gameId)).toBeNull()
+      expect((await theStore().gamesOf(userId, 50)).map((game) => game.id)).not.toContain(gameId)
+      // And still findable here, or nothing could ever be un-hidden.
+      expect(await theStore().findGames({ userId, hidden: true, limit: 50 })).toHaveLength(1)
+      expect(await theStore().findGames({ userId, hidden: false, limit: 50 })).toEqual([])
+      expect(await theStore().findGames({ userId, limit: 50 })).toHaveLength(1)
+
+      await theStore().setGameHidden(gameId, false)
+      expect(await theStore().gameById(gameId)).not.toBeNull()
+    })
+
+    it('says so when there is no such game', async () => {
+      expect(await theStore().setGameHidden('no-such-game', true)).toBe(false)
+    })
+  })
+
+  describe('the reports queue', () => {
+    it('writes one, reads both ends, and refuses a second about the same thing', async () => {
+      const reporter = await account()
+      const subject = await account()
+      const row = {
+        id: `report-${reporter.userId}`,
+        reporterUserId: reporter.userId,
+        subjectUserId: subject.userId,
+        subjectGameId: null,
+        field: 'bio',
+        reason: 'buying followers',
+      }
+      expect(await theStore().insertReport(row)).toBe(true)
+      // One open report per person per subject per field. The duplicate check has to compare a
+      // null subject with `is null` rather than `=`, which is the branch a fake cannot check.
+      expect(await theStore().insertReport({ ...row, id: `${row.id}-again` })).toBe(false)
+
+      const open = await theStore().findReports(true, 50)
+      const mine = open.find((report) => report.id === row.id)
+      expect(mine).toMatchObject({
+        field: 'bio',
+        reason: 'buying followers',
+        resolvedAt: null,
+        reporter: { userId: reporter.userId },
+        subjectUser: { userId: subject.userId },
+        subjectGame: null,
+      })
+    })
+
+    it('carries the game and its score when the objection is to one', async () => {
+      const reporter = await account()
+      const subject = await account()
+      const at = new Date()
+      await theStore().insertGame(gameFor(subject.userId, at, { score: 77 }), oneWord)
+      const gameId = gameFor(subject.userId, at, { score: 77 }).id
+      const id = `report-score-${subject.userId}`
+      expect(
+        await theStore().insertReport({
+          id,
+          reporterUserId: reporter.userId,
+          subjectUserId: subject.userId,
+          subjectGameId: gameId,
+          field: 'score',
+          reason: null,
+        }),
+      ).toBe(true)
+      const found = (await theStore().findReports(true, 200)).find((report) => report.id === id)
+      expect(found?.subjectGame).toEqual({ id: gameId, score: 77 })
+    })
+
+    it('resolves one, reopens it, and keeps the open ones first', async () => {
+      const reporter = await account()
+      const subject = await account()
+      const id = `report-order-${subject.userId}`
+      await theStore().insertReport({
+        id,
+        reporterUserId: reporter.userId,
+        subjectUserId: subject.userId,
+        subjectGameId: null,
+        field: 'username',
+        reason: null,
+      })
+      const at = new Date()
+      expect(await theStore().setReportResolved(id, at)).toBe(true)
+      expect((await theStore().findReports(true, 200)).map((r) => r.id)).not.toContain(id)
+
+      const all = await theStore().findReports(false, 200)
+      expect(all.find((report) => report.id === id)?.resolvedAt).toBeInstanceOf(Date)
+      // `nulls first` is written out because Postgres puts nulls last under `asc`, and an
+      // unresolved report is exactly a null. Without it the queue opens on finished work.
+      const resolvedFirst = all.findIndex((report) => report.resolvedAt !== null)
+      const openLast = all.map((report) => report.resolvedAt === null).lastIndexOf(true)
+      expect(openLast).toBeLessThan(resolvedFirst)
+
+      expect(await theStore().setReportResolved(id, null)).toBe(true)
+      expect((await theStore().findReports(true, 200)).map((r) => r.id)).toContain(id)
+    })
+
+    it('outlives the account that filed it', async () => {
+      // `reporter_user_id` is `on delete set null`, so the objection survives its author. Which
+      // is why every join in `findReports` is a left join, and why `reporter` is nullable.
+      const reporter = await account()
+      const subject = await account()
+      const id = `report-orphan-${subject.userId}`
+      await theStore().insertReport({
+        id,
+        reporterUserId: reporter.userId,
+        subjectUserId: subject.userId,
+        subjectGameId: null,
+        field: 'bio',
+        reason: 'still worth reading',
+      })
+      // A real delete rather than the mark, because this is the database's rule being checked.
+      await theDb().delete(users).where(eq(users.id, reporter.userId))
+      const found = (await theStore().findReports(true, 200)).find((report) => report.id === id)
+      expect(found?.reporter).toBeNull()
+      expect(found?.reason).toBe('still worth reading')
+    })
+
+    it('says so when there is no such report', async () => {
+      expect(await theStore().setReportResolved('no-such-report', new Date())).toBe(false)
+    })
   })
 })

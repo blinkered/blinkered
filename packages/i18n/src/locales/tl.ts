@@ -282,6 +282,18 @@ export const tl: Messages = {
   keepThisGame: 'Itago ang larong ito',
   savedToYourGames: 'Na-save sa mga laro mo.',
 
+  reportThis: 'Iulat',
+  reportHeading: 'Iulat ito',
+  reportTheName: 'Ang pangalan',
+  reportTheBio: 'Ang bio',
+  reportTheScore: 'Ang puntos',
+  reportWhy: 'Ano ang mali dito? Opsyonal.',
+  reportSend: 'Ipadala ang ulat',
+  reportSent: 'Salamat. May titingin dito.',
+  reportSignIn: 'Mag-sign in para makapag-ulat.',
+  reportGone: 'Wala na iyon.',
+  reportCancel: 'Kanselahin',
+
   plurals: {
     words: { one: '{n} salita', other: '{n} salita' },
     rounds: { one: '{n} ikot', other: '{n} ikot' },

@@ -264,6 +264,18 @@ export const el: Messages = {
   keepThisGame: 'Κράτα αυτό το παιχνίδι',
   savedToYourGames: 'Αποθηκεύτηκε στα παιχνίδια σου.',
 
+  reportThis: 'Αναφορά',
+  reportHeading: 'Αναφορά αυτού',
+  reportTheName: 'Το όνομα',
+  reportTheBio: 'Η περιγραφή',
+  reportTheScore: 'Το σκορ',
+  reportWhy: 'Τι πάει λάθος με αυτό; Προαιρετικό.',
+  reportSend: 'Αποστολή αναφοράς',
+  reportSent: 'Ευχαριστούμε. Κάποιος θα το δει.',
+  reportSignIn: 'Συνδέσου για να αναφέρεις κάτι.',
+  reportGone: 'Αυτό δεν υπάρχει πια.',
+  reportCancel: 'Άκυρο',
+
   plurals: {
     words: { one: '{n} λέξη', other: '{n} λέξεις' },
     rounds: { one: '{n} γύρος', other: '{n} γύροι' },

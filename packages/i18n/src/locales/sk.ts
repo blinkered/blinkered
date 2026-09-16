@@ -265,6 +265,18 @@ export const sk: Messages = {
   keepThisGame: 'Zachovať túto hru',
   savedToYourGames: 'Uložené medzi tvoje hry.',
 
+  reportThis: 'Nahlásiť',
+  reportHeading: 'Nahlásiť toto',
+  reportTheName: 'Meno',
+  reportTheBio: 'Popis',
+  reportTheScore: 'Skóre',
+  reportWhy: 'Čo s tým nie je v poriadku? Nepovinné.',
+  reportSend: 'Odoslať hlásenie',
+  reportSent: 'Ďakujeme. Niekto sa na to pozrie.',
+  reportSignIn: 'Prihlás sa, aby si mohol niečo nahlásiť.',
+  reportGone: 'To už tu nie je.',
+  reportCancel: 'Zrušiť',
+
   plurals: {
     words: { one: '{n} slovo', few: '{n} slová', many: '{n} slova', other: '{n} slov' },
     rounds: { one: '{n} kolo', few: '{n} kolá', many: '{n} kola', other: '{n} kôl' },

@@ -268,6 +268,18 @@ export const arz: Messages = {
   keepThisGame: 'احتفظ باللعبة دي',
   savedToYourGames: 'اتحفظت في ألعابك.',
 
+  reportThis: 'بلّغ',
+  reportHeading: 'بلّغ عن ده',
+  reportTheName: 'الاسم',
+  reportTheBio: 'النبذة',
+  reportTheScore: 'النتيجة',
+  reportWhy: 'إيه الغلط فيه؟ اختياري.',
+  reportSend: 'ابعت البلاغ',
+  reportSent: 'شكرًا. حدّ حيبصّ عليه.',
+  reportSignIn: 'سجّل دخولك عشان تبلّغ عن حاجة.',
+  reportGone: 'ده مبقى موجود.',
+  reportCancel: 'إلغاء',
+
   plurals: {
     words: {
       zero: '{n} كلمة',

@@ -1,10 +1,11 @@
 /**
  * Where in the app the address bar points, which until now was only ever "the game".
  *
- * Two shapes, and they are the two things worth linking to:
+ * Three shapes. Two of them are the things worth linking to:
  *
  *   /g/<id>        one finished game
  *   /u/<username>  one player
+ *   /admin         moderation, which is not worth linking to and has an address anyway
  *
  * A game id rather than anything prettier, because a game permalink is the link that gets
  * shared and it must not rot. A username in the other, because a profile link is read by people
@@ -13,8 +14,9 @@
  * side of the trade when the durable link is the other one.
  *
  * Paths rather than query parameters, so the links look like links. That needs nginx to answer
- * these two prefixes with `index.html`, and deploy/nginx.shared.conf does it for exactly these
- * two and nothing else: a blanket fallback is what made a missing word list parse as HTML once,
+ * these with `index.html`, and deploy/nginx.shared.conf does it for exactly these three and
+ * nothing else -- the two prefixes as prefixes, and `/admin` as an exact match so it cannot grow
+ * to swallow a neighbour. A blanket fallback is what made a missing word list parse as HTML once,
  * and the comment there refusing one is still right.
  */
 
@@ -22,11 +24,25 @@ export type Route =
   | { readonly at: 'game' }
   | { readonly at: 'played-game'; readonly id: string }
   | { readonly at: 'player'; readonly username: string }
+  /**
+   * Moderation.
+   *
+   * An address rather than only a menu item, for two reasons that have nothing to do with
+   * sharing a link. It survives a reload, which matters on the screen somebody works in for
+   * twenty minutes at a time; and it is what lets the panel be reached at all in a tab that
+   * was opened straight onto it.
+   *
+   * It grants nothing. The menu item appears for an admin and the panel is drawn for one, but
+   * every route under `/v1/admin` reads the column itself, so typing this address signed out
+   * gets an empty panel full of refusals.
+   */
+  | { readonly at: 'admin' }
 
 /** Reads a path. Anything unrecognised is the game, which is what `/` has always been. */
 export function routeOf(pathname: string): Route {
   const parts = pathname.split('/').filter((part) => part !== '')
   const [prefix, value] = parts
+  if (parts.length === 1 && prefix === 'admin') return { at: 'admin' }
   if (parts.length === 2 && value !== undefined && value !== '') {
     if (prefix === 'g') return { at: 'played-game', id: decodeURIComponent(value) }
     if (prefix === 'u') return { at: 'player', username: decodeURIComponent(value) }
@@ -41,6 +57,8 @@ export function pathOf(route: Route): string {
       return `/g/${encodeURIComponent(route.id)}`
     case 'player':
       return `/u/${encodeURIComponent(route.username)}`
+    case 'admin':
+      return '/admin'
     case 'game':
       return '/'
   }

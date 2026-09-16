@@ -273,6 +273,18 @@ export const cy: Messages = {
   keepThisGame: "Cadw'r gêm hon",
   savedToYourGames: "Wedi'i chadw i dy gemau.",
 
+  reportThis: 'Adrodd',
+  reportHeading: 'Adrodd hyn',
+  reportTheName: 'Yr enw',
+  reportTheBio: 'Y disgrifiad',
+  reportTheScore: 'Y sgôr',
+  reportWhy: 'Beth sy’n bod arno? Dewisol.',
+  reportSend: 'Anfon yr adroddiad',
+  reportSent: 'Diolch. Bydd rhywun yn edrych arno.',
+  reportSignIn: 'Mewngofnoda i adrodd rhywbeth.',
+  reportGone: 'Nid yw hwnnw yno mwyach.',
+  reportCancel: 'Canslo',
+
   plurals: {
     words: {
       zero: '{n} gair',

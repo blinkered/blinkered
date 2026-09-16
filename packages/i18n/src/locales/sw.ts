@@ -269,6 +269,18 @@ export const sw: Messages = {
   keepThisGame: 'Hifadhi mchezo huu',
   savedToYourGames: 'Imehifadhiwa kwenye michezo yako.',
 
+  reportThis: 'Ripoti',
+  reportHeading: 'Ripoti hii',
+  reportTheName: 'Jina',
+  reportTheBio: 'Wasifu',
+  reportTheScore: 'Alama',
+  reportWhy: 'Kuna nini kibaya nayo? Si lazima.',
+  reportSend: 'Tuma ripoti',
+  reportSent: 'Asante. Mtu ataiangalia.',
+  reportSignIn: 'Ingia ili kuripoti kitu.',
+  reportGone: 'Hiyo haipo tena.',
+  reportCancel: 'Ghairi',
+
   plurals: {
     words: { one: 'neno {n}', other: 'maneno {n}' },
     rounds: { one: 'raundi {n}', other: 'raundi {n}' },

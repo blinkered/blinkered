@@ -16,7 +16,8 @@ import type { Account } from './account.js'
  * it opens. An account menu at the end of a title bar reads as an account menu, because that is
  * where every reader has been trained to look for one.
  *
- * English, like the dialog it opens, and for the same reason: see the note in `SignInDialog`.
+ * Translated, like the dialog it opens. The one item that is not is **Moderation**, which is
+ * drawn only for an admin and opens a panel that is English on purpose; `AdminScreen` records why.
  */
 
 export type Destination = 'profile' | 'games'
@@ -30,6 +31,7 @@ export function AccountMenu({
   onSignIn,
   onGo,
   onPublicProfile,
+  onModerate,
   onSignOut,
 }: {
   readonly account: Account | null
@@ -38,6 +40,8 @@ export function AccountMenu({
   readonly onGo: (destination: Destination) => void
   /** Opens the page everybody else sees, which is the only way to check what it says. */
   readonly onPublicProfile: (username: string) => void
+  /** Opens the admin panel. Only ever called from the item that appears for an admin. */
+  readonly onModerate: () => void
   readonly onSignOut: () => void
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -134,6 +138,31 @@ export function AccountMenu({
           >
             {messages.menuPublicPage}
           </button>
+          {/*
+            Moderation, for the accounts that can.
+            
+            Shown from `Profile.isAdmin`, which decides only what is drawn: every route under
+            `/v1/admin` reads the column itself, so a browser that lies about this gets a menu
+            item and a 403 behind it.
+            
+            Untranslated, alone in a translated menu, which is the visible edge of the decision
+            recorded in `AdminScreen`: the panel it opens is English because its audience is us.
+            An English item above a translated one looks like a mistake to anybody else, and
+            nobody else ever sees it.
+          */}
+          {account.isAdmin ? (
+            <button
+              type="button"
+              role="menuitem"
+              className="account-item"
+              onClick={() => {
+                close()
+                onModerate()
+              }}
+            >
+              Moderation
+            </button>
+          ) : null}
           <button
             type="button"
             role="menuitem"

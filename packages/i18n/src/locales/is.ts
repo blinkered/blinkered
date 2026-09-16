@@ -267,6 +267,18 @@ export const is: Messages = {
   keepThisGame: 'Halda þessum leik',
   savedToYourGames: 'Vistað hjá leikjunum þínum.',
 
+  reportThis: 'Tilkynna',
+  reportHeading: 'Tilkynna þetta',
+  reportTheName: 'Nafnið',
+  reportTheBio: 'Kynningin',
+  reportTheScore: 'Skorið',
+  reportWhy: 'Hvað er að því? Valfrjálst.',
+  reportSend: 'Senda tilkynningu',
+  reportSent: 'Þakka þér. Einhver skoðar það.',
+  reportSignIn: 'Skráðu þig inn til að tilkynna eitthvað.',
+  reportGone: 'Það er ekki þar lengur.',
+  reportCancel: 'Hætta',
+
   plurals: {
     words: { one: '{n} orð', other: '{n} orð' },
     rounds: { one: '{n} umferð', other: '{n} umferðir' },

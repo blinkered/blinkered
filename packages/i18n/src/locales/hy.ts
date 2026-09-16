@@ -272,6 +272,18 @@ export const hy: Messages = {
   keepThisGame: 'Պահել այս խաղը',
   savedToYourGames: 'Պահվեց ձեր խաղերում։',
 
+  reportThis: 'Բողոքել',
+  reportHeading: 'Բողոքել սրանից',
+  reportTheName: 'Անունը',
+  reportTheBio: 'Ներկայացումը',
+  reportTheScore: 'Միավորը',
+  reportWhy: 'Ի՞նչն է սխալ։ Ըստ ցանկության։',
+  reportSend: 'Ուղարկել բողոքը',
+  reportSent: 'Շնորհակալություն։ Ինչ-որ մեկը կնայի։',
+  reportSignIn: 'Մտեք՝ որևէ բան հայտնելու համար։',
+  reportGone: 'Դա այլևս չկա։',
+  reportCancel: 'Չեղարկել',
+
   plurals: {
     words: { one: '{n} բառ', other: '{n} բառ' },
     rounds: { one: '{n} փուլ', other: '{n} փուլ' },

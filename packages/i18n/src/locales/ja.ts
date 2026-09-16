@@ -275,6 +275,18 @@ export const ja: Messages = {
   keepThisGame: 'このゲームを残す',
   savedToYourGames: 'ゲームに保存しました。',
 
+  reportThis: '報告',
+  reportHeading: 'これを報告する',
+  reportTheName: '名前',
+  reportTheBio: '自己紹介',
+  reportTheScore: 'スコア',
+  reportWhy: 'どこが問題ですか？（任意）',
+  reportSend: '報告を送る',
+  reportSent: 'ありがとうございます。誰かが確認します。',
+  reportSignIn: '報告するにはログインしてください。',
+  reportGone: 'それはもうありません。',
+  reportCancel: 'キャンセル',
+
   plurals: {
     words: { other: '{n}語' },
     rounds: { other: '{n}ラウンド' },

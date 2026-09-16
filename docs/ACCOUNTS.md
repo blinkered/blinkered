@@ -689,6 +689,10 @@ The shape it should take is not a lone endpoint. What is actually wanted is an `
 the `reports` rows that already have a table and nothing reading them. A moderation queue with no
 way to act on it is the current state, and one delete route would not change that.
 
+**That panel is now built** — see "Moderation" below. `DELETE /v1/me`, the one a person fires at
+their own account, still does not exist and is still the App Store blocker. What exists is the
+other half: somebody can now be deleted, and by somebody who can also undo it.
+
 **A game played while signed in goes through the same route, and is not marked `imported`.**
 Phase A issues no seeds, so every game is finished on the client whoever was signed in, and one
 route takes both. What the two are is still different: `imported` means a game brought in from a
@@ -854,3 +858,148 @@ that comes with it, and it should be planned rather than arrived at.
   different object: it needs a server-issued seed and the envelope check, and a game played
   before the server knew it existed has neither. It belongs in the person's history and not on a
   board, and the column for saying so is already there.
+
+## Moderation
+
+Built, and it is what the section above asked for rather than a delete route: an `is_admin` on
+`users`, a panel behind it, and a report button in front of it. The two halves are the point. A
+queue nothing writes to is a queue of nothing, and a report nobody can act on is a form that
+wastes somebody's time politely.
+
+### The flag is a column, and nobody can give it to themselves
+
+`users.is_admin`, default false, not null. A column rather than a roles table because there is
+exactly one power and it is not going to grow into a permission system for a word game; the day
+it needs two is the day to build the table, and a boolean is cheap to migrate off.
+
+Three rules hold it shut, and together they mean **every admin was made by somebody else**:
+
+- Nothing in the sign-in flow writes the column. There is no path from signing up to holding it.
+- `PATCH /v1/admin/users/:id` answers 409 when the id is the caller's own. Not a rail against a
+  misclick: it is what stops the flag being something an admin panel can hand to itself. A bug in
+  the panel cannot mint an admin, because the panel has no route that would.
+- So **the first one is set by hand against the database.** One `update`, recorded in
+  [DEPLOY.md](DEPLOY.md). That is the correct amount of ceremony for the power to delete
+  anybody's account.
+
+Deleting yourself is refused the same way, for a smaller reason: it is a misclick that would cost
+the account able to undo it. The panel does not draw either button on your own row, because a
+control that exists only to be refused is worse than no control — the same rule the report button
+follows about your own profile.
+
+`Profile.isAdmin` goes to the browser on `GET /v1/me`, so a menu item can be drawn. It is
+**not** on `PublicProfile` and must not be: who moderates is nobody else's business, and a public
+field saying so would be a list of the accounts worth attacking. Every route reads the column
+itself, so a client that lies about it gets a menu item and a 403.
+
+### The routes
+
+| route                              | for                                                 |
+| ---------------------------------- | --------------------------------------------------- |
+| `POST /v1/reports`                 | the report button, behind the session               |
+| `GET /v1/admin/users`              | find somebody, by username or sign-in address       |
+| `GET /v1/admin/users/:id`          | one account: how they sign in, how much they played |
+| `PATCH /v1/admin/users/:id`        | rename, clear a bio, grant or remove the flag       |
+| `DELETE /v1/admin/users/:id`       | mark deleted                                        |
+| `POST /v1/admin/users/:id/restore` | unmark                                              |
+| `GET /v1/admin/games`              | the board, in the board's own order                 |
+| `PATCH /v1/admin/games/:id`        | hide a game, or bring it back                       |
+| `GET /v1/admin/reports`            | the queue                                           |
+| `PATCH /v1/admin/reports/:id`      | resolve one, or reopen it                           |
+
+Everything under `/v1/admin` sits behind one middleware rather than a check at the top of nine
+handlers, which is the property worth having: a route added to that file later is behind the gate
+because of where it is, not because somebody remembered. That is the opposite call from
+`account/routes.ts`, where each handler asks for the session itself because some of those routes
+are public. Here nothing is.
+
+401 and 403 stay apart. They are different facts and the client shows different things — signed
+out means sign in, and not an admin means this page is not for you — and there is no enumeration
+concern, because you have to be signed in to tell them apart and your own account's flag is not
+news to you.
+
+### The panel is in English, and the button is in fifty-one languages
+
+Deliberate, and the asymmetry is the whole of it. The queue has one audience and it is us; the
+button has fifty-one, and this document already settled why that matters: "a blocklist is not
+going to work across this many languages and pretending otherwise is worse than not having one.
+What works is a report button and the power to rename an account and tell its owner why." A
+button that only worked in English would be a blocklist with extra steps.
+
+Going the other way, forty admin strings nobody outside the project will read would cost
+fifty-one locale files apiece, forever, and the i18n suite's own completeness checks would then be
+policing translations of "Mark deleted". It is a decision rather than a gap, and the day somebody
+moderating Blinkered does not read English it becomes a wrong one.
+
+Two strings are reused rather than added: the dialog's sending state is `saving` and its failure
+is `serverBusy`, which already say exactly those things in every language.
+
+### What a report is
+
+`POST /v1/reports`, **behind the session**, which is a deliberate cost. An anonymous button would
+collect more reports and the `reporter_user_id` column is nullable so it could, but a queue nobody
+can be held to is a queue of noise: much of a report's value is who filed it and whether they file
+good ones.
+
+One open report per person per subject per field. A second one answers 200 rather than 409 and the
+dialog says the same thing it says about the first, because from where the reader is standing they
+reported it and it is reported; telling them the difference only invites a third attempt. The
+duplicate rule is a check rather than a partial unique index over four nullable columns — the race
+that leaves costs the queue a duplicate row, and the index costs more than that to get right for
+the same outcome.
+
+A reported game carries **its owner as well as the game id**, because "has this person done this
+before" is a question a queue holding only game ids could not answer. Reporting yourself is 409; a
+subject that is not there is 404, through the same readers the public pages use, so there is one
+idea of what a person is and one of what a game is rather than moderation-flavoured copies.
+
+### Hiding, renaming, marking
+
+The three verbs, and each one is the reversible half of something irreversible.
+
+**Hiding a game** is the whole anti-cheat apparatus this document already argued for: the server
+scores a submission from its own words, which stops the thirty-second attack, and anything
+surviving that is dealt with by a person looking at it. A hidden game 404s on its permalink and
+disappears from its owner's own list too — a score removed from a board that still sits at the top
+of a personal page has been removed from nowhere its setter can see. The curation listing shows
+hidden games unless the filter excludes them, because a hidden game that could not be found again
+could never be un-hidden.
+
+That listing is ordered **score down, rounds up, oldest first**, which is `compareResults` in
+`@blinkered/engine` and the column order `games_leaderboard_idx` is built for. Deliberately the
+board's order rather than "newest first": the screen exists to look at what is at the top of a
+board and decide whether it belongs there, and a listing sorted differently would not be showing
+the board.
+
+**Renaming** goes through `parsePatch`, the same checks a name its owner types goes through. An
+admin renaming somebody past the rules would be creating the impersonation problem the rules exist
+to prevent — including the generated `word-word-1234` shape, which stays reserved, so nobody can
+be made indistinguishable from a brand-new account.
+
+**Marking deleted** sets `users.deleted_at` and nothing else. It ends their sessions as a
+consequence rather than as a second step, because `findSession` already joins `users` and checks
+the column; their profile and their games 404 with them. The row stays until something reaps it,
+and nothing reaps it yet. That reaper is what App Store 5.1.1(v) needs, and it is the piece still
+missing. A marked account is still editable here, unlike through `updateProfile`, which is what
+lets an offensive name be fixed on an account on its way out.
+
+### The one place the API returns a sign-in address
+
+`GET /v1/admin/users` and `/v1/admin/users/:id`, and nowhere else. A profile has never carried one
+and `PublicProfile` exists to keep it that way, so this is a deliberate exception rather than an
+oversight: moderation means answering "who is this account", and a panel that cannot see the
+address cannot answer it. `AdminUser` is a third type beside `Profile` and `PublicProfile` rather
+than a widening of either, and that is the mechanism — the routes that answer a browser do not
+have an address to leak.
+
+### What is still not built
+
+- **`DELETE /v1/me`**, the self-service one. Still the App Store blocker.
+- **The reaper.** `deleted_at` is set and nothing acts on it, so a marked account is still a row.
+- **Telling somebody why they were renamed.** There is no notification of any kind, so this is a
+  person and an email address. Worth doing before the first rename that is not ours.
+- **A rate limit on `POST /v1/reports`.** The duplicate rule stops somebody filing the same report
+  twice; it does not stop them filing one about everybody. Behind a session, which makes it
+  attributable, which is most of the defence.
+- **An audit trail.** Who hid what, and when. The reports table records the objection and nothing
+  records the answer beyond `resolved_at`. Wanted the first time two people moderate.

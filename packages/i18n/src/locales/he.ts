@@ -271,6 +271,18 @@ export const he: Messages = {
   keepThisGame: 'שמור את המשחק הזה',
   savedToYourGames: 'נשמר במשחקים שלך.',
 
+  reportThis: 'דווח',
+  reportHeading: 'דווח על זה',
+  reportTheName: 'השם',
+  reportTheBio: 'התיאור',
+  reportTheScore: 'הניקוד',
+  reportWhy: 'מה לא בסדר בזה? לא חובה.',
+  reportSend: 'שליחת הדיווח',
+  reportSent: 'תודה. מישהו יבדוק את זה.',
+  reportSignIn: 'התחבר כדי לדווח על משהו.',
+  reportGone: 'זה לא נמצא שם יותר.',
+  reportCancel: 'ביטול',
+
   plurals: {
     words: { one: 'מילה {n}', two: '{n} מילים', other: '{n} מילים' },
     rounds: { one: 'סיבוב {n}', two: '{n} סיבובים', other: '{n} סיבובים' },

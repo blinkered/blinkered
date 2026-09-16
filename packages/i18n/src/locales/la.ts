@@ -272,6 +272,18 @@ export const la: Messages = {
   keepThisGame: 'Hunc ludum serva',
   savedToYourGames: 'In ludis tuis servatum.',
 
+  reportThis: 'Defer',
+  reportHeading: 'Hoc defer',
+  reportTheName: 'Nomen',
+  reportTheBio: 'Descriptio',
+  reportTheScore: 'Numerus',
+  reportWhy: 'Quid in eo vitii est? Ad libitum.',
+  reportSend: 'Delationem mitte',
+  reportSent: 'Gratias tibi. Aliquis inspiciet.',
+  reportSignIn: 'Intra ut aliquid deferas.',
+  reportGone: 'Id iam non adest.',
+  reportCancel: 'Desine',
+
   plurals: {
     words: { one: 'verbum {n}', other: 'verba {n}' },
     rounds: { one: 'ambitus {n}', other: 'ambitus {n}' },

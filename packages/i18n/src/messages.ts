@@ -388,6 +388,41 @@ export interface Messages {
   /** Keeping a game that was played signed out. */
   readonly keepThisGame: string
   readonly savedToYourGames: string
+
+  /**
+   * Objecting to something somebody wrote or scored.
+   *
+   * Translated, unlike the panel that reads these reports, and the asymmetry is deliberate. The
+   * queue has one audience and it is us; the button has fifty-one, and docs/ACCOUNTS.md is
+   * explicit that this button is what a blocklist cannot be: "a blocklist is not going to work
+   * across this many languages and pretending otherwise is worse than not having one. What works
+   * is a report button and the power to rename an account and tell its owner why." A button that
+   * only worked in English would be a blocklist with extra steps.
+   *
+   * `reportSent` answers a duplicate as well as a first report, on purpose: from where the
+   * reader is standing they reported it and it is reported, and saying "you already did that"
+   * only invites a third attempt.
+   */
+  readonly reportThis: string
+  readonly reportHeading: string
+  /** The three things there are to object to, which are the three free-text surfaces. */
+  readonly reportTheName: string
+  readonly reportTheBio: string
+  readonly reportTheScore: string
+  readonly reportWhy: string
+  readonly reportSend: string
+  readonly reportSent: string
+  /** Reporting is behind the session, so a signed-out reader is told rather than left waiting. */
+  readonly reportSignIn: string
+  readonly reportGone: string
+  readonly reportCancel: string
+  /*
+   * There is no `reportSending` and no `reportFailed`. The dialog uses `saving` and `serverBusy`,
+   * which already say exactly those two things in fifty-one languages -- "Saving…" and "Could not
+   * reach the server. Try again in a moment." A second key per locale holding the same sentence
+   * would be fifty-one more strings to keep in step for no new words.
+   */
+
   readonly plurals: Plurals
 }
 

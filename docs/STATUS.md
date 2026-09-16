@@ -48,11 +48,21 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in every language.
+- **Moderation**, which is `is_admin` on `users`, a panel behind it, and a report button in
+  front of it. The panel finds an account by username or sign-in address, renames it, clears a
+  bio, grants or removes the flag, marks it deleted and brings it back; it lists games in the
+  board's own order and hides one; and it reads and resolves the `reports` rows that had a table
+  and nothing writing to or reading them. Nobody can grant themselves the flag — the sign-in flow
+  never writes the column and the routes refuse to change it on the caller's own row — so the
+  first admin is one `update` by hand, which is the correct ceremony for the power to delete
+  anybody's account. The panel is in English and the report button is in all fifty-one languages,
+  and that asymmetry is the point: a report button that only worked in English would be the
+  blocklist ACCOUNTS.md refuses. See [ACCOUNTS.md](ACCOUNTS.md), "Moderation".
 - **`apps/server`** — started, and honest about how far. A Hono app answering `/healthz`, and
   `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
   believed. No database yet, so no other route exists: one that answered from nothing would be a
   fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
-- 1,287 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
+- 1,614 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
   CI on ubuntu and macos. Three of them are per-language sweeps rather than samples: every
   alphabet deals an accepted board over three seeds, every letter in every `weights` table
   appears in some shipped word, and every written form in every shipped list folds back onto the
@@ -81,12 +91,25 @@ boards are public.
 
 ## Wanted, not built
 
-**Accounts, history and leaderboards** is queued and designed:
-[ACCOUNTS.md](ACCOUNTS.md). Decided so far: sign-in is a six-digit emailed code plus Google and
-Apple, with no password anywhere; avatars are generated rather than uploaded, so there is nothing
-hosted to moderate; personal history ships before any public board, and the boards wait for the
-balance simulator. Scores are checked rather than replayed: the client sends the words it found
-and the server scores them, since `points` is a function of word length alone.
+**Accounts, history and leaderboards** is largely built rather than queued; what is left of it is
+in [ACCOUNTS.md](ACCOUNTS.md). Sign-in is a six-digit emailed code plus Google and Apple, with no
+password anywhere; avatars are generated rather than uploaded, so there is nothing hosted to
+moderate; personal history ships before any public board, and the boards wait for the balance
+simulator. Scores are checked rather than replayed: the client sends the words it found and the
+server scores them, since `points` is a function of word length alone.
+
+**Three pieces of the account surface are still owed**, and the first is a store blocker:
+
+- **`DELETE /v1/me`**, the deletion a person fires at their own account. App Store guideline
+  5.1.1(v) requires in-app deletion from anything offering account creation, and the privacy
+  policy currently gives an address instead. An admin can delete somebody; nobody can delete
+  themselves.
+- **A reaper for `users.deleted_at`.** Deletion is marked and not yet swept, deliberately — a
+  cascade fired from an HTTP handler has no way back if it was aimed at the wrong row — but
+  marked-and-never-reaped is only half of what deletion means.
+- **Telling somebody why they were renamed.** ACCOUNTS.md's answer to an abusive username is "the
+  power to rename an account and tell its owner why". The rename exists; there is no notification
+  of any kind, so the telling is a person and an email address.
 
 Otherwise nothing is queued. [PROPOSALS.md](PROPOSALS.md) is now a record of the three that
 shipped, kept because the reasoning is the part worth having: what was decided, what was measured,

@@ -265,6 +265,18 @@ export const cs: Messages = {
   keepThisGame: 'Zachovat tuhle hru',
   savedToYourGames: 'Uloženo mezi tvoje hry.',
 
+  reportThis: 'Nahlásit',
+  reportHeading: 'Nahlásit tohle',
+  reportTheName: 'Jméno',
+  reportTheBio: 'Popis',
+  reportTheScore: 'Skóre',
+  reportWhy: 'Co je na tom špatně? Nepovinné.',
+  reportSend: 'Odeslat hlášení',
+  reportSent: 'Děkujeme. Někdo se na to podívá.',
+  reportSignIn: 'Přihlas se, abys mohl něco nahlásit.',
+  reportGone: 'Tohle už tu není.',
+  reportCancel: 'Zrušit',
+
   plurals: {
     words: { one: '{n} slovo', few: '{n} slova', many: '{n} slova', other: '{n} slov' },
     rounds: { one: '{n} kolo', few: '{n} kola', many: '{n} kola', other: '{n} kol' },

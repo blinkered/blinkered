@@ -266,6 +266,18 @@ export const ko: Messages = {
   keepThisGame: '이 게임 남기기',
   savedToYourGames: '게임에 저장했습니다.',
 
+  reportThis: '신고',
+  reportHeading: '이것을 신고하기',
+  reportTheName: '이름',
+  reportTheBio: '소개',
+  reportTheScore: '점수',
+  reportWhy: '무엇이 문제인가요? (선택)',
+  reportSend: '신고 보내기',
+  reportSent: '감사합니다. 누군가 확인할 것입니다.',
+  reportSignIn: '신고하려면 로그인하세요.',
+  reportGone: '그것은 이제 없습니다.',
+  reportCancel: '취소',
+
   plurals: {
     words: { other: '단어 {n}개' },
     rounds: { other: '{n}라운드' },

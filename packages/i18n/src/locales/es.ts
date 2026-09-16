@@ -266,6 +266,18 @@ export const es: Messages = {
   keepThisGame: 'Guardar esta partida',
   savedToYourGames: 'Guardada en tus partidas.',
 
+  reportThis: 'Denunciar',
+  reportHeading: 'Denunciar esto',
+  reportTheName: 'El nombre',
+  reportTheBio: 'La biografía',
+  reportTheScore: 'La puntuación',
+  reportWhy: '¿Qué tiene de malo? Opcional.',
+  reportSend: 'Enviar la denuncia',
+  reportSent: 'Gracias. Alguien lo revisará.',
+  reportSignIn: 'Inicia sesión para denunciar algo.',
+  reportGone: 'Eso ya no está.',
+  reportCancel: 'Cancelar',
+
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },
     rounds: { one: '{n} ronda', other: '{n} rondas' },

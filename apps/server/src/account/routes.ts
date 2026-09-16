@@ -8,6 +8,7 @@ import type { LimitOptions } from '../rateLimit.js'
 import type { Store } from '../types.js'
 import { parseImport } from './importing.js'
 import { parsePatch } from './profile.js'
+import { parseReport } from './reporting.js'
 
 /**
  * What an account *is*, once somebody has one: a profile, a name, and a history.
@@ -57,6 +58,11 @@ const GAMES_MAX = 200
  */
 function newGameId(): string {
   return randomBytes(8).toString('base64url')
+}
+
+/** Every other row id. Random rather than sequential, and never read aloud, so sixteen bytes. */
+function newId(): string {
+  return randomBytes(16).toString('base64url')
 }
 
 export function accountRoutes(deps: AccountDeps): Hono {
@@ -220,6 +226,70 @@ export function accountRoutes(deps: AccountDeps): Hono {
    * and it is the right side of the trade -- the links worth keeping are game permalinks, and
    * those carry an id that never moves.
    */
+  /*
+   * Objecting to something.
+   *
+   * The half of moderation that faces players, and the reason docs/ACCOUNTS.md gives for it is
+   * worth repeating here: a blocklist cannot work across fifty-one languages, so what defends
+   * the free-text surfaces is somebody reporting them and somebody able to act. The `reports`
+   * table has existed since the first migration with nothing writing to it, which made the
+   * moderation queue a queue of nothing.
+   *
+   * **Behind the session**, which is a deliberate cost. An anonymous button would collect more
+   * reports and the column is nullable so it could, but a queue nobody can be held to is a queue
+   * of noise: the value of a report is largely who filed it and whether they file good ones.
+   *
+   * A subject that is not there is 404 rather than a report about nothing, and the two kinds of
+   * subject resolve through the same readers the public pages use -- one idea of what a person
+   * is and one of what a game is, rather than a moderation-flavoured copy of each.
+   */
+  routes.post('/reports', async (context) => {
+    const user = await currentUser(deps, context)
+    if (user === null) return context.json({ error: 'signed-out' }, 401)
+
+    const parsed = parseReport(await bodyOf(context.req))
+    if (!parsed.ok) return context.json({ error: 'bad-report', problem: parsed.problem }, 400)
+    const { field, username, gameId, reason } = parsed.report
+
+    /*
+     * Both ends, resolved to ids.
+     *
+     * A reported game carries its owner as well, because a score is objected to *and* somebody
+     * set it: a queue that held only the game id would make "has this person done this before"
+     * a question nobody can ask.
+     */
+    let subjectUserId: string | null = null
+    let subjectGameId: string | null = null
+    if (gameId !== null) {
+      const game = await deps.store.gameById(gameId)
+      if (game === null) return context.json({ error: 'no-subject' }, 404)
+      subjectGameId = gameId
+      subjectUserId = game.owner.userId
+    }
+    if (username !== null) {
+      const subject = await deps.store.profileByUsername(normalizeUsername(username))
+      if (subject === null) return context.json({ error: 'no-subject' }, 404)
+      subjectUserId = subject.userId
+    }
+
+    // Reporting yourself is not moderation, and the queue is short enough to be worth keeping
+    // free of it. Refused rather than silently dropped, because somebody who did it by accident
+    // should find out.
+    if (subjectUserId === user.userId) return context.json({ error: 'self-report' }, 409)
+
+    const filed = await deps.store.insertReport({
+      id: newId(),
+      reporterUserId: user.userId,
+      subjectUserId,
+      subjectGameId,
+      field,
+      reason,
+    })
+    // A duplicate is 200 rather than 409. From where the person is standing they reported it and
+    // it is reported; telling them the difference would only invite a second attempt.
+    return context.json({ filed }, filed ? 201 : 200)
+  })
+
   /*
    * The two public routes, behind a limit where the deployment can identify a caller.
    *

@@ -263,6 +263,18 @@ export const no: Messages = {
   keepThisGame: 'Ta vare på dette spillet',
   savedToYourGames: 'Lagret blant spillene dine.',
 
+  reportThis: 'Rapporter',
+  reportHeading: 'Rapporter dette',
+  reportTheName: 'Navnet',
+  reportTheBio: 'Presentasjonen',
+  reportTheScore: 'Poengsummen',
+  reportWhy: 'Hva er galt med det? Valgfritt.',
+  reportSend: 'Send rapporten',
+  reportSent: 'Takk. Noen ser på det.',
+  reportSignIn: 'Logg inn for å rapportere noe.',
+  reportGone: 'Det er ikke der lenger.',
+  reportCancel: 'Avbryt',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },

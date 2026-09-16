@@ -21,6 +21,13 @@ export interface Account {
   readonly uiLanguage: string | null
   readonly gameLanguage: string | null
   readonly bio: string | null
+  /**
+   * Whether this person can moderate, which decides whether the menu has an Admin item.
+   *
+   * It decides what is *shown* and nothing else. Every route under `/v1/admin` reads the column
+   * itself, so a browser that lies about this gets a menu item and a 403 behind it.
+   */
+  readonly isAdmin: boolean
 }
 
 /**
@@ -307,6 +314,45 @@ export async function keepGame(game: GameToKeep): Promise<{ id: string; score: n
     return (await response.json()) as { id: string; score: number }
   } catch {
     return null
+  }
+}
+
+/** Which part of somebody is being objected to. Three, because there are three free surfaces. */
+export type ReportField = 'username' | 'bio' | 'score'
+
+/**
+ * What filing a report did.
+ *
+ * `filed` and `already` are both successes, and the screen says the same thing about them: from
+ * where the person is standing they reported it and it is reported. The distinction is here at
+ * all because the server draws it, and swallowing it in the client would make a duplicate look
+ * like a failure the next time somebody reads this.
+ */
+export type ReportResult = 'filed' | 'already' | 'signed-out' | 'no-subject' | 'unavailable'
+
+/**
+ * Objecting to a username, a bio, or a score.
+ *
+ * Behind the session on the server, so a signed-out reader gets `signed-out` and the dialog says
+ * to sign in rather than pretending to have sent something.
+ */
+export async function report(objection: {
+  field: ReportField
+  username?: string
+  gameId?: string
+  reason?: string
+}): Promise<ReportResult> {
+  try {
+    const response = await post('reports', objection)
+    if (response.status === 201) return 'filed'
+    if (response.ok) return 'already'
+    if (response.status === 401) return 'signed-out'
+    if (response.status === 404) return 'no-subject'
+    // 409 is reporting yourself, which the interface does not offer, and 400 is a body this
+    // function built. Both are bugs here rather than anything to tell the reader about.
+    return 'unavailable'
+  } catch {
+    return 'unavailable'
   }
 }
 

@@ -263,6 +263,18 @@ export const sv: Messages = {
   keepThisGame: 'Spara det här spelet',
   savedToYourGames: 'Sparat bland dina spel.',
 
+  reportThis: 'Rapportera',
+  reportHeading: 'Rapportera det här',
+  reportTheName: 'Namnet',
+  reportTheBio: 'Presentationen',
+  reportTheScore: 'Poängen',
+  reportWhy: 'Vad är det för fel på det? Frivilligt.',
+  reportSend: 'Skicka rapporten',
+  reportSent: 'Tack. Någon tittar på det.',
+  reportSignIn: 'Logga in för att rapportera något.',
+  reportGone: 'Det finns inte längre.',
+  reportCancel: 'Avbryt',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} omgång', other: '{n} omgångar' },

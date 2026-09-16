@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import type { TieredIndex } from '@blinkered/words'
 import { Avatar } from './Avatar.js'
+import { ReportButton } from './ReportDialog.js'
 import { gameDetail } from './account.js'
 import { goTo } from './route.js'
 import type { BoardAtRound, PlayedGameDetail, PlayedWord } from './account.js'
@@ -26,7 +27,8 @@ import { spellingFor } from './spelling.js'
  * Rounds that changed nothing draw no board, which is most of them, and a game where nothing was
  * ever replaced reads as one board and a list of words -- which is what it was.
  *
- * English, like the rest of the account surface, and for the reason recorded in `SignInDialog`.
+ * Translated, like the rest of the account surface. This comment claimed otherwise for a while
+ * after the pass that translated it.
  */
 
 /** Renders a tick count as the clock a player was watching. */
@@ -95,11 +97,25 @@ function changes(before: BoardAtRound, after: BoardAtRound): Change[] {
 export function GameDetail({
   id,
   messages,
+  me,
   dictionary,
   onBack,
 }: {
   readonly id: string
   readonly messages: Messages
+  /**
+   * Who is reading, or null for nobody.
+   *
+   * Only used to decide whether to draw the report button, and the rule is that you are not
+   * offered one on your own game. The server refuses a self-report with a 409 anyway; this is so
+   * the button is not there to press, because a control that exists only to be refused is worse
+   * than no control.
+   *
+   * Null is a signed-out reader, who does get the button. They cannot file a report until they
+   * sign in and the dialog says so, which is a better discovery than a button that is invisible
+   * to everybody who has not signed in yet.
+   */
+  readonly me: string | null
   /**
    * The dictionary in hand, or null.
    *
@@ -196,6 +212,10 @@ export function GameDetail({
         </p>
         {/* Said plainly rather than left to be inferred from a board it never appears on. */}
         {game.canonical ? null : <p className="signin-note">{messages.gameNotRanked}</p>}
+        {/* A score is the third thing there is to object to, and the only one that is not text. */}
+        {me === game.owner.userId ? null : (
+          <ReportButton messages={messages} subject={{ kind: 'game', gameId: game.id }} />
+        )}
       </header>
 
       {detail === null ? (

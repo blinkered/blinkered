@@ -2847,3 +2847,290 @@ kbd {
 .account-page h2 {
   margin: 0.5rem 0 0;
 }
+
+/* ---------- moderation ---------- */
+/*
+ * Wider than the account screen, and that is the only structural difference between them.
+ *
+ * `.account-page` is 40rem because a profile is one column of fields and a five-column table of
+ * games. This holds a seven-column table with an address in one of its cells, and at 40rem the
+ * addresses wrapped onto three lines each. It is the one screen in the app with no phone case to
+ * answer to: it is read at a desk, by us.
+ */
+.admin-page {
+  max-width: 64rem;
+}
+.admin-lane {
+  display: grid;
+  gap: 1rem;
+  /* Its own grid rather than relying on the page's, because the tabs switch between panes of
+     wildly different heights and a gap that collapsed would make the switch look like a jump. */
+  align-content: start;
+}
+/*
+ * The way back, at the start of the line rather than across it.
+ *
+ * A grid item stretches by default, and a stretched `<button>` centres its own text, so this read
+ * as a centred caption over the account rather than as a link back to the list. `start` in both
+ * senses: the box and the text, because the two right-to-left interfaces need the other edge.
+ */
+.admin-lane > .game-back {
+  justify-self: start;
+  text-align: start;
+}
+.admin-search {
+  max-width: 26rem;
+}
+.admin-search input,
+.admin-filters input,
+.admin-filters select {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--bg);
+  color: inherit;
+  min-height: 2.75rem;
+  /* WebKit ignores author heights on a native select without this; the nerd panel hit the same
+     thing and the note there has the measurements. */
+  appearance: none;
+}
+.admin-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.admin-filters .signin-field {
+  min-width: 8rem;
+}
+
+/* How many reports are waiting, on the tab. A number to draw an eye, not a dashboard. */
+.admin-count {
+  margin-inline-start: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--sel);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.admin-table {
+  font-size: 0.8rem;
+}
+/*
+ * Fixed only on the accounts table, which is the one with a `<colgroup>`.
+ *
+ * It was on `.admin-table` for a moment, and that put it on the two games tables as well, where
+ * there are no declared widths: fixed layout with nothing to go on divides the space equally, so
+ * WHEN got as much room as SCORE and the Hide button was squeezed into a seventh of the width.
+ * Fixed layout is only ever right where the widths are actually stated.
+ */
+.admin-accounts {
+  table-layout: fixed;
+}
+.admin-table td {
+  vertical-align: top;
+}
+/* Who, how they sign in, and then two counts that need a few characters each. */
+.admin-accounts col.is-who {
+  width: 22%;
+}
+.admin-accounts col.is-how {
+  width: 48%;
+}
+.admin-accounts col.is-count {
+  width: 15%;
+}
+/* A marked account, and a hidden game. Dimmed rather than struck through: the row is still there
+   to be worked on, which is the whole reason the mark is reversible. */
+.admin-table tr.is-gone td,
+.admin-report.is-done {
+  opacity: 0.55;
+}
+.admin-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: start;
+}
+/*
+ * Somebody else's name, in somebody else's script.
+ *
+ * `anywhere`, like `.account-name`, because a name is not obliged to have spaces in it and one
+ * that cannot break pushes the whole table sideways. It never becomes markup and never becomes a
+ * link; the same rule the bio follows.
+ */
+.admin-name {
+  overflow-wrap: anywhere;
+}
+/*
+ * One line per way in, because two providers on one line read as one long address.
+ *
+ * The line break comes from the spans rather than from a grid on the cell, which is the version
+ * this started as and which drew wrong: `display: grid` on a `<td>` stops it being a table cell,
+ * so it no longer shared the row's bottom border and every identities cell had a rule of its own
+ * sitting a couple of pixels off the one beside it. Found by looking at the screen, not the CSS.
+ */
+.admin-identities {
+  color: var(--dim);
+  overflow-wrap: anywhere;
+}
+.admin-identities > span,
+.admin-line {
+  display: block;
+}
+.admin-facts dd {
+  display: grid;
+  gap: 0.15rem;
+  overflow-wrap: anywhere;
+}
+.admin-badges {
+  display: inline-flex;
+  gap: 0.3rem;
+  margin-inline-start: 0.4rem;
+}
+.admin-badge {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.admin-badge.is-admin {
+  color: var(--sel);
+}
+.admin-badge.is-gone {
+  color: var(--bad);
+}
+
+.admin-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+.admin-facts dt {
+  color: var(--dim);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.admin-facts dd {
+  margin: 0;
+  color: inherit;
+}
+
+/* Said where the two buttons would have been, so their absence is an answer and not a gap. */
+.admin-own {
+  margin: 0;
+  max-width: 34rem;
+  font-size: 0.85rem;
+}
+.admin-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+/* Small enough to sit in a table cell and still clear a finger on the one screen where that is
+   not the point: this is read at a desk. */
+.admin-small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  min-height: 2rem;
+}
+/*
+ * The buttons that take something away.
+ *
+ * Red on the border and the text rather than a red fill: a filled destructive button next to a
+ * filled primary one makes the pair read as a choice of two equal things, and hiding a score is
+ * not equal to saving a name.
+ */
+.btn.is-danger {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+/* One objection, as a card. A list of these is the queue. */
+.admin-report {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.admin-report header {
+  display: grid;
+  gap: 0.15rem;
+}
+.admin-report h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.admin-report .dim {
+  margin: 0;
+  font-size: 0.8rem;
+}
+/*
+ * Why somebody objected, in their own words.
+ *
+ * `pre-wrap` so the line breaks they typed survive, and `anywhere` because this is free text from
+ * anybody: a five-hundred-character word would otherwise widen the card past the screen. It is
+ * rendered as text and never as markup, the same rule the bio follows.
+ */
+.admin-reason {
+  margin: 0;
+  padding-inline-start: 0.7rem;
+  border-inline-start: 2px solid var(--line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.admin-subtabs {
+  border-bottom: none;
+}
+
+/* ---------- reporting something ---------- */
+/*
+ * Quiet, and deliberately so.
+ *
+ * This sits on a profile and on a game, next to the name of the person it is about, and a loud
+ * button there would read as an invitation. What it needs to be is findable by somebody who has
+ * decided to look for it.
+ */
+.report-open {
+  margin-inline-start: auto;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.75rem;
+  /* Apple's floor. It is a real target on a real phone, whatever it looks like. */
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .report-open:hover {
+    color: var(--ink);
+    border-color: var(--dim);
+  }
+}
+.report-fields {
+  display: grid;
+  gap: 0.35rem;
+}
+.report-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* The whole row is the target, not the twelve pixels of the radio itself. */
+  min-height: 2.75rem;
+  cursor: pointer;
+}

@@ -267,6 +267,18 @@ export const lt: Messages = {
   keepThisGame: 'Išsaugoti šį žaidimą',
   savedToYourGames: 'Išsaugota tavo žaidimuose.',
 
+  reportThis: 'Pranešti',
+  reportHeading: 'Pranešti apie tai',
+  reportTheName: 'Vardas',
+  reportTheBio: 'Aprašymas',
+  reportTheScore: 'Taškai',
+  reportWhy: 'Kas su tuo ne taip? Neprivaloma.',
+  reportSend: 'Siųsti pranešimą',
+  reportSent: 'Dėkojame. Kas nors tai peržiūrės.',
+  reportSignIn: 'Prisijunk, kad galėtum apie ką nors pranešti.',
+  reportGone: 'To jau nebėra.',
+  reportCancel: 'Atsisakyti',
+
   plurals: {
     words: { one: '{n} žodis', few: '{n} žodžiai', many: '{n} žodžio', other: '{n} žodžių' },
     rounds: { one: '{n} raundas', few: '{n} raundai', many: '{n} raundo', other: '{n} raundų' },
