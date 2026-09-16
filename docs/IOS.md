@@ -236,7 +236,61 @@ same code inside a WebView.
 **This section used to say "what is left is not code". That is no longer true**, and the reason
 is accounts. Everything below is the state as of the icon change.
 
-**Signed in is broken in the shell, and it is the real work.** The client calls the API with
+**Signed in works in the shell now, by bearer token.** What follows is how, and what is still
+owed. The paragraph this replaces described the problem; it is kept below in outline because the
+shape of the fix only makes sense against it.
+
+The client calls the API with root-relative paths and a `SameSite=Lax` same-origin cookie, which
+is how the website is deployed: nginx serves the bundle and the API together, so there is no CORS
+in the server and none was needed. Inside the WebView the origin is `capacitor://localhost`, so
+every one of those paths resolved into the app bundle and found nothing, and the cookie could not
+have travelled even with an absolute URL.
+
+Four pieces, and each one is in a single place on purpose:
+
+- **`apps/web/src/api.ts`** decides where a request goes and what it carries. Absolute origin and
+  an `Authorization: Bearer` header in the shell, root-relative and a cookie in a browser.
+  `account.ts` and `admin.ts` go through `apiFetch` and know nothing about the platform.
+- **`currentUser`** accepts either credential, cookie first. That is the whole server-side
+  surface, because every authenticated route already went through it.
+- **`sessions.kind`** finally has a second value. `schema.ts` has said "cookie on the web, bearer
+  in the native shell. They expire differently" since accounts arrived; a bearer session lasts a
+  year, refreshed on use past halfway, against thirty days for a cookie. An installed app is the
+  only place somebody is signed in, and the commitment is that they stay signed in through
+  however long they are offline, which is time that cannot be spent refreshing. Revocable
+  through `revoked_at`, which is what makes a year acceptable rather than merely convenient.
+- **`WKAppBoundDomains`** in `Info.plist`. `limitsNavigationsToAppBoundDomains` is still on, and
+  with no list it meant the local bundle and nothing else, which is what made this unreachable
+  rather than merely broken.
+
+The API grew CORS for exactly one origin, `capacitor://localhost`, and
+**`Access-Control-Allow-Credentials` is deliberately absent**: without it a browser will not send
+cookies cross-origin whatever a page asks, so the cookie session stays strictly same-origin and
+the header block cannot become a way to ride one. The only credential it admits is a header a
+client has to hold deliberately.
+
+Three things are still owed here, and none of them is a detail:
+
+- **The token is in `localStorage`, not the keychain.** In a WKWebView that store is inside the
+  app sandbox, is not shared with Safari, and goes on uninstall, so it is defensible -- but any
+  script in the WebView can read it and the keychain is the right home. Moving it needs a
+  Capacitor plugin and a way for `apps/web` to reach it, and `platform.ts` exists precisely so
+  that this package does not depend on Capacitor. Kept behind `token`, `rememberToken` and
+  `forgetToken` so the move is one file.
+- **Google and Apple sign-in are not wired for the shell.** They are navigations off-origin that
+  end at a server redirect setting a cookie, which is the one thing the shell cannot receive. The
+  native flow is `ASWebAuthenticationSession` and a callback that hands back a token instead, and
+  it is not built. **The email code flow works, and is enough**: an app offering no third-party
+  SSO at all is not subject to guideline 4.8, so this does not block a submission -- it just
+  means the shell offers one way in where the website offers three.
+- **None of this has run on a device.** It is tested to the edge of what a Mac can check: the
+  unit suites, the server's bearer and CORS routes, and a simulator build. `WKAppBoundDomains` in
+  particular fails in a way that looks like a network outage rather than a configuration error,
+  and it is the first thing to check if the shell signs in and then cannot reach anything.
+
+The original statement of the problem, kept because it is what the fix is shaped by:
+
+**Signed in was broken in the shell, and it was the real work.** The client calls the API with
 root-relative paths -- `fetch('/v1/me')`, `fetch('/v1/reports')` -- and relies on an
 `httpOnly; Secure; SameSite=Lax` session cookie on a single origin, which is how the web is
 deployed: nginx serves the bundle and the API together, so there is no CORS anywhere in the

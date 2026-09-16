@@ -100,6 +100,28 @@ boards are public.
 
 ## Wanted, not built
 
+**The offline design is built, in four steps, and three things are owed out of it.** The product
+commitment was Nick's, on 2026-09-16: sign-in needs a connection; a signed-in player stays signed
+in but cannot write; games are playable either way; and games played offline upload when a
+connection returns. Half of it already existed -- every finished game has always gone to
+`localStorage`, and `POST /v1/games/import` has always existed to move one onto an account. What
+is new is that only a 401 means signed out, that a finished game is queued rather than posted
+once, and that the native shell can authenticate at all. See
+[ACCOUNTS.md](ACCOUNTS.md) and [IOS.md](IOS.md).
+
+- **The native bearer token is in `localStorage`, not the keychain.** Defensible -- the store is
+  inside the app sandbox and goes on uninstall -- and not right: any script in the WebView can
+  read it. Moving it needs a Capacitor plugin and a bridge, and `apps/web` deliberately has no
+  Capacitor dependency. It is behind three functions in `api.ts` so the move is one file.
+- **Google and Apple sign-in are not wired for the shell**, because they are navigations
+  off-origin ending at a cookie the shell cannot receive. `ASWebAuthenticationSession` and a
+  token-returning callback is the shape. Not a store blocker: an app offering no third-party SSO
+  is not subject to guideline 4.8, so the email code flow is enough to submit with.
+- **None of the native work has run on a device.** Unit suites, the server's bearer and CORS
+  routes, and a simulator build are the limit of what a Mac can check. `WKAppBoundDomains` fails
+  in a way that looks like a network outage, and it is the first thing to suspect if the shell
+  signs in and then reaches nothing.
+
 **Accounts, history and leaderboards** is largely built rather than queued; what is left of it is
 in [ACCOUNTS.md](ACCOUNTS.md). Sign-in is a six-digit emailed code plus Google and Apple, with no
 password anywhere; avatars are generated rather than uploaded, so there is nothing hosted to

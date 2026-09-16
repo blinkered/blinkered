@@ -52,7 +52,10 @@ export interface FakeStore extends Store {
 export function fakeStore(): FakeStore {
   const codes = new Map<string, StoredCode & { email: string }>()
   const users = new Map<string, FakeUser>()
-  const sessions = new Map<string, { userId: string; expiresAt: Date; revokedAt: Date | null }>()
+  const sessions = new Map<
+    string,
+    { userId: string; kind: 'cookie' | 'bearer'; expiresAt: Date; revokedAt: Date | null }
+  >()
   const issued: { id: string; email: string; at: Date }[] = []
   const takenUsernames = new Set<string>()
   const games: { row: GameRow; detail: GameDetail }[] = []
@@ -187,7 +190,24 @@ export function fakeStore(): FakeStore {
       return Promise.resolve(profileOf(user))
     },
     createSession: (row) => {
-      sessions.set(row.id, { userId: row.userId, expiresAt: row.expiresAt, revokedAt: null })
+      sessions.set(row.id, {
+        userId: row.userId,
+        kind: row.kind,
+        expiresAt: row.expiresAt,
+        revokedAt: null,
+      })
+      return Promise.resolve()
+    },
+    touchBearerSession: (id, when) => {
+      /*
+       * The conditions the real statement carries, modelled rather than skipped: only a bearer
+       * row, and only one already inside the refresh window. A fake that slid every session
+       * would let "cookie sessions are thirty days from sign-in" regress unnoticed.
+       */
+      const row = sessions.get(id)
+      if (row === undefined || row.kind !== 'bearer') return Promise.resolve()
+      if (row.expiresAt.getTime() >= when.ifExpiringBefore.getTime()) return Promise.resolve()
+      sessions.set(id, { ...row, expiresAt: when.until })
       return Promise.resolve()
     },
     revokeSession: (id, at) => {

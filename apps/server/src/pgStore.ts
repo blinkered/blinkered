@@ -11,6 +11,7 @@ import {
   inArray,
   isNotNull,
   isNull,
+  lt,
   or,
   sql,
 } from 'drizzle-orm'
@@ -197,6 +198,25 @@ export function pgStore(db: Database): Store {
 
     createSession: async (row) => {
       await db.insert(sessions).values(row)
+    },
+
+    touchBearerSession: async (id, when) => {
+      /*
+       * One statement, and every condition is in the `where` rather than in a read followed by a
+       * decision. `kind = 'bearer'` is what keeps a browser session thirty days from sign-in:
+       * sliding those on use would quietly make every one of them permanent. The expiry
+       * condition is what keeps this from writing a row on every authenticated request.
+       */
+      await db
+        .update(sessions)
+        .set({ expiresAt: when.until })
+        .where(
+          and(
+            eq(sessions.id, id),
+            eq(sessions.kind, 'bearer'),
+            lt(sessions.expiresAt, when.ifExpiringBefore),
+          ),
+        )
     },
 
     revokeSession: async (id, at) => {

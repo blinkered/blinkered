@@ -20,13 +20,19 @@ const config: CapacitorConfig = {
     // Nothing in the game scrolls the document on purpose. The board is fixed and the page
     // fits, so the elastic bounce is only ever an accident of a stray drag across a tile.
     scrollEnabled: false,
-    // **This is now a blocker rather than a safe default, and it is left on deliberately so
-    // that it stays visible.** It was written when the game had no accounts and the WebView
-    // genuinely never needed the network. Accounts shipped, and the client calls the API with
-    // root-relative paths (`fetch('/v1/me')`) and a same-origin session cookie. Inside the
-    // WebView the origin is `capacitor://localhost`, so those calls resolve to the bundle and
-    // there is nothing to answer them; Google and Apple sign-in are also navigations off-origin.
-    // Turning this off alone does not fix it. See docs/IOS.md.
+    /*
+     * Still on, and now it has a list to work from.
+     *
+     * With no `WKAppBoundDomains` in Info.plist this meant the local bundle and nothing else,
+     * which is why signed-in features in the shell were unreachable rather than merely broken.
+     * The API's hosts are listed there now, so the restriction is a restriction rather than a
+     * wall: the WebView can reach the API and nothing else, which is the point of keeping it.
+     *
+     * Left on rather than removed because the alternative is a WebView that may navigate
+     * anywhere, and the game has no reason to. The client-side half of this is `api.ts`, which
+     * sends an absolute URL and a bearer token, because a root-relative path resolves into the
+     * bundle and the session cookie cannot cross origins.
+     */
     limitsNavigationsToAppBoundDomains: true,
   },
 }

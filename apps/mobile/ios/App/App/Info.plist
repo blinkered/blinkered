@@ -22,6 +22,28 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!--
+		The domains the WebView is allowed to reach, which it needs because the app now talks to
+		the API.
+
+		`limitsNavigationsToAppBoundDomains` is on in capacitor.config.ts, and with no list here
+		that means the local bundle and nothing else -- which was right when the game was entirely
+		offline and is what made signed-in features unreachable rather than merely broken. The
+		app's own `capacitor://localhost` is implicit and must not be listed.
+
+		Apple caps this at ten entries and the cap is per app, not per WebView. Both hosts are
+		here because the dev client signs in through the second one: see docs/AUTH.md on why
+		`tightlinesoftware.com` is in the authorized domains at all.
+
+		**Not verified on a device.** No iPhone has run this build yet, and this setting fails in
+		a way that looks like a network outage rather than a configuration error. It is the first
+		thing to check if the shell signs in and then cannot reach anything.
+	-->
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>playblinkered.com</string>
+		<string>tightlinesoftware.com</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

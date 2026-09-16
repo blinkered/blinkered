@@ -1,16 +1,21 @@
 /**
  * Talking to the API, which until accounts arrived the app had never done.
  *
- * Same origin, so the session is an ordinary cookie and there is no CORS anywhere: `/v1` is
- * routed to the API by the same proxy that serves the game. That is why `credentials` has to be
- * set at all — `fetch` omits cookies on same-origin requests only when nobody says otherwise, and
- * a sign-in that does not carry its own cookie back is a sign-in that never sticks.
+ * Same origin **in a browser**, so the session is an ordinary cookie: `/v1` is routed to the API
+ * by the same proxy that serves the game, and there is no CORS for it anywhere.
+ *
+ * The native shell is not same-origin and cannot be made to be. It is served from
+ * `capacitor://localhost`, so a root-relative path resolves into the app bundle and the
+ * `SameSite=Lax` cookie never travels. Where a request goes and what it carries is therefore
+ * decided in exactly one place, `api.ts`, and every function here goes through `apiFetch`.
+ * Nothing below this line knows which platform it is running on.
  *
  * Every function here answers rather than throws. A build served without an API is still a game,
  * and a screen that refuses to render because it could not learn whether anybody is signed in
  * would be a poor trade for a feature nobody has to use.
  */
 
+import { apiFetch, forgetToken, rememberToken, wantsToken } from './api.js'
 import { cached, forget, remember } from './identity.js'
 import { queuedFor, settle } from './pendingGames.js'
 
@@ -78,12 +83,9 @@ export type SaveResult =
   | { readonly ok: false; readonly field: string | null; readonly problem: string }
 
 async function post(path: string, body: unknown): Promise<Response> {
-  return fetch(`/v1/${path}`, {
+  return apiFetch(path, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    // Same origin, and still stated: the default is `same-origin`, and relying on a default for
-    // the thing the whole feature depends on is how it breaks the day something proxies it.
-    credentials: 'same-origin',
     body: JSON.stringify(body),
   })
 }
@@ -105,10 +107,24 @@ export async function requestCode(email: string, locale: string): Promise<SignIn
 /** Spends a code. The cookie arrives on the response and the browser keeps it. */
 export async function submitCode(email: string, code: string): Promise<SignInResult> {
   try {
-    const response = await post('auth/code/verify', { email, code })
-    if (response.ok) return 'signed-in'
-    if (response.status === 400 || response.status === 401) return 'bad-code'
-    return 'unavailable'
+    /*
+     * `native` is what asks for a bearer token instead of a cookie, and the client asks rather
+     * than the server sniffing a user agent: a guess would be wrong at the only moment that
+     * matters, and a browser that asked would simply get the same credential in a header.
+     */
+    const response = await post('auth/code/verify', { email, code, native: wantsToken() })
+    if (!response.ok) {
+      return response.status === 400 || response.status === 401 ? 'bad-code' : 'unavailable'
+    }
+    if (wantsToken()) {
+      const issued = (await response.json()) as { token?: unknown }
+      // A shell that asked for a token and did not get one is signed in by nothing: there is no
+      // cookie either. Reporting it rather than returning 'signed-in' is what stops the app
+      // rendering an account it cannot authenticate a single request for.
+      if (typeof issued.token !== 'string' || issued.token === '') return 'unavailable'
+      rememberToken(issued.token)
+    }
+    return 'signed-in'
   } catch {
     return 'unavailable'
   }
@@ -137,7 +153,7 @@ export type Identity =
 
 export async function whoAmI(): Promise<Identity> {
   try {
-    const response = await fetch('/v1/me', { credentials: 'same-origin' })
+    const response = await apiFetch('me')
     // The one definite answer. `/v1/me` answers 401 `signed-out` and nothing else does.
     if (response.status === 401) {
       forget()
@@ -165,8 +181,11 @@ export async function whoAmI(): Promise<Identity> {
  */
 export async function signOut(): Promise<void> {
   // Before the request, not after, and regardless of how it goes. The interface signs out either
-  // way, so a cache that outlived a lost request would re-adopt the account on the next load.
+  // way, so a credential or a cache that outlived a lost request would sign the app back in on
+  // the next load. The bearer token goes with it: in the shell that token *is* the session, and
+  // a revoke whose request was lost would otherwise leave a working one on the device.
   forget()
+  forgetToken()
   try {
     await post('auth/signout', {})
   } catch {
@@ -177,10 +196,9 @@ export async function signOut(): Promise<void> {
 /** Saves a profile edit, and hands back what the server stored rather than what was sent. */
 export async function saveProfile(edit: ProfileEdit): Promise<SaveResult> {
   try {
-    const response = await fetch('/v1/me', {
+    const response = await apiFetch('me', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      credentials: 'same-origin',
       body: JSON.stringify(edit),
     })
     if (response.ok) {
@@ -487,10 +505,9 @@ export async function requestDeletionCode(locale: string): Promise<DeleteResult 
  */
 export async function deleteAccount(code: string): Promise<DeleteResult> {
   try {
-    const response = await fetch('/v1/me', {
+    const response = await apiFetch('me', {
       method: 'DELETE',
       headers: { 'content-type': 'application/json' },
-      credentials: 'same-origin',
       body: JSON.stringify({ code }),
     })
     if (response.ok) return 'deleted'
@@ -510,7 +527,7 @@ export async function deleteAccount(code: string): Promise<DeleteResult> {
 /** One GET, one shape of failure. Null covers signed out, refused, absent, and offline alike. */
 async function getting<T>(path: string): Promise<T | null> {
   try {
-    const response = await fetch(`/v1/${path}`, { credentials: 'same-origin' })
+    const response = await apiFetch(path)
     if (!response.ok) return null
     return (await response.json()) as T
   } catch {

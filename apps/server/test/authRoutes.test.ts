@@ -292,6 +292,179 @@ describe('who am I', () => {
   })
 })
 
+/*
+ * The native shell's credential.
+ *
+ * The app is served from `capacitor://localhost`, so a `SameSite=Lax` cookie scoped to
+ * `playblinkered.com` is cross-site and never sent, and WKWebView's third-party cookie policy is
+ * against it besides. `schema.ts` has carried a `kind` column saying `cookie` on the web and
+ * `bearer` in the native shell since accounts arrived; these are the tests for the second half.
+ */
+describe('a bearer token, for the app', () => {
+  const json = { 'content-type': 'application/json' }
+  const app = (store: ReturnType<typeof fakeStore>, mailer: ReturnType<typeof capturingMailer>) =>
+    createApp({ auth: { store, mailer, secureCookies: false } })
+
+  const tokenFor = async (
+    store: ReturnType<typeof fakeStore>,
+    mailer: ReturnType<typeof capturingMailer>,
+    made: ReturnType<typeof createApp>,
+  ): Promise<{ token: string; expiresAt: string }> => {
+    await made.request('/v1/auth/code', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com' }),
+    })
+    const verified = await made.request('/v1/auth/code/verify', {
+      method: 'POST',
+      headers: json,
+      // The client asks. The server does not sniff a user agent to guess.
+      body: JSON.stringify({ email: 'nick@example.com', code: mailer.sent[0]?.code, native: true }),
+    })
+    return (await verified.json()) as { token: string; expiresAt: string }
+  }
+
+  it('hands back a token instead of setting a cookie, and the token works', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const made = app(store, mailer)
+    const verified = await made.request('/v1/auth/code', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com' }),
+    })
+    expect(verified.status).toBe(202)
+
+    const answer = await made.request('/v1/auth/code/verify', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com', code: mailer.sent[0]?.code, native: true }),
+    })
+    // No cookie at all: a credential in a header and a credential in a cookie are not both set.
+    expect(answer.headers.get('set-cookie')).toBeNull()
+    const { token } = (await answer.json()) as { token: string }
+    expect(token).toBeTruthy()
+
+    const me = await made.request('/v1/me', { headers: { authorization: `Bearer ${token}` } })
+    expect(me.status).toBe(200)
+  })
+
+  it('lasts a year rather than thirty days', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const { expiresAt } = await tokenFor(store, mailer, app(store, mailer))
+    const days = (new Date(expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+    // A signed-in player stays signed in through however long they are offline, and offline time
+    // cannot be spent refreshing. See BEARER_LIFETIME_MS.
+    expect(days).toBeGreaterThan(360)
+    expect(days).toBeLessThan(366)
+  })
+
+  it('still sets a cookie when nobody asked for a token', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const made = app(store, mailer)
+    await made.request('/v1/auth/code', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com' }),
+    })
+    const answer = await made.request('/v1/auth/code/verify', {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ email: 'nick@example.com', code: mailer.sent[0]?.code }),
+    })
+    expect(answer.headers.get('set-cookie')).toContain('blinkered_session=')
+    expect(await answer.json()).not.toHaveProperty('token')
+  })
+
+  it.each([
+    ['no scheme', (t: string) => t],
+    ['the wrong scheme', (t: string) => `Basic ${t}`],
+    ['an empty token', () => 'Bearer '],
+    ['a token nobody issued', () => 'Bearer not-a-real-token'],
+  ])('is 401 for %s', async (_what, shape) => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const made = app(store, mailer)
+    const { token } = await tokenFor(store, mailer, made)
+    const me = await made.request('/v1/me', { headers: { authorization: shape(token) } })
+    expect(me.status).toBe(401)
+  })
+
+  it('takes the scheme case-insensitively, as the specification requires', async () => {
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const made = app(store, mailer)
+    const { token } = await tokenFor(store, mailer, made)
+    const me = await made.request('/v1/me', { headers: { authorization: `bearer ${token}` } })
+    expect(me.status).toBe(200)
+  })
+
+  it('prefers the cookie when a request somehow carries both', async () => {
+    // Not a case a client should produce. Pinned because the order decides which credential wins,
+    // and "the cookie, because that is the overwhelming majority of traffic" is a choice.
+    const store = fakeStore()
+    const mailer = capturingMailer()
+    const made = app(store, mailer)
+    const { token } = await tokenFor(store, mailer, made)
+    const me = await made.request('/v1/me', {
+      headers: { authorization: `Bearer ${token}`, cookie: 'blinkered_session=rubbish' },
+    })
+    expect(me.status).toBe(401)
+  })
+})
+
+describe('the app origin, and the CORS it needs', () => {
+  const made = () => createApp({ auth: { store: fakeStore(), mailer: capturingMailer() } })
+
+  it('admits the shell origin and nothing else', async () => {
+    const answer = await made().request('/v1/healthz', {
+      headers: { origin: 'capacitor://localhost' },
+    })
+    expect(answer.headers.get('access-control-allow-origin')).toBe('capacitor://localhost')
+    expect(answer.headers.get('vary')).toBe('Origin')
+  })
+
+  it.each(['https://evil.example', 'http://localhost:5173', 'null'])(
+    'says nothing to %s',
+    async (origin) => {
+      const answer = await made().request('/v1/healthz', { headers: { origin } })
+      expect(answer.headers.get('access-control-allow-origin')).toBeNull()
+    },
+  )
+
+  it('never allows credentials, which is what keeps the cookie same-origin', async () => {
+    // Without this header a browser will not send cookies cross-origin whatever a page asks, so
+    // the block above cannot become a way to ride a session. The only credential it admits is a
+    // header a client has to hold deliberately.
+    const answer = await made().request('/v1/healthz', {
+      headers: { origin: 'capacitor://localhost' },
+    })
+    expect(answer.headers.get('access-control-allow-credentials')).toBeNull()
+  })
+
+  it('answers the preflight that an Authorization header forces', async () => {
+    // A browser sends OPTIONS before any request carrying `Authorization`, and there is no route
+    // for it. Without the middleware it is a 404 and the real request is never sent.
+    const answer = await made().request('/v1/me', {
+      method: 'OPTIONS',
+      headers: { origin: 'capacitor://localhost' },
+    })
+    expect(answer.status).toBe(204)
+    expect(answer.headers.get('access-control-allow-headers')).toContain('authorization')
+    expect(answer.headers.get('access-control-allow-methods')).toContain('DELETE')
+  })
+
+  it('refuses a preflight from anywhere else', async () => {
+    const answer = await made().request('/v1/me', {
+      method: 'OPTIONS',
+      headers: { origin: 'https://evil.example' },
+    })
+    expect(answer.status).toBe(403)
+  })
+})
+
 describe('a send that fails', () => {
   it('leaves no code behind and costs nothing against the limit', async () => {
     // The bug this exists for: the row is written before the mail goes, so two failed sends

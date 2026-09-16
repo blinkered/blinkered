@@ -12,6 +12,7 @@
  * two of them.
  */
 
+import { apiFetch } from './api.js'
 /** One way somebody signs in. The address is here; it is nowhere else in the API. */
 export interface AdminIdentity {
   readonly provider: string
@@ -188,9 +189,8 @@ async function ask<T>(
   sending: { method?: string; body?: unknown } = {},
 ): Promise<Answer<T>> {
   try {
-    const response = await fetch(`/v1/${path}`, {
+    const response = await apiFetch(path, {
       method: sending.method ?? 'GET',
-      credentials: 'same-origin',
       ...(sending.body === undefined
         ? {}
         : {

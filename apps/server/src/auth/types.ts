@@ -154,6 +154,19 @@ export interface AuthStore {
     expiresAt: Date
   }): Promise<void>
   /**
+   * Slides a native session's expiry forward, if it is close enough to matter.
+   *
+   * Scoped to `kind = 'bearer'` inside the statement rather than by the caller, because the
+   * distinction is the point: a cookie session is thirty days from sign-in and sliding it on use
+   * would quietly make every browser session permanent. A bearer session is a year, refreshed on
+   * use, so that an installed app never signs somebody out for having been offline.
+   *
+   * Conditional on the expiry so that an authenticated request does not write a row it does not
+   * need to: at most one update per `ifExpiringBefore` window. Resolves either way; nothing
+   * depends on whether a row was touched.
+   */
+  touchBearerSession(id: string, when: { ifExpiringBefore: Date; until: Date }): Promise<void>
+  /**
    * Ends a session, by the hash the cookie hashes to.
    *
    * Revoked rather than deleted, and revoked rather than the client simply dropping the cookie.

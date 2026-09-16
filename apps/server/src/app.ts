@@ -54,6 +54,55 @@ export function createApp(options: { auth?: ApiDeps } = {}): Hono {
   app.get('/healthz', (context) => context.text('ok'))
 
   const v1 = new Hono()
+
+  /*
+   * The one cross-origin caller this API has, and it is not a website.
+   *
+   * There was no CORS here at all, on purpose and correctly: nginx serves the bundle and the API
+   * on one origin, so every browser request is same-origin and the session is an ordinary cookie.
+   * The native shell breaks that premise rather than bending it. It is served from
+   * `capacitor://localhost`, so every call to `playblinkered.com` is cross-origin, and no amount
+   * of CORS would make the cookie travel -- which is why the shell authenticates with a bearer
+   * token instead.
+   *
+   * **`Allow-Credentials` is deliberately absent, and that is the security property.** Without it
+   * a browser will not send cookies cross-origin no matter what a page asks for, so the cookie
+   * session stays strictly same-origin and this header block cannot become a way to ride one. The
+   * only credential it admits is an `Authorization` header, which a client has to hold
+   * deliberately and cannot be made to send by a third-party page.
+   *
+   * The origin list is exact rather than a pattern. `capacitor://localhost` is the whole of it:
+   * the scheme is Capacitor's own on iOS, and a wildcard here would admit every page on the web
+   * to an API that answers 401 to them anyway but should not be asked.
+   */
+  const APP_ORIGINS = new Set(['capacitor://localhost'])
+  v1.use('*', async (context, next) => {
+    const origin = context.req.header('origin')
+    const allowed = origin !== undefined && APP_ORIGINS.has(origin)
+    if (allowed) {
+      context.header('Access-Control-Allow-Origin', origin)
+      // So a proxy or a CDN cannot serve one origin's answer to another.
+      context.header('Vary', 'Origin')
+    }
+    /*
+     * Preflight, answered here rather than by a route.
+     *
+     * A browser sends `OPTIONS` before any request carrying an `Authorization` header, and it
+     * never reaches a handler: there is no route for it, so without this it is a 404 and the real
+     * request is never sent. The symptom is every authenticated call failing in the app while
+     * the same call works from a terminal.
+     */
+    if (context.req.method === 'OPTIONS') {
+      if (!allowed) return context.body(null, 403)
+      context.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+      context.header('Access-Control-Allow-Headers', 'authorization, content-type')
+      // A day, so a phone on a flaky connection is not re-asking this before every call.
+      context.header('Access-Control-Max-Age', '86400')
+      return context.body(null, 204)
+    }
+    await next()
+  })
+
   v1.get('/healthz', (context) => context.text('ok'))
   const auth = options.auth
   if (auth !== undefined) {

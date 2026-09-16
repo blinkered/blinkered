@@ -29,6 +29,29 @@ export const SESSION_COOKIE = 'blinkered_session'
 
 /** How long a browser session lasts. Long, because signing in again is the friction it removes. */
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
+/**
+ * How long a native session lasts, and why it is not thirty days.
+ *
+ * `schema.ts` has said since accounts arrived that the two kinds "expire differently"; this is
+ * that sentence becoming a number. A browser tab is one of many places somebody is signed in and
+ * thirty days is generous there. An installed app is the only place, it is on a device with a
+ * passcode, and the product commitment is that a signed-in player **stays** signed in through
+ * however long they are offline -- which is time that cannot be spent refreshing.
+ *
+ * Refreshed on use, so an active player never reaches it. Revocable through `revoked_at`, which
+ * is what makes a long life acceptable rather than merely convenient: the remedy for a lost
+ * phone is signing that session out, not waiting for it to lapse.
+ */
+const BEARER_LIFETIME_MS = 365 * 24 * 60 * 60 * 1000
+
+/**
+ * Half of `BEARER_LIFETIME_MS`. Past this, a request extends the session.
+ *
+ * Refreshing on every request would be a write on every authenticated call for a value that
+ * moves by seconds. Half the lifetime means at most one extension per six months of use, and an
+ * app opened even once a year never lapses.
+ */
+const BEARER_REFRESH_AFTER_MS = BEARER_LIFETIME_MS / 2
 
 /** Tries before giving up on finding an unused generated name. Ten million names; two is plenty. */
 const USERNAME_TRIES = 5
@@ -60,7 +83,7 @@ function newId(): string {
  * extends it rather than repeating it, so there is one definition of where a session comes from.
  */
 export interface SessionDeps {
-  readonly store: Pick<AuthStore, 'findSession'>
+  readonly store: Pick<AuthStore, 'findSession' | 'touchBearerSession'>
   /** Injected so a test can move it, and so expiry is decided once per request rather than twice. */
   readonly now?: () => Date
 }
@@ -175,8 +198,35 @@ export function authRoutes(deps: AuthDeps): Hono {
     if (userId === null) return context.json({ error: 'no-username' }, 503)
 
     const { token, hash } = newSessionToken()
-    const expiresAt = new Date(now.getTime() + SESSION_LIFETIME_MS)
-    await deps.store.createSession({ id: hash, userId, kind: 'cookie', expiresAt })
+
+    /*
+     * A token in the body for the native shell, a cookie for a browser.
+     *
+     * The app cannot use a cookie at all: it is served from `capacitor://localhost`, so a
+     * `SameSite=Lax` cookie scoped to `playblinkered.com` is cross-site and never sent, and
+     * WKWebView's third-party cookie policy is against it regardless. `schema.ts` has always had
+     * a `kind` column saying `cookie` on the web and `bearer` in the native shell; this is the
+     * first thing to write `bearer` into it.
+     *
+     * The client asks, rather than the server sniffing a user agent. A browser that asked for a
+     * token would get one and be no worse off -- it is the same credential -- and a header-based
+     * guess would be one more thing to be wrong about at the only moment that matters.
+     *
+     * The token is returned **once** and never again. It is stored hashed, so there is nothing to
+     * re-read: a client that loses it signs in again.
+     */
+    const wantsToken = body.native === true
+    const expiresAt = new Date(
+      now.getTime() + (wantsToken ? BEARER_LIFETIME_MS : SESSION_LIFETIME_MS),
+    )
+    await deps.store.createSession({
+      id: hash,
+      userId,
+      kind: wantsToken ? 'bearer' : 'cookie',
+      expiresAt,
+    })
+
+    if (wantsToken) return context.json({ userId, token, expiresAt: expiresAt.toISOString() })
 
     setCookie(context, SESSION_COOKIE, token, {
       httpOnly: true,
@@ -259,14 +309,58 @@ export function authRoutes(deps: AuthDeps): Hono {
  * revoked one, a deleted account — because a caller can do nothing useful with the distinction
  * and telling them apart is how a 401 turns into a description of somebody else's session.
  */
+/**
+ * The token this request is presenting, from either place a client can put one.
+ *
+ * The cookie is the browser, and it is tried first because it is the overwhelming majority of
+ * traffic. `Authorization: Bearer` is the native shell, which cannot use a cookie at all: the app
+ * is served from `capacitor://localhost`, so a `SameSite=Lax` cookie for `playblinkered.com` is
+ * cross-site and never sent, and WKWebView's third-party cookie policy is against it besides.
+ *
+ * One header, parsed strictly. A scheme that is not `Bearer` and an empty token both read as no
+ * credential rather than as a bad one, because the caller's next move is identical either way.
+ */
+function presentedToken(context: {
+  req: { header: (name: string) => string | undefined }
+}): string | null {
+  const cookie = getCookie(context as never, SESSION_COOKIE)
+  if (cookie !== undefined && cookie !== '') return cookie
+  const header = context.req.header('authorization')
+  if (header === undefined) return null
+  const [scheme, value] = header.split(' ')
+  if (scheme?.toLowerCase() !== 'bearer') return null
+  return value === undefined || value === '' ? null : value
+}
+
 export async function currentUser(
   deps: SessionDeps,
   context: { req: { header: (name: string) => string | undefined } },
 ): Promise<Profile | null> {
-  const token = getCookie(context as never, SESSION_COOKIE)
-  if (token === undefined || token === '') return null
+  const token = presentedToken(context)
+  if (token === null) return null
   const clock = deps.now ?? ((): Date => new Date())
-  return deps.store.findSession(hashSessionToken(token), clock())
+  const now = clock()
+  const id = hashSessionToken(token)
+  const found = await deps.store.findSession(id, now)
+  if (found === null) return null
+  /*
+   * Extend a native session that is past halfway, so an app in regular use never lapses.
+   *
+   * One conditional statement rather than a read and a decision here: the store updates only a
+   * `bearer` row whose expiry is already inside the refresh window, so this is a no-op for every
+   * cookie session and for every bearer session touched in the last six months. A cookie session
+   * must not be extended by use at all -- thirty days from sign-in is the rule there, and
+   * sliding it would quietly make every browser session permanent.
+   *
+   * Not awaited, and not fatal: this is bookkeeping on the way to answering a request that is
+   * already authorised. A failed write costs the session six months of remaining life, which is
+   * a far better outcome than costing this request its answer.
+   */
+  void deps.store.touchBearerSession(id, {
+    ifExpiringBefore: new Date(now.getTime() + BEARER_REFRESH_AFTER_MS),
+    until: new Date(now.getTime() + BEARER_LIFETIME_MS),
+  })
+  return found
 }
 
 /**
