@@ -109,13 +109,18 @@ server scores them, since `points` is a function of word length alone.
 
 **Three pieces of the account surface are still owed**, and the first is a store blocker:
 
-- **`DELETE /v1/me`**, the deletion a person fires at their own account. App Store guideline
-  5.1.1(v) requires in-app deletion from anything offering account creation, and the privacy
-  policy currently gives an address instead. An admin can delete somebody; nobody can delete
-  themselves.
-- **A reaper for `users.deleted_at`.** Deletion is marked and not yet swept, deliberately — a
-  cascade fired from an HTTP handler has no way back if it was aimed at the wrong row — but
-  marked-and-never-reaped is only half of what deletion means.
+- **A reaper for `users.deleted_at`, which is the half that actually blocks a store
+  submission.** Deletion is marked and not yet swept, deliberately — a cascade fired from an HTTP
+  handler has no way back if it was aimed at the wrong row — but Apple is explicit that "only
+  offering to temporarily deactivate or disable an account is insufficient", so marked-and-never
+  reaped is deactivation by their reading and by any honest one.
+- **A findable in-app way for somebody to start deleting their own account.** Guideline 5.1.1(v),
+  which applies because the shell offers sign-in, and which blocks submitting the native app
+  rather than anything on the web. **Not necessarily `DELETE /v1/me`**: Apple permits finishing on
+  a linked web page and permits the process taking time, as long as it is disclosed. What it does
+  not permit is the current arrangement, where the privacy policy gives an address — "requiring
+  users to phone, email, or contact support" is named as unacceptable. ACCOUNTS.md, "What the App
+  Store requires, exactly", has the quotes.
 - **Telling somebody why they were renamed.** ACCOUNTS.md's answer to an abusive username is "the
   power to rename an account and tell its owner why". The rename exists; there is no notification
   of any kind, so the telling is a person and an email address.

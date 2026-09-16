@@ -689,9 +689,10 @@ The shape it should take is not a lone endpoint. What is actually wanted is an `
 the `reports` rows that already have a table and nothing reading them. A moderation queue with no
 way to act on it is the current state, and one delete route would not change that.
 
-**That panel is now built** — see "Moderation" below. `DELETE /v1/me`, the one a person fires at
-their own account, still does not exist and is still the App Store blocker. What exists is the
-other half: somebody can now be deleted, and by somebody who can also undo it.
+**That panel is now built** — see "Moderation" below. What exists is the other half: somebody can
+now be deleted, and by somebody who can also undo it. Self-service deletion still does not, and
+what Apple actually asks for is narrower than a route and wider than one at the same time — see
+"What the App Store requires, exactly" below.
 
 **A game played while signed in goes through the same route, and is not marked `imported`.**
 Phase A issues no seeds, so every game is finished on the client whoever was signed in, and one
@@ -1027,7 +1028,9 @@ have an address to leak.
 
 ### What is still not built
 
-- **`DELETE /v1/me`**, the self-service one. Still the App Store blocker.
+- **Self-service deletion**, which is a store requirement before any native submission and is
+  written up precisely in the next section. Not a route on its own: the reaper below is the
+  load-bearing half.
 - **The reaper.** `deleted_at` is set and nothing acts on it, so a marked account is still a row.
 - **Telling somebody why they were renamed.** There is no notification of any kind, so this is a
   person and an email address. Worth doing before the first rename that is not ours.
@@ -1040,3 +1043,38 @@ have an address to leak.
   suite on STATUS.md's list is for.
 - **An audit trail.** Who hid what, and when. The reports table records the objection and nothing
   records the answer beyond `resolved_at`. Wanted the first time two people moderate.
+
+## What the App Store requires, exactly
+
+Worth stating precisely, because "the App Store blocker" was attached to `DELETE /v1/me` for a
+while and that is not what Apple asks for.
+
+Guideline 5.1.1(v) is one sentence: "If your app supports account creation, you must also offer
+account deletion within the app." The shell offers sign-in, so it applies. It blocks **submitting
+the native app** and nothing else — the web is unaffected and so is everything shipped today.
+
+What the [support page](https://developer.apple.com/support/offering-account-deletion-in-your-app/)
+adds is the part that changes the design:
+
+- **A route is not required.** "If people need to visit a website to finish deleting their
+  account, include a link directly to the page on your website where they can complete the
+  process." So a findable in-app entry point leading to a real deletion satisfies it, and
+  `DELETE /v1/me` is one way to build that rather than the obligation.
+- **A slow or manual process is acceptable**, if it says how long it will take and confirms when
+  it is done. Which means the reaper does not have to be synchronous.
+- **Marking is not enough.** "Offer to delete the entire account record, along with associated
+  personal data... only offering to temporarily deactivate or disable an account is
+  insufficient." `deleted_at` with nothing reaping it _is_ deactivation, so **the reaper is the
+  load-bearing half of this and the entry point is the easy one.** That is the opposite of the
+  order these were listed in.
+- **An address is specifically disqualifying.** "Requiring users to phone, email, or contact
+  support" is listed as not acceptable outside the regulated industries of 5.1.1(ix), and the
+  privacy policy currently gives an address. So the thing standing in for deletion today is the
+  one thing named as insufficient.
+- **Everybody, everywhere.** "All users should be allowed to delete their accounts, regardless of
+  where they're located" — not a GDPR-region path.
+
+One requirement is ours to answer rather than Apple's to settle: they expect user-generated
+content shared with others to go too. Games are public and carry permalinks. A deleted account's
+games already 404, which is the right behaviour, but the rows are still there — so the reaper has
+to decide whether a game outlives the person who played it. That is a product question.
