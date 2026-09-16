@@ -60,7 +60,7 @@ describe('the auth routes, once the app is given what they need', () => {
     expect((await app.request('/v1/admin/reports')).status).toBe(401)
   })
 
-  it('date a moderation action from the real clock when nothing injects one', async () => {
+  it('dates a moderation action from the real clock when nothing injects one', async () => {
     /*
      * The deployed arrangement, which every other suite replaces with a fixed moment.
      *
@@ -93,14 +93,15 @@ describe('the auth routes, once the app is given what they need', () => {
     makeAdmin(store, me.userId)
 
     const before = Date.now()
-    const response = await app.request(`/v1/admin/users/${them.userId}`, {
-      method: 'DELETE',
+    const response = await app.request(`/v1/admin/users/${them.userId}/ban`, {
+      method: 'POST',
       headers: { ...headers, cookie },
+      body: '{}',
     })
     expect(response.status).toBe(200)
-    // The mark is a moment, and it is this moment rather than `undefined` or the epoch.
-    expect(store.users.get(them.userId)?.deletedAt?.getTime()).toBeGreaterThanOrEqual(before)
-    // And the account it was aimed at is signed out, which is what the mark is for.
+    // The ban is a moment, and it is this moment rather than `undefined` or the epoch.
+    expect(store.users.get(them.userId)?.bannedAt?.getTime()).toBeGreaterThanOrEqual(before)
+    // And the account it was aimed at is signed out, which is what a ban is.
     expect((await app.request('/v1/me', { headers: { cookie: theirs } })).status).toBe(401)
   })
 })

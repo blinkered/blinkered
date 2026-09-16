@@ -31,8 +31,8 @@ export interface AdminUser {
   readonly bio: string | null
   readonly isAdmin: boolean
   readonly createdAt: string
-  /** Set means marked for deletion and not yet reaped. */
-  readonly deletedAt: string | null
+  /** When an admin banned them, or null. A ban is reversible and keeps the row. */
+  readonly bannedAt: string | null
   readonly games: number
   readonly identities: readonly AdminIdentity[]
 }
@@ -127,17 +127,18 @@ export async function editUser(userId: string, edit: AdminEdit): Promise<Answer<
 }
 
 /**
- * Marks an account deleted, or brings one back.
+ * Bans an account, or lifts the ban.
  *
- * One function for both directions, because they are one column. The server uses two verbs --
- * `DELETE` for the mark and a `restore` POST for the other way -- because a DELETE that undeletes
- * would be a lie about what the method means.
+ * One function for both directions, because they are one column. `POST` either way: this used to
+ * be a `DELETE`, which read as erasure and is not what it does -- the row stays, reversibly.
+ * Deleting an account is `DELETE /v1/me`, which somebody does to their own.
  */
-export async function deleteUser(userId: string, deleted: boolean): Promise<Answer<null>> {
+export async function banUser(userId: string, banned: boolean): Promise<Answer<null>> {
   const path = encodeURIComponent(userId)
-  const answer = deleted
-    ? await ask<unknown>(`admin/users/${path}`, { method: 'DELETE' })
-    : await ask<unknown>(`admin/users/${path}/restore`, { method: 'POST', body: {} })
+  const answer = await ask<unknown>(`admin/users/${path}/${banned ? 'ban' : 'unban'}`, {
+    method: 'POST',
+    body: {},
+  })
   return unwrap(answer, () => null)
 }
 

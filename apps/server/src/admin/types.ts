@@ -53,8 +53,8 @@ export interface AdminUser {
   readonly bio: string | null
   readonly isAdmin: boolean
   readonly createdAt: Date
-  /** Set means marked for deletion, not yet reaped. See the note on the column in `schema.ts`. */
-  readonly deletedAt: Date | null
+  /** When an admin banned them, or null. A ban is reversible and the row stays; see `schema.ts`. */
+  readonly bannedAt: Date | null
   /** How many finished games they have, hidden ones included. The panel is the one place that
    * should be able to see a count that disagrees with the person's own page. */
   readonly games: number
@@ -135,8 +135,8 @@ export interface AdminStore {
    * Accounts, by a search that matches a username or a sign-in address.
    *
    * One box rather than two, because the question is always "find me this person" and the
-   * searcher has whichever handle they happen to have been given. Deleted accounts are included:
-   * this is the surface that has to be able to see and restore one.
+   * searcher has whichever handle they happen to have been given. Banned accounts are included:
+   * this is the surface that has to be able to see one and lift the ban.
    */
   findUsers(text: string | null, limit: number): Promise<readonly AdminUser[]>
   /** One account in full, or null. */
@@ -150,16 +150,17 @@ export interface AdminStore {
    */
   editUser(userId: string, patch: AdminPatch): Promise<EditResult>
   /**
-   * Marks an account deleted, or unmarks it.
+   * Bans an account, or lifts the ban.
    *
    * One method for both directions, because they are one column and a pair of methods would be
    * two places to get the guard wrong. False when there is no such account.
    *
-   * Marked rather than reaped, which is what the column is for: a cascade fired from an HTTP
-   * handler has no way back if it was a mistake, and this is the handler that can be aimed at
-   * anybody. The reaper does not exist yet and is the thing App Store 5.1.1(v) will need.
+   * The row stays either way, and that is the point rather than a shortcut: this is the handler
+   * that can be aimed at anybody, so it has to be undoable, and the identities it keeps are the
+   * only thing that could ever recognise a banned account coming back. Deletion is a different
+   * operation with a different route -- `DELETE /v1/me`, which erases.
    */
-  markUserDeleted(userId: string, at: Date | null): Promise<boolean>
+  setBanned(userId: string, at: Date | null): Promise<boolean>
   /** Games across everybody, newest first, for curating what is on a board. */
   findGames(filter: GameFilter): Promise<readonly AdminGame[]>
   /**

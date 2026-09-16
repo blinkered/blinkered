@@ -21,7 +21,7 @@ import type { LoginMail, Mailer } from '../src/auth/mail.js'
 export interface FakeUser extends Profile {
   email: string
   createdAt: Date
-  deletedAt: Date | null
+  bannedAt: Date | null
 }
 
 export interface FakeStore extends Store {
@@ -87,7 +87,7 @@ export function fakeStore(): FakeStore {
     bio: user.bio,
     isAdmin: user.isAdmin,
     createdAt: user.createdAt,
-    deletedAt: user.deletedAt,
+    bannedAt: user.bannedAt,
     games: games.filter((one) => one.row.userId === user.userId).length,
     identities: identities
       .filter((identity) => identity.userId === user.userId)
@@ -170,7 +170,7 @@ export function fakeStore(): FakeStore {
         // column, so the only way to become one is for another admin to say so.
         isAdmin: false,
         createdAt: new Date(),
-        deletedAt: null,
+        bannedAt: null,
       })
       return Promise.resolve(id)
     },
@@ -180,10 +180,10 @@ export function fakeStore(): FakeStore {
         return Promise.resolve(null)
       }
       const user = users.get(row.userId)
-      // A marked account cannot sign in. The Postgres store gets this from the join in
-      // `findSession`; the fake has to say it out loud or a test of deletion would pass here
+      // A banned account cannot sign in. The Postgres store gets this from the join in
+      // `findSession`; the fake has to say it out loud or a test of banning would pass here
       // and fail against a database.
-      if (user === undefined || user.deletedAt !== null) return Promise.resolve(null)
+      if (user === undefined || user.bannedAt !== null) return Promise.resolve(null)
       return Promise.resolve(profileOf(user))
     },
     createSession: (row) => {
@@ -232,7 +232,7 @@ export function fakeStore(): FakeStore {
       if (kept === undefined || hidden.has(gameId)) return Promise.resolve(null)
       // An unclaimed guest game has nobody to attribute it to and is nobody's to show.
       const owner = users.get(kept.row.userId)
-      if (owner === undefined || owner.deletedAt !== null) return Promise.resolve(null)
+      if (owner === undefined || owner.bannedAt !== null) return Promise.resolve(null)
       return Promise.resolve({
         summary: summaryOf(kept.row),
         detail: kept.detail,
@@ -294,17 +294,17 @@ export function fakeStore(): FakeStore {
         takenUsernames.delete(normalizeUsername(user.username))
         takenUsernames.add(wanted)
       }
-      // No `deletedAt` guard, as in the Postgres store: a marked account is still editable, which
-      // is what lets an offensive name be fixed on an account on its way out.
+      // No `bannedAt` guard, as in the Postgres store: a banned account is still editable, which
+      // is what lets an offensive name be fixed rather than merely hidden.
       const updated: FakeUser = { ...user, ...patch }
       users.set(userId, updated)
       return Promise.resolve({ ok: true as const, user: adminOf(updated) })
     },
 
-    markUserDeleted: (userId, at) => {
+    setBanned: (userId, at) => {
       const user = users.get(userId)
       if (user === undefined) return Promise.resolve(false)
-      users.set(userId, { ...user, deletedAt: at })
+      users.set(userId, { ...user, bannedAt: at })
       return Promise.resolve(true)
     },
 
@@ -442,9 +442,9 @@ export function fakeStore(): FakeStore {
     },
 
     profileByUsername: (normalized) => {
-      // A deleted account is not a profile, and gives the same answer as a name nobody has.
+      // A banned account is not a profile, and gives the same answer as a name nobody has.
       const found = [...users.values()].find(
-        (user) => normalizeUsername(user.username) === normalized && user.deletedAt === null,
+        (user) => normalizeUsername(user.username) === normalized && user.bannedAt === null,
       )
       return Promise.resolve(found === undefined ? null : publicOf(found))
     },

@@ -1,0 +1,17 @@
+-- An admin removal is a ban, so the column says so.
+--
+-- `deleted_at` never meant deleted. Nothing reaped it, the row stayed indefinitely, and what it
+-- actually did was stop somebody signing in and take their profile and games out of public view
+-- -- reversibly. That is a ban. Deletion is `DELETE /v1/me`, which erases the row outright,
+-- because App Store 5.1.1(v) refuses the alternative: "only offering to temporarily deactivate or
+-- disable an account is insufficient".
+--
+-- **A rename is not a zero-downtime migration and this one is knowingly not.** The migrate Job is
+-- a pre-upgrade hook, so between this statement and the last old pod draining there are pods in
+-- service whose queries name a column that no longer exists -- every session lookup 500s for the
+-- length of a rollout. The usual remedy is two deploys: add, backfill, switch reads, drop later.
+--
+-- Not done here, on purpose and on the strength of one fact: nothing has shipped. Two accounts
+-- exist, both ours. Paying a four-step dance to protect a minute of downtime for two people we
+-- can tell in advance is ceremony rather than care. **Do not copy this once there are players.**
+ALTER TABLE "blinkered"."users" RENAME COLUMN "deleted_at" TO "banned_at";

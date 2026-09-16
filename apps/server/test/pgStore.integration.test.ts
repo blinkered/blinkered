@@ -212,24 +212,24 @@ describe('keeping games', () => {
     expect(found?.owner).not.toHaveProperty('email')
   })
 
-  it('finds a profile by any casing of the name, and not a deleted one', async () => {
+  it('finds a profile by any casing of the name, and not a banned one', async () => {
     const { userId } = await account('Heron-Watcher')
     expect((await theStore().profileByUsername('heron-watcher'))?.userId).toBe(userId)
     await (open as NonNullable<typeof open>).db.execute(
-      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set deleted_at = now() where id = ${userId}`,
+      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set banned_at = now() where id = ${userId}`,
     )
     // Same answer as a name nobody has: telling them apart would report who used to be here.
     expect(await theStore().profileByUsername('heron-watcher')).toBeNull()
   })
 
-  it('will not show a game whose owner is deleted, nor an unclaimed one', async () => {
+  it('will not show a game whose owner is banned, nor an unclaimed one', async () => {
     const { userId } = await account()
     const at = new Date(Date.now() - 1000)
     await theStore().insertGame(gameFor(userId, at, 9), detailFor('WREN'))
     const id = gameFor(userId, at, 9).id
     expect(await theStore().gameById(id)).not.toBeNull()
     await (open as NonNullable<typeof open>).db.execute(
-      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set deleted_at = now() where id = ${userId}`,
+      sql`update ${sql.identifier(DATABASE_SCHEMA)}.users set banned_at = now() where id = ${userId}`,
     )
     expect(await theStore().gameById(id)).toBeNull()
   })
@@ -606,45 +606,45 @@ describe('moderating', () => {
     })
   })
 
-  describe('deleting an account', () => {
-    it('marks it, which ends every session and hides the profile', async () => {
+  describe('banning an account', () => {
+    it('ends every session and takes the profile out of view', async () => {
       const { userId, token } = await account(`going-${String(Date.now())}`)
       const at = new Date()
       await theStore().insertGame(gameFor(userId, at, { score: 10 }), oneWord)
       const gameId = gameFor(userId, at, { score: 10 }).id
 
-      expect(await theStore().markUserDeleted(userId, new Date())).toBe(true)
+      expect(await theStore().setBanned(userId, new Date())).toBe(true)
       // `findSession` joins `users` and checks the column, so this is a consequence rather than
-      // a second step -- and it is the reason the mark is enough to stop somebody.
+      // a second step -- and it is the reason one column is the whole of a ban.
       expect(await theStore().findSession(token, new Date())).toBeNull()
       expect(await theStore().profileByUsername(`going-${String(at.getTime())}`)).toBeNull()
-      // A game belonging to a marked account is no such game, the same answer as one that never
-      // existed. The inner join and the `isNull(users.deletedAt)` both say so.
+      // A game belonging to a banned account is no such game, the same answer as one that never
+      // existed. The inner join and the `isNull(users.bannedAt)` both say so.
       expect(await theStore().gameById(gameId)).toBeNull()
       // Still there for the panel, which is the one surface that has to see it.
-      expect((await theStore().adminUser(userId))?.deletedAt).toBeInstanceOf(Date)
+      expect((await theStore().adminUser(userId))?.bannedAt).toBeInstanceOf(Date)
     })
 
-    it('brings one back', async () => {
+    it('lifts a ban', async () => {
       const { userId, token } = await account()
-      await theStore().markUserDeleted(userId, new Date())
-      expect(await theStore().markUserDeleted(userId, null)).toBe(true)
+      await theStore().setBanned(userId, new Date())
+      expect(await theStore().setBanned(userId, null)).toBe(true)
       expect(await theStore().findSession(token, new Date())).toMatchObject({ userId })
     })
 
-    it('still edits a marked account, so a bad name can be fixed on the way out', async () => {
-      // The one deliberate difference from `updateProfile`, which guards on `deletedAt`: the row
-      // is still there until it is reaped, and until then the name is still on a game.
+    it('still edits a banned account, so a bad name can be fixed rather than only hidden', async () => {
+      // The one deliberate difference from `updateProfile`, which guards on `bannedAt`: the row
+      // stays for good, so the name does too, and it should be fixable.
       const { userId } = await account()
-      await theStore().markUserDeleted(userId, new Date())
-      const renamed = await theStore().editUser(userId, { username: `Reaped${String(Date.now())}` })
+      await theStore().setBanned(userId, new Date())
+      const renamed = await theStore().editUser(userId, { username: `Banned${String(Date.now())}` })
       expect(renamed.ok).toBe(true)
       // And `updateProfile` still refuses, which is the pair of behaviours worth pinning together.
       expect(await theStore().updateProfile(userId, { bio: 'hello' })).toBeNull()
     })
 
     it('says so when there is no such account', async () => {
-      expect(await theStore().markUserDeleted('no-such-user', new Date())).toBe(false)
+      expect(await theStore().setBanned('no-such-user', new Date())).toBe(false)
     })
   })
 

@@ -109,16 +109,12 @@ server scores them, since `points` is a function of word length alone.
 
 **Three pieces of the account surface are still owed**, and the first is a store blocker:
 
-- **A reaper for `users.deleted_at`.** The _admin_ deletion path marks rather than sweeps, which
-  is deliberate — that handler can be aimed at the wrong row, and a mark can be undone. What is
-  missing is the thing that eventually finishes the job. Self-service deletion no longer waits on
-  it: that path is a real cascade, so App Store 5.1.1(v) is answered. See ACCOUNTS.md, "Deleting
-  your own account".
 - **Anything at all that recognises a returning account.** No fingerprinting, no retained
-  addresses, no blocklist, so a deleted address can sign up again at once — and self-deletion
-  erases the identities an admin deletion would have kept, so somebody who sees moderation coming
-  can delete themselves, destroy the evidence, and re-register. ACCOUNTS.md lists three options
-  and takes none of them; it is a privacy decision rather than a task.
+  addresses, no blocklist, so a new address is a clean account. ACCOUNTS.md lists three options and
+  takes none: it is a privacy decision rather than a task, and lower priority than it looks.
+  The evasion path through self-deletion destroys the evader's own username, bio and score on the
+  way out, so it is largely self-defeating; the real hole is **serial signup**, which predates all
+  of this.
 - **The privacy policy still gives an address for deletion**, which is now wrong in the good
   direction: there is a button. Worth rewriting before any submission, since "requiring users to
   phone, email, or contact support" is the pattern Apple names as unacceptable and we no longer

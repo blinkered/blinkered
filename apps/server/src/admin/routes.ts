@@ -117,30 +117,34 @@ export function adminRoutes(deps: AdminDeps): Hono<AdminEnv> {
   })
 
   /*
-   * Mark an account deleted, and bring one back.
+   * Ban an account, and lift a ban.
    *
-   * Marked rather than reaped, which is what `users.deleted_at` is for: a cascade fired from an
-   * HTTP handler has no way back if it was aimed at the wrong row, and this handler can be aimed
-   * at anybody. The reaper that finishes the job is what App Store 5.1.1(v) will need and does
-   * not exist yet.
+   * The row stays, and that is the operation rather than half of one. This handler can be aimed
+   * at anybody, so it has to be undoable; and the identities it keeps are the only thing that
+   * could ever recognise a banned account coming back. Deletion is somebody erasing their own
+   * account through `DELETE /v1/me`, which is a different route doing a different thing.
    *
-   * A marked account cannot sign in -- `findSession` already joins `users` and checks the
-   * column -- so this ends their sessions as a consequence rather than as a second step.
+   * A banned account cannot sign in -- `findSession` already joins `users` and checks the
+   * column -- so this ends their sessions as a consequence rather than as a second step, and
+   * their profile and games leave public view with them.
+   *
+   * `POST` for both directions rather than `DELETE` for one. It used to be a `DELETE`, which read
+   * as erasure and was the name that kept the word "deletion" attached to this for weeks.
    */
-  routes.delete('/users/:id', async (context) => {
+  routes.post('/users/:id/ban', async (context) => {
     const id = context.req.param('id')
-    // Deleting yourself through the panel is almost certainly a misclick, and the account you
+    // Banning yourself through the panel is almost certainly a misclick, and the account you
     // would lose is the one that can undo it.
     if (id === context.get('admin').userId) return context.json({ error: 'not-yourself' }, 409)
-    const found = await deps.store.markUserDeleted(id, clock())
+    const found = await deps.store.setBanned(id, clock())
     if (!found) return context.json({ error: 'no-user' }, 404)
-    return context.json({ deleted: true })
+    return context.json({ banned: true })
   })
 
-  routes.post('/users/:id/restore', async (context) => {
-    const found = await deps.store.markUserDeleted(context.req.param('id'), null)
+  routes.post('/users/:id/unban', async (context) => {
+    const found = await deps.store.setBanned(context.req.param('id'), null)
     if (!found) return context.json({ error: 'no-user' }, 404)
-    return context.json({ deleted: false })
+    return context.json({ banned: false })
   })
 
   /*

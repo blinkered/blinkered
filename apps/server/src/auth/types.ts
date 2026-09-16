@@ -41,7 +41,7 @@ export interface NewIdentity {
  * A person, as every authenticated route wants them.
  *
  * Returned by `findSession` rather than fetched separately, because the session lookup already
- * joins `users` in order to check `deletedAt`, and asking twice for a row already in hand is how
+ * joins `users` in order to check `bannedAt`, and asking twice for a row already in hand is how
  * `GET /v1/me` becomes two round trips for one sentence. It is also the reason `avatarSeed` is
  * here rather than on a route of its own: the picture is drawn wherever the name is shown.
  *

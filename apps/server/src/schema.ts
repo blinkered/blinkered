@@ -36,10 +36,21 @@ const blinkered = pgSchema(DATABASE_SCHEMA)
 /**
  * A person.
  *
- * `deletedAt` rather than a delete, but only briefly: App Store guideline 5.1.1(v) requires
- * in-app account deletion, and honouring that means the row goes. This column exists so a
- * deletion is a two-step, marked and then reaped, rather than a cascade fired from an HTTP
- * handler with no way back if it was a mistake.
+ * There are two ways an account stops being usable and they are different things, which took a
+ * while to say out loud.
+ *
+ * **Deletion is a delete.** `DELETE /v1/me` erases the row and lets the foreign keys take the
+ * identities, sessions and games with it. App Store guideline 5.1.1(v) requires that, and its
+ * support page refuses the alternative in as many words: "only offering to temporarily deactivate
+ * or disable an account is insufficient". So there is nothing marked and nothing to sweep.
+ *
+ * **`bannedAt` is a ban**, set by an admin and undone by one. The row stays, deliberately and
+ * indefinitely: it is reversible because that handler can be aimed at the wrong person, and the
+ * identities it keeps are the only thing that could ever recognise a banned account coming back.
+ *
+ * This column was called `deleted_at` and was described here as the first half of a two-step
+ * deletion with a reaper still to come. Neither was true: nothing reaped it, and what it actually
+ * did was ban. The reaper was on the list of owed work for exactly as long as the wrong name was.
  */
 export const users = blinkered.table(
   'users',
@@ -76,7 +87,17 @@ export const users = blinkered.table(
      */
     isAdmin: boolean('is_admin').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    /**
+     * When an admin banned them, or null.
+     *
+     * Every reader treats it the same way -- `findSession`, `profileByUsername` and `gameById`
+     * all refuse a row that has it set -- so a ban is one column and no other logic.
+     *
+     * What it does **not** do is free the name: `usernameTaken` deliberately does not filter on
+     * this, because the unique index does not either. A name taken off somebody for abuse stays
+     * taken, which is right for that case and is worth knowing for the other one.
+     */
+    bannedAt: timestamp('banned_at', { withTimezone: true }),
   },
   (table) => [uniqueIndex('users_username_normalized_key').on(table.usernameNormalized)],
 )

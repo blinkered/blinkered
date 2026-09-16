@@ -9,7 +9,7 @@ import type { FakeUser } from './fake.js'
  * Deleting your own account.
  *
  * App Store guideline 5.1.1(v) is why it exists at all, and its support page is why it is a real
- * delete rather than the `deleted_at` an admin sets: "only offering to temporarily deactivate or
+ * delete rather than the ban an admin applies: "only offering to temporarily deactivate or
  * disable an account is insufficient".
  *
  * Two things are asserted harder than the rest, because they are the ones that would be quietly

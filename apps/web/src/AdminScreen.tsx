@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
 import {
-  deleteUser,
+  banUser,
   editUser,
   findGames,
   findReports,
@@ -54,7 +54,7 @@ export function AdminScreen({
    * Which account is doing the moderating, or null for nobody.
    *
    * Used to stop the panel offering the two things the server refuses on your own row: granting
-   * or removing your own admin flag, and marking yourself deleted. Both would 409, and a control
+   * or removing your own admin flag, and banning yourself. Both would 409, and a control
    * that exists only to be refused is worse than no control -- the same rule the report button
    * follows about your own profile.
    *
@@ -216,7 +216,7 @@ function Accounts({ me }: { readonly me: string | null }): React.JSX.Element {
           </thead>
           <tbody>
             {found.value.map((user) => (
-              <tr key={user.userId} className={user.deletedAt === null ? undefined : 'is-gone'}>
+              <tr key={user.userId} className={user.bannedAt === null ? undefined : 'is-gone'}>
                 <td>
                   <button
                     type="button"
@@ -255,11 +255,11 @@ function Accounts({ me }: { readonly me: string | null }): React.JSX.Element {
 
 /** The two things worth saying about an account at a glance. */
 function Badges({ user }: { readonly user: AdminUser }): React.JSX.Element | null {
-  if (!user.isAdmin && user.deletedAt === null) return null
+  if (!user.isAdmin && user.bannedAt === null) return null
   return (
     <span className="admin-badges">
       {user.isAdmin ? <span className="admin-badge is-admin">admin</span> : null}
-      {user.deletedAt === null ? null : <span className="admin-badge is-gone">deleted</span>}
+      {user.bannedAt === null ? null : <span className="admin-badge is-gone">banned</span>}
     </span>
   )
 }
@@ -325,7 +325,7 @@ function Account({
   }
 
   const it = user.value
-  const gone = it.deletedAt !== null
+  const banned = it.bannedAt !== null
 
   return (
     <div className="admin-lane">
@@ -345,7 +345,7 @@ function Account({
         </div>
         {/* The page everybody else sees, which is the only way to check what it says. Absent for
             a marked account, whose public page is a 404 by design. */}
-        {gone ? null : (
+        {banned ? null : (
           <button
             type="button"
             className="signin-again account-close"
@@ -375,10 +375,10 @@ function Account({
         <dd>
           {it.uiLanguage ?? 'unset'} reading · {it.gameLanguage ?? 'unset'} playing
         </dd>
-        {it.deletedAt === null ? null : (
+        {it.bannedAt === null ? null : (
           <>
-            <dt>Marked deleted</dt>
-            <dd>{new Date(it.deletedAt).toLocaleString()}</dd>
+            <dt>Banned</dt>
+            <dd>{new Date(it.bannedAt).toLocaleString()}</dd>
           </>
         )}
       </dl>
@@ -444,8 +444,8 @@ function Account({
       */}
       {userId === me ? (
         <p className="dim admin-own">
-          This is your own account. Another admin changes your flag or deletes you; the panel does
-          not, and neither does the server.
+          This is your own account. Another admin changes your flag or bans you; the panel does not,
+          and neither does the server.
         </p>
       ) : (
         <div className="admin-actions">
@@ -464,22 +464,23 @@ function Account({
           </button>
 
           {/*
-            Marked rather than reaped, which is what the column is for: a cascade fired from here
-            has no way back if it was aimed at the wrong row. Marking ends their sessions and
-            takes their profile and games down with it; the row stays until something reaps it.
+            The row stays, reversibly, which is the whole operation rather than half of one: this
+            can be aimed at anybody, and the identities it keeps are the only thing that could
+            recognise a banned account coming back. A ban ends their sessions and takes their
+            profile and games out of public view. Erasing an account is something its owner does.
           */}
           <button
             type="button"
-            className={`btn${gone ? '' : ' is-danger'}`}
+            className={`btn${banned ? '' : ' is-danger'}`}
             disabled={busy}
             onClick={() => {
               void act(
-                () => deleteUser(userId, !gone),
-                gone ? 'Restored.' : 'Marked deleted. Their sessions are over.',
+                () => banUser(userId, !banned),
+                banned ? 'Ban lifted.' : 'Banned. Their sessions are over.',
               )
             }}
           >
-            {gone ? 'Restore account' : 'Mark deleted'}
+            {banned ? 'Lift the ban' : 'Ban'}
           </button>
         </div>
       )}
@@ -674,7 +675,7 @@ function GamesList({
                   /*
                    * Not `is-danger`, deliberately, though hiding is the destructive direction.
                    * A column of red buttons makes red the resting state of every row, and then
-                   * it has stopped marking anything. The red is spent on `Mark deleted`, which
+                   * it has stopped marking anything. The red is spent on `Ban`, which
                    * is one button on one account.
                    */
                   className="btn admin-small"
@@ -775,7 +776,7 @@ function Reports({ onCount }: { readonly onCount: (open: number) => void }): Rea
                 <p className="dim">
                   {/* Nullable because the column is: a report outlives the account that filed
                       it, and the objection is still worth reading afterwards. */}
-                  from {report.reporter?.username ?? 'a deleted account'} ·{' '}
+                  from {report.reporter?.username ?? 'an account that is gone'} ·{' '}
                   {new Date(report.createdAt).toLocaleString()}
                 </p>
               </header>

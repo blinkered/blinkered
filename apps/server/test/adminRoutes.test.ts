@@ -126,8 +126,8 @@ describe('the admin surface', () => {
       ['GET', '/v1/admin/users'],
       ['GET', '/v1/admin/users/whoever'],
       ['PATCH', '/v1/admin/users/whoever'],
-      ['DELETE', '/v1/admin/users/whoever'],
-      ['POST', '/v1/admin/users/whoever/restore'],
+      ['POST', '/v1/admin/users/whoever/ban'],
+      ['POST', '/v1/admin/users/whoever/unban'],
       ['GET', '/v1/admin/games'],
       ['PATCH', '/v1/admin/games/whatever'],
       ['GET', '/v1/admin/reports'],
@@ -252,7 +252,7 @@ describe('the admin surface', () => {
     it('reads one account in full, and 404s for one that is not there', async () => {
       const found = (await (await get(`/v1/admin/users/${them.userId}`)).json()) as AdminUser
       expect(found.username).toBe(them.username)
-      expect(found.deletedAt).toBeNull()
+      expect(found.bannedAt).toBeNull()
       expect((await get('/v1/admin/users/nobody')).status).toBe(404)
     })
   })
@@ -360,57 +360,57 @@ describe('the admin surface', () => {
     })
   })
 
-  describe('deleting an account', () => {
-    it('marks it, which ends the session and hides the profile', async () => {
-      // Marked rather than reaped: a cascade fired from a handler that can be aimed at anybody
-      // has no way back if it was aimed wrong. `findSession` already checks the column, so the
+  describe('banning an account', () => {
+    it('ends the session and takes the profile out of view', async () => {
+      // The row stays, which is the operation rather than half of one: this handler can be aimed
+      // at anybody so it has to be undoable. `findSession` already checks the column, so the
       // sign-out is a consequence rather than a second step.
-      const response = await send('DELETE', `/v1/admin/users/${them.userId}`, {})
+      const response = await send('POST', `/v1/admin/users/${them.userId}/ban`, {})
       expect(response.status).toBe(200)
-      expect(await response.json()).toEqual({ deleted: true })
+      expect(await response.json()).toEqual({ banned: true })
 
       expect((await get('/v1/me', { cookie: theirs })).status).toBe(401)
       expect((await get(`/v1/users/${them.username}`)).status).toBe(404)
       // Still visible to the panel, which is the one surface that has to see one.
       const found = (await (await get(`/v1/admin/users/${them.userId}`)).json()) as AdminUser
-      expect(found.deletedAt).toBe(clock.toISOString())
+      expect(found.bannedAt).toBe(clock.toISOString())
     })
 
-    it('takes a game down with the account that played it', async () => {
+    it('takes a game out of view with the account that played it', async () => {
       const gameId = await keepGame(theirs, { score: 3 })
-      await send('DELETE', `/v1/admin/users/${them.userId}`, {})
-      // A game belonging to a deleted account is 404, the same answer as a game that never
+      await send('POST', `/v1/admin/users/${them.userId}/ban`, {})
+      // A game belonging to a banned account is 404, the same answer as a game that never
       // existed. Telling them apart is how an endpoint starts reporting who used to be here.
       expect((await get(`/v1/games/${gameId}`)).status).toBe(404)
     })
 
-    it('brings one back', async () => {
-      await send('DELETE', `/v1/admin/users/${them.userId}`, {})
-      const restored = await send('POST', `/v1/admin/users/${them.userId}/restore`, {})
+    it('lifts a ban', async () => {
+      await send('POST', `/v1/admin/users/${them.userId}/ban`, {})
+      const restored = await send('POST', `/v1/admin/users/${them.userId}/unban`, {})
       expect(restored.status).toBe(200)
-      expect(await restored.json()).toEqual({ deleted: false })
+      expect(await restored.json()).toEqual({ banned: false })
       expect((await get(`/v1/users/${them.username}`)).status).toBe(200)
       // The session is still revoked-by-expiry rather than resurrected, but the account works.
       const again = await signIn('player@example.com')
       expect((await get('/v1/me', { cookie: again })).status).toBe(200)
     })
 
-    it('still edits a marked account, so a bad name can be fixed on the way out', async () => {
-      await send('DELETE', `/v1/admin/users/${them.userId}`, {})
+    it('still edits a banned account, so a bad name can be fixed rather than only hidden', async () => {
+      await send('POST', `/v1/admin/users/${them.userId}/ban`, {})
       const renamed = await send('PATCH', `/v1/admin/users/${them.userId}`, { username: 'gone' })
       expect(renamed.status).toBe(200)
     })
 
-    it('refuses to delete the account making the request', async () => {
+    it('refuses to ban the account making the request', async () => {
       // Almost certainly a misclick, and the account it would cost is the one that can undo it.
-      const response = await send('DELETE', `/v1/admin/users/${me.userId}`, {})
+      const response = await send('POST', `/v1/admin/users/${me.userId}/ban`, {})
       expect(response.status).toBe(409)
       expect(await response.json()).toEqual({ error: 'not-yourself' })
     })
 
     it('404s for an account that is not there, either way', async () => {
-      expect((await send('DELETE', '/v1/admin/users/nobody', {})).status).toBe(404)
-      expect((await send('POST', '/v1/admin/users/nobody/restore', {})).status).toBe(404)
+      expect((await send('POST', '/v1/admin/users/nobody/ban', {})).status).toBe(404)
+      expect((await send('POST', '/v1/admin/users/nobody/unban', {})).status).toBe(404)
     })
   })
 

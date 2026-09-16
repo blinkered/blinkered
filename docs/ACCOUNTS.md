@@ -356,7 +356,7 @@ PLAN.md 2.4 with the gaps filled. Drizzle, Postgres.
 
 ```
 users             id, username, username_normalized, country, ui_language, game_language,
-                  bio, avatar_seed, created_at, deleted_at
+                  bio, avatar_seed, created_at, banned_at, is_admin
 auth_identities   user_id, provider (google|apple|email), provider_account_id,
                   email, email_verified_at
 sessions          id, user_id, kind (cookie|bearer), expires_at, revoked_at
@@ -883,7 +883,7 @@ Three rules hold it shut, and together they mean **every admin was made by someb
   [DEPLOY.md](DEPLOY.md). That is the correct amount of ceremony for the power to delete
   anybody's account.
 
-Deleting yourself is refused the same way, for a smaller reason: it is a misclick that would cost
+Banning yourself is refused the same way, for a smaller reason: it is a misclick that would cost
 the account able to undo it. The panel does not draw either button on your own row, because a
 control that exists only to be refused is worse than no control — the same rule the report button
 follows about your own profile.
@@ -895,18 +895,18 @@ itself, so a client that lies about it gets a menu item and a 403.
 
 ### The routes
 
-| route                              | for                                                 |
-| ---------------------------------- | --------------------------------------------------- |
-| `POST /v1/reports`                 | the report button, behind the session               |
-| `GET /v1/admin/users`              | find somebody, by username or sign-in address       |
-| `GET /v1/admin/users/:id`          | one account: how they sign in, how much they played |
-| `PATCH /v1/admin/users/:id`        | rename, clear a bio, grant or remove the flag       |
-| `DELETE /v1/admin/users/:id`       | mark deleted                                        |
-| `POST /v1/admin/users/:id/restore` | unmark                                              |
-| `GET /v1/admin/games`              | the board, in the board's own order                 |
-| `PATCH /v1/admin/games/:id`        | hide a game, or bring it back                       |
-| `GET /v1/admin/reports`            | the queue                                           |
-| `PATCH /v1/admin/reports/:id`      | resolve one, or reopen it                           |
+| route                            | for                                                 |
+| -------------------------------- | --------------------------------------------------- |
+| `POST /v1/reports`               | the report button, behind the session               |
+| `GET /v1/admin/users`            | find somebody, by username or sign-in address       |
+| `GET /v1/admin/users/:id`        | one account: how they sign in, how much they played |
+| `PATCH /v1/admin/users/:id`      | rename, clear a bio, grant or remove the flag       |
+| `POST /v1/admin/users/:id/ban`   | ban, reversibly                                     |
+| `POST /v1/admin/users/:id/unban` | lift it                                             |
+| `GET /v1/admin/games`            | the board, in the board's own order                 |
+| `PATCH /v1/admin/games/:id`      | hide a game, or bring it back                       |
+| `GET /v1/admin/reports`          | the queue                                           |
+| `PATCH /v1/admin/reports/:id`    | resolve one, or reopen it                           |
 
 Everything under `/v1/admin` sits behind one middleware rather than a check at the top of nine
 handlers, which is the property worth having: a route added to that file later is behind the gate
@@ -1010,12 +1010,25 @@ admin renaming somebody past the rules would be creating the impersonation probl
 to prevent — including the generated `word-word-1234` shape, which stays reserved, so nobody can
 be made indistinguishable from a brand-new account.
 
-**Marking deleted** sets `users.deleted_at` and nothing else. It ends their sessions as a
-consequence rather than as a second step, because `findSession` already joins `users` and checks
-the column; their profile and their games 404 with them. The row stays until something reaps it,
-and nothing reaps it yet. That reaper is what App Store 5.1.1(v) needs, and it is the piece still
-missing. A marked account is still editable here, unlike through `updateProfile`, which is what
-lets an offensive name be fixed on an account on its way out.
+**Banning** sets `users.banned_at` and nothing else. It ends their sessions as a consequence
+rather than as a second step, because `findSession` already joins `users` and checks the column;
+their profile and their games 404 with them. A banned account is still editable here, unlike
+through `updateProfile`, which is what lets an offensive name be fixed rather than merely hidden.
+
+**The row stays, indefinitely, and that is the operation rather than half of one.** This column was
+called `deleted_at` and was described as the first step of a two-step deletion with a reaper still
+to come. Neither was true: nothing reaped it, and what it did was ban. The reaper sat on the list
+of owed work for exactly as long as the wrong name did — which is the argument for renaming things
+when you notice, since a bad name generates imaginary work.
+
+Two consequences of keeping the row, both of which may be what you want and are worth stating:
+
+- **The name stays taken.** `usernameTaken` deliberately does not filter banned accounts, because
+  the unique index does not either. Right for a name removed for abuse; worth knowing for a ban
+  applied by mistake and never lifted.
+- **The address is retained with no stated period.** Which is also the only thing that could ever
+  recognise a banned account coming back — see the ban-evasion note under "Deleting your own
+  account".
 
 ### The one place the API returns a sign-in address
 
@@ -1028,10 +1041,10 @@ have an address to leak.
 
 ### What is still not built
 
-- **A reaper for `users.deleted_at`.** Self-service deletion is built and is a real delete, so
-  5.1.1(v) is answered; what is still marked-and-never-swept is the _admin_ path, which is
-  deliberately reversible and therefore deliberately incomplete.
-- **The reaper.** `deleted_at` is set and nothing acts on it, so a marked account is still a row.
+- ~~**A reaper for the marked-deleted column.**~~ There is nothing to reap. Self-service deletion
+  erases the row, and the admin path is a ban that keeps it on purpose. This was owed work for
+  exactly as long as the column was misnamed `deleted_at`, which is the argument for renaming
+  things when you notice: a bad name generates imaginary work.
 - **Telling somebody why they were renamed.** There is no notification of any kind, so this is a
   person and an email address. Worth doing before the first rename that is not ours.
 - **A rate limit on `POST /v1/reports`.** The duplicate rule stops somebody filing the same report
@@ -1049,9 +1062,9 @@ have an address to leak.
 Built. `DELETE /v1/me`, behind a fresh six-digit code, and it is a real delete rather than the
 mark an admin sets.
 
-**Two deletion paths, on purpose.** An admin marks `deleted_at` and can undo it, because that
-handler can be aimed at the wrong row. A person deleting their own account gets a cascade, because
-they are the row and they have just answered a code — and because 5.1.1(v)'s support page is
+**Two paths, on purpose, and only one is a deletion.** An admin sets `banned_at` and can undo it,
+because that handler can be aimed at the wrong person. Somebody deleting their own account gets a
+cascade, because they are the row and they have just answered a code — and because 5.1.1(v)'s support page is
 explicit that "only offering to temporarily deactivate or disable an account is insufficient", so
 a mark would not satisfy it.
 
@@ -1100,10 +1113,22 @@ Worth stating plainly because it is the obvious question. Nothing here recognise
 account: no fingerprinting, no retained addresses, no blocklist. A deleted address can sign up
 again immediately and get a clean account.
 
-Self-deletion makes that sharper rather than better. An admin deletion marks the row and keeps
-`auth_identities`, so it leaves something recognisable; a self-deletion erases it. So somebody who
-sees moderation coming can delete their own account, destroy the evidence about them, and
-re-register. That is a real path and this feature opened it.
+A ban keeps the row and its `auth_identities`, so it leaves something recognisable; a
+self-deletion erases them. So somebody who sees a ban coming can delete their own account and
+re-register clean.
+
+**That path is mostly self-defeating, which is why it is not urgent.** The three reportable
+surfaces are a username, a bio and a score, and self-deletion removes all three — the evader
+destroys their own offending content to escape a ban, which is us getting the outcome we wanted by
+an unexpected route. What it costs us is the `reason` prose on reports about them, so a moderator
+mid-investigation loses the description of what happened; `field`, the timestamps and the counts
+survive.
+
+**The real hole is serial signup, and it predates all of this.** Nothing stops a second account
+with a second address, reported or not, and a spammer wants impressions rather than persistence —
+so delete-and-recreate is barely a shortcut for them. Worth filing as "serial signup is
+undefended" rather than "self-deletion enables evasion", because the second framing blames the
+wrong button.
 
 It is not closed, and closing it is a decision rather than a task. The options, none taken:
 
@@ -1135,9 +1160,9 @@ adds is the part that changes the design:
   it is done. Which means the reaper does not have to be synchronous.
 - **Marking is not enough.** "Offer to delete the entire account record, along with associated
   personal data... only offering to temporarily deactivate or disable an account is
-  insufficient." `deleted_at` with nothing reaping it _is_ deactivation, so **the reaper is the
-  load-bearing half of this and the entry point is the easy one.** That is the opposite of the
-  order these were listed in.
+  insufficient." A reversible mark _is_ deactivation, which is why self-service deletion erases
+  the row outright rather than setting a column. It also settles what the admin path is: a ban,
+  now named `banned_at`, and not a half-finished deletion waiting on a reaper.
 - **An address is specifically disqualifying.** "Requiring users to phone, email, or contact
   support" is listed as not acceptable outside the regulated industries of 5.1.1(ix), and the
   privacy policy currently gives an address. So the thing standing in for deletion today is the

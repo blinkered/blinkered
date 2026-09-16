@@ -216,7 +216,7 @@ export function accountRoutes(deps: AccountDeps): Hono {
    * answered 404 to everybody else on purpose.
    *
    * Still 404, and for the same reason it was then, for a game that is not there, never
-   * finished, nobody has claimed, is `hidden`, or belongs to a deleted account. Those are all
+   * finished, nobody has claimed, is `hidden`, or belongs to a banned account. Those are all
    * "no such game" to a stranger, and telling them apart is how an endpoint starts reporting
    * which games exist.
    */
@@ -295,12 +295,12 @@ export function accountRoutes(deps: AccountDeps): Hono {
   /*
    * Deleting your own account, for good.
    *
-   * A real delete rather than the `deleted_at` an admin sets, and the asymmetry is the point.
-   * `schema.ts` argues against cascading from an HTTP handler because an admin can aim at the
-   * wrong row; here the person asking is the row, and they have just answered a code. App Store
-   * guideline 5.1.1(v) also wants the account record gone rather than disabled -- "only offering
-   * to temporarily deactivate or disable an account is insufficient" -- so a mark would not
-   * satisfy it.
+   * A real delete, unlike the ban an admin applies, and the asymmetry is the point. A ban keeps
+   * the row because that handler can be aimed at the wrong person and has to be undoable; here
+   * the person asking is the row, and they have just answered a code. App Store guideline
+   * 5.1.1(v) also wants the account record gone rather than disabled -- "only offering to
+   * temporarily deactivate or disable an account is insufficient" -- so a ban would not satisfy
+   * it.
    *
    * What goes with it: identities, sessions, games and their documents, by `on delete cascade`.
    * What does not: reports, whose three links are `set null` so the objection outlives the people

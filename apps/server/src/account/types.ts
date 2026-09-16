@@ -214,7 +214,7 @@ export interface AccountStore extends ReportWriter {
    * private one that could drift about what a game is.
    *
    * Null for a game that is not there, one that never finished, one an owner has not claimed,
-   * a `hidden` one, and one belonging to a deleted account. Those are all "no such game" to a
+   * a `hidden` one, and one belonging to a banned account. Those are all "no such game" to a
    * stranger, and the distinctions are exactly what a 404 exists to withhold.
    */
   gameById(gameId: string): Promise<{
@@ -222,7 +222,7 @@ export interface AccountStore extends ReportWriter {
     detail: GameDetail | null
     owner: PublicProfile
   } | null>
-  /** Somebody else's profile, by the name in the URL. Null for unknown and for deleted. */
+  /** Somebody else's profile, by the name in the URL. Null for unknown and for banned. */
   profileByUsername(normalized: string): Promise<PublicProfile | null>
   /**
    * The address a code can be sent to, for somebody who is already signed in.

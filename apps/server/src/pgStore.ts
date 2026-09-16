@@ -181,14 +181,14 @@ export function pgStore(db: Database): Store {
         .select(PROFILE)
         .from(sessions)
         .innerJoin(users, eq(users.id, sessions.userId))
-        // Expiry and revocation in the query rather than in the caller, and `deletedAt` with
-        // them: a deleted account whose session is still live would otherwise keep working.
+        // Expiry and revocation in the query rather than in the caller, and `bannedAt` with
+        // them: a banned account whose session is still live would otherwise keep working.
         .where(
           and(
             eq(sessions.id, id),
             isNull(sessions.revokedAt),
             gte(sessions.expiresAt, now),
-            isNull(users.deletedAt),
+            isNull(users.bannedAt),
           ),
         )
         .limit(1)
@@ -209,7 +209,7 @@ export function pgStore(db: Database): Store {
     },
 
     usernameTaken: async (normalized) => {
-      // Deleted accounts are not filtered out, deliberately: the unique index does not exclude
+      // Banned accounts are not filtered out, deliberately: the unique index does not exclude
       // them either, so filtering here would answer "free" about a name an update cannot have.
       const [row] = await db
         .select({ id: users.id })
@@ -221,7 +221,7 @@ export function pgStore(db: Database): Store {
 
     updateProfile: async (userId, patch) => {
       const values = columnsOf(patch)
-      const where = and(eq(users.id, userId), isNull(users.deletedAt))
+      const where = and(eq(users.id, userId), isNull(users.bannedAt))
       // An empty patch is a read. Drizzle refuses `set({})` outright, and a PATCH that mentions
       // no field is a client asking for the profile back rather than an error worth raising.
       if (Object.keys(values).length === 0) {
@@ -356,8 +356,8 @@ export function pgStore(db: Database): Store {
      * collapse them. A subquery answers the question the search is actually asking -- does this
      * account have an address like that -- and returns each account once.
      *
-     * Deleted accounts are included. This is the surface that has to be able to see one in order
-     * to restore it, and it is the only surface where that is true: `profileByUsername` and
+     * Banned accounts are included. This is the surface that has to be able to see one in order
+     * to lift the ban, and it is the only surface where that is true: `profileByUsername` and
      * `gameById` both exclude them, and should.
      */
     findUsers: async (text, limit) => {
@@ -399,10 +399,9 @@ export function pgStore(db: Database): Store {
     /*
      * Applying an admin's patch.
      *
-     * No `isNull(users.deletedAt)` guard, unlike `updateProfile`, and that is the one deliberate
-     * difference: a marked account is still editable here, which is what lets an offensive name
-     * be fixed on an account that is on its way out. The row is still there until it is reaped,
-     * and until then it is still a name on a game somebody can open.
+     * No `isNull(users.bannedAt)` guard, unlike `updateProfile`, and that is the one deliberate
+     * difference: a banned account is still editable here, which is what lets an offensive name
+     * be fixed rather than merely hidden. The row stays for good, so the name does too.
      */
     editUser: async (userId, patch) => {
       const values = adminColumnsOf(patch)
@@ -429,10 +428,10 @@ export function pgStore(db: Database): Store {
       }
     },
 
-    markUserDeleted: async (userId, at) => {
+    setBanned: async (userId, at) => {
       const written = await db
         .update(users)
-        .set({ deletedAt: at })
+        .set({ bannedAt: at })
         .where(eq(users.id, userId))
         .returning({ id: users.id })
       return written[0] !== undefined
@@ -570,9 +569,9 @@ export function pgStore(db: Database): Store {
       const [row] = await db
         .select(PUBLIC_PROFILE)
         .from(users)
-        // A deleted account is not a profile. Same answer as a name nobody has, deliberately:
+        // A banned account is not a profile. Same answer as a name nobody has, deliberately:
         // telling the two apart would make this endpoint report who used to be here.
-        .where(and(eq(users.usernameNormalized, normalized), isNull(users.deletedAt)))
+        .where(and(eq(users.usernameNormalized, normalized), isNull(users.bannedAt)))
         .limit(1)
       return row ?? null
     },
@@ -608,7 +607,7 @@ export function pgStore(db: Database): Store {
             eq(games.id, gameId),
             isNotNull(games.finishedAt),
             eq(games.hidden, false),
-            isNull(users.deletedAt),
+            isNull(users.bannedAt),
           ),
         )
         .limit(1)
@@ -658,7 +657,7 @@ const PROFILE = {
  * An account, as the panel wants it, minus the two things that need another query.
  *
  * Named beside `PROFILE` and `PUBLIC_PROFILE` so the three are visible together: this is the one
- * that carries `is_admin` and `deleted_at`, and the reason the others do not is that they go to a
+ * that carries `is_admin` and `banned_at`, and the reason the others do not is that they go to a
  * browser belonging to somebody who is not moderating. `dressUsers` adds the identities and the
  * game count.
  */
@@ -672,7 +671,7 @@ const ADMIN_USER = {
   bio: users.bio,
   isAdmin: users.isAdmin,
   createdAt: users.createdAt,
-  deletedAt: users.deletedAt,
+  bannedAt: users.bannedAt,
 } as const
 
 /**
