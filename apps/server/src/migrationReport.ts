@@ -8,6 +8,22 @@
  * integration suite it points at measures no coverage at all. Logic put in there is logic nothing
  * checks. So the logic is here.
  *
+ * ## Whose rule this is
+ *
+ * The ordering rule below is **drizzle's, not a choice made here**, and it is worth saying
+ * plainly because it is a bad one: it applies every migration newer than the newest row in
+ * `__drizzle_migrations` rather than every migration that table is missing, so anything stamped
+ * earlier is skipped in silence. That assumes one line of history, which is an assumption a team
+ * violates the first time two branches each generate a migration.
+ *
+ * Drizzle agrees it is wrong. It is filed as drizzle-team/drizzle-orm#5316 and #5769, and the
+ * 1.0 line replaces it with "apply every missing migration, whatever its stamp" -- there is a
+ * dist-tag called `update/migrator-strategy` for the work. That fix is in `1.0.0-rc`, and this
+ * repository is on the latest **stable**, 0.45.2, which still has the old behaviour. Upgrading
+ * is a major version with an API change and is a decision rather than a detail; until it is
+ * taken, the behaviour is what it is and the job of this module is to refuse to deploy on top
+ * of it.
+ *
  * ## There is no rollback, and this cannot invent one
  *
  * `drizzle-kit generate` writes forward SQL and nothing else -- there are no down migrations in
@@ -36,11 +52,9 @@ export interface MigrationPlan {
   /**
    * In the journal, not in the database, and **drizzle will not apply them.**
    *
-   * The reason this category exists at all is drizzle's rule: it applies every migration whose
-   * stamp is greater than the newest row in the table, rather than every migration the table is
-   * missing. A file whose stamp lands before something already applied is therefore skipped in
-   * silence, forever. That happens when two branches each generate a migration and the older one
-   * merges second, which is a thing that will eventually happen here.
+   * Which makes this the one condition that stops a deployment: see `refusal`. The schema the
+   * code expects is not the schema it would get, and the whole point of running migrations
+   * before the rollout is that this is the moment to find out.
    */
   readonly skipped: readonly string[]
   /**
@@ -125,13 +139,18 @@ export function planLines(plan: MigrationPlan): readonly string[] {
   if (plan.pending.length === 0) lines.push('  nothing to apply')
 
   /*
-   * The two anomalies, spelled out rather than counted.
+   * The two anomalies, and only one of them stops the deployment.
    *
-   * Neither is made a failure, and that is deliberate in both directions. A database ahead of the
-   * image is what a rollback looks like, and a Job that refused it would block the rollback --
-   * which is the one operation you need to work when everything else has gone wrong. A skipped
-   * migration is a real fault, but failing here would leave the only fix as a hand-edited journal
-   * against a stack that will not start.
+   * A **skipped** migration does, through `refusal` below. An earlier version of this file made
+   * it a warning, on the reasoning that failing would leave nothing to do but hand-edit the
+   * journal. That was wrong twice over: the fix is to regenerate the stranded migration so it
+   * gets a current stamp, which is one local command; and a warning is no protection at all
+   * against the thing it warns about, because what follows it is an API pod serving traffic
+   * against a schema that is missing a column its code expects.
+   *
+   * A database **ahead** of the image does not, and that asymmetry is deliberate. It is what a
+   * rollback looks like, and a Job that refused it would block the rollback -- the one operation
+   * that has to work when everything else has gone wrong.
    */
   for (const tag of plan.skipped) {
     lines.push(`  WILL NOT APPLY ${tag}: its stamp is older than a migration already applied`)
@@ -163,6 +182,33 @@ export function doneLine(plan: MigrationPlan): string {
     parts.push(`DATABASE AHEAD by ${String(plan.ahead.length)}`)
   }
   return `done: ${parts.join('; ')}`
+}
+
+/**
+ * Why this deployment must not proceed, or null when it may.
+ *
+ * Here rather than in `migrate.ts` so that the one condition which stops a rollout is decided by
+ * tested code. Returned rather than thrown, because a pure function that throws is a pure
+ * function nobody can ask a question of.
+ *
+ * Only `skipped` refuses. It means the journal carries a migration the database does not have and
+ * this version of drizzle will never apply -- so the schema the code was written against is not
+ * the schema it would run on, and every later deploy would inherit the same gap in the same
+ * silence.
+ */
+export function refusal(plan: MigrationPlan): string | null {
+  if (plan.skipped.length === 0) return null
+  return [
+    `${count(plan.skipped.length, 'migration')} in this build will never be applied by drizzle: ` +
+      plan.skipped.join(', '),
+    'Their stamps are older than a migration already applied, and drizzle applies only what is',
+    'newer than the newest row in __drizzle_migrations rather than what that table is missing.',
+    'That is drizzle-team/drizzle-orm#5316, fixed in the 1.0 line and not in 0.45.',
+    '',
+    'Regenerate them so they get a current stamp -- `pnpm exec drizzle-kit generate` after',
+    'dropping the stranded file -- and deploy again. Refusing here rather than starting the API',
+    'against a schema it was not written for.',
+  ].join('\n')
 }
 
 /** "1 migration", "3 migrations". English only; this is a deploy log, not a player's screen. */

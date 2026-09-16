@@ -168,6 +168,31 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
 
 ## Known and accepted
 
+- **Drizzle's migrator assumes one line of history, and 0.45 is the version that does.** It
+  applies every migration whose timestamp is newer than the newest row in
+  `__drizzle_migrations`, rather than every migration that table is missing, so a file stamped
+  earlier than something already applied is skipped **in silence, for good**. Two branches each
+  generating a migration, with the older one merging second, is all it takes — which is a thing a
+  team does routinely rather than an exotic case.
+
+  Drizzle agrees it is wrong: [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316)
+  and [#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769), with the 1.0 line
+  replacing the rule with "apply every missing migration, whatever its stamp" — there is a
+  dist-tag called `update/migrator-strategy` for the work. Rails and Liquibase have always
+  worked that way; Django builds a dependency graph and makes you merge branches explicitly.
+
+  **What is built instead is a refusal.** `migrationReport.ts` reimplements drizzle's rule,
+  detects a migration that would be stranded, and fails the migration Job before anything is
+  applied, so Helm aborts the upgrade and the old pods keep serving the schema they match. That
+  turns a silent wrong schema into a blocked deploy with instructions in the log. It is a guard,
+  not a fix.
+
+  **The open question is whether to move to `drizzle-orm@1.0.0-rc`.** For: it is the actual fix,
+  and nothing has shipped, so a release candidate under a product with no users is a much smaller
+  bet than it would be later. Against: it is a major version with API changes across the ORM, so
+  it is a day of work and a re-read of every query rather than a version bump. Not taken yet, and
+  worth taking before there is a second person generating migrations.
+
 - **Twenty languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
   them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German, Hebrew, Icelandic,
   Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian, Tagalog, Ukrainian,

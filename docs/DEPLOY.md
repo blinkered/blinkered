@@ -324,21 +324,35 @@ forward SQL only; there are no down migrations in the repository and no command 
 change that has to be undone is undone by writing another migration.
 
 Two lines are worth recognising, because both are conditions drizzle itself passes over in
-silence. Neither fails the Job, and that is deliberate in both directions.
+silence. **One of them fails the Job and the other does not**, and that asymmetry is the whole of
+it.
 
 **`DATABASE AHEAD by 1`** means the database holds a migration this image does not. The ordinary
-cause is a deliberate rollback to an older build, and the other is a shared database somebody
-else has migrated further. Not a failure, because refusing it would block the rollback — which is
-the one operation that has to work when everything else has gone wrong. Before this line existed
-the case arrived as `migrations are up to date`, which reads as success.
+cause is a deliberate rollback to an older build, and the other is a shared database somebody else
+has migrated further. Not a failure, because refusing it would block the rollback — which is the
+one operation that has to work when everything else has gone wrong. Before this line existed the
+case arrived as `migrations are up to date`, which reads as success.
 
-**`WILL NOT APPLY <tag>`** is the one to worry about. It means a migration is in the journal, is
-absent from the database, and drizzle is going to skip it for good. That follows from drizzle's
-rule, which is worth knowing: it applies every migration **newer than the newest row** in
-`__drizzle_migrations`, not every migration the table is missing. So a file whose stamp lands
-before something already applied is never picked up. Two branches each generating a migration, and
-the older one merging second, produces exactly that. The fix is to regenerate the stranded
-migration so it gets a current stamp.
+**`WILL NOT APPLY <tag>` fails the Job**, before anything is applied, so Helm aborts the upgrade
+and the old pods keep serving the schema they were written for. It means a migration is in the
+journal, absent from the database, and drizzle will never apply it.
+
+That follows from drizzle's rule, which is worth knowing because it is the surprising part: it
+applies every migration **newer than the newest row** in `__drizzle_migrations`, not every
+migration that table is missing. A file whose stamp lands before something already applied is
+therefore never picked up. Two branches each generating a migration, with the older one merging
+second, produces exactly that — which is to say **the rule assumes one line of history**, and a
+team violates that assumption routinely.
+
+The fix on the day it happens is local and takes one command: drop the stranded migration file,
+`pnpm exec drizzle-kit generate` so it gets a current stamp, and deploy again.
+
+**This is drizzle's behaviour, not a choice made here, and drizzle considers it a bug.** It is
+filed as [#5316](https://github.com/drizzle-team/drizzle-orm/issues/5316) and
+[#5769](https://github.com/drizzle-team/drizzle-orm/issues/5769), and the 1.0 line replaces it
+with "apply every missing migration, whatever its stamp". That fix is in `1.0.0-rc` only; this
+repository is on the latest stable, 0.45.2, which still has the old behaviour. See STATUS.md for
+the upgrade question, which is open.
 
 ## Making the first admin
 

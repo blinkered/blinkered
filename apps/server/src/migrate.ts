@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { client } from './db.js'
-import { journalEntries, planLines, planMigrations } from './migrationReport.js'
+import { journalEntries, planLines, planMigrations, refusal } from './migrationReport.js'
 import type { MigrationPlan } from './migrationReport.js'
 import { DATABASE_SCHEMA } from './schema.js'
 import type { DatabaseConfig } from './config.js'
@@ -70,6 +70,16 @@ export async function runMigrations(
      */
     const plan = planMigrations(journal(), await appliedStamps(connection))
     for (const line of planLines(plan)) say(line)
+
+    /*
+     * Refused before anything is applied, so a build carrying a migration drizzle would silently
+     * skip does not half-migrate and then roll.
+     *
+     * The Job exits non-zero, Helm aborts the upgrade, and the old pods keep serving the schema
+     * they were written for. That is the whole reason migrations run as a pre-upgrade hook.
+     */
+    const refused = refusal(plan)
+    if (refused !== null) throw new Error(refused)
 
     await migrate(drizzle(connection), {
       migrationsFolder: MIGRATIONS,

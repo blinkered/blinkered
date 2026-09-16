@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { doneLine, journalEntries, planLines, planMigrations } from '../src/migrationReport.js'
+import {
+  doneLine,
+  journalEntries,
+  planLines,
+  planMigrations,
+  refusal,
+} from '../src/migrationReport.js'
 import type { JournalEntry } from '../src/migrationReport.js'
 
 /**
@@ -146,5 +152,52 @@ describe('what it prints', () => {
     expect(doneLine(planMigrations(JOURNAL, [1000]))).toBe(
       'done: applied 2 migrations: 0001_drop_game_words, 0002_game_detail; 1 already there',
     )
+  })
+})
+
+describe('refusing a deployment', () => {
+  it('lets an ordinary run through', () => {
+    for (const applied of [[], [1000], [1000, 2000, 3000]]) {
+      expect(refusal(planMigrations(JOURNAL, applied))).toBeNull()
+    }
+  })
+
+  it('lets a rollback through, because a rollback has to work', () => {
+    // The database is ahead of the image. That is an older build being deployed on purpose, and
+    // refusing it would block the one operation you need when everything else has gone wrong.
+    expect(refusal(planMigrations(JOURNAL, [1000, 2000, 3000, 4000]))).toBeNull()
+  })
+
+  it('refuses a migration drizzle would never apply, and says what to do about it', () => {
+    /*
+     * The condition Nick's question was about, and the reason this is a refusal rather than the
+     * warning it started as: what follows a warning is an API pod serving traffic against a
+     * schema missing a column its code expects.
+     */
+    const journal: readonly JournalEntry[] = [
+      { tag: '0000_initial', when: 1000 },
+      { tag: '0001_from_the_older_branch', when: 1500 },
+      { tag: '0002_from_the_newer_branch', when: 2000 },
+    ]
+    const said = refusal(planMigrations(journal, [1000, 2000]))
+    expect(said).not.toBeNull()
+    expect(said).toContain('0001_from_the_older_branch')
+    // Names the cause rather than only the symptom, because the reader will not know that
+    // drizzle compares against a high-water mark rather than against the table.
+    expect(said).toContain('newer than the newest row')
+    // And what to do, since the fix is one local command rather than a hand-edited journal.
+    expect(said).toContain('drizzle-kit generate')
+  })
+
+  it('counts more than one of them', () => {
+    const journal: readonly JournalEntry[] = [
+      { tag: '0000_initial', when: 1000 },
+      { tag: '0001_stranded', when: 1400 },
+      { tag: '0002_also_stranded', when: 1500 },
+      { tag: '0003_applied', when: 2000 },
+    ]
+    const said = refusal(planMigrations(journal, [1000, 2000]))
+    expect(said).toContain('2 migrations in this build will never be applied')
+    expect(said).toContain('0001_stranded, 0002_also_stranded')
   })
 })
