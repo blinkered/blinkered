@@ -50,6 +50,7 @@ import {
 import type { Ruleset, Settings } from './settings.js'
 import { useGame } from './useGame.js'
 import type { GameSpec } from './useGame.js'
+import { ignoredByManagers } from './autofill.js'
 
 /**
  * A game is set up, played, and then over. Nothing starts on its own.
@@ -678,6 +679,7 @@ function Session({
             <input
               type="checkbox"
               checked={settings.nerdMode}
+              {...ignoredByManagers}
               {...nerdFocus.handlers}
               onChange={(e) => {
                 // Give the keyboard back, or the board stops hearing anything typed at it.

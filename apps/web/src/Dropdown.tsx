@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { withoutStealingFocus } from './focus.js'
+import { notACredential } from './autofill.js'
 
 /**
  * A menu the page draws itself.
@@ -287,6 +288,7 @@ export function Dropdown({
                 ref={search}
                 type="text"
                 className="drop-search"
+                {...notACredential()}
                 placeholder={filter}
                 value={query}
                 role="combobox"

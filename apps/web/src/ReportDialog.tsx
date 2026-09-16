@@ -1,6 +1,7 @@
 import type { Messages } from '@blinkered/i18n'
 import { useEffect, useRef, useState } from 'react'
 import { report } from './account.js'
+import { ignoredByManagers, notACredential } from './autofill.js'
 import type { ReportField, ReportResult } from './account.js'
 import { draftKept, dropDraft, keepDraft, subjectKey } from './reportDraft.js'
 import type { Subject } from './reportDraft.js'
@@ -247,6 +248,7 @@ function ReportDialog({
                       type="radio"
                       name="report-field"
                       value={one}
+                      {...ignoredByManagers}
                       checked={field === one}
                       onChange={() => {
                         setField(one)
@@ -264,6 +266,7 @@ function ReportDialog({
                 className="account-bio"
                 rows={3}
                 value={reason}
+                {...notACredential()}
                 onChange={(event) => {
                   setReason(event.target.value)
                 }}

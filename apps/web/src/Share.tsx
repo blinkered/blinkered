@@ -3,6 +3,7 @@ import type { GameResult } from '@blinkered/engine'
 import { shareText } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { withoutStealingFocus } from './focus.js'
+import { notACredential } from './autofill.js'
 
 /**
  * Where the synopsis points when the game itself cannot be linked to.
@@ -114,6 +115,7 @@ export function Share({
           {/* Selectable, and pre-selected on focus, since the whole point is to get it out. */}
           <textarea
             className="share-text"
+            {...notACredential()}
             readOnly
             rows={4}
             value={text}

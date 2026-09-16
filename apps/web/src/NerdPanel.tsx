@@ -8,6 +8,7 @@ import { useFocusRelease } from './focus.js'
 import { InterfacePicker } from './LanguagePicker.js'
 import { FLIP_ECONOMIES, KEY_SCHEMES, WORD_COMPLETE_MODES, isCanonical } from './settings.js'
 import type { Settings } from './settings.js'
+import { ignoredByManagers, notACredential } from './autofill.js'
 
 interface NerdPanelProps {
   readonly settings: Settings
@@ -283,6 +284,7 @@ function Number({
       <input
         type="number"
         value={value}
+        {...notACredential()}
         min={min}
         max={max}
         step={step ?? 1}
@@ -316,6 +318,7 @@ function Choice<T extends string>({
     <label className="nerd-row">
       <span>{label}</span>
       <select
+        {...ignoredByManagers}
         value={value}
         disabled={disabled ?? false}
         {...focus.handlers}

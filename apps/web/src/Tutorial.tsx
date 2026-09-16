@@ -11,6 +11,7 @@ import { boardFor, stepsFor, wordOf } from './tutorialScript.js'
 import type { Frame, Step } from './tutorialScript.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
+import { ignoredByManagers } from './autofill.js'
 
 /**
  * The first-run tour.
@@ -219,6 +220,7 @@ export function Tutorial({
             <input
               type="checkbox"
               checked={hideAgain}
+              {...ignoredByManagers}
               onChange={(event) => {
                 setHideAgain(event.currentTarget.checked)
               }}
@@ -384,6 +386,7 @@ export function Tutorial({
             <input
               type="checkbox"
               checked={hideAgain}
+              {...ignoredByManagers}
               onChange={(event) => {
                 setHideAgain(event.currentTarget.checked)
               }}

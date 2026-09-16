@@ -12,6 +12,7 @@ import {
   trouble,
 } from './admin.js'
 import type { AdminGame, AdminReport, AdminUser, Answer } from './admin.js'
+import { ignoredByManagers, notACredential } from './autofill.js'
 import { countryName } from './countries.js'
 import { goTo } from './route.js'
 
@@ -172,10 +173,13 @@ function Accounts({ me }: { readonly me: string | null }): React.JSX.Element {
     <div className="admin-lane">
       <label className="signin-field admin-search">
         <span>Search a username or a sign-in address</span>
+        {/* The likeliest target in the app: a manager that matches on placeholders sees an
+            address in this one and offers to fill it. See `autofill.ts`. */}
         <input
           type="search"
           value={search}
           placeholder="trout, or nick@example.com"
+          {...notACredential()}
           onChange={(event) => {
             setSearch(event.target.value)
           }}
@@ -400,6 +404,7 @@ function Account({
           <input
             type="text"
             value={name}
+            {...notACredential('nickname')}
             onChange={(event) => {
               setName(event.target.value)
             }}
@@ -411,6 +416,7 @@ function Account({
             className="account-bio"
             rows={2}
             value={bio}
+            {...notACredential()}
             onChange={(event) => {
               setBio(event.target.value)
             }}
@@ -535,6 +541,7 @@ function Games(): React.JSX.Element {
             type="text"
             value={language}
             placeholder="en"
+            {...notACredential()}
             onChange={(event) => {
               setLanguage(event.target.value.trim())
             }}
@@ -543,6 +550,7 @@ function Games(): React.JSX.Element {
         <label className="signin-field">
           <span>Difficulty</span>
           <select
+            {...ignoredByManagers}
             value={difficulty}
             onChange={(event) => {
               setDifficulty(event.target.value)
@@ -559,6 +567,7 @@ function Games(): React.JSX.Element {
         <label className="signin-field">
           <span>Shown</span>
           <select
+            {...ignoredByManagers}
             value={shown}
             onChange={(event) => {
               setShown(event.target.value)

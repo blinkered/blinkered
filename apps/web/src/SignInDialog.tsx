@@ -1,6 +1,7 @@
 import type { Messages } from '@blinkered/i18n'
 import { useEffect, useRef, useState } from 'react'
 import { requestCode, submitCode, whoAmI } from './account.js'
+import { ignoredByManagers } from './autofill.js'
 import type { Account, SignInResult } from './account.js'
 import { startUrl } from './sso.js'
 
@@ -226,10 +227,18 @@ export function SignInDialog({
               <span>{messages.codeLabel}</span>
               <input
                 type="text"
-                // `one-time-code` is what lets iOS and Android offer the code from the
-                // notification without the mail being opened, which is most of the ergonomics
-                // of this flow.
+                /*
+                 * `one-time-code` stays, and the manager opt-outs go on beside it.
+                 *
+                 * The two are different mechanisms and only one is wanted here. That token is
+                 * what lets iOS and Android offer the code from the notification without the
+                 * mail being opened, which is most of the ergonomics of this flow; the `data-`
+                 * attributes are what stop LastPass and its neighbours treating the field as a
+                 * credential to suggest into. The address above is the one field in the app
+                 * where a password manager should speak up, and it is the only one without them.
+                 */
                 autoComplete="one-time-code"
+                {...ignoredByManagers}
                 inputMode="numeric"
                 pattern="[0-9]*"
                 maxLength={6}

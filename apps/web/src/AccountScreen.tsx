@@ -7,6 +7,7 @@ import { GamesTable } from './GamesTable.js'
 import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { checkName, myGames, saveProfile } from './account.js'
+import { notACredential } from './autofill.js'
 import { countriesIn } from './countries.js'
 import type { Account, PlayedGame } from './account.js'
 import type { CatalogueEntry } from './dictionary.js'
@@ -246,7 +247,15 @@ function Profile({
           type="text"
           value={name}
           maxLength={NAME_MAX}
-          autoComplete="username"
+          /*
+           * `nickname`, not `username`.
+           *
+           * This said `username`, which is the hint that means "the username of a login form",
+           * and every password manager read it exactly that way: LastPass offered to fill an
+           * email address into a field nobody had focused. A public handle is a nickname. See
+           * `autofill.ts` for the four vendor attributes that come with it.
+           */
+          {...notACredential('nickname')}
           onChange={(event) => {
             setName(event.target.value)
             setSaved(false)
@@ -265,6 +274,7 @@ function Profile({
           className="account-bio"
           rows={2}
           value={bio}
+          {...notACredential()}
           onChange={(event) => {
             setBio(event.target.value)
             setSaved(false)
