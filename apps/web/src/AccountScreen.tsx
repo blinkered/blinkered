@@ -1,3 +1,5 @@
+import { format } from '@blinkered/i18n'
+import type { Messages } from '@blinkered/i18n'
 import { useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
 import { GameDetail } from './GameDetail.js'
@@ -37,26 +39,38 @@ const BIO_MAX = 140
 const CHECK_MS = 400
 
 /** The server's words for a bad name, in the reader's. */
-const NAME_TROUBLE: Readonly<Record<string, string>> = {
-  taken: 'Somebody already has that name.',
-  'too-short': 'A bit longer, please.',
-  'too-long': 'That is too long.',
-  'bad-characters': 'Letters, digits, hyphens and underscores only.',
-  'bad-edges': 'It has to start and end with a letter or a digit.',
-  'mixed-scripts': 'Pick one alphabet and stay in it.',
-  reserved: 'That looks like a name we hand out. Choose another.',
-  unavailable: 'Could not reach the server. Try again in a moment.',
+/**
+ * Why a name or a bio was refused, in the reader's own language.
+ *
+ * Built from the catalogue rather than held as a constant, because a constant would be fixed in
+ * whatever language the module was first evaluated in. The server sends a tag; the words are
+ * ours to choose.
+ */
+function nameTrouble(messages: Messages): Readonly<Record<string, string>> {
+  return {
+    taken: messages.nameTaken,
+    'too-short': messages.nameTooShort,
+    'too-long': messages.nameTooLong,
+    'bad-characters': messages.nameBadCharacters,
+    'bad-edges': messages.nameBadEdges,
+    'mixed-scripts': messages.nameMixedScripts,
+    reserved: messages.nameReserved,
+    unavailable: messages.serverBusy,
+  }
 }
 
-const BIO_TROUBLE: Readonly<Record<string, string>> = {
-  'too-long': `Bios are ${String(BIO_MAX)} characters or fewer.`,
-  'has-link': 'Links are not allowed in a bio.',
-  'has-control': 'That contains characters a bio cannot hold.',
-  unavailable: 'Could not reach the server. Try again in a moment.',
+function bioTrouble(messages: Messages): Readonly<Record<string, string>> {
+  return {
+    'too-long': format(messages.bioTooLong, { max: BIO_MAX }),
+    'has-link': messages.bioHasLink,
+    'has-control': messages.bioHasControl,
+    unavailable: messages.serverBusy,
+  }
 }
 
 export function AccountScreen({
   account,
+  messages,
   at,
   catalogue,
   readIn,
@@ -66,6 +80,7 @@ export function AccountScreen({
   onClose,
 }: {
   readonly account: Account
+  readonly messages: Messages
   readonly at: Destination
   readonly catalogue: readonly CatalogueEntry[]
   /** The interface language, which is what the country and language lists are read in. */
@@ -83,12 +98,10 @@ export function AccountScreen({
           <Avatar seed={account.avatarSeed} size={56} className="avatar-large" />
           <div>
             <h1 className="account-name">{account.username}</h1>
-            <p className="dim" lang="en">
-              Your account
-            </p>
+            <p className="dim">{messages.accountTitle}</p>
           </div>
-          <button type="button" className="btn account-close" onClick={onClose} lang="en">
-            Back to the game
+          <button type="button" className="btn account-close" onClick={onClose}>
+            {messages.backToGame}
           </button>
         </header>
 
@@ -100,20 +113,26 @@ export function AccountScreen({
               role="tab"
               aria-selected={at === tab}
               className={`account-tab${at === tab ? ' is-on' : ''}`}
-              lang="en"
+
               onClick={() => {
                 onTab(tab)
               }}
             >
-              {tab === 'profile' ? 'Profile' : 'Games'}
+              {tab === 'profile' ? messages.tabProfile : messages.gamesHeading}
             </button>
           ))}
         </div>
 
         {at === 'profile' ? (
-          <Profile account={account} catalogue={catalogue} readIn={readIn} onAccount={onAccount} />
+          <Profile
+            account={account}
+            messages={messages}
+            catalogue={catalogue}
+            readIn={readIn}
+            onAccount={onAccount}
+          />
         ) : (
-          <Games dictionary={dictionary} />
+          <Games dictionary={dictionary} messages={messages} />
         )}
       </div>
     </div>
@@ -122,11 +141,13 @@ export function AccountScreen({
 
 function Profile({
   account,
+  messages,
   catalogue,
   readIn,
   onAccount,
 }: {
   readonly account: Account
+  readonly messages: Messages
   readonly catalogue: readonly CatalogueEntry[]
   readonly readIn: string
   readonly onAccount: (account: Account) => void
@@ -202,7 +223,7 @@ function Profile({
       }}
     >
       <label className="signin-field">
-        <span lang="en">Username</span>
+        <span>{messages.usernameLabel}</span>
         <input
           type="text"
           value={name}
@@ -215,13 +236,13 @@ function Profile({
         />
       </label>
       {nameProblem === null ? null : (
-        <p className="signin-note is-bad" role="alert" lang="en">
-          {NAME_TROUBLE[nameProblem] ?? 'That name cannot be used.'}
+        <p className="signin-note is-bad" role="alert">
+          {nameTrouble(messages)[nameProblem] ?? messages.nameUnusable}
         </p>
       )}
 
       <label className="signin-field">
-        <span lang="en">Bio</span>
+        <span>{messages.bioLabel}</span>
         <textarea
           className="account-bio"
           rows={2}
@@ -232,13 +253,13 @@ function Profile({
           }}
         />
       </label>
-      <p className={`signin-note${left < 0 ? ' is-bad' : ''}`} lang="en">
+      <p className={`signin-note${left < 0 ? ' is-bad' : ''}`}>
         {/* Links are refused, and saying so before the save is cheaper than saying so after. */}
-        {String(left)} characters left. No links.
+        {format(messages.bioHint, { left, max: BIO_MAX })}
       </p>
       {bioProblem === null ? null : (
-        <p className="signin-note is-bad" role="alert" lang="en">
-          {BIO_TROUBLE[bioProblem] ?? 'That bio cannot be used.'}
+        <p className="signin-note is-bad" role="alert">
+          {bioTrouble(messages)[bioProblem] ?? messages.bioUnusable}
         </p>
       )}
 
@@ -252,16 +273,16 @@ function Profile({
           `<label>` pointing at a composite control, which is not what a label is for. */}
       <Dropdown
         options={[
-          { value: '', label: 'Not saying' },
+          { value: '', label: messages.countryAny },
           ...countriesIn(readIn).map((country) => ({
             value: country.code,
             label: country.name,
           })),
         ]}
         value={account.country ?? ''}
-        label="Country"
-        filter="Find a country"
-        empty="No matches"
+        label={messages.countryLabel}
+        filter={messages.findCountry}
+        empty={messages.noMatches}
         onChange={(code) => {
           void saveProfile({ country: code === '' ? null : code }).then((result) => {
             if (result.ok) onAccount(result.account)
@@ -279,7 +300,7 @@ function Profile({
         catalogue={catalogue}
         value={account.uiLanguage ?? readIn}
         readIn={readIn}
-        label="Interface language"
+        label={messages.interfaceLanguage}
         onChange={(tag) => {
           void saveProfile({ uiLanguage: tag }).then((result) => {
             if (result.ok) onAccount(result.account)
@@ -291,7 +312,7 @@ function Profile({
         catalogue={catalogue}
         value={account.gameLanguage ?? readIn}
         readIn={readIn}
-        label="Game language"
+        label={messages.gameLanguage}
         onChange={(tag) => {
           void saveProfile({ gameLanguage: tag }).then((result) => {
             if (result.ok) onAccount(result.account)
@@ -299,19 +320,25 @@ function Profile({
         }}
       />
 
-      <button type="submit" className="btn btn-primary" disabled={busy} lang="en">
-        {busy ? 'Saving…' : 'Save'}
+      <button type="submit" className="btn btn-primary" disabled={busy}>
+        {busy ? messages.saving : messages.save}
       </button>
       {saved ? (
-        <p className="signin-note" role="status" lang="en">
-          Saved.
+        <p className="signin-note" role="status">
+          {messages.saved}
         </p>
       ) : null}
     </form>
   )
 }
 
-function Games({ dictionary }: { readonly dictionary: TieredIndex | null }): React.JSX.Element {
+function Games({
+  dictionary,
+  messages,
+}: {
+  readonly dictionary: TieredIndex | null
+  readonly messages: Messages
+}): React.JSX.Element {
   const [games, setGames] = useState<readonly PlayedGame[] | null>(null)
   const [failed, setFailed] = useState(false)
   /**
@@ -336,30 +363,19 @@ function Games({ dictionary }: { readonly dictionary: TieredIndex | null }): Rea
   }, [])
 
   if (failed) {
-    return (
-      <p className="signin-note is-bad" lang="en">
-        Could not reach the server.
-      </p>
-    )
+    return <p className="signin-note is-bad">{messages.serverDown}</p>
   }
   if (games === null) {
-    return (
-      <p className="dim" lang="en">
-        Reading your games…
-      </p>
-    )
+    return <p className="dim">{messages.gamesLoading}</p>
   }
   if (games.length === 0) {
-    return (
-      <p className="dim" lang="en">
-        Nothing here yet. Games you play while signed in will show up here.
-      </p>
-    )
+    return <p className="dim">{messages.gamesEmpty}</p>
   }
 
   if (open !== null) {
     return (
       <GameDetail
+        messages={messages}
         id={open}
         dictionary={dictionary}
         onBack={() => {
@@ -369,5 +385,5 @@ function Games({ dictionary }: { readonly dictionary: TieredIndex | null }): Rea
     )
   }
 
-  return <GamesTable games={games} onOpen={setOpen} />
+  return <GamesTable messages={messages} games={games} onOpen={setOpen} />
 }

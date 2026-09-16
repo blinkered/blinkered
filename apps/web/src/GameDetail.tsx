@@ -1,3 +1,6 @@
+import { format } from '@blinkered/i18n'
+import type { Messages } from '@blinkered/i18n'
+import { formatFinalResult } from './Hud.js'
 import { useEffect, useState } from 'react'
 import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import type { TieredIndex } from '@blinkered/words'
@@ -39,10 +42,16 @@ function elapsed(tick: number, secondsPerTick: number): string {
  * A replacement and a card are not the same event and should not share a sentence: one is a
  * letter gone for good, the other a letter hidden for a round and coming back.
  */
-const WORDING: Readonly<Record<Change['kind'], string>> = {
-  replaced: 'replaced in',
-  'wild-on': 'wild card in',
-  'wild-off': 'card gone from',
+/**
+ * Whole sentences rather than the fragments this used to hold.
+ *
+ * It was `{letter}` + `replaced in` + `slot {n}`, assembled in the markup, which is three pieces
+ * in an order only English uses: a language that puts the slot first, or inflects the letter for
+ * it, had no way to say so. Each kind is now one template with both placeholders in it.
+ */
+function wordingFor(messages: Messages, kind: Change['kind']): string {
+  if (kind === 'replaced') return messages.changeReplaced
+  return kind === 'wild-on' ? messages.changeWildOn : messages.changeWildOff
 }
 
 /** One slot that is not what it was, and what happened to it. */
@@ -85,10 +94,12 @@ function changes(before: BoardAtRound, after: BoardAtRound): Change[] {
 
 export function GameDetail({
   id,
+  messages,
   dictionary,
   onBack,
 }: {
   readonly id: string
+  readonly messages: Messages
   /**
    * The dictionary in hand, or null.
    *
@@ -127,9 +138,7 @@ export function GameDetail({
     return (
       <div className="game-detail">
         <BackLink onBack={onBack} />
-        <p className="signin-note is-bad" lang="en">
-          That game could not be read.
-        </p>
+        <p className="signin-note is-bad">{messages.gameUnreadable}</p>
       </div>
     )
   }
@@ -137,9 +146,7 @@ export function GameDetail({
     return (
       <div className="game-detail">
         <BackLink onBack={onBack} />
-        <p className="dim" lang="en">
-          Reading the game…
-        </p>
+        <p className="dim">{messages.gameLoading}</p>
       </div>
     )
   }
@@ -171,7 +178,7 @@ export function GameDetail({
           <Avatar seed={game.owner.avatarSeed} size={24} />
           <span>{game.owner.username}</span>
         </button>
-        <p className="game-when" lang="en">
+        <p className="game-when">
           {new Date(game.finishedAt).toLocaleString(undefined, {
             dateStyle: 'full',
             timeStyle: 'short',
@@ -181,35 +188,29 @@ export function GameDetail({
           {game.language} · {game.difficulty}
         </p>
         <p className="game-score">
-          <strong>{game.score}</strong>
-          <span className="dim" lang="en">
-            {' '}
-            points from {game.words} words over {game.rounds} rounds
-          </span>
+          {formatFinalResult(messages, {
+            score: game.score,
+            words: game.words,
+            rounds: game.rounds,
+          })}
         </p>
         {/* Said plainly rather than left to be inferred from a board it never appears on. */}
-        {game.canonical ? null : (
-          <p className="signin-note" lang="en">
-            Played on edited rules, so this game is not ranked.
-          </p>
-        )}
+        {game.canonical ? null : <p className="signin-note">{messages.gameNotRanked}</p>}
       </header>
 
       {detail === null ? (
-        <p className="dim" lang="en">
-          The words and boards for this game are no longer kept.
-        </p>
+        <p className="dim">{messages.detailNotKept}</p>
       ) : (
         <>
           {opening === undefined ? null : (
             <section>
-              <h2 lang="en">The opening board</h2>
+              <h2>{messages.openingBoard}</h2>
               <Board board={opening} direction={alphabet.direction} />
             </section>
           )}
 
           <section>
-            <h2 lang="en">Round by round</h2>
+            <h2>{messages.roundByRound}</h2>
             <ol className="rounds">
               {boards.map((board, round) => {
                 const before = boards[round - 1]
@@ -232,7 +233,7 @@ export function GameDetail({
                             direction={alphabet.direction}
                             marked={new Set(moved.map((change) => change.at))}
                           />
-                          <p className="round-change dim" lang="en">
+                          <p className="round-change dim">
                             {moved.map((change) => (
                               <span key={change.at} className="round-delta">
                                 <span className="chip is-gone">{change.from}</span>
@@ -243,7 +244,10 @@ export function GameDetail({
                                   {change.to}
                                 </span>
                                 <span>
-                                  {WORDING[change.kind]} slot {change.at + 1}
+                                  {format(wordingFor(messages, change.kind), {
+                                    letter: change.to,
+                                    slot: change.at + 1,
+                                  })}
                                 </span>
                               </span>
                             ))}
@@ -251,9 +255,7 @@ export function GameDetail({
                         </>
                       )}
                       {found.length === 0 && moved.length === 0 ? (
-                        <p className="round-nothing dim" lang="en">
-                          nothing found
-                        </p>
+                        <p className="round-nothing dim">{messages.roundNothing}</p>
                       ) : null}
                       {found.map((word) => (
                         <p key={word.word} className="round-word">
@@ -273,7 +275,7 @@ export function GameDetail({
                               </span>
                             ))}
                           </span>
-                          <span className="round-facts dim" lang="en">
+                          <span className="round-facts dim">
                             <span className="round-points">+{word.points}</span>
                             <span>{word.tiles} tiles</span>
                             {/* Under `fibonacci` this is the whole economy: a long word buys the
@@ -302,7 +304,7 @@ function BackLink({
 }): React.JSX.Element | null {
   if (onBack === undefined) return null
   return (
-    <button type="button" className="signin-again game-back" onClick={onBack} lang="en">
+    <button type="button" className="signin-again game-back" onClick={onBack}>
       ← All games
     </button>
   )

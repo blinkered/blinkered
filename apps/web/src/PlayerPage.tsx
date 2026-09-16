@@ -1,3 +1,4 @@
+import type { Messages } from '@blinkered/i18n'
 import { useEffect, useState } from 'react'
 import type { TieredIndex } from '@blinkered/words'
 import { Avatar } from './Avatar.js'
@@ -21,9 +22,11 @@ import { goTo } from './route.js'
  * make this page report who used to be here.
  */
 export function PlayerPage({
+  messages,
   username,
   onHome,
 }: {
+  readonly messages: Messages
   readonly username: string
   readonly onHome: () => void
 }): React.JSX.Element {
@@ -56,9 +59,7 @@ export function PlayerPage({
     return (
       <div className="account-page">
         <HomeLink onHome={onHome} />
-        <p className="signin-note is-bad" lang="en">
-          There is nobody here by that name.
-        </p>
+        <p className="signin-note is-bad">{messages.playerNotFound}</p>
       </div>
     )
   }
@@ -66,9 +67,7 @@ export function PlayerPage({
     return (
       <div className="account-page">
         <HomeLink onHome={onHome} />
-        <p className="dim" lang="en">
-          Reading the profile…
-        </p>
+        <p className="dim">{messages.profileLoading}</p>
       </div>
     )
   }
@@ -89,17 +88,13 @@ export function PlayerPage({
           looking for links; see docs/ACCOUNTS.md on why the bio is never markup. */}
       {profile.bio === null ? null : <p className="player-bio">{profile.bio}</p>}
 
-      <h2 lang="en">Games</h2>
+      <h2>{messages.gamesHeading}</h2>
       {games === null ? (
-        <p className="dim" lang="en">
-          Reading their games…
-        </p>
+        <p className="dim">{messages.theirGamesLoading}</p>
       ) : games.length === 0 ? (
-        <p className="dim" lang="en">
-          Nothing here yet.
-        </p>
+        <p className="dim">{messages.gamesEmptyShort}</p>
       ) : (
-        <GamesTable games={games} />
+        <GamesTable messages={messages} games={games} />
       )}
     </div>
   )
@@ -114,17 +109,19 @@ export function PlayerPage({
  */
 export function PlayedGamePage({
   id,
+  messages,
   dictionary,
   onHome,
 }: {
   readonly id: string
+  readonly messages: Messages
   readonly dictionary: TieredIndex | null
   readonly onHome: () => void
 }): React.JSX.Element {
   return (
     <div className="account-page">
       <HomeLink onHome={onHome} />
-      <GameDetail id={id} dictionary={dictionary} onBack={undefined} />
+      <GameDetail messages={messages} id={id} dictionary={dictionary} onBack={undefined} />
     </div>
   )
 }
@@ -134,7 +131,7 @@ function HomeLink({ onHome }: { readonly onHome: () => void }): React.JSX.Elemen
     <button
       type="button"
       className="signin-again game-back"
-      lang="en"
+
       onClick={() => {
         goTo({ at: 'game' })
         onHome()

@@ -1,3 +1,4 @@
+import type { Messages } from '@blinkered/i18n'
 import type { PlayedGame } from './account.js'
 import { goTo, pathOf } from './route.js'
 
@@ -10,9 +11,11 @@ import { goTo, pathOf } from './route.js'
  */
 export function GamesTable({
   games,
+  messages,
   onOpen,
 }: {
   readonly games: readonly PlayedGame[]
+  readonly messages: Messages
   /**
    * What opening a game does, or absent to navigate to its permalink.
    *
@@ -24,12 +27,12 @@ export function GamesTable({
   return (
     <table className="account-games">
       <thead>
-        <tr lang="en">
-          <th scope="col">When</th>
-          <th scope="col">Game</th>
-          <th scope="col">Score</th>
-          <th scope="col">Words</th>
-          <th scope="col">Rounds</th>
+        <tr>
+          <th scope="col">{messages.columnWhen}</th>
+          <th scope="col">{messages.columnGame}</th>
+          <th scope="col">{messages.score}</th>
+          <th scope="col">{messages.words}</th>
+          <th scope="col">{messages.columnRounds}</th>
         </tr>
       </thead>
       <tbody>

@@ -1,3 +1,5 @@
+import type { Messages } from '@blinkered/i18n'
+
 /**
  * The browser's half of signing in with Apple or Google, which is smaller than it sounds.
  *
@@ -36,16 +38,16 @@ export function returnedFromSso(
  * true and tells a person nothing they can act on, while telling anybody probing the flow
  * exactly which check they tripped.
  */
-export function ssoProblem(reason: string): string {
+export function ssoProblem(messages: Messages, reason: string): string {
   switch (reason) {
     case 'cancelled':
-      return 'Signing in was cancelled.'
+      return messages.ssoCancelled
     case 'expired':
-      return 'That took too long. Try signing in again.'
+      return messages.ssoExpired
     case 'no-username':
-      return 'Could not finish creating an account. Try again in a moment.'
+      return messages.ssoNoUsername
     default:
-      return 'That did not work. Try again, or use your email.'
+      return messages.ssoFailed
   }
 }
 

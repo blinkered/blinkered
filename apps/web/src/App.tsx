@@ -206,7 +206,7 @@ function Session({
     const returned = returnedFromSso(globalThis.location.search)
     if (returned === null) return
     clearSignInParam()
-    if (!returned.ok) setSigningIn({ reason: ssoProblem(returned.reason) })
+    if (!returned.ok) setSigningIn({ reason: ssoProblem(messages, returned.reason) })
   }, [])
   const [visiting, setVisiting] = useState<Destination | null>(null)
 
@@ -500,7 +500,7 @@ function Session({
 
       {signingIn === null ? null : (
         <SignInDialog
-          locale={messages.tag}
+          messages={messages}
           {...(signingIn.reason === undefined ? {} : { reason: signingIn.reason })}
           onSignedIn={(found) => {
             adopt(found)
@@ -519,6 +519,7 @@ function Session({
       */}
       {visiting === null || account === null ? null : (
         <AccountScreen
+          messages={messages}
           account={account}
           at={visiting}
           catalogue={catalogue}
@@ -544,6 +545,7 @@ function Session({
         <div className="rules-overlay account-screen">
           {route.at === 'player' ? (
             <PlayerPage
+              messages={messages}
               username={route.username}
               onHome={() => {
                 setRoute({ at: 'game' })
@@ -551,6 +553,7 @@ function Session({
             />
           ) : (
             <PlayedGamePage
+              messages={messages}
               id={route.id}
               dictionary={dictionary}
               onHome={() => {
@@ -644,6 +647,7 @@ function Session({
             everybody has been trained to look for one.
           */}
           <AccountMenu
+            messages={messages}
             account={account}
             onSignIn={() => {
               setSigningIn({})
@@ -711,19 +715,14 @@ function Session({
                   <button
                     type="button"
                     className="btn"
-                    lang="en"
                     onClick={() => {
-                      setSigningIn({
-                        reason: 'Sign in to keep this game, and every one after it.',
-                      })
+                      setSigningIn({ reason: messages.signInKeepGame })
                     }}
                   >
-                    Keep this game
+                    {messages.keepThisGame}
                   </button>
                 ) : (
-                  <p className="signin-note" lang="en">
-                    Saved to your games.
-                  </p>
+                  <p className="signin-note">{messages.savedToYourGames}</p>
                 )}
                 {setup(messages.newGame)}
               </div>

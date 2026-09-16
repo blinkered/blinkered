@@ -1,3 +1,4 @@
+import type { Messages } from '@blinkered/i18n'
 import { useEffect, useRef, useState } from 'react'
 import { requestCode, submitCode, whoAmI } from './account.js'
 import type { Account, SignInResult } from './account.js'
@@ -17,10 +18,10 @@ import { startUrl } from './sso.js'
  * with it, and a sign-up that failed halfway would have cost the player the result it existed to
  * preserve.
  *
- * Strings are English here and nowhere else in the app is. docs/ACCOUNTS.md takes that decision
- * too: `Messages` requires every key in all fifty-one locales at once, so twenty new strings
- * cannot be added a little at a time, and translating a flow nobody has walked through is
- * translating a guess. One localization pass, afterwards.
+ * Its strings were English while the flow was being built, for the reason docs/ACCOUNTS.md gave:
+ * `Messages` requires every key in all fifty-one locales at once, so they could not be added a
+ * little at a time, and translating a flow nobody had walked through is translating a guess.
+ * That pass has since happened and they come from the catalogue like everything else.
  */
 
 /**
@@ -74,19 +75,16 @@ function forget(): void {
  * Apple first, deliberately. It is the one iOS requires under App Store guideline 4.8 once any
  * other third-party sign-in exists, and putting the required one first costs nothing.
  */
-const PROVIDERS = [
-  { id: 'apple', label: 'Continue with Apple' },
-  { id: 'google', label: 'Continue with Google' },
-] as const
+const PROVIDERS = [{ id: 'apple' }, { id: 'google' }] as const
 
 export function SignInDialog({
-  locale,
+  messages,
   reason,
   onSignedIn,
   onClose,
 }: {
-  /** The game's interface language, so the mail can be written in it once it is localized. */
-  readonly locale: string
+  /** The whole catalogue: the dialog's own words, and the tag the mailed code is written in. */
+  readonly messages: Messages
   /**
    * Why the dialog is open, when it was opened by something in particular.
    *
@@ -121,7 +119,7 @@ export function SignInDialog({
   const send = async (): Promise<void> => {
     setBusy(true)
     setProblem(null)
-    const result = await requestCode(email.trim(), locale)
+    const result = await requestCode(email.trim(), messages.tag)
     setBusy(false)
     if (result === 'sent') {
       remember(email.trim())
@@ -155,11 +153,11 @@ export function SignInDialog({
 
   const message =
     problem === 'bad-email'
-      ? 'That does not look like an email address.'
+      ? messages.badEmail
       : problem === 'bad-code'
-        ? 'That code did not work. Codes expire after 10 minutes and can only be used once.'
+        ? messages.badCode
         : problem === 'unavailable'
-          ? 'Could not reach the server. Try again in a moment.'
+          ? messages.serverBusy
           : null
 
   return (
@@ -174,12 +172,10 @@ export function SignInDialog({
       }}
     >
       <div className="modal-card signin-card" ref={card}>
-        <h2 id="signin-title" className="signin-title" lang="en">
-          Sign in or sign up
+        <h2 id="signin-title" className="signin-title">
+          {messages.signInTitle}
         </h2>
-        <p className="signin-lead" lang="en">
-          {reason ?? 'An account keeps your games, on every device you play on.'}
-        </p>
+        <p className="signin-lead">{reason ?? messages.signInLead}</p>
 
         <div className="signin-providers">
           {PROVIDERS.map((option) => (
@@ -187,7 +183,7 @@ export function SignInDialog({
               key={option.id}
               type="button"
               className="btn"
-              lang="en"
+
               onClick={() => {
                 // A whole navigation rather than a fetch. The handshake has to happen in the
                 // address bar: the provider shows its own sheet on its own origin, and the
@@ -195,13 +191,11 @@ export function SignInDialog({
                 globalThis.location.assign(startUrl(option.id))
               }}
             >
-              {option.label}
+              {option.id === 'apple' ? messages.continueWithApple : messages.continueWithGoogle}
             </button>
           ))}
         </div>
-        <p className="signin-or" lang="en">
-          or
-        </p>
+        <p className="signin-or">{messages.signInOr}</p>
 
         <form
           className="signin"
@@ -211,7 +205,7 @@ export function SignInDialog({
           }}
         >
           <label className="signin-field">
-            <span lang="en">Email</span>
+            <span>{messages.emailLabel}</span>
             <input
               type="email"
               autoComplete="email"
@@ -229,7 +223,7 @@ export function SignInDialog({
 
           {sent ? (
             <label className="signin-field">
-              <span lang="en">Code</span>
+              <span>{messages.codeLabel}</span>
               <input
                 type="text"
                 // `one-time-code` is what lets iOS and Android offer the code from the
@@ -250,8 +244,8 @@ export function SignInDialog({
             </label>
           ) : null}
 
-          <button type="submit" className="btn btn-primary" disabled={busy} lang="en">
-            {busy ? 'Working…' : sent ? 'Sign in' : 'Email me a code'}
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? messages.working : sent ? messages.signIn : messages.emailMeACode}
           </button>
 
           {sent ? (
@@ -259,7 +253,7 @@ export function SignInDialog({
               type="button"
               className="signin-again"
               disabled={busy}
-              lang="en"
+
               onClick={() => {
                 // Says what it costs, because it does: the code already sent stops working.
                 forget()
@@ -268,24 +262,20 @@ export function SignInDialog({
                 setProblem(null)
               }}
             >
-              Send a new code
+              {messages.sendNewCode}
             </button>
           ) : null}
 
-          {sent && problem === null ? (
-            <p className="signin-note" lang="en">
-              Check your email. The code lasts 10 minutes.
-            </p>
-          ) : null}
+          {sent && problem === null ? <p className="signin-note">{messages.codeSent}</p> : null}
           {message === null ? null : (
-            <p className="signin-note is-bad" role="alert" lang="en">
+            <p className="signin-note is-bad" role="alert">
               {message}
             </p>
           )}
         </form>
 
-        <button type="button" className="signin-again" onClick={onClose} lang="en">
-          Not now
+        <button type="button" className="signin-again" onClick={onClose}>
+          {messages.notNow}
         </button>
       </div>
     </div>

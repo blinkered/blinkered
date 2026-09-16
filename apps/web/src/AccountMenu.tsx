@@ -1,3 +1,4 @@
+import type { Messages } from '@blinkered/i18n'
 import { useEffect, useRef, useState } from 'react'
 import { Avatar } from './Avatar.js'
 import type { Account } from './account.js'
@@ -20,19 +21,19 @@ import type { Account } from './account.js'
 
 export type Destination = 'profile' | 'games'
 
-const ITEMS = [
-  { id: 'profile', label: 'My profile' },
-  { id: 'games', label: 'My games' },
-] as const
+/** The two panels the menu opens. Labels come from the catalogue, by the same key names. */
+const ITEMS = [{ id: 'profile' }, { id: 'games' }] as const
 
 export function AccountMenu({
   account,
+  messages,
   onSignIn,
   onGo,
   onPublicProfile,
   onSignOut,
 }: {
   readonly account: Account | null
+  readonly messages: Messages
   readonly onSignIn: () => void
   readonly onGo: (destination: Destination) => void
   /** Opens the page everybody else sees, which is the only way to check what it says. */
@@ -73,8 +74,8 @@ export function AccountMenu({
 
   if (account === null) {
     return (
-      <button type="button" className="btn account-cta" onClick={onSignIn} lang="en">
-        Sign in
+      <button type="button" className="btn account-cta" onClick={onSignIn}>
+        {messages.signIn}
       </button>
     )
   }
@@ -104,8 +105,8 @@ export function AccountMenu({
 
       {open ? (
         <div className="account-menu" role="menu" ref={menu}>
-          <p className="account-who" lang="en">
-            Signed in as
+          <p className="account-who">
+            {messages.menuSignedInAs}
             <strong>{account.username}</strong>
           </p>
           {ITEMS.map((item) => (
@@ -114,38 +115,35 @@ export function AccountMenu({
               type="button"
               role="menuitem"
               className="account-item"
-              lang="en"
               onClick={() => {
                 close()
                 onGo(item.id)
               }}
             >
-              {item.label}
+              {item.id === 'profile' ? messages.menuProfile : messages.menuGames}
             </button>
           ))}
           <button
             type="button"
             role="menuitem"
             className="account-item"
-            lang="en"
             onClick={() => {
               close()
               onPublicProfile(account.username)
             }}
           >
-            My public page
+            {messages.menuPublicPage}
           </button>
           <button
             type="button"
             role="menuitem"
             className="account-item"
-            lang="en"
             onClick={() => {
               close()
               onSignOut()
             }}
           >
-            Sign out
+            {messages.signOut}
           </button>
         </div>
       ) : null}

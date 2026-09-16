@@ -767,10 +767,24 @@ did, on the first run.
 
 ### Two decisions, taken
 
-- **English first, one localization pass afterwards.** Roughly twenty new strings, and `Messages`
-  requires every key in all fifty-one locales at once, so it cannot be added a little at a time.
-  Translating a flow nobody has walked through is translating a guess. The same call already
-  taken for the login email, and it carries the same debt: write it down rather than discover it.
+- ~~**English first, one localization pass afterwards.**~~ Done. `Messages` requires every key in
+  all fifty-one locales at once, so it could not be added a little at a time, and translating a
+  flow nobody had walked through would have been translating a guess. The flow has since been
+  walked through and the pass has happened: **72 keys, 51 locales, about 3,700 strings.**
+
+  Three things came out of doing it rather than planning it. The estimate of "roughly twenty
+  strings" was wrong by a factor of three, because strings hide in props (`label=`, `filter=`,
+  `empty=`) and in maps of server error tags, not just in text nodes. The board-change lines were
+  fragments assembled in the markup, `{letter}` + `replaced in` + `slot {n}`, which is three
+  pieces in an order only English uses; they are now one template each. And the character counter
+  under the bio was reworded from "{n} characters left" to `{left}/{max}`, because the original
+  needs a plural set for a string nobody reads twice.
+
+  `columnRounds` is derived from each locale's existing `plurals.rounds` form rather than
+  invented, so the noun is one a translator already chose. Finnish gets the partitive
+  `kierrosta` that way, which is what follows a numeral rather than what heads a column; it is
+  the one place the derivation is visibly imperfect.
+
 - **A geometric identicon**, drawn from `avatarSeed`. Deterministic, so the same account is the
   same picture everywhere without anything being stored; inline SVG, so there is no dependency
   and no second request; and coarse on purpose, because it has to read at 24 pixels in the top

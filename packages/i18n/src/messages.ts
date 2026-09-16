@@ -275,6 +275,119 @@ export interface Messages {
   readonly changesNextGame: string
   readonly presets: string
 
+  /*
+   * Accounts: the menu, the profile screen, signing in, and one game's history.
+   *
+   * Everything a player reads once they have an account. It arrived last and in English, which
+   * is why it sits in a block of its own rather than beside the words it is nearest to.
+   *
+   * Two of these are templates rather than sentences, and deliberately. `bioHint` carries both
+   * numbers so no language has to make "characters" agree with a count, which would need a
+   * plural set for a string nobody reads twice. And the three `change*` lines are whole
+   * sentences rather than the fragments they replaced: the screen used to assemble
+   * "{letter}" + "replaced in" + "slot {n}", which is three words in an order only English uses.
+   */
+
+  /** The account menu, hanging off the avatar. */
+  readonly accountTitle: string
+  readonly menuProfile: string
+  readonly menuGames: string
+  readonly menuPublicPage: string
+  readonly menuSignedInAs: string
+  readonly signIn: string
+  readonly signOut: string
+
+  /** The sign-in dialog. */
+  readonly signInTitle: string
+  readonly signInLead: string
+  /** Shown instead of the lead when the dialog opens over a finished game. */
+  readonly signInKeepGame: string
+  readonly continueWithApple: string
+  readonly continueWithGoogle: string
+  /** Between the provider buttons and the email form. Lowercase on purpose. */
+  readonly signInOr: string
+  readonly emailLabel: string
+  readonly codeLabel: string
+  readonly emailMeACode: string
+  readonly working: string
+  readonly sendNewCode: string
+  readonly codeSent: string
+  readonly notNow: string
+  readonly badEmail: string
+  readonly badCode: string
+  /** Reachable again if they wait; said where there is something to retry. */
+  readonly serverBusy: string
+  /** Not reachable now; said where a screen simply has nothing to show. */
+  readonly serverDown: string
+
+  /** Coming back from Apple or Google. Vague on purpose about which check failed. */
+  readonly ssoCancelled: string
+  readonly ssoExpired: string
+  readonly ssoNoUsername: string
+  readonly ssoFailed: string
+
+  /** The profile form. */
+  /** The two tabs on the account screen; the other is `gamesHeading`. */
+  readonly tabProfile: string
+  /** The country a player has not given, which is the default and is not an error. */
+  readonly countryAny: string
+  readonly findCountry: string
+  readonly usernameLabel: string
+  readonly bioLabel: string
+  readonly countryLabel: string
+  /** `{left}` of `{max}`, and a reminder that links are refused before the save rather than after. */
+  readonly bioHint: string
+  readonly save: string
+  readonly saving: string
+  readonly saved: string
+  readonly nameTaken: string
+  readonly nameTooShort: string
+  readonly nameTooLong: string
+  readonly nameBadCharacters: string
+  readonly nameBadEdges: string
+  readonly nameMixedScripts: string
+  readonly nameReserved: string
+  /** When the server refuses a name for a reason this version does not know about. */
+  readonly nameUnusable: string
+  /** `{max}` characters. */
+  readonly bioTooLong: string
+  readonly bioHasLink: string
+  readonly bioHasControl: string
+  readonly bioUnusable: string
+
+  /** Listings, yours and somebody else's. */
+  readonly gamesHeading: string
+  readonly gamesEmpty: string
+  readonly gamesEmptyShort: string
+  readonly gamesLoading: string
+  readonly theirGamesLoading: string
+  readonly profileLoading: string
+  readonly playerNotFound: string
+  readonly columnWhen: string
+  readonly columnGame: string
+  /**
+   * The count-of-rounds column. `round` next to it is the singular the HUD uses, so this is
+   * its own key rather than a reuse, and it is taken from the plural form each locale already
+   * chose rather than invented a second time.
+   */
+  readonly columnRounds: string
+
+  /** One game, round by round. */
+  readonly gameLoading: string
+  readonly gameUnreadable: string
+  readonly gameNotRanked: string
+  readonly detailNotKept: string
+  readonly openingBoard: string
+  readonly roundByRound: string
+  readonly roundNothing: string
+  /** `{letter}` and `{slot}`. Whole sentences: see the note at the top of this block. */
+  readonly changeReplaced: string
+  readonly changeWildOn: string
+  readonly changeWildOff: string
+
+  /** Keeping a game that was played signed out. */
+  readonly keepThisGame: string
+  readonly savedToYourGames: string
   readonly plurals: Plurals
 }
 
