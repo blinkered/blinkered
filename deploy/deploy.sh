@@ -62,5 +62,8 @@ helm --kube-context "$context" -n "$namespace" upgrade --install blinkered \
 echo "==> rolled:"
 kubectl --context "$context" -n "$namespace" get deploy \
   -o jsonpath='{range .items[*]}    {.metadata.name}  {.spec.template.spec.containers[0].image}{"\n"}{end}'
+# The whole log, not a tail of it. The Job now names every migration it applies, so three lines
+# was the summary and nothing above it -- which is the half you want on the deploy that did
+# something. It is a handful of lines even on a first install.
 echo "==> migrations:"
-kubectl --context "$context" -n "$namespace" logs job/blinkered-migrate --tail=3 2>&1 | sed 's/^/    /'
+kubectl --context "$context" -n "$namespace" logs job/blinkered-migrate 2>&1 | sed 's/^/    /'

@@ -1,7 +1,10 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { sql } from 'drizzle-orm'
 import { connect } from '../src/db.js'
-import { runMigrations } from '../src/migrate.js'
+import { runMigrations, MIGRATIONS } from '../src/migrate.js'
+import { doneLine, journalEntries } from '../src/migrationReport.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { DATABASE_SCHEMA, games, users } from '../src/schema.js'
 
@@ -15,6 +18,16 @@ import { DATABASE_SCHEMA, games, users } from '../src/schema.js'
  * on the first push is a trap this repo has already been caught by once.
  */
 const config = integrationConfig
+
+/**
+ * Every migration this build carries, read off the journal rather than written out here.
+ *
+ * A hard-coded list would be a second place to remember on the day somebody generates the next
+ * one, and the test that would then fail is the one nobody suspects.
+ */
+const JOURNAL_TAGS = journalEntries(
+  JSON.parse(readFileSync(join(MIGRATIONS, 'meta', '_journal.json'), 'utf8')),
+).map((entry) => entry.tag)
 
 let db: ReturnType<typeof connect> | undefined
 
@@ -59,8 +72,36 @@ describe('the migration', () => {
     expect(stray).toHaveLength(0)
   })
 
-  it('runs again without doing anything', async () => {
-    await expect(runMigrations(config)).resolves.toBeUndefined()
+  it('runs again without doing anything, and says that is what it did', async () => {
+    const said: string[] = []
+    const plan = await runMigrations(config, (line) => said.push(line))
+    expect(plan.pending).toEqual([])
+    expect(plan.skipped).toEqual([])
+    expect(plan.ahead).toEqual([])
+    expect(said).toContain('  nothing to apply')
+    // Every committed migration, which is the half a fake cannot check: the journal on disk and
+    // the rows in `__drizzle_migrations` have to agree about which files exist and ran.
+    expect(plan.already).toEqual(JOURNAL_TAGS)
+    expect(doneLine(plan)).toBe(
+      `done: nothing to apply; ${String(JOURNAL_TAGS.length)} already there`,
+    )
+  })
+
+  it('names each one it applies on an empty database', async () => {
+    // The whole point of the reporting: the log says which migration ran rather than only that
+    // the process finished. Against a real Postgres, because what is being checked is that the
+    // stamps in the journal and the stamps drizzle writes are the same numbers -- they are the
+    // join key, and nothing but a database will say so.
+    await freshDatabase()
+    const said: string[] = []
+    const plan = await runMigrations(config, (line) => said.push(line))
+    expect(plan.already).toEqual([])
+    expect(plan.pending).toEqual(JOURNAL_TAGS)
+    for (const tag of JOURNAL_TAGS) expect(said).toContain(`  applying ${tag}`)
+    expect(doneLine(plan)).toContain(`applied ${String(JOURNAL_TAGS.length)} migration`)
+
+    // And the schema is back, so the suites after this one have something to talk to.
+    db = connect(config)
   })
 
   it('refuses a schema the migrations were not generated for, before connecting', async () => {

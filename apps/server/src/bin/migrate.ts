@@ -1,5 +1,6 @@
 import { databaseConfig } from '../config.js'
 import { runMigrations } from '../migrate.js'
+import { doneLine } from '../migrationReport.js'
 
 /**
  * Brings the database up to date, then exits.
@@ -11,8 +12,14 @@ import { runMigrations } from '../migrate.js'
  * @blinkered/server migrate`.
  */
 try {
-  await runMigrations(databaseConfig(process.env))
-  console.log('migrations are up to date')
+  // Every line as it is decided, rather than a summary at the end: a migration that fails halfway
+  // has then already said which one it was.
+  const plan = await runMigrations(databaseConfig(process.env), (line) => {
+    console.log(line)
+  })
+  // Last, and always last. `deploy/deploy.sh` tails this log, so the line carrying every count
+  // has to be the one the tail is guaranteed to catch.
+  console.log(doneLine(plan))
 } catch (error) {
   console.error(error instanceof Error ? error.message : error)
   // Non-zero, so a Job fails and the rollout that depends on it does not proceed.

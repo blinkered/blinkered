@@ -305,6 +305,41 @@ The order that does not drop traffic: install the chart with `ingress.enabled=fa
 pods are healthy, then delete the old Ingress, then upgrade with the ingress on, then delete the
 old Deployment and Service. `deploy/k8s/` stays in the repo until that has been done once.
 
+## Reading the migration log
+
+The Job names every migration it applies, and ends on one line carrying every count:
+
+```
+5 migrations in this build, 4 already applied
+  applying 0004_is_admin
+done: applied 1 migration: 0004_is_admin; 4 already there
+```
+
+The summary is last deliberately, because this log gets tailed. `deploy/deploy.sh` prints the
+whole thing rather than the last three lines, which is what it used to do and which showed the
+summary with nothing above it on exactly the deploys that had done something.
+
+**Nothing is ever rolled back, and the log will never say it was.** `drizzle-kit generate` writes
+forward SQL only; there are no down migrations in the repository and no command to run them. A
+change that has to be undone is undone by writing another migration.
+
+Two lines are worth recognising, because both are conditions drizzle itself passes over in
+silence. Neither fails the Job, and that is deliberate in both directions.
+
+**`DATABASE AHEAD by 1`** means the database holds a migration this image does not. The ordinary
+cause is a deliberate rollback to an older build, and the other is a shared database somebody
+else has migrated further. Not a failure, because refusing it would block the rollback — which is
+the one operation that has to work when everything else has gone wrong. Before this line existed
+the case arrived as `migrations are up to date`, which reads as success.
+
+**`WILL NOT APPLY <tag>`** is the one to worry about. It means a migration is in the journal, is
+absent from the database, and drizzle is going to skip it for good. That follows from drizzle's
+rule, which is worth knowing: it applies every migration **newer than the newest row** in
+`__drizzle_migrations`, not every migration the table is missing. So a file whose stamp lands
+before something already applied is never picked up. Two branches each generating a migration, and
+the older one merging second, produces exactly that. The fix is to regenerate the stranded
+migration so it gets a current stamp.
+
 ## Making the first admin
 
 The moderation panel is behind `users.is_admin`, and **nothing in the application can set it the
