@@ -287,6 +287,14 @@ export const ja: Messages = {
   reportGone: 'それはもうありません。',
   reportCancel: 'キャンセル',
 
+  deleteAccount: 'アカウントを削除',
+  deleteAccountWhat: 'プロフィールと保存したすべてのゲームを完全に削除します。取り消せません。',
+  deleteAccountAsk: 'コードを送る',
+  deleteConfirm: '完全に削除する',
+  deleteGone: 'アカウントを削除しました。遊んでくれてありがとう。',
+  deleteNoAddress:
+    'このアカウントには確認済みのアドレスがないため、削除を確認できません。ご連絡いただければ手作業で対応します。',
+
   plurals: {
     words: { other: '{n}語' },
     rounds: { other: '{n}ラウンド' },

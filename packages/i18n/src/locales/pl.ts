@@ -281,6 +281,15 @@ export const pl: Messages = {
   reportGone: 'Tego już nie ma.',
   reportCancel: 'Anuluj',
 
+  deleteAccount: 'Usuń moje konto',
+  deleteAccountWhat:
+    'To na zawsze usuwa twój profil i każdą zachowaną grę. Nie da się tego cofnąć.',
+  deleteAccountAsk: 'Wyślij mi kod',
+  deleteConfirm: 'Usuń na zawsze',
+  deleteGone: 'Twojego konta już nie ma. Dzięki za grę.',
+  deleteNoAddress:
+    'Na tym koncie nie ma potwierdzonego adresu, więc nie można sprawdzić usunięcia. Napisz do nas, a zrobimy to ręcznie.',
+
   plurals: {
     words: { one: '{n} słowo', few: '{n} słowa', many: '{n} słów', other: '{n} słowa' },
     rounds: { one: '{n} runda', few: '{n} rundy', many: '{n} rund', other: '{n} rundy' },

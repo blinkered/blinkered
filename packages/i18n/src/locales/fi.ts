@@ -279,6 +279,15 @@ export const fi: Messages = {
   reportGone: 'Sitä ei ole enää.',
   reportCancel: 'Peruuta',
 
+  deleteAccount: 'Poista tilini',
+  deleteAccountWhat:
+    'Tämä poistaa profiilisi ja kaikki tallentamasi pelit lopullisesti. Sitä ei voi peruuttaa.',
+  deleteAccountAsk: 'Lähetä minulle koodi',
+  deleteConfirm: 'Poista lopullisesti',
+  deleteGone: 'Tilisi on poistettu. Kiitos pelaamisesta.',
+  deleteNoAddress:
+    'Tällä tilillä ei ole vahvistettua osoitetta, joten poistoa ei voi tarkistaa. Ota yhteyttä, niin teemme sen käsin.',
+
   plurals: {
     words: { one: '{n} sana', other: '{n} sanaa' },
     rounds: { one: '{n} kierros', other: '{n} kierrosta' },

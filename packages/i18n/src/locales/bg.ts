@@ -280,6 +280,15 @@ export const bg: Messages = {
   reportGone: 'Това вече го няма.',
   reportCancel: 'Отказ',
 
+  deleteAccount: 'Изтрий акаунта ми',
+  deleteAccountWhat:
+    'Това премахва профила ти и всяка запазена игра, окончателно. Не може да се върне.',
+  deleteAccountAsk: 'Изпрати ми код',
+  deleteConfirm: 'Изтрий окончателно',
+  deleteGone: 'Акаунтът ти го няма. Благодарим, че играхте.',
+  deleteNoAddress:
+    'На този акаунт няма потвърден адрес, така че изтриването не може да се провери. Свържи се с нас и ще го направим ръчно.',
+
   plurals: {
     words: { one: '{n} дума', other: '{n} думи' },
     rounds: { one: '{n} рунд', other: '{n} рунда' },

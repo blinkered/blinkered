@@ -282,6 +282,15 @@ export const ro: Messages = {
   reportGone: 'Asta nu mai există.',
   reportCancel: 'Anulează',
 
+  deleteAccount: 'Șterge contul meu',
+  deleteAccountWhat:
+    'Asta elimină profilul tău și fiecare joc pe care l-ai păstrat, definitiv. Nu se poate anula.',
+  deleteAccountAsk: 'Trimite-mi un cod',
+  deleteConfirm: 'Șterge definitiv',
+  deleteGone: 'Contul tău nu mai există. Mulțumim că ai jucat.',
+  deleteNoAddress:
+    'Nu există o adresă confirmată pe acest cont, deci o ștergere nu poate fi verificată. Scrie-ne și o facem manual.',
+
   plurals: {
     words: { one: '{n} cuvânt', few: '{n} cuvinte', other: '{n} de cuvinte' },
     rounds: { one: '{n} rundă', few: '{n} runde', other: '{n} de runde' },

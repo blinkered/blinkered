@@ -286,6 +286,15 @@ export const eu: Messages = {
   reportGone: 'Hori jada ez dago.',
   reportCancel: 'Utzi',
 
+  deleteAccount: 'Ezabatu nire kontua',
+  deleteAccountWhat:
+    'Honek zure profila eta gorde dituzun partida guztiak ezabatzen ditu, betiko. Ezin da desegin.',
+  deleteAccountAsk: 'Bidali kode bat',
+  deleteConfirm: 'Ezabatu betiko',
+  deleteGone: 'Zure kontua joan da. Eskerrik asko jolasteagatik.',
+  deleteNoAddress:
+    'Kontu honek ez du helbide baieztaturik, beraz ezabatzea ezin da egiaztatu. Jarri gurekin harremanetan eta eskuz egingo dugu.',
+
   plurals: {
     words: { one: 'hitz {n}', other: '{n} hitz' },
     rounds: { one: 'txanda {n}', other: '{n} txanda' },

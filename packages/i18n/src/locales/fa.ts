@@ -280,6 +280,15 @@ export const fa: Messages = {
   reportGone: 'آن دیگر آنجا نیست.',
   reportCancel: 'لغو',
 
+  deleteAccount: 'حساب من را حذف کن',
+  deleteAccountWhat:
+    'این نمایه شما و هر بازی که نگه داشته‌اید را برای همیشه حذف می‌کند. بازگشتی ندارد.',
+  deleteAccountAsk: 'برایم یک کد بفرست',
+  deleteConfirm: 'برای همیشه حذف کن',
+  deleteGone: 'حساب شما رفت. ممنون که بازی کردید.',
+  deleteNoAddress:
+    'نشانی تأییدشده‌ای روی این حساب نیست، پس حذف را نمی‌توان بررسی کرد. با ما تماس بگیرید تا دستی انجامش دهیم.',
+
   plurals: {
     words: { one: '{n} واژه', other: '{n} واژه' },
     rounds: { one: '{n} دور', other: '{n} دور' },

@@ -283,6 +283,15 @@ export const gl: Messages = {
   reportGone: 'Iso xa non está.',
   reportCancel: 'Cancelar',
 
+  deleteAccount: 'Eliminar a miña conta',
+  deleteAccountWhat:
+    'Isto elimina o teu perfil e todas as partidas que gardaches, para sempre. Non se pode desfacer.',
+  deleteAccountAsk: 'Envíame un código',
+  deleteConfirm: 'Eliminar para sempre',
+  deleteGone: 'A túa conta xa non existe. Grazas por xogar.',
+  deleteNoAddress:
+    'Non hai un enderezo confirmado nesta conta, así que non se pode comprobar unha eliminación. Escríbenos e farémolo a man.',
+
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },
     rounds: { one: '{n} rolda', other: '{n} roldas' },

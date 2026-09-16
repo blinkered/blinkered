@@ -283,6 +283,15 @@ export const ca: Messages = {
   reportGone: 'Això ja no hi és.',
   reportCancel: 'Cancel·la',
 
+  deleteAccount: 'Suprimeix el meu compte',
+  deleteAccountWhat:
+    'Això elimina el teu perfil i totes les partides que has guardat, per sempre. No es pot desfer.',
+  deleteAccountAsk: 'Envia’m un codi',
+  deleteConfirm: 'Suprimeix-ho per sempre',
+  deleteGone: 'El teu compte ja no hi és. Gràcies per jugar.',
+  deleteNoAddress:
+    'En aquest compte no hi ha cap adreça confirmada, així que no es pot verificar la supressió. Posa’t en contacte i ho farem a mà.',
+
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} ronda', other: '{n} rondes' },

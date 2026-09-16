@@ -281,16 +281,49 @@ export const gameDetail = blinkered.table('game_detail', {
   detail: jsonb('detail').notNull(),
 })
 
-/** Somebody objecting to a username, a bio, or a score. The other half of moderation. */
+/**
+ * Somebody objecting to a username, a bio, or a score. The other half of moderation.
+ *
+ * **A report outlives everybody named in it, and all three links are `set null`.** Each direction
+ * buys something different, and they are worth keeping straight because one argument does not
+ * cover both.
+ *
+ * **The reporter side** is the one that stops evidence being waited out. If a report died with
+ * its author, a subject could outlast the people who reported them and the record would go with
+ * them. This was already `set null` and was never at risk.
+ *
+ * **The subject side** buys something much narrower, and it is not about the subject at all:
+ * `deleteAccount` nulls `reason` as well as the link, so nothing about the person who left
+ * survives and nothing here recognises them if they come back. What survives is our own
+ * bookkeeping -- how many reports arrived and how many were resolved -- and the reporter's link,
+ * so "this person files real reports" stays true after some of their subjects leave. Modest, and
+ * the reason it is still worth more than `cascade`, which used to silently shrink the history of
+ * our own moderation every time somebody deleted an account.
+ *
+ * What a nulled link does **not** do is erase the person from `reason`, which is prose one player
+ * wrote about another and can name them in any spelling. `deleteAccount` in `pgStore.ts` nulls
+ * `reason` for a deleted subject before the row goes, and redacting it is not attempted:
+ * usernames here are renameable by design and nothing records the old ones, so the name in a
+ * report may be one the account no longer has.
+ *
+ * **Neither is a defence against ban evasion**, which nothing in this schema attempts. A deleted
+ * address can sign up again at once. See docs/ACCOUNTS.md.
+ */
 export const reports = blinkered.table(
   'reports',
   {
     id: text('id').primaryKey(),
     reporterUserId: text('reporter_user_id').references(() => users.id, { onDelete: 'set null' }),
-    subjectUserId: text('subject_user_id').references(() => users.id, { onDelete: 'cascade' }),
-    subjectGameId: text('subject_game_id').references(() => games.id, { onDelete: 'cascade' }),
+    subjectUserId: text('subject_user_id').references(() => users.id, { onDelete: 'set null' }),
+    subjectGameId: text('subject_game_id').references(() => games.id, { onDelete: 'set null' }),
     /** Which part is objected to: `username`, `bio`, or `score`. */
     field: text('field').notNull(),
+    /**
+     * Why, in the reporter's words, and the one column here that is erased rather than unlinked.
+     *
+     * It is prose about the subject, so it is personal data about them: nulling the foreign key
+     * removes the join and leaves "nickmarden is posting a slur" sitting in a text column.
+     */
     reason: text('reason'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     resolvedAt: timestamp('resolved_at', { withTimezone: true }),

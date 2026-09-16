@@ -277,6 +277,14 @@ export const sk: Messages = {
   reportGone: 'To už tu nie je.',
   reportCancel: 'Zrušiť',
 
+  deleteAccount: 'Zmazať môj účet',
+  deleteAccountWhat: 'Týmto sa navždy odstráni tvoj profil a každá uložená hra. Nedá sa to vrátiť.',
+  deleteAccountAsk: 'Pošlite mi kód',
+  deleteConfirm: 'Zmazať navždy',
+  deleteGone: 'Tvoj účet je zmazaný. Ďakujeme, že si hral.',
+  deleteNoAddress:
+    'Na tomto účte nie je potvrdená adresa, takže zmazanie sa nedá overiť. Napíš nám a urobíme to ručne.',
+
   plurals: {
     words: { one: '{n} slovo', few: '{n} slová', many: '{n} slova', other: '{n} slov' },
     rounds: { one: '{n} kolo', few: '{n} kolá', many: '{n} kola', other: '{n} kôl' },

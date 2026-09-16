@@ -356,6 +356,66 @@ export async function report(objection: {
   }
 }
 
+/**
+ * What deleting an account did, or why it did not.
+ *
+ * `no-address` is its own answer rather than folded into a failure, because it is the one the
+ * reader can act on: an account with no confirmed address cannot be checked, and the screen has
+ * to say so rather than looking broken.
+ */
+export type DeleteResult = 'deleted' | 'bad-code' | 'no-address' | 'signed-out' | 'unavailable'
+
+/**
+ * Asks for the six-digit code a deletion needs.
+ *
+ * The address comes from the account rather than from here: letting the client name where a
+ * deletion code goes would be letting it name who confirms one. `locale` is sent because the
+ * server cannot know it -- an account that has never set `uiLanguage` has none stored.
+ *
+ * 202 whether or not a code was really sent, matching the sign-in route, so this cannot be used
+ * to find out anything. `no-address` is the one refusal worth passing through.
+ */
+export async function requestDeletionCode(locale: string): Promise<DeleteResult | 'sent'> {
+  try {
+    const response = await post('me/deletion-code', { locale })
+    if (response.status === 202) return 'sent'
+    if (response.status === 401) return 'signed-out'
+    if (response.status === 409) return 'no-address'
+    return 'unavailable'
+  } catch {
+    return 'unavailable'
+  }
+}
+
+/**
+ * Deletes the account, for good.
+ *
+ * There is nothing to sign out of afterwards: the session row went with the account, so the
+ * cookie it presented is already dead. The caller drops the account from the interface because
+ * the interface is the only place it is still remembered.
+ */
+export async function deleteAccount(code: string): Promise<DeleteResult> {
+  try {
+    const response = await fetch('/v1/me', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ code }),
+    })
+    if (response.ok) return 'deleted'
+    if (response.status === 400 || response.status === 401) {
+      // 401 here is a refused code rather than a lost session, because the route checks the
+      // session first and answers `signed-out` for that.
+      const said = (await response.json().catch(() => ({}))) as { error?: unknown }
+      return said.error === 'signed-out' ? 'signed-out' : 'bad-code'
+    }
+    if (response.status === 409) return 'no-address'
+    return 'unavailable'
+  } catch {
+    return 'unavailable'
+  }
+}
+
 /** One GET, one shape of failure. Null covers signed out, refused, absent, and offline alike. */
 async function getting<T>(path: string): Promise<T | null> {
   try {

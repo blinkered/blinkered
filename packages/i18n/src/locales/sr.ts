@@ -279,6 +279,14 @@ export const sr: Messages = {
   reportGone: 'Тога више нема.',
   reportCancel: 'Одустани',
 
+  deleteAccount: 'Избриши мој рачун',
+  deleteAccountWhat: 'Ово заувек уклања твој профил и сваку сачувану игру. Не може се вратити.',
+  deleteAccountAsk: 'Пошаљите ми код',
+  deleteConfirm: 'Избриши заувек',
+  deleteGone: 'Твог рачуна више нема. Хвала што си играо.',
+  deleteNoAddress:
+    'На овом рачуну нема потврђене адресе, па се брисање не може проверити. Јави нам се и урадићемо то ручно.',
+
   plurals: {
     words: { one: '{n} реч', few: '{n} речи', other: '{n} речи' },
     rounds: { one: '{n} рунда', few: '{n} рунде', other: '{n} рунди' },

@@ -285,6 +285,15 @@ export const pcm: Messages = {
   reportGone: 'Dat one no dey again.',
   reportCancel: 'Cancel',
 
+  deleteAccount: 'Delete my account',
+  deleteAccountWhat:
+    'Dis one go remove your profile and every game you keep, finish. You no go be able to bring am back.',
+  deleteAccountAsk: 'Send me code',
+  deleteConfirm: 'Delete am finish',
+  deleteGone: 'Your account done go. Thank you for playing.',
+  deleteNoAddress:
+    'No confirmed address dey on dis account, so we no fit check di delete. Talk to us and we go do am by hand.',
+
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },

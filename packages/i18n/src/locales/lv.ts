@@ -281,6 +281,15 @@ export const lv: Messages = {
   reportGone: 'Tā vairs nav.',
   reportCancel: 'Atcelt',
 
+  deleteAccount: 'Dzēst manu kontu',
+  deleteAccountWhat:
+    'Tas neatgriezeniski dzēš tavu profilu un visas saglabātās spēles. To nevar atsaukt.',
+  deleteAccountAsk: 'Nosūtiet man kodu',
+  deleteConfirm: 'Dzēst neatgriezeniski',
+  deleteGone: 'Tavs konts ir dzēsts. Paldies, ka spēlēji.',
+  deleteNoAddress:
+    'Šim kontam nav apstiprinātas adreses, tāpēc dzēšanu nevar pārbaudīt. Sazinies ar mums, un izdarīsim to ar roku.',
+
   plurals: {
     words: { zero: '{n} vārdu', one: '{n} vārds', other: '{n} vārdi' },
     rounds: { zero: '{n} raundu', one: '{n} raunds', other: '{n} raundi' },

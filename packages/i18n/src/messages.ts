@@ -416,6 +416,23 @@ export interface Messages {
   readonly reportSignIn: string
   readonly reportGone: string
   readonly reportCancel: string
+
+  /**
+   * Deleting your own account, which App Store guideline 5.1.1(v) requires of anything offering
+   * account creation and which is owed regardless.
+   *
+   * Translated like the rest of the account surface. Four of the strings this flow needs already
+   * exist and are reused rather than duplicated: `codeLabel` and `codeSent` from signing in,
+   * because it is the same six-digit code and the same ten minutes; `reportCancel` for the way
+   * out; and `serverBusy` for a server that did not answer.
+   */
+  readonly deleteAccount: string
+  readonly deleteAccountWhat: string
+  readonly deleteAccountAsk: string
+  readonly deleteConfirm: string
+  readonly deleteGone: string
+  /** For an account with no confirmed address, which a provider is under no obligation to give. */
+  readonly deleteNoAddress: string
   /*
    * There is no `reportSending` and no `reportFailed`. The dialog uses `saving` and `serverBusy`,
    * which already say exactly those two things in fifty-one languages -- "Saving…" and "Could not

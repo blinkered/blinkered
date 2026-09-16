@@ -284,6 +284,15 @@ export const la: Messages = {
   reportGone: 'Id iam non adest.',
   reportCancel: 'Desine',
 
+  deleteAccount: 'Rationem meam dele',
+  deleteAccountWhat:
+    'Hoc personam tuam et omnes ludos servatos in perpetuum tollit. Revocari non potest.',
+  deleteAccountAsk: 'Mitte mihi notam',
+  deleteConfirm: 'In perpetuum dele',
+  deleteGone: 'Ratio tua sublata est. Gratias quod lusisti.',
+  deleteNoAddress:
+    'Nulla inscriptio confirmata huic rationi adest, itaque deletio probari non potest. Nos conveni et manu faciemus.',
+
   plurals: {
     words: { one: 'verbum {n}', other: 'verba {n}' },
     rounds: { one: 'ambitus {n}', other: 'ambitus {n}' },

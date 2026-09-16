@@ -275,6 +275,15 @@ export const no: Messages = {
   reportGone: 'Det er ikke der lenger.',
   reportCancel: 'Avbryt',
 
+  deleteAccount: 'Slett kontoen min',
+  deleteAccountWhat:
+    'Dette fjerner profilen din og alle spill du har beholdt, for godt. Det kan ikke angres.',
+  deleteAccountAsk: 'Send meg en kode',
+  deleteConfirm: 'Slett for godt',
+  deleteGone: 'Kontoen din er borte. Takk for at du spilte.',
+  deleteNoAddress:
+    'Det finnes ingen bekreftet adresse på denne kontoen, så en sletting kan ikke sjekkes. Ta kontakt, og vi gjør det manuelt.',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },

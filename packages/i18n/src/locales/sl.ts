@@ -279,6 +279,15 @@ export const sl: Messages = {
   reportGone: 'Tega ni več.',
   reportCancel: 'Prekliči',
 
+  deleteAccount: 'Izbriši moj račun',
+  deleteAccountWhat:
+    'To za vedno odstrani tvoj profil in vse shranjene igre. Tega ni mogoče razveljaviti.',
+  deleteAccountAsk: 'Pošljite mi kodo',
+  deleteConfirm: 'Izbriši za vedno',
+  deleteGone: 'Tvojega računa ni več. Hvala, da si igral.',
+  deleteNoAddress:
+    'Na tem računu ni potrjenega naslova, zato izbrisa ni mogoče preveriti. Javi se nam in naredili bomo ročno.',
+
   plurals: {
     words: { one: '{n} beseda', two: '{n} besedi', few: '{n} besede', other: '{n} besed' },
     rounds: { one: '{n} krog', two: '{n} kroga', few: '{n} krogi', other: '{n} krogov' },

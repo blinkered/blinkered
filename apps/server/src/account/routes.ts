@@ -2,6 +2,8 @@ import { randomBytes } from 'node:crypto'
 import { Hono } from 'hono'
 import { currentUser } from '../auth/routes.js'
 import type { SessionDeps } from '../auth/routes.js'
+import { codeExpiry, tooManyCodes, verifyCode, windowStart } from '../auth/policy.js'
+import { codeMatches, hashCode, looksLikeCode, newCode } from '../auth/secrets.js'
 import { normalizeUsername } from '../auth/usernames.js'
 import { rateLimit } from '../rateLimit.js'
 import type { LimitOptions } from '../rateLimit.js'
@@ -22,6 +24,15 @@ import { parseReport } from './reporting.js'
 
 export interface AccountDeps extends SessionDeps {
   readonly store: Store
+  /**
+   * The mailer, for the deletion code and nothing else on this surface.
+   *
+   * Optional so that everything here except deletion still works in a deployment without one --
+   * which is the arrangement `app.ts` already describes for the health checks, and the same
+   * reason `auth` is optional there. A deployment that cannot send mail cannot verify a deletion
+   * and says so, rather than deleting on a weaker check.
+   */
+  readonly mailer?: { send: (mail: { to: string; code: string; locale: string }) => Promise<void> }
   /**
    * Absent where the deployment cannot identify a caller, and then there is no limiter at all.
    * See `rateLimit.ts` for why that is the honest answer rather than a weaker limit.
@@ -226,6 +237,107 @@ export function accountRoutes(deps: AccountDeps): Hono {
    * and it is the right side of the trade -- the links worth keeping are game permalinks, and
    * those carry an id that never moves.
    */
+  /*
+   * Asking for the code that a deletion needs.
+   *
+   * Deletion is the one irreversible thing a person can do to their own account, and a session
+   * lasts thirty days -- so a session alone means an open laptop is enough to erase somebody.
+   * Apple's guidance permits exactly this remedy: "entering a code from an email or phone number
+   * already associated with the account".
+   *
+   * The same machinery as signing in, deliberately: `loginCodes`, `policy.ts`, `secrets.ts`. One
+   * implementation of what a six-digit code is, with one rate limit and one expiry. The
+   * consequence, worth stating rather than discovering: a code asked for here can be used to sign
+   * in and one asked for there can be used to delete. Both mean "whoever holds the inbox", which
+   * is already the bar for the account itself -- somebody with the inbox can sign in and then
+   * delete anyway. So it is not a new exposure.
+   *
+   * The address comes from the account rather than from the request. Letting somebody name the
+   * address a deletion code goes to would be letting them choose who confirms it.
+   */
+  routes.post('/me/deletion-code', async (context) => {
+    const user = await currentUser(deps, context)
+    if (user === null) return context.json({ error: 'signed-out' }, 401)
+    const mailer = deps.mailer
+    if (mailer === undefined) return context.json({ error: 'no-mailer' }, 503)
+
+    const email = await deps.store.verifiedEmailFor(user.userId)
+    // No verified address at all, which the schema allows: a provider is under no obligation to
+    // give us one. Said plainly rather than pretended, because the alternative is a button that
+    // silently never works.
+    if (email === null) return context.json({ error: 'no-address' }, 409)
+
+    const now = clock()
+    const issued = await deps.store.countCodesSince(email, windowStart(now))
+    // 202 either way, matching the sign-in route: whether a code was actually sent is not a fact
+    // worth leaking, and here it also stops the button being a way to send yourself mail.
+    if (tooManyCodes(issued)) return context.body(null, 202)
+
+    const code = newCode()
+    const id = newId()
+    await deps.store.insertCode({ id, email, codeHash: hashCode(code), expiresAt: codeExpiry(now) })
+    try {
+      // The language the mail is written in, which the client knows and the session does not:
+      // `uiLanguage` can be unset on an account that has never said. Optional chaining rather
+      // than three type guards, since a body that is null or not an object answers the same way.
+      const asked = ((await bodyOf(context.req)) as { locale?: unknown } | null)?.locale
+      await mailer.send({ to: email, code, locale: typeof asked === 'string' ? asked : 'en' })
+    } catch (failure) {
+      // The row is written before the mail goes, so a failed send would otherwise leave a live
+      // code nobody has and a slot spent against the rate limit. Same order and same repair as
+      // the sign-in route.
+      await deps.store.deleteCode(id)
+      throw failure
+    }
+    return context.body(null, 202)
+  })
+
+  /*
+   * Deleting your own account, for good.
+   *
+   * A real delete rather than the `deleted_at` an admin sets, and the asymmetry is the point.
+   * `schema.ts` argues against cascading from an HTTP handler because an admin can aim at the
+   * wrong row; here the person asking is the row, and they have just answered a code. App Store
+   * guideline 5.1.1(v) also wants the account record gone rather than disabled -- "only offering
+   * to temporarily deactivate or disable an account is insufficient" -- so a mark would not
+   * satisfy it.
+   *
+   * What goes with it: identities, sessions, games and their documents, by `on delete cascade`.
+   * What does not: reports, whose three links are `set null` so the objection outlives the people
+   * in it. The one thing a cascade cannot reach is the prose in `reason`, and `deleteAccount`
+   * nulls that for a deleted subject in the same transaction.
+   */
+  routes.delete('/me', async (context) => {
+    const user = await currentUser(deps, context)
+    if (user === null) return context.json({ error: 'signed-out' }, 401)
+
+    // Optional chaining, as on the code route above: a body that is null, or not an object, or
+    // carries no code, all answer the same way.
+    const sent = ((await bodyOf(context.req)) as { code?: unknown } | null)?.code
+    const given = typeof sent === 'string' ? sent.trim() : ''
+    if (!looksLikeCode(given)) return context.json({ error: 'bad-code' }, 400)
+
+    const email = await deps.store.verifiedEmailFor(user.userId)
+    if (email === null) return context.json({ error: 'no-address' }, 409)
+
+    const now = clock()
+    const stored = await deps.store.latestCode(email)
+    if (stored === null) return context.json({ error: 'bad-code' }, 401)
+    const verdict = verifyCode(stored, given, now, codeMatches)
+    if (verdict !== 'ok') {
+      // A wrong guess costs an attempt; a dead code is left alone. As in the sign-in route.
+      if (verdict === 'wrong') await deps.store.recordAttempt(stored.id)
+      return context.json({ error: 'bad-code' }, 401)
+    }
+    // Spent before the deletion, so a failure afterwards cannot leave a live code behind.
+    await deps.store.consumeCode(stored.id, now)
+
+    const gone = await deps.store.deleteAccount(user.userId)
+    // The session died with the row, so there is no cookie to clear and nothing to sign out of.
+    // Answered as 200 with a body rather than 204, because the client shows a last screen.
+    return context.json({ deleted: gone })
+  })
+
   /*
    * Objecting to something.
    *

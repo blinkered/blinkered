@@ -233,6 +233,14 @@ function Session({
     setRoute(back)
   }, [])
   const [visiting, setVisiting] = useState<Destination | null>(null)
+  /**
+   * Whether the account on screen has just been deleted.
+   *
+   * Held here rather than in the account screen because the screen unmounts the moment `account`
+   * is null, so the panel cannot both announce the deletion and be the thing that triggers
+   * forgetting it. This defers the forgetting to whenever the screen is closed.
+   */
+  const [deletedAccount, setDeletedAccount] = useState(false)
 
   /*
    * Where the address bar points.
@@ -550,12 +558,31 @@ function Session({
           readIn={settings.uiLanguage}
           dictionary={dictionary}
           onAccount={adopt}
+          onDeleted={() => {
+            /*
+             * Noted rather than acted on, and that is not squeamishness -- it is that this screen
+             * only renders while `account` is set, so clearing it here would unmount the very
+             * panel that says the account is gone. Found by wiring it the obvious way first.
+             *
+             * There is nothing to sign out of either way: the session row went with the account
+             * and the cookie it presented is already dead. What is left is the interface still
+             * remembering somebody, and `onClose` below forgets them however the screen is
+             * dismissed.
+             */
+            setDeletedAccount(true)
+          }}
           onTab={setVisiting}
           onSignIn={() => {
             setSigningIn({})
           }}
           onClose={() => {
             setVisiting(null)
+            // Whichever way they left -- the header button or the one under the message -- this
+            // is where the interface stops remembering a deleted account.
+            if (deletedAccount) {
+              setDeletedAccount(false)
+              setAccount(null)
+            }
           }}
         />
       )}

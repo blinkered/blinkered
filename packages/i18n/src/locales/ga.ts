@@ -289,6 +289,15 @@ export const ga: Messages = {
   reportGone: 'Níl sé sin ann a thuilleadh.',
   reportCancel: 'Cealaigh',
 
+  deleteAccount: 'Scrios mo chuntas',
+  deleteAccountWhat:
+    'Baineann sé seo do phróifíl agus gach cluiche a choinnigh tú, go buan. Ní féidir é a chur ar ceal.',
+  deleteAccountAsk: 'Seol cód chugam',
+  deleteConfirm: 'Scrios go buan',
+  deleteGone: 'Tá do chuntas imithe. Go raibh maith agat as imirt.',
+  deleteNoAddress:
+    'Níl seoladh deimhnithe ar an gcuntas seo, mar sin ní féidir scriosadh a sheiceáil. Déan teagmháil linn agus déanfaimid de láimh é.',
+
   plurals: {
     words: {
       one: '{n} fhocal',

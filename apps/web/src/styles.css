@@ -3134,3 +3134,21 @@ kbd {
   min-height: 2.75rem;
   cursor: pointer;
 }
+
+/* ---------- deleting your own account ---------- */
+/*
+ * Set apart from the form above it, because it is the one thing on this screen that cannot be
+ * undone. A rule and a gap rather than a red box: the button is already red, and a panel that
+ * shouts before anybody has asked for it makes the whole screen feel dangerous.
+ */
+.account-danger {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  margin-block-start: 0.5rem;
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--line);
+}
+.account-danger .signin-note {
+  max-width: 34rem;
+}

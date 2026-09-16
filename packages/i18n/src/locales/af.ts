@@ -283,6 +283,15 @@ export const af: Messages = {
   reportGone: 'Dit is nie meer daar nie.',
   reportCancel: 'Kanselleer',
 
+  deleteAccount: 'Skrap my rekening',
+  deleteAccountWhat:
+    'Dit verwyder jou profiel en elke spel wat jy gehou het, vir altyd. Dit kan nie ongedaan gemaak word nie.',
+  deleteAccountAsk: 'Stuur my ’n kode',
+  deleteConfirm: 'Skrap dit vir altyd',
+  deleteGone: 'Jou rekening is weg. Dankie dat jy gespeel het.',
+  deleteNoAddress:
+    'Daar is geen bevestigde adres op hierdie rekening nie, dus kan ’n skrapping nie nagegaan word nie. Kontak ons en ons doen dit met die hand.',
+
   plurals: {
     words: { one: '{n} woord', other: '{n} woorde' },
     rounds: { one: '{n} rondte', other: '{n} rondtes' },

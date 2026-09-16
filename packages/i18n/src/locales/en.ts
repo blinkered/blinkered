@@ -283,6 +283,15 @@ export const en: Messages = {
   reportGone: 'That is not there any more.',
   reportCancel: 'Cancel',
 
+  deleteAccount: 'Delete my account',
+  deleteAccountWhat:
+    'This removes your profile and every game you have kept, for good. It cannot be undone.',
+  deleteAccountAsk: 'Send me a code',
+  deleteConfirm: 'Delete it for good',
+  deleteGone: 'Your account is gone. Thank you for playing.',
+  deleteNoAddress:
+    'There is no confirmed address on this account, so a deletion cannot be checked. Get in touch and we will do it by hand.',
+
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },

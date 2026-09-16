@@ -282,6 +282,14 @@ export const tr: Messages = {
   reportGone: 'O artık yok.',
   reportCancel: 'Vazgeç',
 
+  deleteAccount: 'Hesabımı sil',
+  deleteAccountWhat: 'Bu, profilini ve sakladığın her oyunu kalıcı olarak kaldırır. Geri alınamaz.',
+  deleteAccountAsk: 'Bana bir kod gönder',
+  deleteConfirm: 'Kalıcı olarak sil',
+  deleteGone: 'Hesabın gitti. Oynadığın için teşekkürler.',
+  deleteNoAddress:
+    'Bu hesapta doğrulanmış bir adres yok, bu yüzden silme kontrol edilemez. Bize yaz, elle yapalım.',
+
   plurals: {
     words: { one: '{n} kelime', other: '{n} kelime' },
     rounds: { one: '{n} tur', other: '{n} tur' },

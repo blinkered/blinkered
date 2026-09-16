@@ -279,6 +279,15 @@ export const lt: Messages = {
   reportGone: 'To jau nebėra.',
   reportCancel: 'Atsisakyti',
 
+  deleteAccount: 'Ištrinti mano paskyrą',
+  deleteAccountWhat:
+    'Tai visiems laikams pašalina tavo profilį ir visus išsaugotus žaidimus. Atšaukti nebus galima.',
+  deleteAccountAsk: 'Atsiųskite man kodą',
+  deleteConfirm: 'Ištrinti visiems laikams',
+  deleteGone: 'Tavo paskyros nebėra. Dėkojame, kad žaidei.',
+  deleteNoAddress:
+    'Šioje paskyroje nėra patvirtinto adreso, todėl ištrynimo patikrinti negalime. Susisiek su mumis ir padarysime tai rankomis.',
+
   plurals: {
     words: { one: '{n} žodis', few: '{n} žodžiai', many: '{n} žodžio', other: '{n} žodžių' },
     rounds: { one: '{n} raundas', few: '{n} raundai', many: '{n} raundo', other: '{n} raundų' },

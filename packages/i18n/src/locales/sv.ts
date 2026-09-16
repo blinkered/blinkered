@@ -275,6 +275,15 @@ export const sv: Messages = {
   reportGone: 'Det finns inte längre.',
   reportCancel: 'Avbryt',
 
+  deleteAccount: 'Ta bort mitt konto',
+  deleteAccountWhat:
+    'Det här tar bort din profil och alla spel du har sparat, för gott. Det går inte att ångra.',
+  deleteAccountAsk: 'Skicka mig en kod',
+  deleteConfirm: 'Ta bort för gott',
+  deleteGone: 'Ditt konto är borta. Tack för att du spelade.',
+  deleteNoAddress:
+    'Det finns ingen bekräftad adress på det här kontot, så en borttagning kan inte kontrolleras. Hör av dig och vi gör det för hand.',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} omgång', other: '{n} omgångar' },

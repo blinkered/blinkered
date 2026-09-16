@@ -280,6 +280,15 @@ export const da: Messages = {
   reportGone: 'Det er der ikke længere.',
   reportCancel: 'Annuller',
 
+  deleteAccount: 'Slet min konto',
+  deleteAccountWhat:
+    'Det fjerner din profil og alle de spil, du har gemt, for altid. Det kan ikke gøres om.',
+  deleteAccountAsk: 'Send mig en kode',
+  deleteConfirm: 'Slet den for altid',
+  deleteGone: 'Din konto er væk. Tak for spillet.',
+  deleteNoAddress:
+    'Der er ingen bekræftet adresse på denne konto, så en sletning kan ikke kontrolleres. Kontakt os, og vi gør det manuelt.',
+
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },

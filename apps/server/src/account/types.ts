@@ -224,4 +224,34 @@ export interface AccountStore extends ReportWriter {
   } | null>
   /** Somebody else's profile, by the name in the URL. Null for unknown and for deleted. */
   profileByUsername(normalized: string): Promise<PublicProfile | null>
+  /**
+   * The address a code can be sent to, for somebody who is already signed in.
+   *
+   * Verified only, newest first. Used by the deletion flow and nothing else: it is the one
+   * question the session cannot answer on its own, because `Profile` has never carried an
+   * address and should not start.
+   *
+   * Null where the account has no verified address at all, which the schema allows -- a provider
+   * is under no obligation to give us one. The route has to say something other than nothing in
+   * that case.
+   */
+  verifiedEmailFor(userId: string): Promise<string | null>
+  /**
+   * Erases an account: the row, and everything the foreign keys carry with it.
+   *
+   * Identities, sessions, games and their detail documents go by `on delete cascade`. Reports do
+   * **not** -- all three of their links are `set null`, so the objection outlives the people in
+   * it. On the reporter side that is what stops evidence being waited out; on the subject side it
+   * keeps our own counts honest and leaves nothing about the person, so it is no defence against
+   * them returning. See the note on the table in `schema.ts`.
+   *
+   * What the cascades cannot do is erase the person from `reason`, which is prose one player
+   * wrote about another. That is nulled here, for reports where this account was the subject,
+   * inside the same transaction and **before** the delete -- afterwards the link is already null
+   * and there is nothing left to match on.
+   *
+   * False when there was no such account, so the route can answer honestly rather than claiming
+   * to have deleted something twice.
+   */
+  deleteAccount(userId: string): Promise<boolean>
 }

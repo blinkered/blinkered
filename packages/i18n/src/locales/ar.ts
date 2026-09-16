@@ -282,6 +282,14 @@ export const ar: Messages = {
   reportGone: 'لم يعد هذا موجودًا.',
   reportCancel: 'إلغاء',
 
+  deleteAccount: 'حذف حسابي',
+  deleteAccountWhat: 'هذا يحذف ملفك الشخصي وكل لعبة حفظتها، نهائيًا. ولا يمكن التراجع عنه.',
+  deleteAccountAsk: 'أرسل لي رمزًا',
+  deleteConfirm: 'احذفه نهائيًا',
+  deleteGone: 'انتهى حسابك. شكرًا على اللعب.',
+  deleteNoAddress:
+    'لا يوجد عنوان مؤكَّد على هذا الحساب، لذا لا يمكن التحقق من الحذف. تواصل معنا وسنقوم به يدويًا.',
+
   plurals: {
     words: {
       zero: '{n} كلمة',

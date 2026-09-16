@@ -1028,9 +1028,9 @@ have an address to leak.
 
 ### What is still not built
 
-- **Self-service deletion**, which is a store requirement before any native submission and is
-  written up precisely in the next section. Not a route on its own: the reaper below is the
-  load-bearing half.
+- **A reaper for `users.deleted_at`.** Self-service deletion is built and is a real delete, so
+  5.1.1(v) is answered; what is still marked-and-never-swept is the _admin_ path, which is
+  deliberately reversible and therefore deliberately incomplete.
 - **The reaper.** `deleted_at` is set and nothing acts on it, so a marked account is still a row.
 - **Telling somebody why they were renamed.** There is no notification of any kind, so this is a
   person and an email address. Worth doing before the first rename that is not ours.
@@ -1043,6 +1043,77 @@ have an address to leak.
   suite on STATUS.md's list is for.
 - **An audit trail.** Who hid what, and when. The reports table records the objection and nothing
   records the answer beyond `resolved_at`. Wanted the first time two people moderate.
+
+## Deleting your own account
+
+Built. `DELETE /v1/me`, behind a fresh six-digit code, and it is a real delete rather than the
+mark an admin sets.
+
+**Two deletion paths, on purpose.** An admin marks `deleted_at` and can undo it, because that
+handler can be aimed at the wrong row. A person deleting their own account gets a cascade, because
+they are the row and they have just answered a code — and because 5.1.1(v)'s support page is
+explicit that "only offering to temporarily deactivate or disable an account is insufficient", so
+a mark would not satisfy it.
+
+**A code rather than a typed confirmation.** A session lasts thirty days, so a session alone means
+an open laptop is enough to erase somebody. Apple permits exactly this remedy: "entering a code
+from an email or phone number already associated with the account". It reuses `loginCodes`,
+`policy.ts` and `secrets.ts`, so there is one implementation of what a six-digit code is, with one
+rate limit and one expiry.
+
+One consequence of that reuse, stated rather than discovered: a code asked for to delete can be
+used to sign in and the other way round. Both mean "whoever holds the inbox", which is already the
+bar for the account — somebody with the inbox can sign in and then delete anyway — so it is not a
+new exposure. The address comes from the account rather than the request, because letting somebody
+name where a deletion code goes is letting them name who confirms it.
+
+### What goes, and what does not
+
+| row                         | what happens | why                                          |
+| --------------------------- | ------------ | -------------------------------------------- |
+| `users`                     | deleted      | the record itself, which is what is required |
+| `auth_identities`           | cascade      | every way back in goes with it               |
+| `sessions`                  | cascade      | nothing to sign out of afterwards            |
+| `games`, `game_detail`      | cascade      | and with them every leaderboard appearance   |
+| `reports` (all three links) | **set null** | the objection outlives the people in it      |
+| `reports.reason`            | **nulled**   | prose about the subject is data about them   |
+
+The reason column is the one a foreign key could not reach. It is one `update` inside the same
+transaction and **before** the delete, since afterwards `subject_user_id` is already null and
+there is nothing left to match on.
+
+**Redacting the name out of `reason` was considered and refused.** It sounds gentler and it cannot
+work here: usernames are renameable by design and nothing records the old ones, so the name in a
+report may be one the account no longer had. Matching would also have to be on the NFKC
+case-folded form against arbitrary prose, and prose can identify somebody without using their
+handle at all. `reason is null` is checkable; "we took their name out" is a claim only readable by
+hand.
+
+What survives a subject's deletion is `field`, `created_at`, `resolved_at` and the reporter — so
+our own count of how much moderating happened stays honest, and a reporter's record of filing real
+reports stands. Both are about us and about reporters. **Neither is about the subject, and none of
+this recognises them if they come back.**
+
+### Ban evasion is undefended, and this widens it
+
+Worth stating plainly because it is the obvious question. Nothing here recognises a returning
+account: no fingerprinting, no retained addresses, no blocklist. A deleted address can sign up
+again immediately and get a clean account.
+
+Self-deletion makes that sharper rather than better. An admin deletion marks the row and keeps
+`auth_identities`, so it leaves something recognisable; a self-deletion erases it. So somebody who
+sees moderation coming can delete their own account, destroy the evidence about them, and
+re-register. That is a real path and this feature opened it.
+
+It is not closed, and closing it is a decision rather than a task. The options, none taken:
+
+- **Accept it.** Pre-release, and ban evasion is unsolved regardless.
+- **Keep a hash of the address** on erasure, so a return is recognisable. Cheap, effective against
+  the lazy case, and it means retaining a derivation of personal data after somebody asked to be
+  erased — a position to take deliberately, not a detail.
+- **Keep an opaque per-account key** that outlives the row, so "this is the fourth account from
+  whoever this was" is answerable without storing anything about them. More machinery, better
+  posture.
 
 ## What the App Store requires, exactly
 

@@ -284,6 +284,14 @@ export const hy: Messages = {
   reportGone: 'Դա այլևս չկա։',
   reportCancel: 'Չեղարկել',
 
+  deleteAccount: 'Ջնջել իմ հաշիվը',
+  deleteAccountWhat: 'Սա ընդմիշտ հեռացնում է ձեր էջը և պահած բոլոր խաղերը։ Հետդարձ չկա։',
+  deleteAccountAsk: 'Ուղարկեք ինձ կոդ',
+  deleteConfirm: 'Ջնջել ընդմիշտ',
+  deleteGone: 'Ձեր հաշիվը ջնջված է։ Շնորհակալություն խաղի համար։',
+  deleteNoAddress:
+    'Այս հաշվին հաստատված հասցե չկա, ուստի ջնջումը հնարավոր չէ ստուգել։ Կապվեք մեզ հետ, և կանենք ձեռքով։',
+
   plurals: {
     words: { one: '{n} բառ', other: '{n} բառ' },
     rounds: { one: '{n} փուլ', other: '{n} փուլ' },

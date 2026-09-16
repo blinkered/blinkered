@@ -278,6 +278,14 @@ export const ko: Messages = {
   reportGone: '그것은 이제 없습니다.',
   reportCancel: '취소',
 
+  deleteAccount: '내 계정 삭제',
+  deleteAccountWhat: '프로필과 보관한 모든 게임이 영구적으로 삭제됩니다. 되돌릴 수 없습니다.',
+  deleteAccountAsk: '코드 보내주세요',
+  deleteConfirm: '영구적으로 삭제',
+  deleteGone: '계정이 삭제되었습니다. 플레이해 주셔서 감사합니다.',
+  deleteNoAddress:
+    '이 계정에는 확인된 주소가 없어 삭제를 확인할 수 없습니다. 연락 주시면 직접 처리해 드립니다.',
+
   plurals: {
     words: { other: '단어 {n}개' },
     rounds: { other: '{n}라운드' },

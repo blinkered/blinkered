@@ -279,6 +279,15 @@ export const et: Messages = {
   reportGone: 'Seda enam ei ole.',
   reportCancel: 'Tühista',
 
+  deleteAccount: 'Kustuta mu konto',
+  deleteAccountWhat:
+    'See eemaldab jäädavalt sinu profiili ja kõik salvestatud mängud. Seda ei saa tagasi võtta.',
+  deleteAccountAsk: 'Saada mulle kood',
+  deleteConfirm: 'Kustuta jäädavalt',
+  deleteGone: 'Sinu kontot enam ei ole. Aitäh, et mängisid.',
+  deleteNoAddress:
+    'Sellel kontol pole kinnitatud aadressi, seega ei saa kustutamist kontrollida. Võta ühendust ja teeme seda käsitsi.',
+
   plurals: {
     words: { one: '{n} sõna', other: '{n} sõna' },
     rounds: { one: '{n} voor', other: '{n} vooru' },

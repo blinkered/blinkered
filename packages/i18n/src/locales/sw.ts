@@ -281,6 +281,15 @@ export const sw: Messages = {
   reportGone: 'Hiyo haipo tena.',
   reportCancel: 'Ghairi',
 
+  deleteAccount: 'Futa akaunti yangu',
+  deleteAccountWhat:
+    'Hii inaondoa wasifu wako na kila mchezo uliohifadhi, kwa kudumu. Haiwezi kurudishwa.',
+  deleteAccountAsk: 'Nitumie msimbo',
+  deleteConfirm: 'Futa kwa kudumu',
+  deleteGone: 'Akaunti yako haipo. Asante kwa kucheza.',
+  deleteNoAddress:
+    'Hakuna anwani iliyothibitishwa kwenye akaunti hii, kwa hivyo ufutaji hauwezi kuthibitishwa. Wasiliana nasi na tutafanya kwa mkono.',
+
   plurals: {
     words: { one: 'neno {n}', other: 'maneno {n}' },
     rounds: { one: 'raundi {n}', other: 'raundi {n}' },

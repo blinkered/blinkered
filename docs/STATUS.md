@@ -109,18 +109,20 @@ server scores them, since `points` is a function of word length alone.
 
 **Three pieces of the account surface are still owed**, and the first is a store blocker:
 
-- **A reaper for `users.deleted_at`, which is the half that actually blocks a store
-  submission.** Deletion is marked and not yet swept, deliberately — a cascade fired from an HTTP
-  handler has no way back if it was aimed at the wrong row — but Apple is explicit that "only
-  offering to temporarily deactivate or disable an account is insufficient", so marked-and-never
-  reaped is deactivation by their reading and by any honest one.
-- **A findable in-app way for somebody to start deleting their own account.** Guideline 5.1.1(v),
-  which applies because the shell offers sign-in, and which blocks submitting the native app
-  rather than anything on the web. **Not necessarily `DELETE /v1/me`**: Apple permits finishing on
-  a linked web page and permits the process taking time, as long as it is disclosed. What it does
-  not permit is the current arrangement, where the privacy policy gives an address — "requiring
-  users to phone, email, or contact support" is named as unacceptable. ACCOUNTS.md, "What the App
-  Store requires, exactly", has the quotes.
+- **A reaper for `users.deleted_at`.** The _admin_ deletion path marks rather than sweeps, which
+  is deliberate — that handler can be aimed at the wrong row, and a mark can be undone. What is
+  missing is the thing that eventually finishes the job. Self-service deletion no longer waits on
+  it: that path is a real cascade, so App Store 5.1.1(v) is answered. See ACCOUNTS.md, "Deleting
+  your own account".
+- **Anything at all that recognises a returning account.** No fingerprinting, no retained
+  addresses, no blocklist, so a deleted address can sign up again at once — and self-deletion
+  erases the identities an admin deletion would have kept, so somebody who sees moderation coming
+  can delete themselves, destroy the evidence, and re-register. ACCOUNTS.md lists three options
+  and takes none of them; it is a privacy decision rather than a task.
+- **The privacy policy still gives an address for deletion**, which is now wrong in the good
+  direction: there is a button. Worth rewriting before any submission, since "requiring users to
+  phone, email, or contact support" is the pattern Apple names as unacceptable and we no longer
+  do it.
 - **Telling somebody why they were renamed.** ACCOUNTS.md's answer to an abusive username is "the
   power to rename an account and tell its owner why". The rename exists; there is no notification
   of any kind, so the telling is a person and an email address.

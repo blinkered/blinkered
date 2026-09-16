@@ -279,6 +279,15 @@ export const is: Messages = {
   reportGone: 'Það er ekki þar lengur.',
   reportCancel: 'Hætta',
 
+  deleteAccount: 'Eyða reikningnum mínum',
+  deleteAccountWhat:
+    'Þetta fjarlægir notandasíðuna þína og alla leiki sem þú hefur haldið, endanlega. Því er ekki hægt að hnekkja.',
+  deleteAccountAsk: 'Sendu mér kóða',
+  deleteConfirm: 'Eyða endanlega',
+  deleteGone: 'Reikningurinn þinn er farinn. Þakka þér fyrir að spila.',
+  deleteNoAddress:
+    'Það er ekkert staðfest netfang á þessum reikningi, svo ekki er unnt að staðfesta eyðingu. Hafðu samband og við gerum það handvirkt.',
+
   plurals: {
     words: { one: '{n} orð', other: '{n} orð' },
     rounds: { one: '{n} umferð', other: '{n} umferðir' },

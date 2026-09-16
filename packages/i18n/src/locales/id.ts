@@ -281,6 +281,15 @@ export const id: Messages = {
   reportGone: 'Itu sudah tidak ada.',
   reportCancel: 'Batal',
 
+  deleteAccount: 'Hapus akun saya',
+  deleteAccountWhat:
+    'Ini menghapus profilmu dan setiap permainan yang kamu simpan, selamanya. Tidak bisa dibatalkan.',
+  deleteAccountAsk: 'Kirimi saya kode',
+  deleteConfirm: 'Hapus selamanya',
+  deleteGone: 'Akunmu sudah hilang. Terima kasih sudah bermain.',
+  deleteNoAddress:
+    'Tidak ada alamat terkonfirmasi di akun ini, jadi penghapusan tidak bisa diperiksa. Hubungi kami dan kami lakukan manual.',
+
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} putaran' },

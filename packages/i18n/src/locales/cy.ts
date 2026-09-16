@@ -285,6 +285,15 @@ export const cy: Messages = {
   reportGone: 'Nid yw hwnnw yno mwyach.',
   reportCancel: 'Canslo',
 
+  deleteAccount: 'Dileu fy nghyfrif',
+  deleteAccountWhat:
+    'Mae hyn yn tynnu dy broffil a phob gêm a gedwaist, am byth. Does dim modd ei ddadwneud.',
+  deleteAccountAsk: 'Anfona god i mi',
+  deleteConfirm: 'Dileu am byth',
+  deleteGone: 'Mae dy gyfrif wedi mynd. Diolch am chwarae.',
+  deleteNoAddress:
+    'Does dim cyfeiriad wedi’i gadarnhau ar y cyfrif hwn, felly does dim modd gwirio’r dileu. Cysyllta â ni ac fe wnawn ni hynny â llaw.',
+
   plurals: {
     words: {
       zero: '{n} gair',

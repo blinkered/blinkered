@@ -282,6 +282,15 @@ export const vi: Messages = {
   reportGone: 'Cái đó không còn ở đó nữa.',
   reportCancel: 'Huỷ',
 
+  deleteAccount: 'Xoá tài khoản của tôi',
+  deleteAccountWhat:
+    'Việc này xoá vĩnh viễn trang cá nhân của bạn và mọi trận đã lưu. Không thể hoàn tác.',
+  deleteAccountAsk: 'Gửi cho tôi một mã',
+  deleteConfirm: 'Xoá vĩnh viễn',
+  deleteGone: 'Tài khoản của bạn đã bị xoá. Cảm ơn bạn đã chơi.',
+  deleteNoAddress:
+    'Tài khoản này không có địa chỉ đã xác nhận, nên không thể kiểm tra việc xoá. Hãy liên hệ và chúng tôi sẽ làm thủ công.',
+
   plurals: {
     words: { other: '{n} từ' },
     rounds: { other: '{n} vòng' },

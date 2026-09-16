@@ -310,6 +310,44 @@ export function pgStore(db: Database): Store {
       return true
     },
 
+    verifiedEmailFor: async (userId) => {
+      const [row] = await db
+        .select({ email: authIdentities.email })
+        .from(authIdentities)
+        .where(
+          and(
+            eq(authIdentities.userId, userId),
+            isNotNull(authIdentities.email),
+            // Verified only. An address a provider merely passed along is a claim, and a code
+            // sent to a claim is a code sent to whoever made it.
+            isNotNull(authIdentities.emailVerifiedAt),
+          ),
+        )
+        .orderBy(desc(authIdentities.createdAt))
+        .limit(1)
+      return row?.email ?? null
+    },
+
+    /*
+     * Erasing an account, in one transaction and in an order that matters.
+     *
+     * The scrub runs **first**. `reports.subject_user_id` is `on delete set null`, so by the time
+     * the delete has happened there is no link left to find the rows by, and an update afterwards
+     * would match nothing and report success. That is the whole reason this is a transaction with
+     * two statements rather than a delete and a trigger.
+     *
+     * It covers reports about a game as well as reports about a person, because the report route
+     * records the game's owner in `subject_user_id` either way -- which it does so that "has this
+     * person done this before" is a question the queue can answer.
+     */
+    deleteAccount: async (userId) => {
+      return db.transaction(async (tx) => {
+        await tx.update(reports).set({ reason: null }).where(eq(reports.subjectUserId, userId))
+        const gone = await tx.delete(users).where(eq(users.id, userId)).returning({ id: users.id })
+        return gone[0] !== undefined
+      })
+    },
+
     /*
      * Accounts, by a search over names and sign-in addresses at once.
      *

@@ -283,6 +283,14 @@ export const he: Messages = {
   reportGone: 'זה לא נמצא שם יותר.',
   reportCancel: 'ביטול',
 
+  deleteAccount: 'מחק את החשבון שלי',
+  deleteAccountWhat: 'זה מוחק את הפרופיל שלך וכל משחק ששמרת, לתמיד. אין דרך לבטל.',
+  deleteAccountAsk: 'שלחו לי קוד',
+  deleteConfirm: 'מחק לתמיד',
+  deleteGone: 'החשבון שלך נמחק. תודה ששיחקת.',
+  deleteNoAddress:
+    'אין כתובת מאומתת בחשבון הזה, ולכן לא ניתן לאמת מחיקה. פנו אלינו ונעשה זאת ידנית.',
+
   plurals: {
     words: { one: 'מילה {n}', two: '{n} מילים', other: '{n} מילים' },
     rounds: { one: 'סיבוב {n}', two: '{n} סיבובים', other: '{n} סיבובים' },

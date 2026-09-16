@@ -294,6 +294,15 @@ export const tl: Messages = {
   reportGone: 'Wala na iyon.',
   reportCancel: 'Kanselahin',
 
+  deleteAccount: 'Burahin ang aking account',
+  deleteAccountWhat:
+    'Aalisin nito ang iyong profile at lahat ng laro na iyong itinago, tuluyan. Hindi na ito maibabalik.',
+  deleteAccountAsk: 'Padalhan ako ng code',
+  deleteConfirm: 'Burahin nang tuluyan',
+  deleteGone: 'Wala na ang account mo. Salamat sa paglalaro.',
+  deleteNoAddress:
+    'Walang nakumpirmang address sa account na ito, kaya hindi masusuri ang pagbura. Makipag-ugnayan sa amin at gagawin namin ito nang manu-mano.',
+
   plurals: {
     words: { one: '{n} salita', other: '{n} salita' },
     rounds: { one: '{n} ikot', other: '{n} ikot' },

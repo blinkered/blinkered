@@ -33,7 +33,18 @@ export interface FakeStore extends Store {
   games: { row: GameRow; detail: GameDetail }[]
   /** Which games are hidden, by id. A set rather than a column, because `GameRow` has none. */
   hidden: Set<string>
-  reports: (NewReport & { createdAt: Date; resolvedAt: Date | null })[]
+  /**
+   * Reports as stored, with a nullable reporter.
+   *
+   * `NewReport.reporterUserId` is a plain string because filing one always has an author. What is
+   * stored outlives them: every link is `on delete set null`, so this is the shape after somebody
+   * deletes their account, and saying so here is what lets `deleteAccount` null it without a cast.
+   */
+  reports: (Omit<NewReport, 'reporterUserId'> & {
+    reporterUserId: string | null
+    createdAt: Date
+    resolvedAt: Date | null
+  })[]
   /** Every way in that has been recorded, so a test can assert that linking linked. */
   identities: (NewIdentity & { userId: string })[]
 }
@@ -46,7 +57,7 @@ export function fakeStore(): FakeStore {
   const takenUsernames = new Set<string>()
   const games: { row: GameRow; detail: GameDetail }[] = []
   const hidden = new Set<string>()
-  const reports: (NewReport & { createdAt: Date; resolvedAt: Date | null })[] = []
+  const reports: FakeStore['reports'] = []
   const identities: (NewIdentity & { userId: string })[] = []
 
   const profileOf = (user: FakeUser): Profile => ({
@@ -350,7 +361,8 @@ export function fakeStore(): FakeStore {
         )
         .slice(0, limit)
         .map((report): AdminReport => {
-          const reporter = users.get(report.reporterUserId)
+          const reporter =
+            report.reporterUserId === null ? undefined : users.get(report.reporterUserId)
           const subject =
             report.subjectUserId === null ? undefined : users.get(report.subjectUserId)
           const game = games.find((one) => one.row.id === report.subjectGameId)
@@ -378,6 +390,54 @@ export function fakeStore(): FakeStore {
       if (at_ === -1) return Promise.resolve(false)
       const report = reports[at_] as (typeof reports)[number]
       reports[at_] = { ...report, resolvedAt: at }
+      return Promise.resolve(true)
+    },
+
+    verifiedEmailFor: (userId) => {
+      const found = identities
+        .filter((i) => i.userId === userId && i.email !== null && i.emailVerified)
+        .at(-1)
+      return Promise.resolve(found?.email ?? null)
+    },
+
+    deleteAccount: (userId) => {
+      const user = users.get(userId)
+      if (user === undefined) return Promise.resolve(false)
+
+      /*
+       * The cascades and the one thing they cannot do, spelled out because the fake is where a
+       * route test learns what deletion means.
+       *
+       * The scrub is first, for the same reason it is first in Postgres: `subject_user_id` is
+       * nulled by the delete, so an update afterwards would find nothing and look like it worked.
+       */
+      for (const [at, report] of reports.entries()) {
+        if (report.subjectUserId === userId) reports[at] = { ...report, reason: null }
+      }
+
+      // `on delete cascade`: identities, sessions, games, and each game's detail with it.
+      for (let at = identities.length - 1; at >= 0; at -= 1) {
+        if (identities[at]?.userId === userId) identities.splice(at, 1)
+      }
+      for (const [id, row] of sessions) if (row.userId === userId) sessions.delete(id)
+      for (let at = games.length - 1; at >= 0; at -= 1) {
+        const game = games[at]
+        if (game?.row.userId !== userId) continue
+        hidden.delete(game.row.id)
+        games.splice(at, 1)
+      }
+
+      // `on delete set null` on all three report links, which is what keeps the report itself.
+      for (const [at, report] of reports.entries()) {
+        reports[at] = {
+          ...report,
+          ...(report.reporterUserId === userId ? { reporterUserId: null } : {}),
+          ...(report.subjectUserId === userId ? { subjectUserId: null } : {}),
+        }
+      }
+
+      takenUsernames.delete(normalizeUsername(user.username))
+      users.delete(userId)
       return Promise.resolve(true)
     },
 

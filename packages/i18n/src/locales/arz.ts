@@ -280,6 +280,14 @@ export const arz: Messages = {
   reportGone: 'ده مبقى موجود.',
   reportCancel: 'إلغاء',
 
+  deleteAccount: 'امسح حسابي',
+  deleteAccountWhat: 'ده بيمسح بروفايلك وكل لعبة حفظتها، خلاص. ومش ممكن ترجّعه.',
+  deleteAccountAsk: 'ابعتلي كود',
+  deleteConfirm: 'امسحه خلاص',
+  deleteGone: 'حسابك خلص. شكرًا إنك لعبت.',
+  deleteNoAddress:
+    'مفيش عنوان مؤكد على الحساب ده، فمش ممكن نتأكد من المسح. كلّمنا وإحنا نعملها بإيدينا.',
+
   plurals: {
     words: {
       zero: '{n} كلمة',

@@ -6,8 +6,8 @@ import { GameDetail } from './GameDetail.js'
 import { GamesTable } from './GamesTable.js'
 import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
-import { checkName, myGames, saveProfile } from './account.js'
-import { notACredential } from './autofill.js'
+import { checkName, deleteAccount, myGames, requestDeletionCode, saveProfile } from './account.js'
+import { notACredential, ignoredByManagers } from './autofill.js'
 import { countriesIn } from './countries.js'
 import type { Account, PlayedGame } from './account.js'
 import type { CatalogueEntry } from './dictionary.js'
@@ -79,6 +79,7 @@ export function AccountScreen({
   readIn,
   dictionary,
   onAccount,
+  onDeleted,
   onTab,
   onSignIn,
   onClose,
@@ -92,6 +93,8 @@ export function AccountScreen({
   /** The dictionary in hand, passed through to a game detail that may be able to use it. */
   readonly dictionary: TieredIndex | null
   readonly onAccount: (account: Account) => void
+  /** Called once the account is really gone, so the interface can stop remembering it. */
+  readonly onDeleted: () => void
   readonly onTab: (at: Destination) => void
   /**
    * Opens the sign-in dialog.
@@ -144,6 +147,7 @@ export function AccountScreen({
             catalogue={catalogue}
             readIn={readIn}
             onAccount={onAccount}
+            onDeleted={onDeleted}
           />
         ) : (
           <Games
@@ -164,12 +168,14 @@ function Profile({
   catalogue,
   readIn,
   onAccount,
+  onDeleted,
 }: {
   readonly account: Account
   readonly messages: Messages
   readonly catalogue: readonly CatalogueEntry[]
   readonly readIn: string
   readonly onAccount: (account: Account) => void
+  readonly onDeleted: () => void
 }): React.JSX.Element {
   const [name, setName] = useState(account.username)
   const [bio, setBio] = useState(account.bio ?? '')
@@ -356,7 +362,163 @@ function Profile({
           {messages.saved}
         </p>
       ) : null}
+
+      {/*
+        Deletion, last on the screen and outside the form above it.
+        
+        Outside because it must not be what Enter does: this form's submit saves a name, and a
+        destructive action sharing a submit handler with a text field is one keystroke from being
+        a mistake. Last because it is the thing somebody scrolls to on purpose, never the thing
+        they meet on the way to something else.
+      */}
+      <DeleteAccount messages={messages} readIn={readIn} onDeleted={onDeleted} />
     </form>
+  )
+}
+
+/**
+ * Deleting your own account, in two steps with a code between them.
+ *
+ * App Store guideline 5.1.1(v) requires this of anything offering account creation, and its
+ * support page requires that it really delete: "only offering to temporarily deactivate or
+ * disable an account is insufficient". So there is no deactivate here, and what the server does
+ * is a real delete rather than the mark an admin sets.
+ *
+ * The code is the reason there are two steps. A session lasts thirty days, so a session on its
+ * own means an open laptop is enough to erase somebody; Apple's guidance permits exactly this
+ * remedy, "entering a code from an email or phone number already associated with the account".
+ * It is the same six-digit code as signing in, which is why `codeLabel`, `codeSent` and
+ * `badCode` are reused rather than written again -- the code expiring after ten minutes and
+ * working once is the same fact in both places.
+ */
+function DeleteAccount({
+  messages,
+  readIn,
+  onDeleted,
+}: {
+  readonly messages: Messages
+  readonly readIn: string
+  readonly onDeleted: () => void
+}): React.JSX.Element {
+  /** `closed` until asked for, then `asking`, then `sent` once a code is out, then `gone`. */
+  const [step, setStep] = useState<'closed' | 'asking' | 'sent' | 'gone'>('closed')
+  const [code, setCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [trouble, setTrouble] = useState<string | null>(null)
+
+  const askForCode = async (): Promise<void> => {
+    setBusy(true)
+    setTrouble(null)
+    const answer = await requestDeletionCode(readIn)
+    setBusy(false)
+    if (answer === 'sent') {
+      setStep('sent')
+      return
+    }
+    // `no-address` is the one worth its own words: nothing the reader typed is wrong, and the
+    // repair is to get in touch rather than to try again.
+    setTrouble(answer === 'no-address' ? messages.deleteNoAddress : messages.serverBusy)
+  }
+
+  const confirm = async (): Promise<void> => {
+    setBusy(true)
+    setTrouble(null)
+    const answer = await deleteAccount(code.trim())
+    setBusy(false)
+    if (answer === 'deleted') {
+      // Said before the interface forgets them, because the next thing that happens is the whole
+      // screen closing.
+      setStep('gone')
+      onDeleted()
+      return
+    }
+    if (answer === 'no-address') setTrouble(messages.deleteNoAddress)
+    else if (answer === 'bad-code') setTrouble(messages.badCode)
+    else setTrouble(messages.serverBusy)
+  }
+
+  if (step === 'gone') {
+    // No button of its own: the account screen's header carries "Back to the game" at all times,
+    // and that is what App listens on to stop remembering a deleted account. A second way out
+    // would be a second thing to keep in step with it.
+    return (
+      <p className="signin-note account-danger" role="status">
+        {messages.deleteGone}
+      </p>
+    )
+  }
+
+  return (
+    <section className="account-danger">
+      {step === 'closed' ? (
+        <button
+          type="button"
+          className="btn is-danger"
+          onClick={() => {
+            setStep('asking')
+          }}
+        >
+          {messages.deleteAccount}
+        </button>
+      ) : (
+        <>
+          <p className="signin-note is-bad">{messages.deleteAccountWhat}</p>
+          {step === 'sent' ? (
+            <>
+              <p className="signin-note">{messages.codeSent}</p>
+              <label className="signin-field">
+                <span>{messages.codeLabel}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={code}
+                  maxLength={6}
+                  // Not a credential a manager should offer into, like every field but one.
+                  autoComplete="one-time-code"
+                  {...ignoredByManagers}
+                  onChange={(event) => {
+                    setCode(event.target.value)
+                  }}
+                />
+              </label>
+            </>
+          ) : null}
+
+          <div className="admin-actions">
+            <button
+              type="button"
+              className="btn is-danger"
+              disabled={busy}
+              onClick={() => {
+                void (step === 'sent' ? confirm() : askForCode())
+              }}
+            >
+              {busy
+                ? messages.saving
+                : step === 'sent'
+                  ? messages.deleteConfirm
+                  : messages.deleteAccountAsk}
+            </button>
+            <button
+              type="button"
+              className="signin-again"
+              onClick={() => {
+                setStep('closed')
+                setCode('')
+                setTrouble(null)
+              }}
+            >
+              {messages.reportCancel}
+            </button>
+          </div>
+          {trouble === null ? null : (
+            <p className="signin-note is-bad" role="alert">
+              {trouble}
+            </p>
+          )}
+        </>
+      )}
+    </section>
   )
 }
 

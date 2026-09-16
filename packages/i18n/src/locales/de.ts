@@ -281,6 +281,15 @@ export const de: Messages = {
   reportGone: 'Das ist nicht mehr da.',
   reportCancel: 'Abbrechen',
 
+  deleteAccount: 'Mein Konto löschen',
+  deleteAccountWhat:
+    'Das entfernt dein Profil und jedes gespeicherte Spiel, endgültig. Es lässt sich nicht zurücknehmen.',
+  deleteAccountAsk: 'Schick mir einen Code',
+  deleteConfirm: 'Endgültig löschen',
+  deleteGone: 'Dein Konto ist weg. Danke fürs Spielen.',
+  deleteNoAddress:
+    'Für dieses Konto gibt es keine bestätigte Adresse, also kann eine Löschung nicht geprüft werden. Melde dich, dann machen wir es von Hand.',
+
   plurals: {
     words: { one: '{n} Wort', other: '{n} Wörter' },
     rounds: { one: '{n} Runde', other: '{n} Runden' },

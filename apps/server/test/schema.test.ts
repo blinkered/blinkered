@@ -78,6 +78,24 @@ describe('the schema', () => {
     expect(userColumns.get('bio')?.notNull).toBe(false)
   })
 
+  it('lets a report outlive everybody named in it', () => {
+    /*
+     * All three links `set null`, none `cascade`. Two of them were `cascade`, which meant
+     * deleting an account deleted the reports about it -- so our own record of how much
+     * moderating had happened shrank every time somebody left.
+     *
+     * Pinned here as well as in the integration suite because this is the kind of property a
+     * later schema edit flips without anybody noticing: `references()` takes `onDelete` as an
+     * option, and the default is not this.
+     */
+    const links = getTableConfig(reports).foreignKeys.map((key) => {
+      const reference = key.reference()
+      return { column: reference.columns[0]?.name, onDelete: key.onDelete }
+    })
+    expect(links).toHaveLength(3)
+    for (const link of links) expect(link.onDelete, link.column).toBe('set null')
+  })
+
   it('makes nobody an admin by default', () => {
     // The default is the security property, not a convenience. Every route under `/v1/admin`
     // reads this column, and a nullable or absent default would make "not set" a third state

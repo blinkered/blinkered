@@ -276,6 +276,15 @@ export const nl: Messages = {
   reportGone: 'Dat is er niet meer.',
   reportCancel: 'Annuleren',
 
+  deleteAccount: 'Mijn account verwijderen',
+  deleteAccountWhat:
+    'Dit verwijdert je profiel en elk bewaard spel, voorgoed. Het kan niet ongedaan worden gemaakt.',
+  deleteAccountAsk: 'Stuur me een code',
+  deleteConfirm: 'Voorgoed verwijderen',
+  deleteGone: 'Je account is weg. Bedankt voor het spelen.',
+  deleteNoAddress:
+    'Er staat geen bevestigd adres op dit account, dus een verwijdering kan niet worden gecontroleerd. Neem contact op en we doen het met de hand.',
+
   plurals: {
     words: { one: '{n} woord', other: '{n} woorden' },
     rounds: { one: '{n} ronde', other: '{n} rondes' },

@@ -283,6 +283,15 @@ export const fr: Messages = {
   reportGone: 'Ce n’est plus là.',
   reportCancel: 'Annuler',
 
+  deleteAccount: 'Supprimer mon compte',
+  deleteAccountWhat:
+    'Cela supprime votre profil et toutes les parties que vous avez conservées, définitivement. C’est irréversible.',
+  deleteAccountAsk: 'Envoyez-moi un code',
+  deleteConfirm: 'Supprimer définitivement',
+  deleteGone: 'Votre compte n’existe plus. Merci d’avoir joué.',
+  deleteNoAddress:
+    'Aucune adresse confirmée sur ce compte, donc une suppression ne peut pas être vérifiée. Contactez-nous et nous le ferons à la main.',
+
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} manche', other: '{n} manches' },

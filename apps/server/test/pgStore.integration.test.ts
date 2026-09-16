@@ -4,7 +4,7 @@ import { connect } from '../src/db.js'
 import { runMigrations } from '../src/migrate.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { pgStore } from '../src/pgStore.js'
-import { DATABASE_SCHEMA, authIdentities, users } from '../src/schema.js'
+import { DATABASE_SCHEMA, authIdentities, gameDetail, reports, users } from '../src/schema.js'
 import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
@@ -821,5 +821,205 @@ describe('moderating', () => {
     it('says so when there is no such report', async () => {
       expect(await theStore().setReportResolved('no-such-report', new Date())).toBe(false)
     })
+  })
+})
+
+/*
+ * Erasing an account, against a Postgres.
+ *
+ * Every claim here is one the foreign keys make rather than the code: what a cascade takes, what
+ * `set null` spares, and the ordering that makes the reason-scrub work at all. A fake can be
+ * written to agree with any of it, which is exactly why this is here.
+ */
+describe('deleting an account', () => {
+  const gameFor = (userId: string, at: Date) => ({
+    id: `del-game-${userId}-${String(at.getTime())}`,
+    userId,
+    seed: 11,
+    source: 'web',
+    imported: false,
+    difficulty: 'medium',
+    language: 'en',
+    canonical: true,
+    n: 12,
+    speedMultiplier: 1.4,
+    holdTicks: 4,
+    initialFlips: 168,
+    wMin: 25,
+    minWordLength: 4,
+    wordCompleteMode: 'spend',
+    flipEconomy: 'fibonacci',
+    chargeFullRound: false,
+    wildChance: 0.02,
+    replaceChance: 0.5,
+    score: 20,
+    wordsCount: 1,
+    roundsPlayed: 3,
+    engineVersion: '0.3.0',
+    dictionaryVersion: 'abc123',
+    startedAt: new Date(at.getTime() - 60_000),
+    finishedAt: at,
+  })
+
+  const oneWord: GameDetail = {
+    boards: [{ tiles: 'A B C' }],
+    words: [{ word: 'OTTER', tiles: 5, points: 20, round: 0, flips: 8, tick: 42 }],
+  }
+
+  it('finds the address a code can be sent to, and only a verified one', async () => {
+    const { userId } = await account()
+    expect(await theStore().verifiedEmailFor(userId)).toBe(`${userId}@example.com`)
+
+    const bare = await account()
+    await theDb().delete(authIdentities).where(eq(authIdentities.userId, bare.userId))
+    await theStore().linkIdentity({
+      id: `unverified-only-${bare.userId}`,
+      userId: bare.userId,
+      identity: {
+        provider: 'apple',
+        providerAccountId: `sub-unverified-${bare.userId}`,
+        email: 'relay@privaterelay.appleid.com',
+        emailVerified: false,
+      },
+    })
+    // An address a provider merely passed along is a claim. A deletion code sent to a claim is a
+    // code sent to whoever made it.
+    expect(await theStore().verifiedEmailFor(bare.userId)).toBeNull()
+  })
+
+  it('takes the identities, the sessions, the games and their documents', async () => {
+    const { userId, token } = await account()
+    const at = new Date()
+    await theStore().insertGame(gameFor(userId, at), oneWord)
+    const gameId = gameFor(userId, at).id
+
+    expect(await theStore().deleteAccount(userId)).toBe(true)
+
+    // Gone rather than hidden, which is what App Store 5.1.1(v) asks for.
+    expect(await theStore().findSession(token, new Date())).toBeNull()
+    expect(await theStore().adminUser(userId)).toBeNull()
+    expect(await theStore().gameById(gameId)).toBeNull()
+    expect(await theStore().gamesOf(userId, 50)).toEqual([])
+    // And the detail document went with the game, by the cascade on `game_detail.game_id`.
+    const orphans = await theDb()
+      .select({ gameId: gameDetail.gameId })
+      .from(gameDetail)
+      .where(eq(gameDetail.gameId, gameId))
+    expect(orphans).toEqual([])
+  })
+
+  it('says so when there is no such account', async () => {
+    expect(await theStore().deleteAccount('no-such-user')).toBe(false)
+  })
+
+  it('keeps a report about the deleted account, without the person or the prose', async () => {
+    const reporter = await account()
+    const subject = await account()
+    const id = `del-report-${subject.userId}`
+    await theStore().insertReport({
+      id,
+      reporterUserId: reporter.userId,
+      subjectUserId: subject.userId,
+      subjectGameId: null,
+      field: 'bio',
+      reason: `${subject.userId} is posting a slur spelled with Cyrillic characters`,
+    })
+
+    expect(await theStore().deleteAccount(subject.userId)).toBe(true)
+
+    const [row] = await theDb()
+      .select({
+        subjectUserId: reports.subjectUserId,
+        reporterUserId: reports.reporterUserId,
+        reason: reports.reason,
+        field: reports.field,
+      })
+      .from(reports)
+      .where(eq(reports.id, id))
+    // `set null` rather than `cascade`: the row survives, so our own count of how much
+    // moderating happened does not shrink when somebody leaves.
+    expect(row).toBeDefined()
+    expect(row?.subjectUserId).toBeNull()
+    expect(row?.field).toBe('bio')
+    // The reporter is untouched, so their record of filing real reports stands.
+    expect(row?.reporterUserId).toBe(reporter.userId)
+    /*
+     * And the prose is gone, which no foreign key could have done.
+     *
+     * This is the assertion that justifies the transaction's ordering: the scrub runs before the
+     * delete, because afterwards `subject_user_id` is already null and an update would match
+     * nothing and look like it had worked.
+     */
+    expect(row?.reason).toBeNull()
+  })
+
+  it('keeps a report the deleted account filed, prose and all', async () => {
+    // The objection is about somebody who is still here, so it is still worth reading.
+    const reporter = await account()
+    const subject = await account()
+    const id = `del-filed-${reporter.userId}`
+    await theStore().insertReport({
+      id,
+      reporterUserId: reporter.userId,
+      subjectUserId: subject.userId,
+      subjectGameId: null,
+      field: 'username',
+      reason: 'the name is an advert',
+    })
+
+    expect(await theStore().deleteAccount(reporter.userId)).toBe(true)
+
+    const [row] = await theDb()
+      .select({
+        reporterUserId: reports.reporterUserId,
+        subjectUserId: reports.subjectUserId,
+        reason: reports.reason,
+      })
+      .from(reports)
+      .where(eq(reports.id, id))
+    expect(row?.reporterUserId).toBeNull()
+    expect(row?.subjectUserId).toBe(subject.userId)
+    expect(row?.reason).toBe('the name is an advert')
+  })
+
+  it('nulls the game link rather than taking the report with the game', async () => {
+    const reporter = await account()
+    const subject = await account()
+    const at = new Date()
+    await theStore().insertGame(gameFor(subject.userId, at), oneWord)
+    const gameId = gameFor(subject.userId, at).id
+    const id = `del-score-${subject.userId}`
+    await theStore().insertReport({
+      id,
+      reporterUserId: reporter.userId,
+      subjectUserId: subject.userId,
+      subjectGameId: gameId,
+      field: 'score',
+      reason: 'impossible in three rounds',
+    })
+
+    expect(await theStore().deleteAccount(subject.userId)).toBe(true)
+
+    const [row] = await theDb()
+      .select({ subjectGameId: reports.subjectGameId, reason: reports.reason })
+      .from(reports)
+      .where(eq(reports.id, id))
+    // The game went by cascade and the report did not go with it, which is the `set null` on
+    // `subject_game_id` -- it was `cascade` until the migration that named this behaviour.
+    expect(row).toBeDefined()
+    expect(row?.subjectGameId).toBeNull()
+    // Scrubbed here too: the report route records the game's owner, so a score report is a
+    // report about a person as well.
+    expect(row?.reason).toBeNull()
+  })
+
+  it('frees the name and the address, which is the ban-evasion hole and is not ours to close', async () => {
+    const username = `Leaving${String(Date.now())}`
+    const { userId } = await account(username)
+    await theStore().deleteAccount(userId)
+    // Nothing recognises them on the way back in. docs/ACCOUNTS.md says so rather than leaving
+    // it to be discovered.
+    expect(await theStore().usernameTaken(username.toLowerCase())).toBe(false)
+    expect(await theStore().userIdForVerifiedEmail(`${userId}@example.com`)).toBeNull()
   })
 })

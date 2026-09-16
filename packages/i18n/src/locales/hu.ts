@@ -282,6 +282,15 @@ export const hu: Messages = {
   reportGone: 'Ez már nincs meg.',
   reportCancel: 'Mégse',
 
+  deleteAccount: 'Fiókom törlése',
+  deleteAccountWhat:
+    'Ez véglegesen törli a profilodat és minden megtartott játékodat. Nem vonható vissza.',
+  deleteAccountAsk: 'Kérek egy kódot',
+  deleteConfirm: 'Törlés véglegesen',
+  deleteGone: 'A fiókod megszűnt. Kösz, hogy játszottál.',
+  deleteNoAddress:
+    'Ehhez a fiókhoz nincs megerősített cím, így a törlés nem ellenőrizhető. Írj nekünk, és kézzel elvégezzük.',
+
   plurals: {
     words: { one: '{n} szó', other: '{n} szó' },
     rounds: { one: '{n} kör', other: '{n} kör' },
