@@ -47,6 +47,24 @@
  * **It is a request, not a guarantee.** An extension can fill anything it likes, and a future
  * version of any of these may rename its attribute. What this buys is the common case going
  * quiet, and it is worth checking again the next time one of them starts misbehaving.
+ *
+ * ## LastPass still draws its icon, and that is not this being broken
+ *
+ * Observed on the profile screen with the attributes in place: LastPass **stops suggesting** --
+ * the field is left alone, which was the whole bug -- and **still injects its icon**, as a
+ * `div[data-lastpass-icon-root]` sibling. So the button is there, looking like the extension is
+ * about to meddle, and it does not.
+ *
+ * Recorded because the obvious conclusion on seeing it is that `data-lpignore` is the wrong
+ * attribute, and it is not: it is the name LastPass documents, and the title of LastPass's own
+ * support thread about it is "data-lpignore is not working, still field is getting autopopulated,
+ * is there a way to hide last pass icon for input field". The attribute governs filling. The icon
+ * is drawn regardless and is theirs, not ours.
+ *
+ * A rule hiding `div[data-lastpass-icon-root]` would remove it, and is deliberately not here: it
+ * reaches into another product's injected DOM to change something cosmetic, on a screen only
+ * signed-in players see. Worth revisiting only if the icon starts appearing somewhere it reads as
+ * a control of ours.
  */
 
 /**
