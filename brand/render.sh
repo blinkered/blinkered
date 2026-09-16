@@ -9,8 +9,9 @@
 #   round   the mark as drawn: the tile fills the frame, its corners are the game's radius, and
 #           the ground behind them is transparent. Anywhere that draws an icon as given.
 #   square  the same tile with its corners squared off and the alpha channel stripped. For the
-#           three places that must not round their own corners or carry transparency: the App
-#           Store asset, the iOS home-screen icon, and the Android maskable icon.
+#           four places that must not round their own corners or carry transparency: the App
+#           Store asset, the native app's icon, the iOS home-screen icon, and the Android
+#           maskable icon.
 #
 # Each variant is rendered once at 1024 and scaled down from there. Two things make that the right
 # way round rather than rendering each size directly:
@@ -28,6 +29,8 @@ set -eu
 cd "$(dirname "$0")/.."
 CHROME=${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}
 [ -x "$CHROME" ] || { echo "no Chrome at $CHROME; set CHROME=" >&2; exit 1; }
+
+ICON=apps/mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -85,8 +88,13 @@ echo "squared off and opaque:"
 scale square 1024 brand/logo-1024.png
 scale square 180 apps/web/public/apple-touch-icon.png
 scale square 512 apps/web/public/icon-maskable-512.png
+# The native app's icon is this same asset, so it is generated here rather than drawn a second
+# time. It used to be redrawn from scratch in apps/mobile/tools/make-icons.mjs, which meant two
+# definitions of one mark, and they had already drifted: that letter was 348x448 where this one
+# is 464x597.
+scale square 1024 "$ICON"
 for f in brand/logo-1024.png apps/web/public/apple-touch-icon.png \
-  apps/web/public/icon-maskable-512.png; do
+  apps/web/public/icon-maskable-512.png "$ICON"; do
   magick "$f" -alpha off "$f" # Apple rejects an icon that carries an alpha channel at all.
   [ "$(magick "$f" -format "%A" info:)" = "Undefined" ] || {
     echo "FAILED: $f still carries an alpha channel" >&2

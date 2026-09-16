@@ -4,7 +4,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
  * The native shell. It owns no game code: `webDir` points at `apps/web`'s build output, so the
  * app is the same bundle the site serves, wrapped in a WebView.
  *
- * That includes the sixteen word lists, which Vite emits into `dist/words/`. In the browser they
+ * That includes the fifty-one word lists, which Vite emits into `dist/words/`. In the browser they
  * are fetched from the server on demand; here they are inside the app, so a game works with the
  * phone in aeroplane mode and no request leaves the device. It also means the binary carries all
  * of them, which is the main thing to know before this goes anywhere near a store.
@@ -20,8 +20,13 @@ const config: CapacitorConfig = {
     // Nothing in the game scrolls the document on purpose. The board is fixed and the page
     // fits, so the elastic bounce is only ever an accident of a stray drag across a tile.
     scrollEnabled: false,
-    // No remote code, so the WebView never needs to reach the network. Anything that does
-    // want the network later (accounts, phase 4) has to say so deliberately.
+    // **This is now a blocker rather than a safe default, and it is left on deliberately so
+    // that it stays visible.** It was written when the game had no accounts and the WebView
+    // genuinely never needed the network. Accounts shipped, and the client calls the API with
+    // root-relative paths (`fetch('/v1/me')`) and a same-origin session cookie. Inside the
+    // WebView the origin is `capacitor://localhost`, so those calls resolve to the bundle and
+    // there is nothing to answer them; Google and Apple sign-in are also navigations off-origin.
+    // Turning this off alone does not fix it. See docs/IOS.md.
     limitsNavigationsToAppBoundDomains: true,
   },
 }

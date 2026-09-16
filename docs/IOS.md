@@ -231,23 +231,65 @@ language in play.
 
 The Capacitor shell exists and consumes this build unchanged, which was the point of doing the
 browser work first: the touch targets, the self-sizing board and the safe-area padding are the
-same code inside a WebView. What is left is not code.
+same code inside a WebView.
 
-- **A signing identity**, which cannot be scripted, because it is an Apple ID typed into Xcode.
-  A free one installs to your own phone and expires after seven days; the paid Developer Program
-  signs for a year and unlocks TestFlight. See apps/mobile/README.md.
-- **Xcode's iOS platform support**, a multi-gigabyte download separate from Xcode itself. Its
-  absence presents as `iOS 26.5 is not installed` and no build destination, which reads like a
-  broken project.
-- **The CC BY-SA decision**, and this is the one that actually blocks a store. Five languages
-  ship under it: Italian, German, Norwegian, Finnish, Malay. The app bundles every word
-  lists, so a store build wraps DRM around a share-alike data file. On the web attribution is the
-  whole obligation and we meet it; a binary is a different question. See the end of
-  DICTIONARIES.md.
-- **Sign in with Apple**, which App Store guideline 4.8 makes non-optional once any other
-  third-party SSO exists. Not yet relevant: there are no accounts until PLAN.md phase 4.
-- **A decision about the 122MB of word lists** in the bundle. Fine for a development install, and
-  worth revisiting before distribution against downloading them on demand.
+**This section used to say "what is left is not code". That is no longer true**, and the reason
+is accounts. Everything below is the state as of the icon change.
+
+**Signed in is broken in the shell, and it is the real work.** The client calls the API with
+root-relative paths -- `fetch('/v1/me')`, `fetch('/v1/reports')` -- and relies on an
+`httpOnly; Secure; SameSite=Lax` session cookie on a single origin, which is how the web is
+deployed: nginx serves the bundle and the API together, so there is no CORS anywhere in the
+server and none is needed. Inside the WebView the origin is `capacitor://localhost`, so every
+one of those paths resolves into the app bundle and finds nothing. Absolute URLs alone do not
+fix it: a `SameSite=Lax` cookie is not sent from `capacitor://localhost` to `playblinkered.com`,
+there is no CORS to permit it, and WKWebView's third-party cookie policy is against it. Google
+and Apple sign-in are worse than fetches, because they are navigations off-origin and
+`limitsNavigationsToAppBoundDomains` forbids them.
+
+So the offline game works in the shell today and nothing that needs an account does. What the
+app does not do is _tell_ you that, which is the part that makes it unshippable rather than
+merely limited: the sign-in button is drawn and does nothing.
+
+That is an architecture decision, not a patch, and the options differ in kind:
+
+- **Point the WebView at the live site** (`server.url`). Everything works at once and the app
+  becomes a web wrapper: offline play goes, the bundled word lists become dead weight, and
+  guideline 4.2 on minimum functionality gets a say.
+- **Bearer tokens in the native keychain**, CORS for the app origin, and sign-in through
+  `ASWebAuthenticationSession`. Keeps offline play and the bundle. It is the real answer and it
+  is a second auth path in the server, not a flag.
+- **Ship the shell with accounts hidden**, and be an offline single-player game on the store.
+  Smallest change, and honest, but it is a different product from the website.
+
+The rest, none of which is code:
+
+- **A signing identity.** `security find-identity -v -p codesigning` reports **0 valid
+  identities** on this machine, so there is nothing to sign with yet. A free Apple ID installs
+  to your own phone and expires after seven days; the paid Developer Program signs for a year
+  and is the only thing that unlocks TestFlight. See apps/mobile/README.md.
+- **An App Store Connect record** for `com.tightlinesoftware.blinkered`, which is where the
+  TestFlight build goes and where export compliance is answered.
+  `ITSAppUsesNonExemptEncryption: false` is already in `Info.plist`, which is the correct answer
+  for an app that uses nothing but system TLS, and it is what stops that question being asked on
+  every upload.
+- **A privacy manifest.** There is no `PrivacyInfo.xcprivacy` anywhere in the project, app or
+  Pods. Capacitor touches `UserDefaults`, which is a required-reason API, so this is a condition
+  of upload rather than a nicety.
+- **The CC BY-SA decision**, and this is still the one that actually blocks a store. It is
+  **twenty-one languages now, not five**: the batch of twenty-five moved it, and German, Italian,
+  Japanese and Korean are among them. The app bundles every word list, so a store build wraps
+  DRM around a share-alike data file. On the web attribution is the whole obligation and we meet
+  it; a binary is a different question. Dropping them was tolerable at five and is not at
+  twenty-one. See the end of DICTIONARIES.md.
+- **A decision about the 120MB of word lists** in the bundle -- fifty-one of them, not the
+  sixteen this and apps/mobile/README.md both used to say. Fine for a development install, and
+  worth weighing against downloading on demand before distribution.
+
+**Sign in with Apple is done**, and is off this list. Guideline 4.8 makes it non-optional once
+any other third-party SSO exists, which Google sign-in triggered; `apps/server/src/auth/apple.ts`
+implements it, minting the client secret per exchange rather than storing a six-month JWT.
+Xcode's iOS platform support is off the list too: iOS 26.5 is installed here now.
 
 ## How this was checked, and what that cannot tell us
 

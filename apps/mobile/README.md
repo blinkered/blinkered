@@ -70,7 +70,7 @@ does not tell a phone to type. See docs/IOS.md.
 
 ## The word lists are inside the app
 
-All sixteen, about 42MB of the bundle. In the browser they are fetched from the server when a
+All fifty-one, about 120MB of the bundle. In the browser they are fetched from the server when a
 language is chosen; here they are already on the device, so a game works in aeroplane mode and no
 request leaves the phone. `dictionary.ts` needed no change for this, because it builds its URLs
 from `import.meta.env.BASE_URL` and the WebView serves the bundle from the app's own root.
@@ -79,11 +79,15 @@ Two consequences worth knowing before this goes near the App Store:
 
 - **The binary is large.** Fine for a development install. For distribution it is worth asking
   whether every language ships or whether they download on demand.
-- **Five of those lists are CC BY-SA**: Italian, German, Norwegian, Finnish, Malay. Wrapping DRM
-  around a share-alike data file is a question the web build never had to answer, because there
-  attribution is the whole obligation and we do it. Read the end of docs/DICTIONARIES.md, and
-  probably a lawyer, before shipping. This is unchanged by anything here; the shell simply makes
-  it live.
+- **Twenty-one of those lists are CC BY-SA**, not the five this used to say: Armenian, Basque,
+  Czech, Egyptian Arabic, Finnish, Galician, German, Hebrew, Icelandic, Irish, Italian, Japanese,
+  Korean, Latin, Macedonian, Malay, Naija, Norwegian, Tagalog, Ukrainian and Vietnamese. Wrapping
+  DRM around a share-alike data file is a question the web build never had to answer, because
+  there attribution is the whole obligation and we do it. Read the end of docs/DICTIONARIES.md,
+  and probably a lawyer, before shipping. This is unchanged by anything here; the shell simply
+  makes it live. The count matters: at five languages, dropping them from the mobile build was a
+  tolerable option, and at twenty-one -- German, Italian, Japanese and Korean among them -- it is
+  not.
 
 ## What is tracked, and what is generated
 
@@ -102,14 +106,19 @@ above and the asset catalogue, which `tools/make-icons.mjs` can redraw.
 
 ## The icon
 
-`tools/make-icons.mjs` draws the app icon and the splash screen by rendering a few lines of HTML
-in headless WebKit and screenshotting it, the same way `apps/web/public`'s icons are made. The
-output is committed; the script only needs running when the mark changes, and it needs a
-throwaway Playwright install rather than a repo dependency. Its header says how.
+**The app icon comes from `brand/render.sh`**, which writes
+`Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png` from `brand/logo.svg` along with every
+other icon in the project. It is byte-identical to `brand/logo-1024.png`, the App Store asset,
+because it is the same square opaque variant of the same mark.
 
-The icon is a selected tile, in the blue the board paints a taken letter. The splash is the app's
-own background with the same tile on it, so the handover from splash to first paint has nothing
-to see.
+It did not use to be. `tools/make-icons.mjs` redrew the icon from scratch in HTML, so one mark
+had two definitions, and they drifted the moment the mark changed: that letter was 348x448 where
+the real one is 464x597. If you find yourself about to draw the mark a third time, don't.
+
+`tools/make-icons.mjs` still draws **the splash**, which is a genuinely different picture: the
+app's own dark background with a small board tile on it, so the handover from splash to first
+paint has nothing to see. The output is committed; it only needs running when the mark changes,
+and it wants a throwaway Playwright install rather than a repo dependency. Its header says how.
 
 ## If `pod` dies looking for a gem
 

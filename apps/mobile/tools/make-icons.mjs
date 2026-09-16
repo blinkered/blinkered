@@ -1,5 +1,11 @@
 /**
- * Draws the app icon and the splash screen.
+ * Draws the splash screen.
+ *
+ * **The app icon is not here any more.** It is the same square, opaque mark as the App Store
+ * asset, so `brand/render.sh` writes `Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png`
+ * from `brand/logo.svg` along with everything else. This file used to redraw it from scratch in
+ * HTML, which meant two definitions of one mark, and they drifted: the letter here came out
+ * 348x448 where the real mark is 464x597.
  *
  * Rendered in headless WebKit and screenshotted, which is how `apps/web/public`'s icons are made
  * too: no image toolchain to install, and the source of every asset is the few lines below rather
@@ -25,19 +31,6 @@ const BLUE = '#2f81f7'
 const DARK = '#0e1116'
 
 /**
- * The icon is a selected tile: the blue the board paints a taken letter, and the white on top of
- * it. Full bleed and fully opaque, because iOS applies its own mask and composites transparency
- * onto black.
- */
-const icon = (size) => `
-<html><head><meta charset="utf-8"><style>
-  html,body { margin:0; padding:0; }
-  body { width:${size}px; height:${size}px; background:${BLUE};
-         display:grid; place-items:center;
-         font:650 ${Math.round(size * 0.62)}px/1 ${FONT}; color:#fff; }
-</style></head><body>B</body></html>`
-
-/**
  * The splash is the app's own background with the same tile on it, so the handover from splash to
  * first paint has nothing to see. Capacitor scales one square image to every screen and crops the
  * overflow, so the mark sits well inside the middle.
@@ -54,12 +47,6 @@ const splash = (size) => `
 </style></head><body><div class="tile">B</div></body></html>`
 
 const JOBS = [
-  {
-    path: `${ASSETS}/AppIcon.appiconset/AppIcon-512@2x.png`,
-    size: 1024,
-    html: icon,
-    background: BLUE,
-  },
   // Three names, one image. Capacitor's template lists a light, a dark and a default; the game
   // is dark either way, so they are the same picture rather than three near-identical ones.
   {
@@ -83,10 +70,11 @@ const JOBS = [
 ]
 
 /**
- * Screenshots always carry an alpha channel, even when every pixel is opaque, and App Store
- * Connect rejects an app icon that has one: "the large app icon can't be transparent nor contain
- * an alpha channel". It is not caught by anything local, so it fails on the first upload, after
- * the archive, which is the worst place to find out.
+ * Screenshots always carry an alpha channel, even when every pixel is opaque. That matters most
+ * for the app icon, which App Store Connect rejects outright if it has one ("the large app icon
+ * can't be transparent nor contain an alpha channel") after the archive, on the first upload,
+ * which is the worst place to find out. The splash does not have that rule, but carrying a
+ * pointless channel on a 2732px image is just weight.
  *
  * `-alpha remove` composites onto the background and `-alpha off` drops the channel. Since the
  * rendered pixels are already fully opaque this is exact rather than approximate.
