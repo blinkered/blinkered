@@ -221,6 +221,7 @@ export const vi: Messages = {
   badCode: 'Mã đó không dùng được. Mã hết hạn sau 10 phút và chỉ dùng một lần.',
   serverBusy: 'Không liên hệ được máy chủ. Thử lại sau chốc lát.',
   serverDown: 'Không liên hệ được máy chủ.',
+  offline: 'Ngoại tuyến',
   ssoCancelled: 'Đã hủy đăng nhập.',
   ssoExpired: 'Lâu quá. Đăng nhập lại đi.',
   ssoNoUsername: 'Chưa tạo xong tài khoản. Thử lại sau chốc lát.',

@@ -214,6 +214,7 @@ export const hr: Messages = {
   badCode: 'Taj kod nije radio. Kodovi istječu nakon 10 minuta i vrijede jednom.',
   serverBusy: 'Poslužitelj nije dostupan. Pokušaj za trenutak.',
   serverDown: 'Poslužitelj nije dostupan.',
+  offline: 'Izvan mreže',
   ssoCancelled: 'Prijava otkazana.',
   ssoExpired: 'Predugo je trajalo. Prijavi se ponovno.',
   ssoNoUsername: 'Račun nije bilo moguće dovršiti. Pokušaj za trenutak.',

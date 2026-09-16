@@ -222,6 +222,7 @@ export const en: Messages = {
   badCode: 'That code did not work. Codes expire after 10 minutes and can only be used once.',
   serverBusy: 'Could not reach the server. Try again in a moment.',
   serverDown: 'Could not reach the server.',
+  offline: 'Offline',
   ssoCancelled: 'Signing in was cancelled.',
   ssoExpired: 'That took too long. Try signing in again.',
   ssoNoUsername: 'Could not finish creating an account. Try again in a moment.',

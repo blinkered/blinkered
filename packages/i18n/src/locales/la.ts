@@ -223,6 +223,7 @@ export const la: Messages = {
   badCode: 'Nota illa non valuit. Notae post decem minuta pereunt et semel valent.',
   serverBusy: 'Servus adiri non potuit. Post momentum retempta.',
   serverDown: 'Servus adiri non potuit.',
+  offline: 'Sine nexu',
   ssoCancelled: 'Introitus omissus est.',
   ssoExpired: 'Nimis diu duravit. Iterum intra.',
   ssoNoUsername: 'Ratio perfici non potuit. Post momentum retempta.',

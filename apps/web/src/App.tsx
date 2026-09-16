@@ -743,13 +743,12 @@ function Session({
       <main
         className={`shell${settings.nerdMode ? ' has-nerd' : ''}`}
         /*
-         * The offline state, exposed but not yet spoken.
+         * The offline state, on the root as well as on the badge.
          *
-         * A visible marker needs a word for "offline" in all fifty-one languages, which arrives
-         * with the rest of the offline wording. Putting the badge in first would mean either a
-         * picture with nothing for a screen reader to say, or one key translated and fifty not.
-         * So the state is here, where the stylesheet and a test can both see it, and the badge
-         * hangs off it rather than off a second source of truth.
+         * The badge in `AccountMenu` is what a reader sees, and this is what a stylesheet or a
+         * test can reach without one: the state is a fact about the whole app rather than about
+         * the account control, and anything else that needs to know it later should hang off
+         * this rather than grow a second source of truth.
          */
         data-offline={offline ? 'yes' : undefined}
       >
@@ -823,6 +822,7 @@ function Session({
           <AccountMenu
             messages={messages}
             account={account}
+            offline={offline}
             onSignIn={() => {
               setSigningIn({})
             }}

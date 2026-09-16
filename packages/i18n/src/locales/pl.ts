@@ -220,6 +220,7 @@ export const pl: Messages = {
   badCode: 'Ten kod nie zadziałał. Kody wygasają po 10 minutach i działają raz.',
   serverBusy: 'Nie udało się połączyć z serwerem. Spróbuj za chwilę.',
   serverDown: 'Nie udało się połączyć z serwerem.',
+  offline: 'Offline',
   ssoCancelled: 'Logowanie anulowane.',
   ssoExpired: 'To trwało za długo. Zaloguj się jeszcze raz.',
   ssoNoUsername: 'Nie udało się dokończyć zakładania konta. Spróbuj za chwilę.',

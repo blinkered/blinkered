@@ -220,6 +220,7 @@ export const lv: Messages = {
   badCode: 'Šis kods nederēja. Kodi zaudē spēku pēc 10 minūtēm un der vienreiz.',
   serverBusy: 'Neizdevās sasniegt serveri. Pamēģini pēc mirkļa.',
   serverDown: 'Neizdevās sasniegt serveri.',
+  offline: 'Bezsaistē',
   ssoCancelled: 'Pieteikšanās atcelta.',
   ssoExpired: 'Tas ilga par ilgu. Piesakies vēlreiz.',
   ssoNoUsername: 'Neizdevās pabeigt konta izveidi. Pamēģini pēc mirkļa.',

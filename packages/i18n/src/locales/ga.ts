@@ -227,6 +227,7 @@ export const ga: Messages = {
   serverBusy:
     'Níorbh fhéidir teagmháil a dhéanamh leis an bhfreastalaí. Bain triail eile as ar ball.',
   serverDown: 'Níorbh fhéidir teagmháil a dhéanamh leis an bhfreastalaí.',
+  offline: 'As líne',
   ssoCancelled: 'Cuireadh an síniú isteach ar ceal.',
   ssoExpired: 'Thóg sé sin rófhada. Sínigh isteach arís.',
   ssoNoUsername: 'Níorbh fhéidir an cuntas a chríochnú. Bain triail eile as ar ball.',

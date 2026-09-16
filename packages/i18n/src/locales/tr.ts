@@ -221,6 +221,7 @@ export const tr: Messages = {
   badCode: 'Bu kod işe yaramadı. Kodlar 10 dakikada dolar ve bir kez kullanılır.',
   serverBusy: 'Sunucuya ulaşılamadı. Birazdan tekrar dene.',
   serverDown: 'Sunucuya ulaşılamadı.',
+  offline: 'Çevrimdışı',
   ssoCancelled: 'Giriş iptal edildi.',
   ssoExpired: 'Çok uzun sürdü. Tekrar giriş yap.',
   ssoNoUsername: 'Hesap oluşturma tamamlanamadı. Birazdan tekrar dene.',

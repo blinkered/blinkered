@@ -218,6 +218,7 @@ export const ptBR: Messages = {
   badCode: 'Esse código não funcionou. Os códigos expiram em 10 minutos e valem uma vez só.',
   serverBusy: 'Não foi possível falar com o servidor. Tente daqui a pouco.',
   serverDown: 'Não foi possível falar com o servidor.',
+  offline: 'Sem conexão',
   ssoCancelled: 'Entrada cancelada.',
   ssoExpired: 'Demorou demais. Tente entrar de novo.',
   ssoNoUsername: 'Não deu para terminar de criar a conta. Tente daqui a pouco.',

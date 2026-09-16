@@ -220,6 +220,7 @@ export const sw: Messages = {
   badCode: 'Nambari hiyo haikufanya kazi. Nambari huisha baada ya dakika 10 na hutumika mara moja.',
   serverBusy: 'Hatukuweza kufikia seva. Jaribu tena baada ya muda kidogo.',
   serverDown: 'Hatukuweza kufikia seva.',
+  offline: 'Nje ya mtandao',
   ssoCancelled: 'Kuingia kumeghairiwa.',
   ssoExpired: 'Imechukua muda mrefu mno. Ingia tena.',
   ssoNoUsername: 'Hatukuweza kumaliza kutengeneza akaunti. Jaribu tena baada ya muda kidogo.',

@@ -217,6 +217,7 @@ export const it: Messages = {
     'Quel codice non ha funzionato. I codici scadono dopo 10 minuti e valgono una volta sola.',
   serverBusy: 'Server irraggiungibile. Riprova tra un momento.',
   serverDown: 'Server irraggiungibile.',
+  offline: 'Offline',
   ssoCancelled: 'Accesso annullato.',
   ssoExpired: 'Ci è voluto troppo. Riprova ad accedere.',
   ssoNoUsername:

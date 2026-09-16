@@ -233,6 +233,7 @@ export const tl: Messages = {
     'Hindi gumana ang code. Nag-e-expire ang mga code pagkalipas ng 10 minuto at minsan lang magagamit.',
   serverBusy: 'Hindi maabot ang server. Subukan ulit mamaya.',
   serverDown: 'Hindi maabot ang server.',
+  offline: 'Walang koneksyon',
   ssoCancelled: 'Kinansela ang pag-sign in.',
   ssoExpired: 'Masyadong natagalan. Mag-sign in ulit.',
   ssoNoUsername: 'Hindi natapos gawin ang account. Subukan ulit mamaya.',

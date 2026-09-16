@@ -218,6 +218,7 @@ export const is: Messages = {
   badCode: 'Þessi kóði virkaði ekki. Kóðar renna út eftir 10 mínútur og gilda einu sinni.',
   serverBusy: 'Náði ekki í þjóninn. Reyndu aftur eftir augnablik.',
   serverDown: 'Náði ekki í þjóninn.',
+  offline: 'Ónettengt',
   ssoCancelled: 'Hætt við innskráningu.',
   ssoExpired: 'Þetta tók of langan tíma. Skráðu þig inn aftur.',
   ssoNoUsername: 'Náði ekki að klára að stofna aðganginn. Reyndu aftur eftir augnablik.',

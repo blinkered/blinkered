@@ -2399,6 +2399,10 @@ kbd {
 }
 .account-trigger {
   display: block;
+  /* So `.account-offline` can sit on the avatar. `.account` is also relative, but it is the
+     wrapper the menu is positioned against, and hanging the dot off that would place it relative
+     to the whole control rather than to the picture. */
+  position: relative;
   padding: 2px;
   border: 1px solid var(--line);
   border-radius: 50%;
@@ -2416,6 +2420,25 @@ kbd {
   .account-trigger:hover {
     border-color: var(--dim);
   }
+}
+/*
+   The offline marker on the account avatar.
+
+   Absolutely placed against `.account-trigger`, which is already a flex centring box, so the dot
+   does not join the layout and cannot move the picture it sits on. `--line` as a ring around it
+   because the avatar underneath is an arbitrary generated colour and a bare dot can land on a
+   patch of itself; the ring is what keeps it readable on all of them.
+
+   Not red. Offline is a state, not a fault, and the only red in this interface is Ban. */
+.account-offline {
+  position: absolute;
+  inset-block-end: 0.4rem;
+  inset-inline-end: 0.4rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--dim);
 }
 .avatar {
   display: block;

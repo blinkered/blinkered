@@ -218,6 +218,7 @@ export const sl: Messages = {
   badCode: 'Ta koda ni delovala. Kode potečejo po 10 minutah in veljajo enkrat.',
   serverBusy: 'Strežnik ni dosegljiv. Poskusi čez trenutek.',
   serverDown: 'Strežnik ni dosegljiv.',
+  offline: 'Brez povezave',
   ssoCancelled: 'Prijava preklicana.',
   ssoExpired: 'Trajalo je predolgo. Prijavi se znova.',
   ssoNoUsername: 'Računa ni bilo mogoče dokončati. Poskusi čez trenutek.',

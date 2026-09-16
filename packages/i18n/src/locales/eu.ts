@@ -224,6 +224,7 @@ export const eu: Messages = {
     'Kode horrek ez du funtzionatu. Kodeak 10 minututan iraungitzen dira eta behin balio dute.',
   serverBusy: 'Ezin izan da zerbitzariarekin konektatu. Saiatu berriro une batean.',
   serverDown: 'Ezin izan da zerbitzariarekin konektatu.',
+  offline: 'Konexiorik gabe',
   ssoCancelled: 'Saio-hasiera bertan behera utzi da.',
   ssoExpired: 'Luzeegi jo du. Hasi saioa berriro.',
   ssoNoUsername: 'Ezin izan da kontua sortzen amaitu. Saiatu berriro une batean.',

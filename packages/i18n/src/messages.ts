@@ -319,6 +319,19 @@ export interface Messages {
   readonly serverBusy: string
   /** Not reachable now; said where a screen simply has nothing to show. */
   readonly serverDown: string
+  /**
+   * This device has no connection, as a badge beside the account rather than a sentence.
+   *
+   * The only string the offline work needed. A blocked write already says the right thing:
+   * `serverBusy` is "Could not reach the server. Try again in a moment.", which is exactly true
+   * with no network, and `AccountScreen` already renders it for every refused save. A second key
+   * saying the same thing in fifty-one languages would be the duplication the note on
+   * `deleteAccount` argues against.
+   *
+   * Short, because it sits next to an avatar. It is also what a screen reader says instead of
+   * the bare username, so it has to read as a state and not as part of somebody's name.
+   */
+  readonly offline: string
 
   /** Coming back from Apple or Google. Vague on purpose about which check failed. */
   readonly ssoCancelled: string

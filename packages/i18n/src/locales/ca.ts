@@ -221,6 +221,7 @@ export const ca: Messages = {
     'Aquest codi no ha funcionat. Els codis caduquen als 10 minuts i només serveixen un cop.',
   serverBusy: "No s'ha pogut contactar amb el servidor. Torna-ho a provar d'aquí a un moment.",
   serverDown: "No s'ha pogut contactar amb el servidor.",
+  offline: 'Fora de línia',
   ssoCancelled: "S'ha cancel·lat l'inici de sessió.",
   ssoExpired: 'Ha trigat massa. Torna a iniciar la sessió.',
   ssoNoUsername: "No s'ha pogut acabar de crear el compte. Torna-ho a provar d'aquí a un moment.",

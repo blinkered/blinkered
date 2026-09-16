@@ -218,6 +218,7 @@ export const fi: Messages = {
   badCode: 'Koodi ei kelvannut. Koodit vanhenevat 10 minuutissa ja toimivat kerran.',
   serverBusy: 'Palvelimeen ei saatu yhteyttä. Yritä hetken päästä.',
   serverDown: 'Palvelimeen ei saatu yhteyttä.',
+  offline: 'Ei yhteyttä',
   ssoCancelled: 'Kirjautuminen peruttiin.',
   ssoExpired: 'Siihen meni liian kauan. Kirjaudu uudelleen.',
   ssoNoUsername: 'Tilin luontia ei saatu valmiiksi. Yritä hetken päästä.',

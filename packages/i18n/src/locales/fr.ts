@@ -222,6 +222,7 @@ export const fr: Messages = {
     'Ce code n’a pas fonctionné. Les codes expirent après 10 minutes et ne servent qu’une fois.',
   serverBusy: 'Serveur injoignable. Réessayez dans un instant.',
   serverDown: 'Serveur injoignable.',
+  offline: 'Hors ligne',
   ssoCancelled: 'Connexion annulée.',
   ssoExpired: 'Cela a pris trop de temps. Reconnectez-vous.',
   ssoNoUsername: 'Impossible de terminer la création du compte. Réessayez dans un instant.',

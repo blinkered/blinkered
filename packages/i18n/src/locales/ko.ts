@@ -217,6 +217,7 @@ export const ko: Messages = {
   badCode: '이 코드는 맞지 않았습니다. 코드는 10분 뒤 만료되고 한 번만 쓸 수 있습니다.',
   serverBusy: '서버에 연결하지 못했습니다. 잠시 후 다시 시도하세요.',
   serverDown: '서버에 연결하지 못했습니다.',
+  offline: '오프라인',
   ssoCancelled: '로그인을 취소했습니다.',
   ssoExpired: '너무 오래 걸렸습니다. 다시 로그인하세요.',
   ssoNoUsername: '계정 생성을 마치지 못했습니다. 잠시 후 다시 시도하세요.',

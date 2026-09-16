@@ -224,6 +224,7 @@ export const pcm: Messages = {
   badCode: 'Dat code no work. Codes dey expire after 10 minutes and dem dey work one time.',
   serverBusy: 'We no fit reach di server. Try again small time.',
   serverDown: 'We no fit reach di server.',
+  offline: 'Net no dey',
   ssoCancelled: 'Dem cancel di sign in.',
   ssoExpired: 'E take too long. Sign in again.',
   ssoNoUsername: 'We no fit finish create di account. Try again small time.',

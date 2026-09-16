@@ -219,6 +219,7 @@ export const id: Messages = {
   badCode: 'Kode itu tidak cocok. Kode kedaluwarsa setelah 10 menit dan sekali pakai.',
   serverBusy: 'Tidak bisa menghubungi server. Coba lagi sebentar lagi.',
   serverDown: 'Tidak bisa menghubungi server.',
+  offline: 'Offline',
   ssoCancelled: 'Masuk dibatalkan.',
   ssoExpired: 'Terlalu lama. Masuk lagi.',
   ssoNoUsername: 'Pembuatan akun tidak selesai. Coba lagi sebentar lagi.',

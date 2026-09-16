@@ -219,6 +219,7 @@ export const da: Messages = {
   badCode: 'Den kode virkede ikke. Koder udløber efter 10 minutter og gælder én gang.',
   serverBusy: 'Kunne ikke nå serveren. Prøv igen om lidt.',
   serverDown: 'Kunne ikke nå serveren.',
+  offline: 'Offline',
   ssoCancelled: 'Login blev afbrudt.',
   ssoExpired: 'Det tog for lang tid. Log ind igen.',
   ssoNoUsername: 'Kontoen kunne ikke gøres færdig. Prøv igen om lidt.',

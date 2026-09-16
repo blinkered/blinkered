@@ -222,6 +222,7 @@ export const af: Messages = {
   badCode: 'Daardie kode het nie gewerk nie. Kodes verval na 10 minute en werk een keer.',
   serverBusy: 'Kon nie die bediener bereik nie. Probeer weer oor ’n oomblik.',
   serverDown: 'Kon nie die bediener bereik nie.',
+  offline: 'Aflyn',
   ssoCancelled: 'Aanmelding gekanselleer.',
   ssoExpired: 'Dit het te lank geneem. Meld weer aan.',
   ssoNoUsername: 'Kon nie die rekening klaar skep nie. Probeer weer oor ’n oomblik.',

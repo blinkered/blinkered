@@ -216,6 +216,7 @@ export const es: Messages = {
   badCode: 'Ese código no funcionó. Los códigos caducan a los 10 minutos y solo sirven una vez.',
   serverBusy: 'No se pudo contactar con el servidor. Inténtalo en un momento.',
   serverDown: 'No se pudo contactar con el servidor.',
+  offline: 'Sin conexión',
   ssoCancelled: 'Se canceló el inicio de sesión.',
   ssoExpired: 'Tardó demasiado. Vuelve a iniciar sesión.',
   ssoNoUsername: 'No se pudo terminar de crear la cuenta. Inténtalo en un momento.',

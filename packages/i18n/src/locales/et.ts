@@ -218,6 +218,7 @@ export const et: Messages = {
   badCode: 'See kood ei sobinud. Koodid aeguvad 10 minutiga ja kehtivad korra.',
   serverBusy: 'Serverini ei jõudnud. Proovi hetke pärast uuesti.',
   serverDown: 'Serverini ei jõudnud.',
+  offline: 'Ühenduseta',
   ssoCancelled: 'Sisselogimine katkestati.',
   ssoExpired: 'See võttis liiga kaua. Logi uuesti sisse.',
   ssoNoUsername: 'Konto loomine jäi pooleli. Proovi hetke pärast uuesti.',

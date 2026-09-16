@@ -283,6 +283,33 @@ Four decisions in the queue that are not obvious:
 The scored history is unaffected: `scores.ts` still records every finished game the moment it
 ends, signed in or not, so the local leaderboard never depended on any of this.
 
+### Offline needed one new string, not a family of them
+
+The instinct is a set of offline messages: one for a blocked save, one for a blocked report, one
+for the game-over panel. That is fifty-one translations each, and it was the wrong instinct.
+
+`serverBusy` already reads "Could not reach the server. Try again in a moment." in every language,
+which is exactly true with no network, and `AccountScreen` already renders it for every refused
+save -- both `unavailable` paths map to it. A second key saying the same thing would be the
+duplication the note on `deleteAccount` argues against, and it would drift.
+
+So there is **one** new key, `offline`, and it is a badge rather than a sentence: a grey dot on the
+account avatar, with the word joining the trigger's `aria-label` so a screen reader says
+"clever-beacon-1267 (Offline), menu button". The dot itself is `aria-hidden`, because the fact is
+already in the label and saying it twice makes a control announce itself as "Nick offline offline".
+
+It marks the state and disables nothing. Every item in the menu still works, and the ones that
+need the network fail the way they already did. The alternative, greying out what cannot work,
+needs the app to predict which actions those are, and it would be wrong the moment a connection
+came back without an `online` event to announce it.
+
+Not red. Offline is a state, not a fault, and red in this interface means Ban.
+
+Checked in a browser rather than only in tests, because the three states are the feature: a
+cached account with no API renders as signed in with the badge; a 200 clears the badge and
+refreshes the cache to the name the server now holds; a 401 clears the cache and shows Sign in.
+The badge was read back in Japanese, Turkish and Finnish.
+
 ### Account deletion is in the app, and the row goes with it
 
 App Store guideline 5.1.1(v) requires in-app account deletion for any app that offers account

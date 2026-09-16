@@ -28,6 +28,7 @@ const ITEMS = [{ id: 'profile' }, { id: 'games' }] as const
 export function AccountMenu({
   account,
   messages,
+  offline,
   onSignIn,
   onGo,
   onPublicProfile,
@@ -36,6 +37,15 @@ export function AccountMenu({
 }: {
   readonly account: Account | null
   readonly messages: Messages
+  /**
+   * Whether the last attempt to reach the API went unanswered.
+   *
+   * Shown here because this is where somebody looks to find out who they are, and the answer
+   * "you, but we cannot check" belongs next to the answer "you". It marks the state rather than
+   * disabling anything: the menu's items all still work, and the ones that need the network fail
+   * with `serverBusy`, which already says so in every language.
+   */
+  readonly offline: boolean
   readonly onSignIn: () => void
   readonly onGo: (destination: Destination) => void
   /** Opens the page everybody else sees, which is the only way to check what it says. */
@@ -96,15 +106,27 @@ export function AccountMenu({
         className="account-trigger"
         aria-haspopup="menu"
         aria-expanded={open}
-        // The name, not "account menu". A screen reader saying "clever-beacon-1267, menu button"
-        // answers the question the picture answers for everybody else: whose account is this.
-        aria-label={account.username}
-        title={account.username}
+        /*
+         * The name, not "account menu". A screen reader saying "clever-beacon-1267, menu button"
+         * answers the question the picture answers for everybody else: whose account is this.
+         *
+         * Offline, the state joins it, because the dot below is the only other thing that says
+         * so and a dot says nothing out loud. Parenthesised so it reads as a state rather than
+         * as part of somebody's name.
+         */
+        aria-label={offline ? `${account.username} (${messages.offline})` : account.username}
+        title={offline ? `${account.username} (${messages.offline})` : account.username}
         onClick={() => {
           setOpen(!open)
         }}
       >
         <Avatar seed={account.avatarSeed} size={28} />
+        {/*
+          A dot on the avatar, and nothing for a screen reader to read: the same fact is already
+          in the button's label above, and saying it twice is how a control starts announcing
+          itself as "Nick offline offline, menu button".
+        */}
+        {offline ? <span className="account-offline" aria-hidden="true" /> : null}
       </button>
 
       {open ? (

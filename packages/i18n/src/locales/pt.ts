@@ -216,6 +216,7 @@ export const pt: Messages = {
     'Esse código não funcionou. Os códigos expiram ao fim de 10 minutos e só servem uma vez.',
   serverBusy: 'Não foi possível contactar o servidor. Tente daqui a pouco.',
   serverDown: 'Não foi possível contactar o servidor.',
+  offline: 'Sem ligação',
   ssoCancelled: 'Início de sessão cancelado.',
   ssoExpired: 'Demorou demasiado. Inicie sessão outra vez.',
   ssoNoUsername: 'Não foi possível terminar de criar a conta. Tente daqui a pouco.',

@@ -215,6 +215,7 @@ export const nl: Messages = {
   badCode: 'Die code werkte niet. Codes verlopen na 10 minuten en gelden één keer.',
   serverBusy: 'Server niet bereikbaar. Probeer het zo nog eens.',
   serverDown: 'Server niet bereikbaar.',
+  offline: 'Offline',
   ssoCancelled: 'Inloggen geannuleerd.',
   ssoExpired: 'Dat duurde te lang. Log opnieuw in.',
   ssoNoUsername: 'Het account kon niet worden afgemaakt. Probeer het zo nog eens.',

@@ -226,6 +226,7 @@ export const ja: Messages = {
   badCode: 'このコードは使えませんでした。コードは10分で失効し、一度だけ使えます。',
   serverBusy: 'サーバーに接続できませんでした。少し待って試してください。',
   serverDown: 'サーバーに接続できませんでした。',
+  offline: 'オフライン',
   ssoCancelled: 'ログインを中止しました。',
   ssoExpired: '時間がかかりすぎました。もう一度ログインしてください。',
   ssoNoUsername: 'アカウントを作成しきれませんでした。少し待って試してください。',

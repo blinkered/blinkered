@@ -218,6 +218,7 @@ export const lt: Messages = {
   badCode: 'Šis kodas netiko. Kodai nustoja galioti po 10 minučių ir tinka vieną kartą.',
   serverBusy: 'Nepavyko pasiekti serverio. Pabandyk po akimirkos.',
   serverDown: 'Nepavyko pasiekti serverio.',
+  offline: 'Atsijungta',
   ssoCancelled: 'Prisijungimas atšauktas.',
   ssoExpired: 'Užtruko per ilgai. Prisijunk iš naujo.',
   ssoNoUsername: 'Nepavyko sukurti paskyros iki galo. Pabandyk po akimirkos.',

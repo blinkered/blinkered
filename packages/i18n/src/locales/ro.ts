@@ -221,6 +221,7 @@ export const ro: Messages = {
   badCode: 'Codul nu a funcționat. Codurile expiră după 10 minute și se folosesc o dată.',
   serverBusy: 'Serverul nu a putut fi contactat. Încearcă peste un moment.',
   serverDown: 'Serverul nu a putut fi contactat.',
+  offline: 'Deconectat',
   ssoCancelled: 'Autentificarea a fost anulată.',
   ssoExpired: 'A durat prea mult. Autentifică-te din nou.',
   ssoNoUsername: 'Contul nu a putut fi finalizat. Încearcă peste un moment.',

@@ -221,6 +221,7 @@ export const gl: Messages = {
   badCode: 'Ese código non funcionou. Os códigos caducan aos 10 minutos e valen unha vez.',
   serverBusy: 'Non se puido contactar co servidor. Téntao noutro intre.',
   serverDown: 'Non se puido contactar co servidor.',
+  offline: 'Sen conexión',
   ssoCancelled: 'Cancelouse o inicio de sesión.',
   ssoExpired: 'Tardou de máis. Inicia sesión outra vez.',
   ssoNoUsername: 'Non se puido rematar de crear a conta. Téntao noutro intre.',

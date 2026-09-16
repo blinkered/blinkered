@@ -216,6 +216,7 @@ export const sk: Messages = {
   badCode: 'Ten kód nefungoval. Kódy vypršia po 10 minútach a platia raz.',
   serverBusy: 'Server je nedostupný. Skús to o chvíľu.',
   serverDown: 'Server je nedostupný.',
+  offline: 'Offline',
   ssoCancelled: 'Prihlásenie zrušené.',
   ssoExpired: 'Trvalo to príliš dlho. Prihlás sa znova.',
   ssoNoUsername: 'Účet sa nepodarilo dokončiť. Skús to o chvíľu.',

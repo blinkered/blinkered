@@ -224,6 +224,7 @@ export const cy: Messages = {
   badCode: "Ni weithiodd y cod hwnnw. Mae codau'n darfod ar ôl 10 munud ac yn gweithio unwaith.",
   serverBusy: 'Methu cyrraedd y gweinydd. Rho gynnig arall ymhen ennyd.',
   serverDown: 'Methu cyrraedd y gweinydd.',
+  offline: 'All-lein',
   ssoCancelled: 'Cafodd y mewngofnodi ei ganslo.',
   ssoExpired: "Cymerodd hynny'n rhy hir. Mewngofnoda eto.",
   ssoNoUsername: "Methu gorffen creu'r cyfrif. Rho gynnig arall ymhen ennyd.",

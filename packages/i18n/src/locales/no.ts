@@ -214,6 +214,7 @@ export const no: Messages = {
   badCode: 'Den koden virket ikke. Koder går ut etter 10 minutter og gjelder én gang.',
   serverBusy: 'Fikk ikke kontakt med serveren. Prøv igjen om litt.',
   serverDown: 'Fikk ikke kontakt med serveren.',
+  offline: 'Frakoblet',
   ssoCancelled: 'Innloggingen ble avbrutt.',
   ssoExpired: 'Det tok for lang tid. Logg inn på nytt.',
   ssoNoUsername: 'Fikk ikke gjort ferdig kontoen. Prøv igjen om litt.',

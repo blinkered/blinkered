@@ -220,6 +220,7 @@ export const de: Messages = {
     'Dieser Code hat nicht funktioniert. Codes laufen nach 10 Minuten ab und gelten nur einmal.',
   serverBusy: 'Server nicht erreichbar. Versuch es gleich noch einmal.',
   serverDown: 'Server nicht erreichbar.',
+  offline: 'Offline',
   ssoCancelled: 'Anmeldung abgebrochen.',
   ssoExpired: 'Das hat zu lange gedauert. Melde dich noch einmal an.',
   ssoNoUsername: 'Konto konnte nicht fertig angelegt werden. Versuch es gleich noch einmal.',

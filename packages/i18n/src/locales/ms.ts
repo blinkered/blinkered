@@ -215,6 +215,7 @@ export const ms: Messages = {
   badCode: 'Kod itu tidak menjadi. Kod luput selepas 10 minit dan hanya sekali guna.',
   serverBusy: 'Tidak dapat menghubungi pelayan. Cuba lagi sebentar.',
   serverDown: 'Tidak dapat menghubungi pelayan.',
+  offline: 'Luar talian',
   ssoCancelled: 'Log masuk dibatalkan.',
   ssoExpired: 'Terlalu lama. Log masuk sekali lagi.',
   ssoNoUsername: 'Akaun tidak sempat disiapkan. Cuba lagi sebentar.',

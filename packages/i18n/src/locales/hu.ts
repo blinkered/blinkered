@@ -221,6 +221,7 @@ export const hu: Messages = {
   badCode: 'Ez a kód nem működött. A kódok 10 perc után lejárnak, és egyszer használhatók.',
   serverBusy: 'A kiszolgáló nem érhető el. Próbáld újra egy pillanat múlva.',
   serverDown: 'A kiszolgáló nem érhető el.',
+  offline: 'Offline',
   ssoCancelled: 'A bejelentkezés megszakadt.',
   ssoExpired: 'Túl sokáig tartott. Jelentkezz be újra.',
   ssoNoUsername: 'A fiók létrehozása nem fejeződött be. Próbáld újra egy pillanat múlva.',

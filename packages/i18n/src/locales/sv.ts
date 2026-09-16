@@ -214,6 +214,7 @@ export const sv: Messages = {
   badCode: 'Koden fungerade inte. Koder går ut efter 10 minuter och gäller en gång.',
   serverBusy: 'Kunde inte nå servern. Försök igen om en stund.',
   serverDown: 'Kunde inte nå servern.',
+  offline: 'Offline',
   ssoCancelled: 'Inloggningen avbröts.',
   ssoExpired: 'Det tog för lång tid. Logga in igen.',
   ssoNoUsername: 'Kontot kunde inte skapas färdigt. Försök igen om en stund.',
