@@ -205,8 +205,11 @@ Installable, which on iOS is a slightly different contract from the standard one
   was drawn under them.
 
 The icon is a selected tile: the same blue the board paints a taken letter, and the same white
-on top of it. Generated from an SVG by screenshotting it in headless WebKit, so there is no
-image toolchain to install and no binary asset whose source has been lost.
+on top of it. The tile fills the frame, because iOS masks the icon to its own corner and a tile
+floating in a dark square would read as a picture of an icon rather than an icon. Generated from
+an SVG by screenshotting it headless, so no binary asset has a source that can be lost. See
+[../brand/README.md](../brand/README.md) for why the home-screen icon is opaque and square while
+the tab icon is neither.
 
 `.webmanifest` is not in nginx's `mime.types`, so without a `default_type` it ships as
 `application/octet-stream`. Browsers are forgiving and Safari is the one that matters here, but
