@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"
      role="img" aria-label="Blinkered">
   <title>Blinkered</title>
-  <rect width="1024" height="1024" rx="151" fill="#2f81f7"/>
+  <rect width="1024" height="1024" rx="151" fill="#1f6feb"/>
   <text x="498" y="490" fill="#ffffff" text-anchor="middle" dominant-baseline="central"
         font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
         font-size="848" font-weight="650">B</text>

@@ -504,9 +504,24 @@ it means "rebuild the app", which the build phase above now does by itself.
 
 ## Three palettes, and the arithmetic behind them
 
-Traditional, light and high contrast, chosen on the setup screen and kept per device --- a fact
+Traditional, light and high contrast, chosen from **the title bar** and kept per device --- a fact
 about the room somebody is in and the eyes they are reading with, which is why it is not synced
 from the account.
+
+It started as a row of chips on the setup screen and that was the wrong place: most people will
+never touch it, and the ones who need it need it on every screen rather than only before a game.
+It is one glyph and a caret up top now --- `◐`, the mark every operating system already uses for
+brightness and contrast, which `☯` would have carried other meanings into. The control is the
+language picker's `Dropdown` told to wear a mark instead of a label, which is what keeps the
+keyboard behaviour a hand-written menu would have had to earn back: arrow keys, Home and End,
+Escape, click-outside, focus returning to the trigger.
+
+**It also found a bug that had already shipped.** The measured collapse hides `.drop-value` to
+shrink a trigger to its flag --- and `.drop-value` is the selected language on the trigger _and_
+the name on every row of the list underneath it. Unscoped, the language menu on any screen below
+600px was a column of flags with invisible names, and the new theme menu was three blank rows.
+Scoped to `.drop-trigger .drop-value` now: it is the trigger that has no room for a word, and the
+popup has all the room it needs.
 
 Two things had to be true before a second palette was possible at all. **The face of a tile was a
 literal `#1f2630` in three rules**, which is a colour no theme can reach, and in daylight it is a

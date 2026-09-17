@@ -18,12 +18,23 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
  */
 const TITLE = 'BLINKERED'
 
-/** A letter lights every 85ms. The title bar takes 225ms; this is the same beat, hurried. */
-const PICK_MS = 85
+/**
+ * A letter lights every 128ms, and the word travels in 630.
+ *
+ * Both were a third of that, and both were wrong: "mobile opening screen is *way* too fast". Half
+ * again as slow is still brisk against the title bar's 225ms a letter -- this is an opening rather
+ * than an idle flourish -- but it is now something somebody can follow rather than a flicker.
+ */
+const PICK_MS = 128
 /** Must match the transition on `.splash-tile`. */
-const TRAVEL_MS = 420
-/** A beat with the name assembled, before it goes. Long enough to read, short enough to forgive. */
-const HOLD_MS = 420
+const TRAVEL_MS = 630
+/**
+ * Two seconds with the name assembled, which Nick asked for by the clock.
+ *
+ * It is the whole point of the screen: the letters were always there and the difficulty was the
+ * order, and that only reads if the finished word is allowed to sit still for a moment.
+ */
+const HOLD_MS = 2000
 /** The fade. Must match the transition on `.splash.is-leaving`. */
 const FADE_MS = 260
 

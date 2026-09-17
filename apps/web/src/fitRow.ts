@@ -25,7 +25,7 @@ import type { RefObject } from 'react'
  * survive by a rule about React's diffing rather than by design, and this row re-renders on every
  * flip of the wordmark's animation.
  */
-const STEPS = ['lang', 'help', 'nerd', 'small', 'flag', 'mark', 'board'] as const
+const STEPS = ['lang', 'help', 'nerd', 'small', 'flag', 'mark', 'caret', 'board'] as const
 
 /**
  * A pixel of slack. `scrollWidth` and `clientWidth` are integers rounded from fractional layout,

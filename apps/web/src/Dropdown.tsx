@@ -48,6 +48,15 @@ interface DropdownProps {
   readonly filter?: string
   /** Shown when the filter matches nothing. Required with `filter`, unused without it. */
   readonly empty?: string
+  /**
+   * A constant mark on the trigger, instead of the selected option's label.
+   *
+   * For a control that has to live in a row with no width for words: the title bar's theme
+   * picker is one glyph and a caret. The label still exists -- `aria-labelledby` points at it and
+   * the stylesheet hides it visually -- so the listbox is still named for a screen reader, which
+   * a bare glyph could not do.
+   */
+  readonly mark?: string
   readonly onChange: (value: string) => void
 }
 
@@ -107,6 +116,7 @@ export function Dropdown({
   disabled = false,
   filter,
   empty,
+  mark,
   onChange,
 }: DropdownProps): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -274,8 +284,16 @@ export function Dropdown({
             else show()
           }}
         >
-          {current?.badge === undefined ? null : <Badge badge={current.badge} />}
-          <span className="drop-value">{current?.label ?? value}</span>
+          {mark === undefined ? (
+            <>
+              {current?.badge === undefined ? null : <Badge badge={current.badge} />}
+              <span className="drop-value">{current?.label ?? value}</span>
+            </>
+          ) : (
+            <span className="drop-badge" aria-hidden="true">
+              {mark}
+            </span>
+          )}
           <span className="drop-caret" aria-hidden="true">
             ▾
           </span>

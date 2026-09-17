@@ -5,7 +5,10 @@
     The game's own object, at the moment it is chosen.
 
     Nothing here is invented. The tile is a selected tile exactly as styles.css draws one: the
-    selected background colour, the same colour for its border, and a white letter. The corner
+    selected background colour, the same colour for its border, and a white letter. The blue is
+    that token's value and follows it: it moved from 2f81f7 to 1f6feb when white text on the
+    accent turned out to be 3.75:1 against WCAG's 4.5, and the icon moved with it rather than
+    being a shade of its own. The corner
     radius is the game's ratio, 10px on a 68px tile, so 151 on 1024. The letter is the game's
     weight. The title screen already spells BLINKERED in tiles that light up this way, so the
     icon and the game are visibly the same thing.
@@ -17,7 +20,7 @@
     Do not write a double hyphen anywhere in this comment. It is illegal inside an XML comment,
     and a renderer will reject the whole file rather than the comment.
   -->
-  <rect width="1024" height="1024" rx="151" fill="#2f81f7"/>
+  <rect width="1024" height="1024" rx="151" fill="#1f6feb"/>
   <text x="498" y="490" fill="#ffffff" text-anchor="middle" dominant-baseline="central"
         font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
         font-size="848" font-weight="650">B</text>

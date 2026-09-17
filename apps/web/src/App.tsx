@@ -14,6 +14,7 @@ import { HowToPlayLink } from './HowToPlayLink.js'
 import { Hud, countOf, formatFinalResult } from './Hud.js'
 import { Icon } from './Icon.js'
 import type { Feedback, WordGain } from './Hud.js'
+import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { BoardPreview } from './BoardPreview.js'
 import { Leaderboard } from './Leaderboard.js'
@@ -50,6 +51,7 @@ import type { Standing } from './scores.js'
 import {
   configOf,
   isCanonical,
+  THEMES,
   applyTheme,
   loadSettings,
   saveSettings,
@@ -633,9 +635,6 @@ function Session({
       onRuleset={(ruleset: Ruleset) => {
         onChange(withRuleset(settings, ruleset))
       }}
-      onTheme={(theme) => {
-        onChange({ ...settings, theme })
-      }}
       onStart={start}
     />
   )
@@ -941,6 +940,32 @@ function Session({
           >
             <span aria-hidden="true">🥇</span>
           </button>
+
+          {/*
+            The palette, as one glyph and a caret.
+            
+            Up here rather than on the setup screen, which is where it started: most people will
+            never touch it, and the ones who need it need it on every screen rather than only
+            before a game. Nick's shape -- "offer a half-and-half logo up top and a drop-down".
+            
+            `◐` rather than `☯`, which was the other suggestion: the half-filled circle is the
+            glyph every operating system already uses for brightness and contrast, and it carries
+            no other meaning that somebody might read into it. The label is hidden visually and
+            kept for `aria-labelledby`, because a listbox named by a glyph is a listbox with no
+            name at all.
+          */}
+          <div className="theme-picker">
+            <Dropdown
+              options={THEMES.map((name) => ({ value: name, label: messages.themeNames[name] }))}
+              value={settings.theme}
+              label={messages.themeLabel}
+              mark="◐"
+              onChange={(chosen) => {
+                const found = THEMES.find((name) => name === chosen)
+                if (found !== undefined) onChange({ ...settings, theme: found })
+              }}
+            />
+          </div>
 
           {/* Always here, and live except while a game is running. Somebody arriving at a page
             in a language they cannot read has to be able to fix that before anything else. */}
