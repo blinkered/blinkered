@@ -1,11 +1,13 @@
 import { readdirSync } from 'node:fs'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { sql } from 'drizzle-orm'
+import { getTableName, is, sql } from 'drizzle-orm'
+import { PgTable } from 'drizzle-orm/pg-core'
 import { connect } from '../src/db.js'
 import { runMigrations, MIGRATIONS } from '../src/migrate.js'
 import { doneLine } from '../src/migrationReport.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { DATABASE_SCHEMA, games, users } from '../src/schema.js'
+import * as schema from '../src/schema.js'
 
 /*
  * Against a real Postgres, because the things worth checking here are the things a fake would
@@ -31,6 +33,22 @@ const MIGRATION_NAMES = readdirSync(MIGRATIONS, { withFileTypes: true })
   .map((entry) => entry.name)
   .sort()
 
+/**
+ * Every table the code declares, read off `schema.ts` for the same reason as the names above --
+ * and this is the list that proved the reasoning. `native_handshakes` arrived with a table
+ * definition and a migration, and the one place left holding a copy of the list was here, in the
+ * suite `pnpm check` does not run because it needs a Postgres. CI failed on four pushes in a row
+ * for that and nothing else.
+ *
+ * Deriving it also makes the assertion say something better than it did. Spelled out, it was "the
+ * database has the tables somebody typed into this file". Read off the schema, it is "the
+ * migrations built every table the code goes looking for", so a declaration whose migration was
+ * never generated fails here rather than on the first query in production.
+ */
+const DECLARED_TABLES = Object.values(schema)
+  .filter((exported) => is(exported, PgTable))
+  .map((table) => getTableName(table))
+
 let db: ReturnType<typeof connect> | undefined
 
 beforeAll(async () => {
@@ -55,17 +73,14 @@ describe('the migration', () => {
   it('puts every table in our schema and nothing in public', async () => {
     const rows = await database().execute<{ table_name: string }>(sql`
       select table_name from information_schema.tables
-      where table_schema = ${DATABASE_SCHEMA} order by table_name`)
-    expect(rows.map((row) => row.table_name)).toEqual([
-      '__drizzle_migrations',
-      'auth_identities',
-      'game_detail',
-      'games',
-      'login_codes',
-      'reports',
-      'sessions',
-      'users',
-    ])
+      where table_schema = ${DATABASE_SCHEMA}`)
+    // Sorted here rather than by Postgres, because `order by` would drag the server's collation
+    // into it: under C it orders by bytes and puts `__drizzle_migrations` first, while a glibc
+    // locale looks past the underscores and files it under D. Neither is wrong, and which tables
+    // exist is the question.
+    expect(rows.map((row) => row.table_name).sort()).toEqual(
+      ['__drizzle_migrations', ...DECLARED_TABLES].sort(),
+    )
 
     // Including drizzle's own bookkeeping, which lands in `public` unless told otherwise and is
     // exactly the kind of stray table a shared managed database does not want.
