@@ -3,7 +3,7 @@ import { createApp } from '../app.js'
 import { consoleMailer } from '../auth/mail.js'
 import { pgStore } from '../pgStore.js'
 import { smtpMailer } from '../auth/smtp.js'
-import { appleProvider } from '../auth/apple.js'
+import { appleNativeProvider, appleProvider } from '../auth/apple.js'
 import { googleProvider } from '../auth/google.js'
 import { oidcClient } from '../auth/oidc.js'
 import type { OidcProvider } from '../auth/oidc.js'
@@ -63,6 +63,15 @@ const providers: OidcProvider[] = [
   ...(google === null ? [] : [googleProvider(google)]),
 ]
 
+/*
+ * Apple again, with the app's audience, for the sheet the operating system runs.
+ *
+ * The same key and the same account; only the `aud` a token will carry differs, because a native
+ * credential is minted for the App ID and a web one for the Services ID. Mounted from the same
+ * config, so a deployment cannot end up offering the native route and not the web one.
+ */
+const appleNative = apple === null ? undefined : oidcClient(appleNativeProvider(apple), fetch)
+
 const app = createApp(
   mailer === null
     ? {}
@@ -72,6 +81,7 @@ const app = createApp(
           mailer,
           ...(publicLimit === undefined ? {} : { publicLimit }),
           oidc: providers.map((provider) => ({ provider, client: oidcClient(provider, fetch) })),
+          ...(appleNative === undefined ? {} : { appleNative }),
         },
       },
 )

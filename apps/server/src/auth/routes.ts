@@ -60,6 +60,25 @@ const USERNAME_TRIES = 5
 const HANDSHAKE_SECONDS = 10 * 60
 
 /**
+ * Where a native Google sign-in comes back to, and why it is a scheme rather than a URL.
+ *
+ * `ASWebAuthenticationSession` runs the handshake in a real browser outside the app -- which is
+ * the whole point, because Google refuses an embedded WebView and app-bound domains refuses the
+ * navigation -- and it ends when the browser is sent to a URL with this scheme. iOS hands that
+ * URL to the app and closes the sheet. Nothing on the web ever sees it.
+ */
+const NATIVE_CALLBACK = 'blinkered://auth'
+
+/**
+ * A minute, for the code in that URL.
+ *
+ * It stands in for the session token, which has no business being in a URL at all: this is worth
+ * one exchange inside a minute, where the token it is traded for is worth a year. The exchange is
+ * an ordinary POST from the app over TLS, which is where a year-long credential belongs.
+ */
+const HANDOFF_SECONDS = 60
+
+/**
  * A request body, or an empty one.
  *
  * Typed as unknown fields rather than as the shape the route wants, because the body is whatever
@@ -99,6 +118,16 @@ export interface AuthDeps extends SessionDeps {
    * either was built.
    */
   readonly oidc?: readonly { readonly provider: OidcProvider; readonly client: OidcClient }[]
+  /**
+   * Apple, for a token the native app got from the operating system rather than from a redirect.
+   *
+   * A client rather than a provider entry, because nothing about the authorize half applies: the
+   * app never visits an authorize URL and there is no code to exchange. What is left is checking
+   * a signed token, and the only thing that differs from the web is the audience -- see
+   * `appleNativeProvider`. Absent on a deployment with no Apple key, exactly as `oidc` is, and
+   * the route answers 501 rather than 404 for the same reason.
+   */
+  readonly appleNative?: OidcClient
 }
 
 /**
@@ -261,6 +290,112 @@ export function authRoutes(deps: AuthDeps): Hono {
   })
 
   /*
+   * ---------- the native app's three routes ----------
+   *
+   * The shell cannot do what a browser does. Its origin is `capacitor://localhost`, so a cookie
+   * scoped to playblinkered.com is cross-site and never sent; app-bound domains stops it
+   * navigating to a provider at all; and Google refuses OAuth inside an embedded WebView on
+   * principle. So the app does the handshake **outside** itself and brings back something these
+   * routes will trade for a bearer token.
+   *
+   * Apple and Google arrive by different doors, which is not a symmetry worth forcing:
+   *
+   * - **Apple** is `ASAuthorizationAppleIDProvider`, a system sheet with no browser in it at
+   *   all. It hands the app a signed identity token, which the app posts here. There is no code,
+   *   no exchange and no client secret on this path -- only the check that the token is real,
+   *   which is the same check the web callback ends with.
+   * - **Google** is `ASWebAuthenticationSession`, a real Safari outside the app. It runs the
+   *   ordinary web flow, so the existing routes do all of it; what changes is the last step,
+   *   where the callback hands back a one-minute code instead of setting a cookie.
+   */
+
+  /*
+   * A nonce, before the app asks Apple for anything.
+   *
+   * This is what makes a captured identity token useless. Apple echoes the nonce inside the
+   * token it signs, and these routes will only accept a nonce this server issued and has not
+   * already spent -- so a token lifted off the wire, which is otherwise valid for ten minutes,
+   * cannot be presented a second time.
+   *
+   * Issued rather than chosen by the app. A client-chosen nonce proves only that the client is
+   * consistent with itself, which is not a property anybody needs.
+   *
+   * The row is keyed on a hash of the nonce, and on a *different* hash from the one the app puts
+   * in front of Apple. Both are derived from the same secret, and separating them means the value
+   * travelling inside the token is not also the key to the row that authorises it.
+   */
+  routes.post('/native/nonce', async (context) => {
+    const now = clock()
+    const { token: nonce } = await issueHandshake(deps, {
+      kind: 'nonce',
+      seconds: HANDSHAKE_SECONDS,
+      now,
+    })
+    return context.json({ nonce })
+  })
+
+  /*
+   * A native Apple credential, traded for a session.
+   *
+   * Every failure is a 401 with a short tag, and the tags are the provider's own reasons from
+   * `OidcError` -- the same vocabulary the web callback puts in `?signin=`, so the dialog already
+   * knows how to say them.
+   */
+  routes.post('/native/apple', async (context) => {
+    const verifier = deps.appleNative
+    // 501, not 404: the route exists and the deployment has no Apple key. See the stubs below.
+    if (verifier === undefined) return context.json({ error: 'not-implemented' }, 501)
+
+    const body = await bodyOf(context.req)
+    const identityToken = typeof body.identityToken === 'string' ? body.identityToken : ''
+    const nonce = typeof body.nonce === 'string' ? body.nonce : ''
+    if (identityToken === '' || nonce === '') return context.json({ error: 'bad-request' }, 400)
+
+    const now = clock()
+    // Spent first, so a token that fails verification still costs the nonce. A nonce that
+    // survived a failed attempt would be a nonce somebody can grind against.
+    const spent = await deps.store.consumeHandshake(handshakeId('nonce', nonce), 'nonce', now)
+    if (spent === null) return context.json({ error: 'expired' }, 401)
+
+    const identity = await verifier
+      .verify(identityToken, appleNonceClaim(nonce), now)
+      .catch((failure: unknown) => {
+        // As in the web callback: a provider's refusal is an answer, and anything else -- a dead
+        // network, a database down -- keeps going up rather than being reported as a bad token.
+        if (failure instanceof OidcError) return failure
+        throw failure
+      })
+    if (identity instanceof OidcError) return context.json({ error: identity.reason }, 401)
+
+    const userId = await accountFor(deps, 'apple', identity)
+    if (userId === null) return context.json({ error: 'no-username' }, 503)
+    return context.json(await bearerSession(deps, userId, now))
+  })
+
+  /*
+   * The code from a native Google callback, traded for a session.
+   *
+   * Nothing is verified here beyond the code itself, and nothing needs to be: the identity was
+   * checked in the callback that minted it, against the same signed token the web flow checks.
+   * This route only proves that whoever is asking is holding the one-minute secret that callback
+   * handed to the app.
+   */
+  routes.post('/native/exchange', async (context) => {
+    const body = await bodyOf(context.req)
+    const code = typeof body.code === 'string' ? body.code : ''
+    if (code === '') return context.json({ error: 'bad-request' }, 400)
+
+    const now = clock()
+    const spent = await deps.store.consumeHandshake(handshakeId('handoff', code), 'handoff', now)
+    // Unknown, expired, already spent, or -- impossible through the store, but the type allows
+    // it -- a row with no account on it. One answer for all of them, and no hint which.
+    if (spent?.userId === undefined || spent.userId === null) {
+      return context.json({ error: 'expired' }, 401)
+    }
+    return context.json(await bearerSession(deps, spent.userId, now))
+  })
+
+  /*
    * Sign in with Apple and Sign in with Google.
    *
    * One implementation, because they are one protocol. The differences that reach this far are
@@ -390,6 +525,14 @@ function mountProvider(
   const formPost = provider.authorizeExtras?.response_mode === 'form_post'
   const stateCookie = `blinkered_${name}_state`
   const nonceCookie = `blinkered_${name}_nonce`
+  /**
+   * Whether this handshake was started by the app rather than by a browser.
+   *
+   * A cookie rather than a query parameter on the callback, because the callback's parameters are
+   * the provider's and we do not get to add to them. It is set at the start, read at the end, and
+   * scoped to the same path as the other two, so nothing else on the site ever sees it.
+   */
+  const nativeCookie = `blinkered_${name}_native`
   // Scoped to the path that reads them, so they are not sent with every request to the site.
   const attributes = {
     httpOnly: true,
@@ -406,6 +549,8 @@ function mountProvider(
   routes.get(base, (context) => {
     const state = newId()
     const nonce = newId()
+    // `?native=1` is the app saying it will be waiting on a custom scheme rather than on a page.
+    if (context.req.query('native') === '1') setCookie(context, nativeCookie, '1', attributes)
     /*
      * Two values, two jobs. `state` comes back in the callback and is compared against a cookie,
      * which is what stops somebody feeding us a callback we never started. `nonce` is carried
@@ -421,7 +566,17 @@ function mountProvider(
     const forget = (): void => {
       deleteCookie(context, stateCookie, { path: `/v1/auth${base}`, secure: true })
       deleteCookie(context, nonceCookie, { path: `/v1/auth${base}`, secure: true })
+      deleteCookie(context, nativeCookie, { path: `/v1/auth${base}`, secure: true })
     }
+    /*
+     * Read before anything can fail, because it decides where a failure goes.
+     *
+     * A native flow that redirected to `/?signin=cancelled` would load the game *inside*
+     * `ASWebAuthenticationSession` -- a sheet showing a playable board, with the app behind it
+     * still waiting for a callback that is never coming. The scheme is what closes the sheet, so
+     * both endings have to use it.
+     */
+    const native = getCookie(context, nativeCookie) === '1'
     /*
      * Every failure ends in a redirect rather than a status code, because the thing on the other
      * end of this request is a browser that just followed a provider: a 400 with a JSON body is
@@ -429,7 +584,10 @@ function mountProvider(
      */
     const failed = (reason: string): Response => {
       forget()
-      return context.redirect(`/?signin=${reason}`, 302)
+      return context.redirect(
+        native ? `${NATIVE_CALLBACK}?error=${reason}` : `/?signin=${reason}`,
+        302,
+      )
     }
 
     const state = getCookie(context, stateCookie)
@@ -460,6 +618,25 @@ function mountProvider(
     const userId = await accountFor(deps, name, identity)
     if (userId === null) return failed('no-username')
 
+    /*
+     * The app gets a code; a browser gets a cookie.
+     *
+     * The code is the whole of the native difference, and it exists so that the session token is
+     * not the thing in the URL: iOS hands this URL to the app, but a URL is a URL -- it can be
+     * logged, and it outlives the request. A minute-long single-use secret traded over TLS for a
+     * year-long token is the same handshake with a much smaller thing left lying around.
+     */
+    if (native) {
+      const { token: code } = await issueHandshake(deps, {
+        kind: 'handoff',
+        seconds: HANDOFF_SECONDS,
+        now,
+        userId,
+      })
+      forget()
+      return context.redirect(`${NATIVE_CALLBACK}?code=${encodeURIComponent(code)}`, 302)
+    }
+
     const { token, hash } = newSessionToken()
     const expiresAt = new Date(now.getTime() + SESSION_LIFETIME_MS)
     await deps.store.createSession({ id: hash, userId, kind: 'cookie', expiresAt })
@@ -481,6 +658,66 @@ function mountProvider(
   } else {
     routes.get(`${base}/callback`, (context) => callback(context, context.req.query()))
   }
+}
+
+/**
+ * A handshake secret, its row, and the only copy of it.
+ *
+ * The secret is returned to the caller and the hash is what is stored, which is the same bargain
+ * `sessions` and `login_codes` make: the table is not a list of live credentials.
+ */
+async function issueHandshake(
+  deps: AuthDeps,
+  what: { kind: 'nonce' | 'handoff'; seconds: number; now: Date; userId?: string },
+): Promise<{ token: string }> {
+  const { token } = newSessionToken()
+  await deps.store.createHandshake({
+    id: handshakeId(what.kind, token),
+    kind: what.kind,
+    ...(what.userId === undefined ? {} : { userId: what.userId }),
+    expiresAt: new Date(what.now.getTime() + what.seconds * 1000),
+  })
+  return { token }
+}
+
+/**
+ * Which row a secret belongs to, with the kind mixed in.
+ *
+ * Domain separation, and it earns its keep in one specific place: the value the app shows Apple
+ * is another hash of the same nonce, and that value travels inside a token other software gets to
+ * see. Deriving the row id differently means seeing it is not the same as holding it.
+ */
+function handshakeId(kind: 'nonce' | 'handoff', secret: string): string {
+  return hashSessionToken(`${kind}:${secret}`)
+}
+
+/**
+ * What the app puts in front of Apple, and therefore what comes back inside the token.
+ *
+ * Apple echoes the request's nonce into the identity token verbatim, and the convention is to
+ * send a hash rather than the value itself, so that the thing on the wire is not the thing that
+ * unlocks anything. `crypto.subtle` in the WebView computes exactly this, which is why this is
+ * SHA-256 hex rather than anything cleverer.
+ */
+function appleNonceClaim(nonce: string): string {
+  return hashSessionToken(nonce)
+}
+
+/**
+ * A bearer session for an account, and the body that carries it back.
+ *
+ * The same year and the same `kind` as the code flow's `native: true` branch, in one place, so
+ * that three ways into the app cannot drift into three different session lifetimes.
+ */
+async function bearerSession(
+  deps: AuthDeps,
+  userId: string,
+  now: Date,
+): Promise<{ userId: string; token: string; expiresAt: string }> {
+  const { token, hash } = newSessionToken()
+  const expiresAt = new Date(now.getTime() + BEARER_LIFETIME_MS)
+  await deps.store.createSession({ id: hash, userId, kind: 'bearer', expiresAt })
+  return { userId, token, expiresAt: expiresAt.toISOString() }
 }
 
 /**

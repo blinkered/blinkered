@@ -13,7 +13,12 @@ import { isNativeApp } from './platform.js'
 export type Sso = 'apple' | 'google'
 
 /**
- * Whether the provider buttons can work where this is running. They cannot in the native shell.
+ * Whether **this** flow -- a redirect in the address bar -- can work where the app is running.
+ *
+ * Not the same question as whether the buttons are shown. The shell offers them through
+ * `nativeAuth.ts`, which does the handshake outside the WebView; what cannot happen there is the
+ * navigation below, and the three reasons why are worth keeping because each of them defeats a
+ * different attempted fix:
  *
  * Not a preference, and not a thing that can be fixed by editing a URL. There are three walls
  * behind it and the first one is what somebody actually sees:
@@ -30,14 +35,12 @@ export type Sso = 'apple' | 'google'
  *    Apple's `response_mode=form_post` flow assumes a real browser. So the redirect handshake
  *    cannot work inside a WebView however it is configured.
  *
- * The real fix is out-of-process: `ASAuthorizationAppleIDProvider` for Apple,
- * `ASWebAuthenticationSession` for Google, a custom-scheme callback carrying a bearer token, and
- * `rememberToken()` to receive it. That is Swift work and a server redirect, and it is written up
- * in `docs/IOS.md`. Until then the shell offers the mailed code, which is a complete way in
- * rather than a degraded one -- it needs no provider, no cookie and no second origin.
+ * So the shell does it out of process instead: `ASAuthorizationAppleIDProvider` for Apple,
+ * `ASWebAuthenticationSession` for Google, a one-minute code on a custom scheme, and a bearer
+ * token in `rememberToken()`. `nativeAuth.ts` is that path and `docs/IOS.md` has the shape.
  *
- * Hiding them also takes App Store guideline 4.8 off the table: Sign in with Apple is required
- * only where another third-party sign-in is offered, and in the shell neither is.
+ * Which leaves this function meaning exactly one thing: draw the buttons that navigate. In the
+ * shell the same two buttons are drawn by the same component and call the plugin instead.
  */
 export function ssoAvailable(): boolean {
   return !isNativeApp()

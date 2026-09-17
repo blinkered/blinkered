@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { requestCode, submitCode, whoAmI } from './account.js'
 import { ignoredByManagers } from './autofill.js'
 import type { Account, SignInResult } from './account.js'
-import { ssoAvailable, startUrl } from './sso.js'
+import { ssoAvailable, ssoProblem, startUrl } from './sso.js'
+import type { Sso } from './sso.js'
+import { appleNatively, googleNatively, nativeSsoAvailable } from './nativeAuth.js'
 
 /**
  * Signing in, as a dialog reached from somewhere that explains why.
@@ -102,6 +104,15 @@ export function SignInDialog({
   const [sent, setSent] = useState(() => remembered() !== null)
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<SignInResult | null>(null)
+  /**
+   * What a provider said, when it was the provider that said it.
+   *
+   * Separate from `problem` because the two vocabularies are separate: `SignInResult` is about
+   * the code flow, and this is one of the `?signin=` tags, which `ssoProblem` already turns into
+   * a sentence in every language. Kept as the sentence rather than the tag so there is one place
+   * that knows the mapping.
+   */
+  const [ssoFailure, setSsoFailure] = useState<string | null>(null)
   const card = useRef<HTMLDivElement>(null)
 
   // Escape closes, which is what every dialog on the web does and what the game's own
@@ -155,6 +166,33 @@ export function SignInDialog({
     onSignedIn(identity.account)
   }
 
+  /**
+   * A native sign-in, start to finish.
+   *
+   * It ends the way the code flow ends -- ask who we are, then hand the account up -- because the
+   * token is only worth what the server will say to it. A dismissed sheet says nothing: somebody
+   * changed their mind, and an error message about that is noise.
+   */
+  const natively = async (provider: Sso): Promise<void> => {
+    setBusy(true)
+    setProblem(null)
+    setSsoFailure(null)
+    const outcome = provider === 'apple' ? await appleNatively() : await googleNatively()
+    if (!outcome.ok) {
+      setBusy(false)
+      if (outcome.reason !== 'cancelled') setSsoFailure(ssoProblem(messages, outcome.reason))
+      return
+    }
+    const identity = await whoAmI()
+    setBusy(false)
+    if (identity.state !== 'signed-in') {
+      setProblem('unavailable')
+      return
+    }
+    forget()
+    onSignedIn(identity.account)
+  }
+
   const message =
     problem === 'bad-email'
       ? messages.badEmail
@@ -162,7 +200,7 @@ export function SignInDialog({
         ? messages.badCode
         : problem === 'unavailable'
           ? messages.serverBusy
-          : null
+          : ssoFailure
 
   return (
     <div
@@ -193,7 +231,7 @@ export function SignInDialog({
           The word "or" goes with them. On its own above the email form it would be an "or"
           with nothing on the other side of it.
         */}
-        {ssoAvailable() ? (
+        {ssoAvailable() || nativeSsoAvailable() ? (
           <>
             <div className="signin-providers">
               {PROVIDERS.map((option) => (
@@ -201,10 +239,23 @@ export function SignInDialog({
                   key={option.id}
                   type="button"
                   className="btn"
+                  disabled={busy}
                   onClick={() => {
-                    // A whole navigation rather than a fetch. The handshake has to happen in the
-                    // address bar: the provider shows its own sheet on its own origin, and the
-                    // session cookie it results in is set by our server on the way back.
+                    /*
+                     * Two ways in, and which one is not a preference.
+                     *
+                     * In a browser: a whole navigation rather than a fetch, because the handshake
+                     * has to happen in the address bar -- the provider shows its own sheet on its
+                     * own origin, and the session cookie it results in is set by our server on
+                     * the way back.
+                     *
+                     * In the shell: the operating system, because none of that can happen inside
+                     * a WebView. `nativeAuth.ts` has the three walls in detail.
+                     */
+                    if (nativeSsoAvailable()) {
+                      void natively(option.id)
+                      return
+                    }
                     globalThis.location.assign(startUrl(option.id))
                   }}
                 >

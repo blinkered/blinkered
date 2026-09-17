@@ -22,6 +22,7 @@ const config: AppleConfig = {
   servicesId: 'com.tightlinesoftware.blinkered.signin',
   redirectUri: 'https://playblinkered.com/v1/auth/apple/callback',
   privateKey: pair.privateKey,
+  bundleId: 'com.tightlinesoftware.blinkered',
 }
 
 const AT = new Date('2026-09-15T16:00:00Z')

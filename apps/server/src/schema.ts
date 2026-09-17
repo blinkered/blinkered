@@ -152,6 +152,44 @@ export const sessions = blinkered.table(
 )
 
 /**
+ * A secret in flight, for the two handshakes the native app needs and a browser does not.
+ *
+ * Both are the same shape -- a random string the server issued, good once, for a few minutes --
+ * so they are one table with a `kind` rather than two tables that would drift:
+ *
+ * - **`nonce`**, handed to the app before it asks Apple for a credential. The app puts its hash
+ *   in the request, Apple echoes it inside the signed identity token, and the server will only
+ *   accept a token whose nonce it issued and has not already spent. Without it a captured
+ *   identity token could be replayed for its ten-minute life; with it, once.
+ * - **`handoff`**, written at the end of Google's callback and carried to the app in the custom
+ *   scheme URL. It stands in for the session token, which has no business being in a URL: this
+ *   one is worth sixty seconds and one use, where the token it is traded for is worth a year.
+ *   `user_id` is which account it will sign in, and the only kind that has one.
+ *
+ * The hash is the primary key, never the secret, for the same reason `sessions` and `login_codes`
+ * do it: a leaked table should not be a leaked login. And `consumed_at` rather than a delete, so
+ * that spending one is a single conditional `UPDATE ... RETURNING` -- read-then-write is a race
+ * whose prize is a second session.
+ */
+export const nativeHandshakes = blinkered.table(
+  'native_handshakes',
+  {
+    /** A hash of the secret, never the secret. */
+    id: text('id').primaryKey(),
+    /** `nonce` or `handoff`. */
+    kind: text('kind').notNull(),
+    /** The account a `handoff` will sign in. Null for a `nonce`, which predates knowing. */
+    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    consumedAt: timestamp('consumed_at', { withTimezone: true }),
+  },
+  // Not indexed beyond the primary key. Every read is by id; the only other query is the sweep of
+  // expired rows, which is a sequential scan over a table that holds minutes of traffic.
+  (table) => [index('native_handshakes_user_idx').on(table.userId)],
+)
+
+/**
  * A six-digit code, in flight.
  *
  * The hash, not the code, for the same reason a password table would, and `attempts` because six

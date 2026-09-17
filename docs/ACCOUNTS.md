@@ -374,6 +374,39 @@ title bar uses. Two things about it are decisions rather than plumbing:
   board's language rather than the reader's, and the moderation panel is deliberately English.
   A head that reached for `messages.backToGame` itself could do neither.
 
+### Three routes for the app, and the two secrets they trade in
+
+The shell signs in through `POST /v1/auth/native/nonce`, `POST /v1/auth/native/apple` and
+`POST /v1/auth/native/exchange`. `docs/IOS.md` has why a browser flow cannot work there; this is
+what the server ended up holding.
+
+**One new table, `native_handshakes`, with a `kind`.** Two secrets, the same shape --- a random
+string the server issued, good once, for a few minutes --- so one table rather than two that would
+drift. A `nonce` is issued before the app asks Apple for a credential; a `handoff` is written at
+the end of a native Google callback and carried to the app in the custom-scheme URL. The hash is
+the primary key, never the secret, exactly as `sessions` and `login_codes` do it.
+
+**Spent in the statement that reads it.** `consumeHandshake` is one conditional
+`UPDATE ... RETURNING` with the expiry, the kind and `consumed_at is null` all in the condition.
+Read-then-write is a race whose prize is a second session: two requests presenting the same secret
+both pass a `select`, and both go on to mint a token. One `update` lets exactly one of them see a
+row.
+
+**The nonce is hashed twice, differently.** The row is keyed on `hash('nonce:' + secret)` and the
+value the app shows Apple is `hash(secret)`. Both derive from the same string, and separating them
+means the value travelling inside a signed token other software gets to see is not also the key to
+the row that authorises it.
+
+**The audience is the one field that differs from the web.** A native Apple credential is minted
+for the App ID and a web one for the Services ID, so `appleNativeProvider` is the web provider with
+`clientId` swapped. `oidc.ts` calls that check the security of the whole feature and it is right:
+accepting either audience on either route would mean a token issued to one client signs somebody in
+through the other.
+
+**A year, in one place.** `bearerSession` writes the session for all three ways into the app --- a
+mailed code with `native: true`, a native Apple credential, a Google handoff --- so three doors
+cannot drift into three different session lifetimes.
+
 ### The conversion problem, and the two things aimed at it
 
 One signup in production besides Nick's own, which says the offer of an account was not reaching

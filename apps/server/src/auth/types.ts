@@ -175,4 +175,29 @@ export interface AuthStore {
    * unknown or already-revoked id is a sign-out that has already happened.
    */
   revokeSession(id: string, at: Date): Promise<void>
+  /**
+   * Writes a handshake secret the native app will present back. See `native_handshakes`.
+   *
+   * The hash goes in, never the secret: the caller keeps the only copy and gives it to the app.
+   */
+  createHandshake(row: {
+    id: string
+    kind: 'nonce' | 'handoff'
+    userId?: string
+    expiresAt: Date
+  }): Promise<void>
+  /**
+   * Spends one, and says what it was worth. Null if it is unknown, expired or already spent.
+   *
+   * One conditional `UPDATE ... RETURNING` rather than a read and then a write, because the race
+   * between those two is worth a whole extra session to whoever wins it. The `kind` is part of
+   * the condition so that a nonce cannot be presented as a handoff or the other way about.
+   *
+   * `userId` comes back null for a `nonce`, which never had one.
+   */
+  consumeHandshake(
+    id: string,
+    kind: 'nonce' | 'handoff',
+    at: Date,
+  ): Promise<{ userId: string | null } | null>
 }

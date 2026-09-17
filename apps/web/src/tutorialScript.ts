@@ -50,6 +50,26 @@ export interface Step {
   readonly tiles: readonly string[]
 }
 
+/**
+ * Whether a screen ever builds a word, and whether it ever pays for one.
+ *
+ * Both lines are reserved space: the word line and the gain badges hold their height on every
+ * frame so that a screen does not change shape halfway through, which is the reason they are
+ * drawn with a non-breaking space when they are empty. Reserved *per screen* rather than for the
+ * whole deck, though, because three of the seven never use either -- and there they were 50px of
+ * blank line above the board, which is most of what made those slides read as mostly space.
+ *
+ * Derived from the frames rather than declared on the step. A flag somebody has to remember to
+ * set is a flag that is wrong the first time a screen gains a word.
+ */
+export function showsWord(step: Step): boolean {
+  return step.frames.some((frame) => frame.sel.length > 0 || frame.word !== undefined)
+}
+
+export function showsGain(step: Step): boolean {
+  return step.frames.some((frame) => frame.gain !== undefined)
+}
+
 export function boardFor(language: string): TutorialBoard {
   // English when a language has an alphabet but no board, which is a language with no word list
   // and so one the picker never offers.

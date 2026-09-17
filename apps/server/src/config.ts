@@ -164,6 +164,9 @@ export function smtpConfig(env: Environment): SmtpEnv | null {
  * configuration produces `invalid_client` at sign-in instead of an error at boot. The Team ID,
  * Key ID, Services ID and redirect URI come from the chart; only the key is a secret.
  */
+/** The iOS app in this repository. See the note on `bundleId` below. */
+const DEFAULT_BUNDLE_ID = 'com.tightlinesoftware.blinkered'
+
 export function appleConfig(env: Environment): AppleConfig | null {
   const privateKey = env.BLINKERED_APPLE_PRIVATE_KEY
   if (privateKey === undefined || privateKey === '') return null
@@ -194,8 +197,21 @@ export function appleConfig(env: Environment): AppleConfig | null {
     problems.push(`BLINKERED_APPLE_REDIRECT_URI is not https: ${redirectUri}`)
   }
 
+  /*
+   * The App ID, with a default, which is the one place this file does not insist on being told.
+   *
+   * Every other value here is per account or per environment and has to come from the chart. A
+   * bundle identifier is neither: there is one iOS app, its identifier is the same in development
+   * and in production, and it is already written into `project.pbxproj` and the App Store record.
+   * A deployment that had to be told it would be a deployment that could be told the wrong one.
+   *
+   * Overridable all the same, because a second app -- a TestFlight-only build under a different
+   * identifier, say -- should not need a code change to sign anybody in.
+   */
+  const bundleId = (env.BLINKERED_APPLE_BUNDLE_ID ?? '').trim() || DEFAULT_BUNDLE_ID
+
   if (problems.length > 0) throw new ConfigError(problems)
-  return { teamId, keyId, servicesId, redirectUri, privateKey }
+  return { teamId, keyId, servicesId, redirectUri, privateKey, bundleId }
 }
 
 /**

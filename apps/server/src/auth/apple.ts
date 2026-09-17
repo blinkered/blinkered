@@ -51,6 +51,17 @@ export interface AppleConfig {
   readonly redirectUri: string
   /** The `.p8`, PEM, as downloaded. */
   readonly privateKey: string
+  /**
+   * The iOS app's bundle identifier, which is the audience of a token the **app** obtained.
+   *
+   * A second client id for the same account, and the reason there is one: a native Sign in with
+   * Apple credential is minted for the App ID, so its `aud` is `com.tightlinesoftware.blinkered`
+   * where a web one's is the Services ID. Both are ours and neither may be used in place of the
+   * other -- accepting either audience on either route would mean a token issued to one client
+   * signs somebody in through the other, which is the check `oidc.ts` calls the security of the
+   * whole feature.
+   */
+  readonly bundleId: string
 }
 
 function segment(value: object): string {
@@ -120,4 +131,21 @@ export function appleProvider(config: AppleConfig): OidcProvider {
     secret: (now) => clientSecret(config, now),
     relayed: (email, claims) => flag(claims.is_private_email) || email.endsWith(RELAY_DOMAIN),
   }
+}
+
+/**
+ * Apple for a token the app got by itself, which differs from the web in exactly one field.
+ *
+ * `ASAuthorizationAppleIDProvider` runs the sheet in the operating system and hands the app a
+ * signed identity token directly: there is no authorize URL to build, no code to exchange, no
+ * client secret to mint and no redirect to register. All that is left of the provider is the part
+ * that checks a token -- the keys, the issuer, the audience -- so this reuses the web provider
+ * and changes the audience to the App ID.
+ *
+ * The three unused fields keep their web values rather than becoming empty strings. They are
+ * unreachable on this path (nothing calls `exchange`), and a provider carrying `''` where a URL
+ * belongs is one refactor away from being used.
+ */
+export function appleNativeProvider(config: AppleConfig): OidcProvider {
+  return { ...appleProvider(config), clientId: config.bundleId }
 }

@@ -27,8 +27,17 @@ import { isNativeApp } from './platform.js'
  * Production, unconditionally, and not configurable at runtime: an installed app has no address
  * bar to read a different one from, and a build that could be pointed at another host is a build
  * somebody can point at another host. A development shell is built from a development bundle.
+ *
+ * **Worth knowing before testing sign-in on a device:** an account created from the app is a
+ * production account, and a game played in it goes on the production boards. Dev is behind the
+ * VPN and a phone cannot reach it, so this is the honest arrangement rather than an oversight.
+ *
+ * Exported because the native sign-in needs it as well: `nativeAuth.ts` hands a URL to
+ * `ASWebAuthenticationSession`, which is the one request in the app the WebView does not make --
+ * iOS does -- so it cannot go through `apiFetch`. Reading the value from here keeps one answer to
+ * "where does this app talk to".
  */
-const NATIVE_API_ORIGIN = 'https://playblinkered.com'
+export const NATIVE_API_ORIGIN = 'https://playblinkered.com'
 
 const TOKEN_KEY = 'blinkered.token.v1'
 

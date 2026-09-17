@@ -333,28 +333,8 @@ Three things are still owed here, and none of them is a detail:
   Capacitor plugin and a way for `apps/web` to reach it, and `platform.ts` exists precisely so
   that this package does not depend on Capacitor. Kept behind `token`, `rememberToken` and
   `forgetToken` so the move is one file.
-- **Google and Apple sign-in are not wired for the shell, and the buttons are now hidden there.**
-  Leaving them visible was worse than leaving them unbuilt: on a phone, pressing one **restarted
-  the app at the first screen of the tour**, instantly and with no network involved. `sso.ts`
-  navigates to a root-relative `/v1/auth/<provider>`, and because it is a navigation rather than
-  a fetch it never passes through `api.ts` and never becomes absolute -- so in the shell it asks
-  Capacitor's local server for a path that is not in the bundle, gets `index.html` back the way
-  any unknown path does, and the app boots again. It reads exactly like a crash.
-
-  Two more walls stand behind that one, which is why the answer is not to make the URL absolute.
-  `WKAppBoundDomains` lists this app's own domains and WebKit refuses to navigate an app-bound
-  WebView anywhere else. And Google refuses OAuth in an embedded WebView outright
-  (`disallowed_useragent`), while Apple's `response_mode=form_post` flow assumes a real browser.
-  The handshake has to happen **out of process**: `ASAuthorizationAppleIDProvider` for Apple,
-  `ASWebAuthenticationSession` for Google, a custom-scheme callback carrying a bearer token, and
-  `rememberToken()` to receive it. `sessions.kind` and `platform.ts` were built for that shape.
-
-  Until it exists the shell offers the mailed code, which is a complete way in rather than a
-  degraded one: no provider, no cookie, no second origin. Hiding the buttons also takes guideline
-  4.8 off the table, since Sign in with Apple is required only where another third-party sign-in
-  is offered. `ssoAvailable()` is the one place that decides this, and `apps/web/test/sso.test.ts`
-  runs it as both platforms -- which is the test that did not exist when this shipped broken.
-
+- ~~**Google and Apple sign-in are not wired for the shell.**~~ Built. See below; what is left is
+  two things in Xcode that only Nick can do.
 - **It has now run on a phone and in the simulator**, which is what found the above. What a Mac
   could check -- the unit suites, the server's bearer and CORS routes, geometry under WebKit --
   was all green while the one thing nobody had run was the shell itself. `WKAppBoundDomains` in
@@ -422,6 +402,74 @@ The rest, none of which is code:
 any other third-party SSO exists, which Google sign-in triggered; `apps/server/src/auth/apple.ts`
 implements it, minting the client secret per exchange rather than storing a six-month JWT.
 Xcode's iOS platform support is off the list too: iOS 26.5 is installed here now.
+
+## Signing in without a browser to sign in with
+
+The web flow cannot run in the shell, and the reasons stack three deep. Each one defeats a
+different attempted fix, which is why they are all written down:
+
+1. `sso.ts` navigates to a **root-relative** `/v1/auth/<provider>`, and a navigation does not go
+   through `api.ts`, so it never becomes absolute. In the shell that resolves against
+   `capacitor://localhost`, Capacitor's local server answers an unknown path with `index.html`,
+   and **the app restarts at the first screen of the tour**. That is what a tester sees: an
+   instant crash, with no network involved.
+2. Making it absolute gets as far as `WKAppBoundDomains`, which lists this app's own domains and
+   stops WebKit navigating an app-bound WebView anywhere else.
+3. Turning that off gets as far as Google, which refuses OAuth in an embedded WebView outright
+   (`disallowed_useragent`), and Apple, whose `response_mode=form_post` flow assumes a browser.
+
+So the handshake happens outside the app, and the two providers arrive by different doors.
+
+**Apple is a system sheet.** `ASAuthorizationAppleIDProvider` has no browser in it at all: it
+returns a signed identity token straight to the app, which posts it to `POST /v1/auth/native/apple`
+with the nonce the server issued. Nothing is exchanged and no client secret is involved --- the
+whole check is the one `oidc.ts` already does, with one field different. A native credential's
+audience is the **App ID**, `com.tightlinesoftware.blinkered`, where a web one's is the Services
+ID, and `appleNativeProvider` exists to say so. Accepting either audience on either route would
+mean a token issued to one client signs somebody in through the other.
+
+**Google is a real browser.** `ASWebAuthenticationSession` is Safari, out of process, with its own
+cookie store --- which is what makes Google willing to serve it and what puts the navigation
+beyond app-bound domains. It runs the ordinary web flow, so the existing routes do all of it;
+`?native=1` at the start is what changes the ending. Instead of setting a session cookie on a page
+nobody will see, the callback mints a **one-minute, single-use code** and sends the browser to
+`blinkered://auth?code=...`, which closes the sheet and hands the URL to the app. The app trades
+that code at `POST /v1/auth/native/exchange` for the bearer token.
+
+The code exists so the session token is not the thing in a URL. iOS hands that URL to the app, but
+a URL is a URL: it can be logged and it outlives the request. Sixty seconds and one use, traded
+over TLS for a year-long token, is the same handshake with a much smaller thing left lying around.
+A failure takes the same route --- `blinkered://auth?error=cancelled` --- because redirecting to
+`/?signin=cancelled` would load the game _inside_ the sheet, leaving a playable board in a browser
+window with the app behind it waiting for a callback that never comes.
+
+**The nonce is the server's.** `POST /v1/auth/native/nonce` issues it, the app hashes it before
+Apple sees it, Apple echoes the hash inside the signed token, and the route will only accept a
+nonce it issued and has not spent. Without that, an identity token lifted off the wire is valid
+for ten minutes; with it, for one attempt. Spent _before_ verification, so a token that fails
+checks still costs the nonce --- otherwise the nonce is something to grind against.
+
+**Everything except the two sheets is TypeScript.** `NativeAuth.swift` fetches nothing, stores
+nothing and decides nothing: it shows a sheet and returns a string. The nonce, the hashing, the
+exchange, the origin and the token store are in `apps/web/src/nativeAuth.ts`, where `api.ts`
+already knows the answers and where there are tests. Swift that talks to the API is Swift that
+needs a second copy of all of it, and it is the copy no test runs.
+
+### Two things in Xcode, and one thing to know
+
+- **Sign in with Apple is a capability, not a library.** `App.entitlements` declares
+  `com.apple.developer.applesignin`, and the App ID has to have the capability enabled as well ---
+  Xcode does that for the team when the capability is added to the target. If a build fails with
+  "provisioning profile doesn't support Sign in with Apple", that is the half that is missing, and
+  Signing & Capabilities is where it is fixed rather than in this repository.
+- **The plugin is registered by conformance, not by configuration.** Capacitor finds
+  `CAPBridgedPlugin` conformers at runtime, so `NativeAuth` needs no entry anywhere; it needs to
+  be in the target's Sources, which `project.pbxproj` now says it is. `xcodebuild` against the
+  simulator SDK compiles it, which is as far as a Mac can check it.
+- **The shell talks to production.** `NATIVE_API_ORIGIN` is `https://playblinkered.com` and is
+  deliberately not configurable, so an account created while testing on a device is a real
+  account and a game played in it goes on the real boards. Dev is behind the VPN and a phone
+  cannot reach it, so there is no arrangement where this is otherwise.
 
 ## How this was checked, and what that cannot tell us
 

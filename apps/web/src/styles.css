@@ -2074,7 +2074,9 @@ kbd {
   max-width: 26rem;
   max-height: 92dvh;
   overflow-y: auto;
-  gap: 0.9rem;
+  /* 0.9rem before, over five or six rows of a card that is mostly rows. The tour reads as one
+     card rather than a list, and this is most of the difference. */
+  gap: 0.7rem;
   text-align: center;
 }
 .tut-head {
@@ -2109,9 +2111,20 @@ kbd {
   justify-items: center;
   width: 100%;
 }
-/* A fixed height, so the caption and the buttons below do not move as the frames advance. The
-   board is six tiles on this screen and the letter-swap panel is the game's own, so the two
-   differ in height by enough to jump. */
+/*
+ * As tall as what is in it, which is not what this used to be.
+ *
+ * It was `height: 11rem` on both, so that a board screen and the letter-swap screen were the same
+ * height and neither jumped when the frames advanced. Two things were wrong with that. The board
+ * is 105px, so every board screen carried **71px of air** inside the box -- Nick's note: the
+ * spacing around the tiles was taller than it needed to be. And the swap panel is 192px, so the
+ * one screen the fixed height was supposed to accommodate was the one overflowing it.
+ *
+ * Nothing jumps as a result: a board does not change size as tiles flip, the swap panel is one
+ * component throughout, and the tour boards are six tiles in every language. The heights the card
+ * takes now differ between screens, which they already did -- what is gone is the space that was
+ * not holding anything.
+ */
 .tut-stage .board-wrap,
 .tut-swap {
   position: relative;
@@ -2119,7 +2132,15 @@ kbd {
   place-items: center;
   container-type: inline-size;
   width: 100%;
-  height: 11rem;
+}
+/*
+ * The swap panel keeps a height, and needs one: `LetterSwap` draws its letters absolutely, so an
+ * `auto` box measures nothing and collapses to zero. Measured at 12rem rather than the 11rem it
+ * shared with the board, because 11 was too small for it -- that screen was quietly overflowing
+ * the box the fixed height existed to give it.
+ */
+.tut-swap {
+  height: 12rem;
 }
 .tut-stage .board {
   --tile-max: 3.1rem;
@@ -2156,10 +2177,9 @@ kbd {
   position: static;
   font-size: 0.9375rem;
 }
-/* Holding the space without showing the button, on screens that do not press it. */
-.tut-controls.is-spacer {
-  visibility: hidden;
-}
+/* `.tut-controls.is-spacer` was here: an invisible Complete button reserving 37px on the screens
+   that never press one. The button is now drawn only where a caption tells somebody to press it,
+   so there is nothing left to hide. */
 
 /* The picker, on its own row under the heading. Left where the eye lands after the title. */
 .tut-language {

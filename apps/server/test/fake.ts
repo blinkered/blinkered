@@ -27,7 +27,10 @@ export interface FakeUser extends Profile {
 export interface FakeStore extends Store {
   codes: Map<string, StoredCode & { email: string }>
   users: Map<string, FakeUser>
-  sessions: Map<string, { userId: string; expiresAt: Date; revokedAt: Date | null }>
+  sessions: Map<
+    string,
+    { userId: string; kind: 'cookie' | 'bearer'; expiresAt: Date; revokedAt: Date | null }
+  >
   issued: { id: string; email: string; at: Date }[]
   takenUsernames: Set<string>
   games: { row: GameRow; detail: GameDetail }[]
@@ -62,6 +65,11 @@ export function fakeStore(): FakeStore {
   const hidden = new Set<string>()
   const reports: FakeStore['reports'] = []
   const identities: (NewIdentity & { userId: string })[] = []
+  // The handshake table: same shape, spent the same way, so the tests exercise the same rules.
+  const handshakes = new Map<
+    string,
+    { kind: 'nonce' | 'handoff'; userId: string | null; expiresAt: Date; consumedAt: Date | null }
+  >()
 
   const profileOf = (user: FakeUser): Profile => ({
     userId: user.userId,
@@ -210,6 +218,31 @@ export function fakeStore(): FakeStore {
       sessions.set(id, { ...row, expiresAt: when.until })
       return Promise.resolve()
     },
+    createHandshake: (row) => {
+      handshakes.set(row.id, {
+        kind: row.kind,
+        userId: row.userId ?? null,
+        expiresAt: row.expiresAt,
+        consumedAt: null,
+      })
+      return Promise.resolve()
+    },
+    consumeHandshake: (id, kind, at) => {
+      const row = handshakes.get(id)
+      // Every condition the SQL has, because the tests that matter here are the ones about a
+      // secret being spent twice or arriving late.
+      if (
+        row === undefined ||
+        row.kind !== kind ||
+        row.consumedAt !== null ||
+        row.expiresAt.getTime() <= at.getTime()
+      ) {
+        return Promise.resolve(null)
+      }
+      handshakes.set(id, { ...row, consumedAt: at })
+      return Promise.resolve({ userId: row.userId })
+    },
+
     revokeSession: (id, at) => {
       const row = sessions.get(id)
       if (row !== undefined && row.revokedAt === null) sessions.set(id, { ...row, revokedAt: at })

@@ -191,7 +191,21 @@ describe('the Apple configuration', () => {
       servicesId: 'com.tightlinesoftware.blinkered.signin',
       redirectUri: 'https://playblinkered.com/v1/auth/apple/callback',
       privateKey: complete.BLINKERED_APPLE_PRIVATE_KEY,
+      // Not in `complete`, and that is the point: the iOS app's identifier is the same in every
+      // deployment, so this is the one value here with a default rather than a requirement.
+      bundleId: 'com.tightlinesoftware.blinkered',
     })
+  })
+
+  it('takes a bundle identifier when it is given one', () => {
+    // A second app -- a TestFlight-only build under its own identifier -- should not need a code
+    // change to sign anybody in. Blank is not an override: it is the same as saying nothing.
+    expect(
+      appleConfig({ ...complete, BLINKERED_APPLE_BUNDLE_ID: ' com.example.other ' })?.bundleId,
+    ).toBe('com.example.other')
+    expect(appleConfig({ ...complete, BLINKERED_APPLE_BUNDLE_ID: '   ' })?.bundleId).toBe(
+      'com.tightlinesoftware.blinkered',
+    )
   })
 
   it('is absent rather than broken when there is no key', () => {

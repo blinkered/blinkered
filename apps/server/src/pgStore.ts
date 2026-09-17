@@ -6,6 +6,7 @@ import {
   desc,
   eq,
   exists,
+  gt,
   gte,
   ilike,
   inArray,
@@ -26,6 +27,7 @@ import {
   gameDetail,
   games,
   loginCodes,
+  nativeHandshakes,
   reports,
   sessions,
   users,
@@ -226,6 +228,40 @@ export function pgStore(db: Database): Store {
         .update(sessions)
         .set({ revokedAt: at })
         .where(and(eq(sessions.id, id), isNull(sessions.revokedAt)))
+    },
+
+    createHandshake: async (row) => {
+      await db.insert(nativeHandshakes).values({
+        id: row.id,
+        kind: row.kind,
+        ...(row.userId === undefined ? {} : { userId: row.userId }),
+        expiresAt: row.expiresAt,
+      })
+    },
+
+    consumeHandshake: async (id, kind, at) => {
+      /*
+       * Spent in the statement that reads it, which is the only way this is safe.
+       *
+       * Two requests presenting the same secret at the same time both pass a `select` and both go
+       * on to mint a session; one `update` guarded on `consumed_at is null` lets exactly one of
+       * them see a row. The expiry is in the same condition rather than checked afterwards, so a
+       * secret that has just run out is indistinguishable from one that never existed -- which is
+       * what the caller should be told anyway.
+       */
+      const [row] = await db
+        .update(nativeHandshakes)
+        .set({ consumedAt: at })
+        .where(
+          and(
+            eq(nativeHandshakes.id, id),
+            eq(nativeHandshakes.kind, kind),
+            isNull(nativeHandshakes.consumedAt),
+            gt(nativeHandshakes.expiresAt, at),
+          ),
+        )
+        .returning({ userId: nativeHandshakes.userId })
+      return row === undefined ? null : { userId: row.userId }
     },
 
     usernameTaken: async (normalized) => {

@@ -21,6 +21,7 @@ const config: AppleConfig = {
   servicesId: 'com.tightlinesoftware.blinkered.signin',
   redirectUri: 'https://playblinkered.com/v1/auth/apple/callback',
   privateKey: 'unused: the client is scripted',
+  bundleId: 'com.tightlinesoftware.blinkered',
 }
 
 /** What Apple would have said, or what it would have failed with. */

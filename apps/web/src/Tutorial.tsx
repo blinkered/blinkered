@@ -7,7 +7,7 @@ import { Board } from './Board.js'
 import { Icon } from './Icon.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { LetterSwap } from './LetterSwap.js'
-import { boardFor, stepsFor, wordOf } from './tutorialScript.js'
+import { boardFor, showsGain, showsWord, stepsFor, wordOf } from './tutorialScript.js'
 import type { Frame, Step } from './tutorialScript.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
@@ -347,18 +347,28 @@ export function Tutorial({
             </div>
           ) : (
             <>
-              <p className="tut-word" dir={alphabetFor(language).direction}>
-                {word === ''
-                  ? '\u00a0'
-                  : [...word].map((letter, at) => (
-                      <span
-                        key={`${String(at)}-${letter}`}
-                        className={at === beat.wildAt ? 'from-wild' : undefined}
-                      >
-                        {letter}
-                      </span>
-                    ))}
-              </p>
+              {/*
+                Reserved on the screens that use it, absent on the screens that do not.
+                
+                The non-breaking space is what holds the line's height across a screen's frames,
+                so the card does not change shape as a word is spelled. What it should not do is
+                hold that height on a screen where no word is ever built: three of the seven
+                never build one, and there this was a blank line above the board.
+              */}
+              {showsWord(current) ? (
+                <p className="tut-word" dir={alphabetFor(language).direction}>
+                  {word === ''
+                    ? '\u00a0'
+                    : [...word].map((letter, at) => (
+                        <span
+                          key={`${String(at)}-${letter}`}
+                          className={at === beat.wildAt ? 'from-wild' : undefined}
+                        >
+                          {letter}
+                        </span>
+                      ))}
+                </p>
+              ) : null}
               {/*
                * What the word just paid, in the same animation the HUD plays during a game.
                *
@@ -367,20 +377,22 @@ export function Tutorial({
                * reward buys. The numbers come from the engine rather than being written down,
                * so a change to the economy shows up here rather than making this a lie.
                */}
-              <p className="tut-gain" aria-hidden="true">
-                {beat.gain === undefined ? (
-                  '\u00a0'
-                ) : (
-                  <>
-                    <span key={`f${String(step)}-${String(frame)}`} className="stat-gain">
-                      +{beat.gain.flips} {messages.flips}
-                    </span>
-                    <span key={`p${String(step)}-${String(frame)}`} className="stat-gain is-late">
-                      +{beat.gain.points} {messages.score}
-                    </span>
-                  </>
-                )}
-              </p>
+              {showsGain(current) ? (
+                <p className="tut-gain" aria-hidden="true">
+                  {beat.gain === undefined ? (
+                    '\u00a0'
+                  ) : (
+                    <>
+                      <span key={`f${String(step)}-${String(frame)}`} className="stat-gain">
+                        +{beat.gain.flips} {messages.flips}
+                      </span>
+                      <span key={`p${String(step)}-${String(frame)}`} className="stat-gain is-late">
+                        +{beat.gain.points} {messages.score}
+                      </span>
+                    </>
+                  )}
+                </p>
+              ) : null}
               <div className="board-wrap">
                 <Board
                   state={stateOf(beat, current.tiles, language)}
@@ -403,26 +415,22 @@ export function Tutorial({
            * frame of those screens rather than appearing at the end, because in a real game it
            * is on screen the whole time; what changes is that it lights when the tour presses it.
            */}
-          {current.panel === 'controls' ||
-          current.panel === 'swap' ||
-          current.panel === 'account' ? null : (
+          {current.panel === 'complete' ? (
             /*
-             * Drawn on every board screen, and only *lit* on the screens that press it.
+             * Only on the screens whose captions say to press it, and lit on the frames that do.
              *
-             * Reserved rather than conditional so the card is the same height throughout: a
-             * modal that grows by a button's worth when you press Next makes the whole thing
-             * hop, and the buttons you are aiming at move while you aim. The same reason the
-             * board's own box is a fixed height a few rules up.
+             * It used to be drawn on every board screen and made invisible elsewhere, reserved so
+             * that pressing Next could not change the card's height. Within a screen that still
+             * matters and still holds -- every frame of a screen that presses Complete draws it.
+             * Between screens it was 37px of nothing on three of the seven, which is the sort of
+             * reserved space that adds up to a slide reading as mostly empty.
              */
-            <div
-              className={`tut-controls${current.panel === 'complete' ? '' : ' is-spacer'}`}
-              aria-hidden="true"
-            >
+            <div className="tut-controls" aria-hidden="true">
               <span className={`btn btn-primary${beat.pressing === true ? ' is-lit' : ''}`}>
                 {messages.completeShort}
               </span>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* The account screen draws its own words inside the stage; see above. */}

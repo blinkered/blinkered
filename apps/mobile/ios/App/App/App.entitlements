@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Sign in with Apple, which is a capability rather than a library: `ASAuthorizationAppleIDProvider`
+	  returns `.unknown` at runtime without it, and the error says nothing about entitlements.
+
+	  `Default` rather than an app-group value. The App ID this signs against has to have the
+	  capability enabled too, which Xcode does for the team when the capability is added; if a build
+	  fails with "provisioning profile doesn't support Sign in with Apple", that is the half that is
+	  missing and it is fixed in Xcode rather than here.
+	-->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+</dict>
+</plist>
