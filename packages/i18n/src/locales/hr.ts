@@ -154,8 +154,8 @@ export const hr: Messages = {
   tutPause: 'Pauza zaustavlja sat i skriva ploču, da se stanka ne bi iskoristila za proučavanje.',
   tutRestart: 'Ponovno dijeli novu ploču od početka. Prije toga pita.',
   tutQuit: 'Izlaz završava igru i pokazuje rezultat. Prije toga pita.',
-  tutDoneTitle: 'To je cijela igra',
-  tutDoneBody: 'Odaberite razinu i igrajte. Upute su uvijek u naslovnoj traci.',
+  tutDoneTitle: 'To su pravila',
+  tutDoneBody: 'Upute su uvijek u naslovnoj traci.',
   htBoardTitle: 'Ploča',
   htBoardBody:
     'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Od otkrivenih pločica slažete riječi.',
@@ -219,6 +219,7 @@ export const hr: Messages = {
   leaderboardEmpty: 'Na ovom poretku još nema igara. Budi prvi.',
   leaderboardWouldBe: 'Gdje bi ova igra stajala',
   leaderboardThisGame: 'Ova igra',
+  tutAccountTitle: 'Sačuvaj svoje rezultate',
   tutAccountBody:
     'Račun čuva tvoje igre, stavlja tvoje rezultate na poredak i održava tvoj profil.',
   ssoCancelled: 'Prijava otkazana.',

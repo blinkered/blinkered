@@ -158,8 +158,8 @@ export const ptBR: Messages = {
     'Pausa para o relógio e esconde o tabuleiro, para que a pausa não sirva para estudá-lo.',
   tutRestart: 'Reiniciar distribui um tabuleiro novo do começo. Ele pergunta antes.',
   tutQuit: 'Sair encerra o jogo e mostra sua pontuação. Ele pergunta antes.',
-  tutDoneTitle: 'O jogo é isso',
-  tutDoneBody: 'Escolha um nível e jogue. Como jogar fica sempre na barra de título.',
+  tutDoneTitle: 'Essas são as regras',
+  tutDoneBody: 'Como jogar fica sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
     'As peças viram uma a uma, na ordem de leitura. As peças à vista servem para formar palavras.',
@@ -223,6 +223,7 @@ export const ptBR: Messages = {
   leaderboardEmpty: 'Ainda não há partidas nesta classificação. Seja o primeiro.',
   leaderboardWouldBe: 'Onde esta partida ficaria',
   leaderboardThisGame: 'Esta partida',
+  tutAccountTitle: 'Guarde suas pontuações',
   tutAccountBody:
     'Uma conta salva suas partidas, coloca suas pontuações na classificação e mantém seu perfil.',
   ssoCancelled: 'Entrada cancelada.',

@@ -159,9 +159,8 @@ export const fr: Messages = {
   tutRestart:
     'Recommencer distribue un nouveau plateau depuis le début. Une confirmation est demandée.',
   tutQuit: 'Quitter met fin à la partie et affiche votre score. Une confirmation est demandée.',
-  tutDoneTitle: 'Voilà tout le jeu',
-  tutDoneBody:
-    'Choisissez un niveau et jouez. Comment jouer reste accessible dans la barre de titre.',
+  tutDoneTitle: 'Voilà les règles',
+  tutDoneBody: 'Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
     'Les tuiles se retournent une à une, dans le sens de la lecture. Les tuiles visibles servent à former des mots.',
@@ -227,6 +226,7 @@ export const fr: Messages = {
   leaderboardEmpty: 'Aucune partie dans ce classement pour l’instant. Sois le premier.',
   leaderboardWouldBe: 'Où se classerait cette partie',
   leaderboardThisGame: 'Cette partie',
+  tutAccountTitle: 'Gardez vos scores',
   tutAccountBody:
     'Un compte enregistre vos parties, place vos scores au classement et conserve votre profil.',
   ssoCancelled: 'Connexion annulée.',

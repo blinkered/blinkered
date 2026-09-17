@@ -155,8 +155,8 @@ export const es: Messages = {
     'Pausa detiene el reloj y oculta el tablero, para que un descanso no sirva para estudiarlo.',
   tutRestart: 'Reiniciar reparte un tablero nuevo desde el principio. Pide confirmación.',
   tutQuit: 'Salir termina la partida y muestra tu puntuación. Pide confirmación.',
-  tutDoneTitle: 'Eso es todo el juego',
-  tutDoneBody: 'Elige un nivel y juega. Cómo jugar está siempre en la barra de título.',
+  tutDoneTitle: 'Esas son las reglas',
+  tutDoneBody: 'Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
     'Las fichas se descubren una a una, en orden de lectura. Las fichas descubiertas sirven para formar palabras.',
@@ -221,6 +221,7 @@ export const es: Messages = {
   leaderboardEmpty: 'Todavía no hay partidas en esta clasificación. Sé el primero.',
   leaderboardWouldBe: 'Dónde quedaría esta partida',
   leaderboardThisGame: 'Esta partida',
+  tutAccountTitle: 'Guarda tus puntuaciones',
   tutAccountBody:
     'Una cuenta guarda tus partidas, pone tus puntuaciones en la clasificación y mantiene tu perfil.',
   ssoCancelled: 'Se canceló el inicio de sesión.',

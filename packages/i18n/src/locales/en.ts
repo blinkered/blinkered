@@ -160,9 +160,8 @@ export const en: Messages = {
   tutPause: 'Pause stops the clock and hides the board, so a break cannot be used to study it.',
   tutRestart: 'Restart deals a new board from the beginning. It asks first.',
   tutQuit: 'Quit ends the game and shows what you scored. It asks first.',
-  tutDoneTitle: 'That is the whole game',
-  tutDoneBody:
-    'Pick a level and play. How to play is always in the title bar if you want it again.',
+  tutDoneTitle: 'Those are the rules',
+  tutDoneBody: 'How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
     'Tiles turn face up one at a time, in reading order. Exposed tiles can be used to form words.',
@@ -227,6 +226,7 @@ export const en: Messages = {
   leaderboardEmpty: 'No games on this board yet. Be the first.',
   leaderboardWouldBe: 'Where this game would rank',
   leaderboardThisGame: 'This game',
+  tutAccountTitle: 'Keep your scores',
   tutAccountBody:
     'An account saves your games, puts your scores on the leaderboard, and keeps your profile.',
   ssoCancelled: 'Signing in was cancelled.',

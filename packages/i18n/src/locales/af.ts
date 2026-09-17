@@ -161,9 +161,8 @@ export const af: Messages = {
     'te bestudeer nie.',
   tutRestart: 'Herbegin deel ’n nuwe bord van voor af. Dit vra eers.',
   tutQuit: 'Stop beëindig die spel en wys wat jy behaal het. Dit vra eers.',
-  tutDoneTitle: 'Dis die hele spel',
-  tutDoneBody:
-    'Kies ’n vlak en speel. Hoe om te speel is altyd in die titelbalk as jy dit weer wil hê.',
+  tutDoneTitle: 'Dis die reëls',
+  tutDoneBody: 'Hoe om te speel is altyd in die titelbalk as jy dit weer wil hê.',
   htBoardTitle: 'Die bord',
   htBoardBody:
     'Blokkies draai een vir een oop, in leesrigting. Met die oop blokkies vorm jy woorde.',
@@ -227,6 +226,7 @@ export const af: Messages = {
   leaderboardEmpty: 'Nog geen speletjies op hierdie bord nie. Wees die eerste.',
   leaderboardWouldBe: 'Waar hierdie speletjie sou staan',
   leaderboardThisGame: 'Hierdie speletjie',
+  tutAccountTitle: 'Hou jou tellings',
   tutAccountBody:
     '’n Rekening stoor jou speletjies, plaas jou tellings op die ranglys, en hou jou profiel.',
   ssoCancelled: 'Aanmelding gekanselleer.',

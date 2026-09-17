@@ -159,8 +159,8 @@ export const lt: Messages = {
   tutPause: 'Pauzė sustabdo laikrodį ir paslepia lentą, kad pertrauka nebūtų skirta jai mokytis.',
   tutRestart: 'Iš naujo išdalija naują lentą nuo pradžių. Pirma paklausia.',
   tutQuit: 'Baigti užbaigia žaidimą ir parodo rezultatą. Pirma paklausia.',
-  tutDoneTitle: 'Štai ir visas žaidimas',
-  tutDoneBody: 'Pasirinkite sudėtingumą ir žaiskite. Kaip žaisti visada rasite prie pavadinimo.',
+  tutDoneTitle: 'Tokios yra taisyklės',
+  tutDoneBody: 'Kaip žaisti visada rasite prie pavadinimo.',
   htBoardTitle: 'Lenta',
   htBoardBody: 'Kauliukai verčiasi po vieną, skaitymo tvarka. Iš atverstų sudaromi žodžiai.',
   htWordsTitle: 'Žodžiai',
@@ -223,6 +223,7 @@ export const lt: Messages = {
   leaderboardEmpty: 'Šioje lentelėje dar nėra žaidimų. Būk pirmas.',
   leaderboardWouldBe: 'Kur būtų šis žaidimas',
   leaderboardThisGame: 'Šis žaidimas',
+  tutAccountTitle: 'Išsaugok savo rezultatus',
   tutAccountBody:
     'Paskyra išsaugo tavo žaidimus, įrašo rezultatus į lentelę ir saugo tavo profilį.',
   ssoCancelled: 'Prisijungimas atšauktas.',

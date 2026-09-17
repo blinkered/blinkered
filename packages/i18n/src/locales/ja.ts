@@ -167,8 +167,8 @@ export const ja: Messages = {
   tutPause: '一時停止は時計を止めて盤を隠します。休憩のあいだに覚えられないように。',
   tutRestart: 'やり直すは最初から新しい盤を配ります。先に確認します。',
   tutQuit: 'やめるはゲームを終えて得点を見せます。先に確認します。',
-  tutDoneTitle: 'ゲームはこれで全部です',
-  tutDoneBody: '難易度を選んで遊びましょう。遊び方はいつでもタイトルの横にあります。',
+  tutDoneTitle: 'ルールはこれで全部です',
+  tutDoneBody: '遊び方はいつでもタイトルの横にあります。',
   htBoardTitle: '盤',
   htBoardBody:
     'もじは読む順に1枚ずつ表になります。表になったもじで単語を作ります。盤の上では濁点も半濁点もつけて読めるので、「は」は「ば」として使えます。小さい「っ」「ゃ」「ゅ」「ょ」も大きいもじで表します。',
@@ -231,6 +231,7 @@ export const ja: Messages = {
   leaderboardEmpty: 'このランキングにはまだ記録がありません。最初の一人になりましょう。',
   leaderboardWouldBe: 'この記録が入る位置',
   leaderboardThisGame: 'この記録',
+  tutAccountTitle: 'スコアを残す',
   tutAccountBody:
     'アカウントがあれば、記録が保存され、スコアがランキングに載り、プロフィールを管理できます。',
   ssoCancelled: 'ログインを中止しました。',

@@ -160,8 +160,8 @@ export const ca: Messages = {
     'Pausa atura el rellotge i amaga el tauler, perquè un descans no serveixi per estudiar-lo.',
   tutRestart: 'Reinicia reparteix un tauler nou des del principi. Ho pregunta abans.',
   tutQuit: 'Deixa-ho acaba la partida i mostra els punts. Ho pregunta abans.',
-  tutDoneTitle: 'Això és tot el joc',
-  tutDoneBody: 'Trieu un nivell i jugueu. Com s’hi juga sempre és a la barra del títol.',
+  tutDoneTitle: 'Aquestes són les regles',
+  tutDoneBody: 'Com s’hi juga sempre és a la barra del títol.',
   htBoardTitle: 'El tauler',
   htBoardBody:
     'Les fitxes es giren d’una en una, en ordre de lectura. Amb les destapades es formen mots.',
@@ -226,6 +226,7 @@ export const ca: Messages = {
   leaderboardEmpty: 'Encara no hi ha partides en aquesta classificació. Sigues el primer.',
   leaderboardWouldBe: 'On quedaria aquesta partida',
   leaderboardThisGame: 'Aquesta partida',
+  tutAccountTitle: 'Guarda les teves puntuacions',
   tutAccountBody:
     'Un compte guarda les teves partides, posa les teves puntuacions a la classificació i manté el teu perfil.',
   ssoCancelled: "S'ha cancel·lat l'inici de sessió.",

@@ -160,8 +160,8 @@ export const pl: Messages = {
     'Pauza zatrzymuje zegar i zakrywa planszę, żeby przerwa nie służyła do uczenia się jej.',
   tutRestart: 'Od nowa rozdaje planszę od początku. Najpierw pyta.',
   tutQuit: 'Zakończ kończy grę i pokazuje wynik. Najpierw pyta.',
-  tutDoneTitle: 'To cała gra',
-  tutDoneBody: 'Wybierz poziom i graj. Jak grać jest zawsze przy tytule, gdybyś chciał wrócić.',
+  tutDoneTitle: 'To wszystkie zasady',
+  tutDoneBody: 'Jak grać jest zawsze przy tytule, gdybyś chciał wrócić.',
   htBoardTitle: 'Plansza',
   htBoardBody:
     'Płytki odkrywają się pojedynczo, w kolejności czytania. Z odkrytych układa się słowa.',
@@ -225,6 +225,7 @@ export const pl: Messages = {
   leaderboardEmpty: 'Nie ma jeszcze gier w tej tabeli. Bądź pierwszy.',
   leaderboardWouldBe: 'Gdzie znalazłaby się ta gra',
   leaderboardThisGame: 'Ta gra',
+  tutAccountTitle: 'Zachowaj swoje wyniki',
   tutAccountBody: 'Konto zapisuje twoje gry, umieszcza wyniki w tabeli i przechowuje twój profil.',
   ssoCancelled: 'Logowanie anulowane.',
   ssoExpired: 'To trwało za długo. Zaloguj się jeszcze raz.',

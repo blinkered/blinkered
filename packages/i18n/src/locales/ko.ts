@@ -159,8 +159,8 @@ export const ko: Messages = {
   tutPause: '일시정지는 시계를 멈추고 판을 가립니다. 쉬는 동안 판을 외울 수 없게요.',
   tutRestart: '다시 시작은 처음부터 새 판을 돌립니다. 먼저 물어봅니다.',
   tutQuit: '나가기는 게임을 끝내고 점수를 보여줍니다. 먼저 물어봅니다.',
-  tutDoneTitle: '이게 게임의 전부입니다',
-  tutDoneBody: '난이도를 고르고 시작하세요. 게임 방법은 언제나 제목 줄에 있습니다.',
+  tutDoneTitle: '규칙은 이것뿐입니다',
+  tutDoneBody: '게임 방법은 언제나 제목 줄에 있습니다.',
   htBoardTitle: '판',
   htBoardBody: '타일은 읽는 순서대로 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
   htWordsTitle: '단어',
@@ -222,6 +222,7 @@ export const ko: Messages = {
   leaderboardEmpty: '이 순위표에는 아직 기록이 없습니다. 첫 번째가 되어 보세요.',
   leaderboardWouldBe: '이 기록이 들어갈 자리',
   leaderboardThisGame: '이 기록',
+  tutAccountTitle: '점수를 남기세요',
   tutAccountBody:
     '계정이 있으면 게임이 저장되고, 점수가 순위표에 오르며, 프로필을 관리할 수 있습니다.',
   ssoCancelled: '로그인을 취소했습니다.',

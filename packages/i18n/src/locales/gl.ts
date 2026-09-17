@@ -160,8 +160,8 @@ export const gl: Messages = {
     'A pausa detén o reloxo e agocha o taboleiro, para que un descanso non sirva para estudalo.',
   tutRestart: 'Reiniciar reparte un taboleiro novo desde o principio. Pregunta antes.',
   tutQuit: 'Deixalo remata a partida e amosa o que puntuou. Pregunta antes.',
-  tutDoneTitle: 'Iso é todo o xogo',
-  tutDoneBody: 'Escolla un nivel e xogue. Como se xoga está sempre na barra do título.',
+  tutDoneTitle: 'Esas son as regras',
+  tutDoneBody: 'Como se xoga está sempre na barra do título.',
   htBoardTitle: 'O taboleiro',
   htBoardBody:
     'As fichas viran unha a unha, en orde de lectura. Coas descubertas fórmanse palabras.',
@@ -226,6 +226,7 @@ export const gl: Messages = {
   leaderboardEmpty: 'Aínda non hai partidas nesta clasificación. Se o primeiro.',
   leaderboardWouldBe: 'Onde quedaría esta partida',
   leaderboardThisGame: 'Esta partida',
+  tutAccountTitle: 'Garda as túas puntuacións',
   tutAccountBody:
     'Unha conta garda as túas partidas, pon as túas puntuacións na clasificación e mantén o teu perfil.',
   ssoCancelled: 'Cancelouse o inicio de sesión.',

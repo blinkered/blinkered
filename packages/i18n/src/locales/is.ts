@@ -159,8 +159,8 @@ export const is: Messages = {
   tutPause: 'Hlé stöðvar klukkuna og felur borðið, svo pása nýtist ekki til að læra það.',
   tutRestart: 'Upp á nýtt gefur nýtt borð frá byrjun. Það spyr fyrst.',
   tutQuit: 'Hætta lýkur leiknum og sýnir stigin. Það spyr fyrst.',
-  tutDoneTitle: 'Þetta er allur leikurinn',
-  tutDoneBody: 'Veldu erfiðleikastig og spilaðu. Hvernig á að spila er alltaf við titilinn.',
+  tutDoneTitle: 'Þetta eru reglurnar',
+  tutDoneBody: 'Hvernig á að spila er alltaf við titilinn.',
   htBoardTitle: 'Borðið',
   htBoardBody: 'Flísarnar snúast við ein í einu, í lestrarröð. Úr þeim sem snúa upp má mynda orð.',
   htWordsTitle: 'Orðin',
@@ -223,6 +223,7 @@ export const is: Messages = {
   leaderboardEmpty: 'Engir leikir á þessari töflu enn. Verðu fyrstur.',
   leaderboardWouldBe: 'Hvar þessi leikur myndi standa',
   leaderboardThisGame: 'Þessi leikur',
+  tutAccountTitle: 'Haltu stigunum þínum',
   tutAccountBody:
     'Reikningur vistar leikina þína, setur stigin þín á stigatöfluna og heldur sniðinu þínu.',
   ssoCancelled: 'Hætt við innskráningu.',

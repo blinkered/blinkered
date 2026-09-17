@@ -157,9 +157,8 @@ export const de: Messages = {
     'Pause hält die Uhr an und verdeckt das Feld, damit eine Pause nicht zum Studieren dient.',
   tutRestart: 'Neustart teilt ein neues Feld von vorn aus. Es fragt vorher nach.',
   tutQuit: 'Beenden schließt die Partie ab und zeigt Ihr Ergebnis. Es fragt vorher nach.',
-  tutDoneTitle: 'Das ist das ganze Spiel',
-  tutDoneBody:
-    'Wählen Sie eine Stufe und spielen Sie. Die Anleitung bleibt oben in der Titelleiste.',
+  tutDoneTitle: 'Das sind die Regeln',
+  tutDoneBody: 'Die Anleitung bleibt oben in der Titelleiste.',
   htBoardTitle: 'Das Feld',
   htBoardBody:
     'Die Steine werden einzeln umgedreht, in Leserichtung. Aus den offenen Steinen bildest du Wörter.',
@@ -225,6 +224,7 @@ export const de: Messages = {
   leaderboardEmpty: 'Noch keine Spiele auf dieser Rangliste. Sei der Erste.',
   leaderboardWouldBe: 'Wo dieses Spiel stehen würde',
   leaderboardThisGame: 'Dieses Spiel',
+  tutAccountTitle: 'Punkte behalten',
   tutAccountBody:
     'Ein Konto speichert deine Spiele, setzt deine Punkte auf die Rangliste und verwaltet dein Profil.',
   ssoCancelled: 'Anmeldung abgebrochen.',

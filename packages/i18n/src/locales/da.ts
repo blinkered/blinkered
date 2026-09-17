@@ -158,8 +158,8 @@ export const da: Messages = {
     'Pause stopper uret og skjuler brættet, så en pause ikke kan bruges til at studere det.',
   tutRestart: 'Forfra deler et nyt bræt fra begyndelsen. Den spørger først.',
   tutQuit: 'Afslut slutter spillet og viser hvad du fik. Den spørger først.',
-  tutDoneTitle: 'Det er hele spillet',
-  tutDoneBody: 'Vælg en sværhedsgrad og spil. Sådan spiller du står altid ved titlen.',
+  tutDoneTitle: 'Det er reglerne',
+  tutDoneBody: 'Sådan spiller du står altid ved titlen.',
   htBoardTitle: 'Brættet',
   htBoardBody:
     'Brikkerne vendes én ad gangen, i læserækkefølge. Vendte brikker kan bruges til at danne ord.',
@@ -224,6 +224,7 @@ export const da: Messages = {
   leaderboardEmpty: 'Der er endnu ingen spil på denne rangliste. Bliv den første.',
   leaderboardWouldBe: 'Hvor dette spil ville stå',
   leaderboardThisGame: 'Dette spil',
+  tutAccountTitle: 'Gem dine resultater',
   tutAccountBody:
     'En konto gemmer dine spil, sætter dine resultater på ranglisten og holder din profil.',
   ssoCancelled: 'Login blev afbrudt.',

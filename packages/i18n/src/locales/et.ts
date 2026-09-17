@@ -159,8 +159,8 @@ export const et: Messages = {
   tutPause: 'Paus peatab kella ja peidab laua, et vaheaega ei saaks selle õppimiseks kasutada.',
   tutRestart: 'Uuesti jagab uue laua algusest peale. Küsib enne.',
   tutQuit: 'Lõpeta lõpetab mängu ja näitab tulemust. Küsib enne.',
-  tutDoneTitle: 'See ongi kogu mäng',
-  tutDoneBody: 'Valige raskusaste ja mängige. Kuidas mängida on alati pealkirja juures.',
+  tutDoneTitle: 'Need on reeglid',
+  tutDoneBody: 'Kuidas mängida on alati pealkirja juures.',
   htBoardTitle: 'Laud',
   htBoardBody:
     'Nupud pöörduvad ükshaaval, lugemise järjekorras. Lahtistest nuppudest moodustatakse sõnu.',
@@ -223,6 +223,7 @@ export const et: Messages = {
   leaderboardEmpty: 'Selles edetabelis pole veel mänge. Ole esimene.',
   leaderboardWouldBe: 'Kus see mäng asuks',
   leaderboardThisGame: 'See mäng',
+  tutAccountTitle: 'Hoia oma tulemused alles',
   tutAccountBody:
     'Konto salvestab sinu mängud, paneb tulemused edetabelisse ja hoiab sinu profiili.',
   ssoCancelled: 'Sisselogimine katkestati.',

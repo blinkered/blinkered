@@ -101,6 +101,15 @@ export interface Messages {
   readonly tutPause: string
   readonly tutRestart: string
   readonly tutQuit: string
+  /**
+   * The next-to-last screen of the tour, which says the rules are covered and nothing more.
+   *
+   * It used to read "That is the whole game" over "Pick a level and play", and then the tour
+   * showed another screen. Announcing the ending and then not ending is what Nick caught:
+   * "then...brings you to another screen. Seems weird." So the heading now closes the *rules*
+   * and the body keeps only the part that is a standing fact -- how to play is in the title bar.
+   * The send-off is gone from here; `tutorialStart` on the last screen is the send-off.
+   */
   readonly tutDoneTitle: string
   readonly tutDoneBody: string
 
@@ -374,12 +383,16 @@ export interface Messages {
    * reaching anybody. The tour is the one place every player passes through, so the last thing
    * before Start playing says what an account is for.
    *
-   * One string. The button reuses `signInTitle`, already "Sign in or sign up" in every language,
-   * and opens the same `SignInDialog` the rest of the app uses rather than a second sign-in
-   * surface with its own validation, its own code step and its own way to fail. The screen's
-   * heading is `tutDoneTitle`, because this is not a screen of its own any more: it was one, and
-   * following "That is the whole game" with another screen read as a false ending.
+   * Two strings, on a screen of its own. Folding them onto the rules screen instead made that
+   * screen carry a board, a closing line, a pitch, a button, a checkbox and the navigation at
+   * once, which is crowded; the answer to a false ending is to stop announcing the ending, not
+   * to lose the screen.
+   *
+   * The button reuses `signInTitle`, already "Sign in or sign up" in every language, and opens
+   * the same `SignInDialog` the rest of the app uses rather than a second sign-in surface with
+   * its own validation, its own code step and its own way to fail.
    */
+  readonly tutAccountTitle: string
   readonly tutAccountBody: string
 
   /** Coming back from Apple or Google. Vague on purpose about which check failed. */

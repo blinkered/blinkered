@@ -153,8 +153,8 @@ export const sv: Messages = {
     'Paus stoppar klockan och döljer brädet, så att en paus inte går att använda för att studera det.',
   tutRestart: 'Börja om delar ut ett nytt bräde från början. Den frågar först.',
   tutQuit: 'Avsluta avslutar partiet och visar din poäng. Den frågar först.',
-  tutDoneTitle: 'Det är hela spelet',
-  tutDoneBody: 'Välj en nivå och spela. Så spelar du finns alltid i titelraden.',
+  tutDoneTitle: 'Det är reglerna',
+  tutDoneBody: 'Så spelar du finns alltid i titelraden.',
   htBoardTitle: 'Brädet',
   htBoardBody:
     'Brickorna vänds upp en i taget, i läsordning. Av de uppvända brickorna bildar du ord.',
@@ -219,6 +219,7 @@ export const sv: Messages = {
   leaderboardEmpty: 'Inga spel på den här topplistan än. Bli först.',
   leaderboardWouldBe: 'Var det här spelet skulle hamna',
   leaderboardThisGame: 'Det här spelet',
+  tutAccountTitle: 'Behåll dina poäng',
   tutAccountBody:
     'Ett konto sparar dina spel, sätter dina poäng på topplistan och behåller din profil.',
   ssoCancelled: 'Inloggningen avbröts.',

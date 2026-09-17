@@ -162,8 +162,8 @@ export const vi: Messages = {
   tutPause: 'Tạm dừng ngừng đồng hồ và che bàn, để giờ nghỉ không dùng để học thuộc bàn.',
   tutRestart: 'Chơi lại từ đầu chia một bàn mới từ đầu. Nó hỏi trước.',
   tutQuit: 'Thoát kết thúc ván và cho xem điểm. Nó hỏi trước.',
-  tutDoneTitle: 'Cả trò chơi chỉ có vậy',
-  tutDoneBody: 'Chọn một mức và chơi. Cách chơi luôn nằm cạnh tên trò chơi.',
+  tutDoneTitle: 'Luật chơi chỉ có vậy',
+  tutDoneBody: 'Cách chơi luôn nằm cạnh tên trò chơi.',
   htBoardTitle: 'Bàn chơi',
   htBoardBody:
     'Các quân mở lần lượt, theo thứ tự đọc. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
@@ -226,6 +226,7 @@ export const vi: Messages = {
   leaderboardEmpty: 'Chưa có trận nào trên bảng này. Hãy là người đầu tiên.',
   leaderboardWouldBe: 'Trận này sẽ đứng ở đâu',
   leaderboardThisGame: 'Trận này',
+  tutAccountTitle: 'Giữ lại điểm của bạn',
   tutAccountBody:
     'Tài khoản lưu các trận của bạn, đưa điểm lên bảng xếp hạng và giữ hồ sơ của bạn.',
   ssoCancelled: 'Đã hủy đăng nhập.',

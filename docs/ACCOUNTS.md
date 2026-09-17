@@ -328,6 +328,17 @@ anybody. Two changes, and the second is much the stronger:
 its own validation, its own code step, its own errors in fifty-one languages, and would give the
 tour a way to fail halfway through.
 
+It went in badly twice before it went in well, and both mistakes are about the screen *before*
+it. The tour's rules screen used to read "That is the whole game" over "Pick a level and play",
+so adding a screen after it announced an ending and then did not end. The first fix was to delete
+the new screen and fold the offer onto that one, which was the wrong end of the problem: it left
+a card carrying a board, a closing line, a pitch, a button, a checkbox and the navigation, and
+the pitch sat in the middle of a send-off. The answer was to stop the rules screen talking like
+the last screen -- it is headed "Those are the rules" now and its body keeps only the standing
+fact, that how to play is always in the title bar. Nothing announces an ending until the ending,
+which is the `Start playing` button itself. **A screen that says the tour is over has to be the
+one that is over.**
+
 **The projected board on the game-over panel**, which is Nick's idea and better than the slide.
 A paragraph asks somebody to imagine a reason to sign up; this hands them one they can see --
 their score, in the board's own shape, third from the top among named strangers.

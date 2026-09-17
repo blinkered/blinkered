@@ -155,8 +155,8 @@ export const it: Messages = {
   tutPause: 'Pausa ferma il tempo e nasconde il tabellone, così una pausa non serve a studiarlo.',
   tutRestart: "Ricomincia distribuisce un tabellone nuovo dall'inizio. Chiede conferma.",
   tutQuit: 'Esci chiude la partita e mostra il punteggio. Chiede conferma.',
-  tutDoneTitle: 'Il gioco è tutto qui',
-  tutDoneBody: 'Scegli un livello e gioca. Come si gioca resta sempre nella barra del titolo.',
+  tutDoneTitle: 'Queste sono le regole',
+  tutDoneBody: 'Come si gioca resta sempre nella barra del titolo.',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
     'Le tessere si girano una alla volta, in ordine di lettura. Le tessere scoperte servono a comporre parole.',
@@ -222,6 +222,7 @@ export const it: Messages = {
   leaderboardEmpty: 'Ancora nessuna partita in questa classifica. Sii il primo.',
   leaderboardWouldBe: 'Dove si classificherebbe questa partita',
   leaderboardThisGame: 'Questa partita',
+  tutAccountTitle: 'Conserva i tuoi punteggi',
   tutAccountBody:
     'Un account salva le tue partite, mette i tuoi punteggi in classifica e conserva il tuo profilo.',
   ssoCancelled: 'Accesso annullato.',

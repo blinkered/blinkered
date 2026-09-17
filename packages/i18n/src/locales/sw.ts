@@ -159,9 +159,8 @@ export const sw: Messages = {
   tutPause: 'Simamisha husimamisha saa na kuficha ubao, ili mapumziko yasitumike kuusoma.',
   tutRestart: 'Anza upya hugawa ubao mpya kutoka mwanzo. Huuliza kwanza.',
   tutQuit: 'Toka humaliza mchezo na kuonyesha ulichopata. Huuliza kwanza.',
-  tutDoneTitle: 'Huo ndio mchezo mzima',
-  tutDoneBody:
-    'Chagua kiwango na ucheze. Jinsi ya kucheza iko kwenye mwambaa wa kichwa ukiitaka tena.',
+  tutDoneTitle: 'Hizo ni kanuni zote',
+  tutDoneBody: 'Jinsi ya kucheza iko kwenye mwambaa wa kichwa ukiitaka tena.',
   htBoardTitle: 'Ubao',
   htBoardBody:
     'Vigae hufunuka kimoja baada ya kingine, kwa mpangilio wa kusoma. Kutoka vigae vilivyo wazi unaunda maneno.',
@@ -225,6 +224,7 @@ export const sw: Messages = {
   leaderboardEmpty: 'Hakuna michezo kwenye jedwali hili bado. Kuwa wa kwanza.',
   leaderboardWouldBe: 'Mchezo huu ungekuwa wapi',
   leaderboardThisGame: 'Mchezo huu',
+  tutAccountTitle: 'Hifadhi alama zako',
   tutAccountBody:
     'Akaunti huhifadhi michezo yako, huweka alama zako kwenye jedwali, na hutunza wasifu wako.',
   ssoCancelled: 'Kuingia kumeghairiwa.',

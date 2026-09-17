@@ -170,9 +170,8 @@ export const tl: Messages = {
     'pag-aaral nito.',
   tutRestart: 'Nagbibigay ang Simulan muli ng bagong tablero mula sa umpisa. Nagtatanong muna.',
   tutQuit: 'Tinatapos ng Umalis ang laro at ipinapakita ang puntos mo. Nagtatanong muna.',
-  tutDoneTitle: 'Iyan na ang buong laro',
-  tutDoneBody:
-    'Pumili ng antas at maglaro. Nasa title bar palagi ang Paano maglaro kung kailanganin mo ulit.',
+  tutDoneTitle: 'Iyan ang mga patakaran',
+  tutDoneBody: 'Nasa title bar palagi ang Paano maglaro kung kailanganin mo ulit.',
   htBoardTitle: 'Ang tablero',
   htBoardBody:
     'Isa-isang bumubukas ang mga piyesa, sunod sa daloy ng pagbasa. Mula sa mga bukas na piyesa ka bumubuo ng salita.',
@@ -238,6 +237,7 @@ export const tl: Messages = {
   leaderboardEmpty: 'Wala pang laro sa talaang ito. Maging una ka.',
   leaderboardWouldBe: 'Saan mapupunta ang larong ito',
   leaderboardThisGame: 'Ang larong ito',
+  tutAccountTitle: 'Itago ang iyong mga puntos',
   tutAccountBody:
     'Ang account ay nag-iingat ng mga laro mo, naglalagay ng puntos mo sa talaan, at nag-iingat ng profile mo.',
   ssoCancelled: 'Kinansela ang pag-sign in.',

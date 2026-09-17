@@ -163,8 +163,8 @@ export const pcm: Messages = {
   tutPause: 'Pause go stop di clock and hide di board, so break no go help you study am.',
   tutRestart: 'Start again go deal new board from di beginning. E go ask you first.',
   tutQuit: 'Quit go end di game and show wetin you score. E go ask you first.',
-  tutDoneTitle: 'Na dat be di whole game',
-  tutDoneBody: 'Pick level make you play. How to play dey always for di title bar.',
+  tutDoneTitle: 'Na dat be di rules',
+  tutDoneBody: 'How to play dey always for di title bar.',
   htBoardTitle: 'Di board',
   htBoardBody:
     'Tiles dey turn face up one by one, di way you dey read. You fit take di ones wey open form word.',
@@ -229,6 +229,7 @@ export const pcm: Messages = {
   leaderboardEmpty: 'No game dey dis board yet. Be di first one.',
   leaderboardWouldBe: 'Where dis game go stand',
   leaderboardThisGame: 'Dis game',
+  tutAccountTitle: 'Keep your score',
   tutAccountBody:
     'Account go save your game, put your score on di leaderboard, and hold your profile.',
   ssoCancelled: 'Dem cancel di sign in.',

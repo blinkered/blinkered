@@ -153,8 +153,8 @@ export const no: Messages = {
     'Pause stopper klokken og skjuler brettet, slik at en pause ikke kan brukes til å studere det.',
   tutRestart: 'Start på nytt deler ut et nytt brett fra begynnelsen. Den spør først.',
   tutQuit: 'Avslutt avslutter partiet og viser poengsummen din. Den spør først.',
-  tutDoneTitle: 'Det er hele spillet',
-  tutDoneBody: 'Velg et nivå og spill. Slik spiller du ligger alltid i tittellinjen.',
+  tutDoneTitle: 'Det er reglene',
+  tutDoneBody: 'Slik spiller du ligger alltid i tittellinjen.',
   htBoardTitle: 'Brettet',
   htBoardBody:
     'Brikkene snus opp én om gangen, i leseretningen. Av brikkene som ligger åpne lager du ord.',
@@ -219,6 +219,7 @@ export const no: Messages = {
   leaderboardEmpty: 'Ingen spill på denne ranglisten ennå. Bli den første.',
   leaderboardWouldBe: 'Hvor dette spillet ville stå',
   leaderboardThisGame: 'Dette spillet',
+  tutAccountTitle: 'Behold poengene dine',
   tutAccountBody:
     'En konto lagrer spillene dine, setter poengene dine på ranglisten og tar vare på profilen din.',
   ssoCancelled: 'Innloggingen ble avbrutt.',

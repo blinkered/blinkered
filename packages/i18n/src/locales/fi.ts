@@ -157,8 +157,8 @@ export const fi: Messages = {
     'Tauko pysäyttää kellon ja piilottaa laudan, jottei taukoa voi käyttää sen tutkimiseen.',
   tutRestart: 'Aloita alusta jakaa uuden laudan alusta. Se kysyy ensin.',
   tutQuit: 'Lopeta päättää pelin ja näyttää pistemääräsi. Se kysyy ensin.',
-  tutDoneTitle: 'Siinä koko peli',
-  tutDoneBody: 'Valitse taso ja pelaa. Pelin ohjeet löytyvät aina otsikkopalkista.',
+  tutDoneTitle: 'Siinä säännöt',
+  tutDoneBody: 'Pelin ohjeet löytyvät aina otsikkopalkista.',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
     'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Näkyvistä laatoista muodostat sanoja.',
@@ -223,6 +223,7 @@ export const fi: Messages = {
   leaderboardEmpty: 'Tällä taululla ei ole vielä pelejä. Ole ensimmäinen.',
   leaderboardWouldBe: 'Mihin tämä peli sijoittuisi',
   leaderboardThisGame: 'Tämä peli',
+  tutAccountTitle: 'Säilytä tuloksesi',
   tutAccountBody: 'Tili tallentaa pelisi, vie tuloksesi tulostaululle ja säilyttää profiilisi.',
   ssoCancelled: 'Kirjautuminen peruttiin.',
   ssoExpired: 'Siihen meni liian kauan. Kirjaudu uudelleen.',

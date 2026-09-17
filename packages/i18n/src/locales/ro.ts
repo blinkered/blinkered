@@ -161,8 +161,8 @@ export const ro: Messages = {
     'Pauza oprește ceasul și ascunde tabla, ca o pauză să nu fie folosită pentru a o învăța.',
   tutRestart: 'De la capăt împarte o tablă nouă de la început. Întreabă mai întâi.',
   tutQuit: 'Renunță încheie jocul și arată cât ați făcut. Întreabă mai întâi.',
-  tutDoneTitle: 'Ăsta e tot jocul',
-  tutDoneBody: 'Alegeți un nivel și jucați. Cum se joacă este mereu lângă titlu.',
+  tutDoneTitle: 'Acestea sunt regulile',
+  tutDoneBody: 'Cum se joacă este mereu lângă titlu.',
   htBoardTitle: 'Tabla',
   htBoardBody:
     'Piesele se întorc una câte una, în ordinea citirii. Din cele întoarse se formează cuvinte.',
@@ -226,6 +226,7 @@ export const ro: Messages = {
   leaderboardEmpty: 'Încă nu există jocuri în acest clasament. Fii primul.',
   leaderboardWouldBe: 'Unde s-ar clasa acest joc',
   leaderboardThisGame: 'Acest joc',
+  tutAccountTitle: 'Păstrează-ți scorurile',
   tutAccountBody:
     'Un cont salvează jocurile tale, pune scorurile în clasament și păstrează profilul tău.',
   ssoCancelled: 'Autentificarea a fost anulată.',

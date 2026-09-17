@@ -160,8 +160,8 @@ export const hu: Messages = {
     'A Szünet megállítja az órát és elrejti a táblát, hogy a pihenő ne tanulásra menjen el.',
   tutRestart: 'Az Újrakezdés új táblát oszt az elejéről. Előbb rákérdez.',
   tutQuit: 'A Kilépés befejezi a játékot és megmutatja az eredményt. Előbb rákérdez.',
-  tutDoneTitle: 'Ennyi az egész játék',
-  tutDoneBody: 'Válasszon nehézséget és játsszon. A leírás mindig ott van a cím mellett.',
+  tutDoneTitle: 'Ennyi a szabály',
+  tutDoneBody: 'A leírás mindig ott van a cím mellett.',
   htBoardTitle: 'A tábla',
   htBoardBody:
     'A lapkák egyesével fordulnak fel, olvasási sorrendben. A felfordítottakból lehet szót alkotni.',
@@ -226,6 +226,7 @@ export const hu: Messages = {
   leaderboardEmpty: 'Ezen a ranglistán még nincsenek játékok. Legyél az első.',
   leaderboardWouldBe: 'Hol állna ez a játék',
   leaderboardThisGame: 'Ez a játék',
+  tutAccountTitle: 'Őrizd meg a pontjaid',
   tutAccountBody:
     'A fiók elmenti a játékaidat, felteszi a pontjaidat a ranglistára, és megtartja a profilodat.',
   ssoCancelled: 'A bejelentkezés megszakadt.',

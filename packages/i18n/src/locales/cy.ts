@@ -163,8 +163,8 @@ export const cy: Messages = {
     'Mae Saib yn stopio’r cloc ac yn cuddio’r bwrdd, fel na ellir defnyddio egwyl i’w astudio.',
   tutRestart: 'Mae Ailddechrau yn delio bwrdd newydd o’r dechrau. Mae’n gofyn yn gyntaf.',
   tutQuit: 'Mae Gadael yn gorffen y gêm ac yn dangos eich sgôr. Mae’n gofyn yn gyntaf.',
-  tutDoneTitle: 'Dyna’r gêm i gyd',
-  tutDoneBody: 'Dewiswch lefel a chwaraewch. Mae Sut i chwarae bob amser wrth y teitl.',
+  tutDoneTitle: 'Dyna’r rheolau',
+  tutDoneBody: 'Mae Sut i chwarae bob amser wrth y teitl.',
   htBoardTitle: 'Y bwrdd',
   htBoardBody:
     'Mae’r teils yn troi fesul un, yn nhrefn darllen. Gellir defnyddio’r rhai sydd yn y golwg i ffurfio geiriau.',
@@ -229,6 +229,7 @@ export const cy: Messages = {
   leaderboardEmpty: 'Dim gemau ar y bwrdd hwn eto. Bydd y cyntaf.',
   leaderboardWouldBe: "Lle byddai'r gêm hon",
   leaderboardThisGame: 'Y gêm hon',
+  tutAccountTitle: 'Cadw dy sgoriau',
   tutAccountBody:
     'Mae cyfrif yn cadw dy gemau, yn rhoi dy sgoriau ar y bwrdd arwain, ac yn cadw dy broffil.',
   ssoCancelled: 'Cafodd y mewngofnodi ei ganslo.',

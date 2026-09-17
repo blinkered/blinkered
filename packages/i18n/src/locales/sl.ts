@@ -158,8 +158,8 @@ export const sl: Messages = {
   tutPause: 'Premor ustavi uro in skrije ploščo, da odmor ne bi služil učenju na pamet.',
   tutRestart: 'Znova razdeli novo ploščo od začetka. Prej vpraša.',
   tutQuit: 'Končaj konča igro in pokaže rezultat. Prej vpraša.',
-  tutDoneTitle: 'To je vsa igra',
-  tutDoneBody: 'Izberite težavnost in igrajte. Kako igrati je vedno ob naslovu.',
+  tutDoneTitle: 'To so pravila',
+  tutDoneBody: 'Kako igrati je vedno ob naslovu.',
   htBoardTitle: 'Plošča',
   htBoardBody:
     'Ploščice se odkrivajo ena za drugo, v smeri branja. Iz odkritih se sestavljajo besede.',
@@ -223,6 +223,7 @@ export const sl: Messages = {
   leaderboardEmpty: 'Na tej lestvici še ni iger. Bodi prvi.',
   leaderboardWouldBe: 'Kje bi bila ta igra',
   leaderboardThisGame: 'Ta igra',
+  tutAccountTitle: 'Shrani svoje rezultate',
   tutAccountBody: 'Račun shrani tvoje igre, uvrsti rezultate na lestvico in ohrani tvoj profil.',
   ssoCancelled: 'Prijava preklicana.',
   ssoExpired: 'Trajalo je predolgo. Prijavi se znova.',

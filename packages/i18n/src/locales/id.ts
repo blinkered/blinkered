@@ -158,8 +158,8 @@ export const id: Messages = {
     'Jeda menghentikan waktu dan menyembunyikan papan, agar istirahat tidak dipakai untuk mempelajarinya.',
   tutRestart: 'Ulangi membagikan papan baru dari awal. Ia bertanya dahulu.',
   tutQuit: 'Keluar mengakhiri permainan dan menampilkan skor Anda. Ia bertanya dahulu.',
-  tutDoneTitle: 'Itulah seluruh permainannya',
-  tutDoneBody: 'Pilih tingkat lalu bermain. Cara bermain selalu ada di bilah judul.',
+  tutDoneTitle: 'Itulah aturannya',
+  tutDoneBody: 'Cara bermain selalu ada di bilah judul.',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Kartu dibuka satu per satu, mengikuti arah baca. Dari kartu yang terbuka Anda menyusun kata.',
@@ -224,6 +224,7 @@ export const id: Messages = {
   leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
   leaderboardWouldBe: 'Di mana permainan ini akan berada',
   leaderboardThisGame: 'Permainan ini',
+  tutAccountTitle: 'Simpan skormu',
   tutAccountBody:
     'Akun menyimpan permainanmu, menempatkan skormu di papan peringkat, dan menjaga profilmu.',
   ssoCancelled: 'Masuk dibatalkan.',

@@ -164,8 +164,8 @@ export const la: Messages = {
     'Intermitte horologium sistit et tabulam occultat, ne quies ad eam ediscendam adhibeatur.',
   tutRestart: 'Redintegra novam tabulam ab initio distribuit. Prius rogat.',
   tutQuit: 'Desiste ludum finit et ostendit quantum tuleris. Prius rogat.',
-  tutDoneTitle: 'Hic est totus ludus',
-  tutDoneBody: 'Gradum elige et lude. Quomodo ludendum sit semper in titulo est, si iterum vis.',
+  tutDoneTitle: 'Hae sunt regulae',
+  tutDoneBody: 'Quomodo ludendum sit semper in titulo est, si iterum vis.',
   htBoardTitle: 'Tabula',
   htBoardBody: 'Tesserae singulae vertuntur, ordine legendi. Ex tesseris apertis verba facis.',
   htWordsTitle: 'Verba',
@@ -228,6 +228,7 @@ export const la: Messages = {
   leaderboardEmpty: 'Nulli ludi in hac tabula adhuc. Esto primus.',
   leaderboardWouldBe: 'Ubi hic ludus staret',
   leaderboardThisGame: 'Hic ludus',
+  tutAccountTitle: 'Serva numeros tuos',
   tutAccountBody:
     'Ratio ludos tuos servat, numeros tuos in tabulam ponit, et personam tuam custodit.',
   ssoCancelled: 'Introitus omissus est.',

@@ -163,8 +163,8 @@ export const eu: Messages = {
     'Etenak erlojua gelditzen du eta taula ezkutatzen, atsedena hura ikasteko erabil ez dadin.',
   tutRestart: 'Berrabiarazi taula berri bat banatzen du hasieratik. Lehenik galdetzen du.',
   tutQuit: 'Utzi partida amaitzen du eta puntuak erakusten. Lehenik galdetzen du.',
-  tutDoneTitle: 'Hori da jokoa osorik',
-  tutDoneBody: 'Aukeratu maila bat eta jokatu. Nola jokatu beti dago izenburuaren ondoan.',
+  tutDoneTitle: 'Horiek dira arauak',
+  tutDoneBody: 'Nola jokatu beti dago izenburuaren ondoan.',
   htBoardTitle: 'Taula',
   htBoardBody:
     'Fitxak banaka biratzen dira, irakurtzeko ordenan. Agerian daudenekin hitzak osatzen dira.',
@@ -229,6 +229,7 @@ export const eu: Messages = {
   leaderboardEmpty: 'Oraindik ez dago partidarik sailkapen honetan. Izan zaitez lehena.',
   leaderboardWouldBe: 'Non egongo litzateke partida hau',
   leaderboardThisGame: 'Partida hau',
+  tutAccountTitle: 'Gorde zure puntuazioak',
   tutAccountBody:
     'Kontu batek zure partidak gordetzen ditu, puntuazioak sailkapenean jartzen eta zure profila mantentzen.',
   ssoCancelled: 'Saio-hasiera bertan behera utzi da.',

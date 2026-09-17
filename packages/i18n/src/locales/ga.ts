@@ -164,8 +164,8 @@ export const ga: Messages = {
   tutRestart: 'Roinneann Atosaigh clár nua ón tús. Fiafraíonn sé ar dtús.',
   tutQuit:
     'Cuireann Éirigh as deireadh leis an gcluiche agus taispeánann sé do scór. Fiafraíonn sé ar dtús.',
-  tutDoneTitle: 'Sin an cluiche ar fad',
-  tutDoneBody: 'Roghnaigh leibhéal agus imir. Tá Conas imirt i gcónaí in aice leis an teideal.',
+  tutDoneTitle: 'Sin na rialacha',
+  tutDoneBody: 'Tá Conas imirt i gcónaí in aice leis an teideal.',
   htBoardTitle: 'An clár',
   htBoardBody:
     'Iompaítear na tíleanna ceann ar cheann, in ord léitheoireachta. Is féidir focail a dhéanamh as na cinn atá iompaithe.',
@@ -232,6 +232,7 @@ export const ga: Messages = {
   leaderboardEmpty: 'Níl aon chluiche ar an gclár seo go fóill. Bí ar an gcéad duine.',
   leaderboardWouldBe: 'Cén áit a mbeadh an cluiche seo',
   leaderboardThisGame: 'An cluiche seo',
+  tutAccountTitle: 'Coinnigh do scóir',
   tutAccountBody:
     'Sábhálann cuntas do chluichí, cuireann sé do scóir ar an gclár, agus coinníonn sé do phróifíl.',
   ssoCancelled: 'Cuireadh an síniú isteach ar ceal.',

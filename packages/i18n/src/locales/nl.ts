@@ -154,8 +154,8 @@ export const nl: Messages = {
     'Pauze stopt de klok en verbergt het bord, zodat een pauze niet gebruikt kan worden om het te bestuderen.',
   tutRestart: 'Opnieuw deelt een nieuw bord vanaf het begin. Het vraagt eerst.',
   tutQuit: 'Stoppen beëindigt het spel en toont je score. Het vraagt eerst.',
-  tutDoneTitle: 'Dat is het hele spel',
-  tutDoneBody: 'Kies een niveau en speel. Spelregels staan altijd in de titelbalk.',
+  tutDoneTitle: 'Dat zijn de regels',
+  tutDoneBody: 'Spelregels staan altijd in de titelbalk.',
   htBoardTitle: 'Het bord',
   htBoardBody:
     'De stenen draaien één voor één om, in leesrichting. Met de open stenen vorm je woorden.',
@@ -220,6 +220,7 @@ export const nl: Messages = {
   leaderboardEmpty: 'Nog geen spellen op deze ranglijst. Wees de eerste.',
   leaderboardWouldBe: 'Waar dit spel zou staan',
   leaderboardThisGame: 'Dit spel',
+  tutAccountTitle: 'Bewaar je scores',
   tutAccountBody:
     'Een account bewaart je spellen, zet je scores op de ranglijst en houdt je profiel bij.',
   ssoCancelled: 'Inloggen geannuleerd.',
