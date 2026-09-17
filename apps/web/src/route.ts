@@ -1,3 +1,6 @@
+import { NATIVE_API_ORIGIN } from './api.js'
+import { isNativeApp } from './platform.js'
+
 /**
  * Where in the app the address bar points, which until now was only ever "the game".
  *
@@ -110,12 +113,23 @@ export function pathOf(route: Route): string {
 /**
  * The absolute form, for sharing.
  *
- * Built from the page's own origin rather than a constant, so a link copied on the dev host
- * points at the dev host. The share *text* still names playblinkered.com when there is no game
- * to link to; that one is an advertisement rather than a location.
+ * The page's own origin on the web, so a link copied on the dev host points at the dev host and
+ * a link copied in production points at production. The share *text* still names
+ * playblinkered.com when there is no game to link to; that one is an advertisement rather than a
+ * location.
+ *
+ * **Except in the native shell, where the page's origin is not a place.** Nick shared a game from
+ * the app and Messages carried `capacitor://localhost/g/T7EZjIEcIz8` -- a scheme that means
+ * something only inside the app that sent it, and nothing at all to whoever received it. The
+ * shell is always the production app, so a link from it is always a production link.
  */
 export function urlOf(route: Route): string {
-  return new URL(pathOf(route), globalThis.location.origin).toString()
+  return new URL(pathOf(route), shareOrigin()).toString()
+}
+
+/** Where a shared link points. The site and the API are one origin, so `api.ts` owns the value. */
+function shareOrigin(): string {
+  return isNativeApp() ? NATIVE_API_ORIGIN : globalThis.location.origin
 }
 
 /** Moves without reloading, and leaves a history entry so Back works. */
