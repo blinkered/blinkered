@@ -37,7 +37,7 @@ const MIGRATION_NAMES = readdirSync(MIGRATIONS, { withFileTypes: true })
  * Every table the code declares, read off `schema.ts` for the same reason as the names above --
  * and this is the list that proved the reasoning. `native_handshakes` arrived with a table
  * definition and a migration, and the one place left holding a copy of the list was here, in the
- * suite `pnpm check` does not run because it needs a Postgres. CI failed on four pushes in a row
+ * suite `pnpm check` does not run because it needs a Postgres. CI failed on six pushes in a row
  * for that and nothing else.
  *
  * Deriving it also makes the assertion say something better than it did. Spelled out, it was "the
