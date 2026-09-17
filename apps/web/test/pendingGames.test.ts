@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { drainGames } from '../src/account.js'
 import type { GameToKeep } from '../src/account.js'
-import { enqueue, newKey, queued, queuedFor, settle } from '../src/pendingGames.js'
+import { claim, enqueue, newKey, queued, queuedFor, settle } from '../src/pendingGames.js'
 
 /**
  * The upload queue, and the three ways an entry leaves it.
@@ -110,6 +110,76 @@ describe('the queue itself', () => {
     expect(queuedFor('u_1')).toHaveLength(1)
     expect(queuedFor('u_2')).toEqual([expect.objectContaining({ key: theirs.key })])
     expect(queuedFor('u_3')).toEqual([])
+  })
+
+  /*
+   * The guest's game, and the bug that made this necessary.
+   *
+   * Signing in with Google or Apple is a full page navigation: away to the provider and back to
+   * `/?signin=ok`, with the app torn down and rebuilt. The upload used to be reached from the
+   * finished game in React state, which does not survive that, so a guest who signed in through
+   * a provider to keep their game lost it every time -- silently, and only through a provider,
+   * because the email code keeps the page alive.
+   *
+   * An unclaimed entry survives because it is in storage. These are the tests that would fail if
+   * the owner requirement came back.
+   */
+  it('holds a guest game with no owner', () => {
+    const entry = enqueue(null, GAME)
+    expect(queued()[0]?.userId).toBeNull()
+    // And it is sent for nobody until it is claimed.
+    expect(queuedFor('u_1')).toEqual([])
+    expect(entry.key).toBeTruthy()
+  })
+
+  it('hands every unclaimed game to whoever signs in', () => {
+    enqueue(null, GAME)
+    enqueue(null, GAME)
+    expect(claim('u_1')).toBe(2)
+    expect(queuedFor('u_1')).toHaveLength(2)
+    expect(queued().every((one) => one.userId === 'u_1')).toBe(true)
+  })
+
+  it('leaves an owned game with its owner when somebody else claims', () => {
+    // The case the owner field exists for: one device, two people over its life.
+    enqueue('u_1', GAME)
+    enqueue(null, GAME)
+    expect(claim('u_2')).toBe(1)
+    expect(queuedFor('u_1')).toHaveLength(1)
+    expect(queuedFor('u_2')).toHaveLength(1)
+  })
+
+  it('claims nothing, and says so, when there is nothing unclaimed', () => {
+    enqueue('u_1', GAME)
+    expect(claim('u_1')).toBe(0)
+    expect(queuedFor('u_1')).toHaveLength(1)
+  })
+
+  it('drops an unclaimed game that waited too long, rather than adopting it', () => {
+    /*
+     * The shared-machine case. A guest's game belongs to the person who just played it, and
+     * after half an hour the next person to sign in is not reliably that person.
+     */
+    const entry = enqueue(null, GAME)
+    const hourLater = Date.now() + 60 * 60 * 1000
+    expect(claim('u_2', hourLater)).toBe(0)
+    expect(queued().map((one) => one.key)).not.toContain(entry.key)
+    expect(queuedFor('u_2')).toEqual([])
+  })
+
+  it('claims one still inside the window', () => {
+    const entry = enqueue(null, GAME)
+    const soon = Date.now() + 5 * 60 * 1000
+    expect(claim('u_1', soon)).toBe(1)
+    expect(queuedFor('u_1').map((one) => one.key)).toEqual([entry.key])
+  })
+
+  it('reads a stored unclaimed entry back, so a reload does not discard it', () => {
+    // The whole point: this shape has to survive being written before a navigation and read
+    // after one. A validator that insisted on a string owner would drop it here.
+    storage.setItem(KEY, JSON.stringify([{ key: 'k1', userId: null, game: GAME, at: Date.now() }]))
+    expect(queued()).toHaveLength(1)
+    expect(claim('u_1')).toBe(1)
   })
 
   it('drops one by key and leaves the rest', () => {

@@ -318,6 +318,43 @@ The ranking is restated on the client rather than calling `compareResults`, whic
 Getting it wrong would show somebody a rank they will not get and nothing would look broken, so
 the agreement with the server's order is asserted in `apps/web/test/boardPreview.test.ts`.
 
+### A guest's game is queued before anybody signs in, because the provider reloads the page
+
+The bug Nick hit: play signed out, sign in to keep the game, and the game is not kept.
+
+**Signing in with Google or Apple is a full page navigation.** The browser leaves for the
+provider and comes back to `/?signin=ok`, and the app is torn down and rebuilt in between. The
+upload was reached from `finished`, which is React state, so by the time the account existed the
+finished game did not. The effect found nothing and did nothing, silently.
+
+The email code never had the problem, because its dialog keeps the page alive. That is why this
+survived: the path that worked was the one that got tested, and the comment that should have
+given it away is right there in `App.tsx` on the SSO return -- "the `whoAmI()` on arrival finds
+the account the same way it does after a reload".
+
+It is the same shape as the half-written report, which `reportDraft.ts` already solved for the
+report button by putting the draft in storage before navigating. Games had no equivalent.
+
+So a finished game is queued **the moment it finishes**, signed in or not, and an entry may carry
+`userId: null`, meaning nobody owns it yet. `claim` hands every unclaimed entry to the account
+that arrives, and it runs whenever one appears -- a code typed into the dialog, or a return from a
+provider on a page with no game in it at all.
+
+Two things bound that, and the second is the one worth stating:
+
+- **An unclaimed entry is sent for nobody.** `queuedFor` matches an owner exactly, so a drain
+  cannot post a guest's game to an account until it has been claimed.
+- **Unclaimed entries expire after thirty minutes.** "Whoever signs in next owns it" is right for
+  the person who just played and wrong for the next person to use a shared browser, and only time
+  tells those apart. Longer than the ten minutes `reportDraft.ts` allows, because keeping a game
+  is a decision somebody may sit and think about.
+
+One gap left, recorded rather than papered over: **the enqueue at game end is not driven through
+a real game in a browser.** `overFixture` builds no `keepable`, so `?fixture=over` cannot reach
+the upload path, and giving it one would mean opening that URL while signed in uploads an invented
+game to your account. The claim half is driven end to end; the enqueue half is a one-line
+condition with unit tests behind it.
+
 ### A finished game is queued, not posted
 
 The second half of the offline design, and the half that needed a column.

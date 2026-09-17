@@ -33,7 +33,7 @@ import { SignInDialog } from './SignInDialog.js'
 import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { draftKept, routeOfDraft } from './reportDraft.js'
 import { drainGames, saveProfile, signOut, whoAmI } from './account.js'
-import { enqueue } from './pendingGames.js'
+import { claim, enqueue } from './pendingGames.js'
 import { cached } from './identity.js'
 import type { Account, BoardAtRound, GameToKeep, Identity } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -521,10 +521,24 @@ function Session({
    */
   useEffect(() => {
     const keepable = finished?.keepable
-    if (account === null || keepable === undefined || kept.current === keepable) return
+    if (keepable === undefined || kept.current === keepable) return
     kept.current = keepable
     setKeptId(null)
-    const mine = enqueue(account.userId, keepable)
+    /*
+     * Queued whether or not anybody is signed in, which is the fix for a real bug.
+     *
+     * This used to require an account, so a guest's game was only ever queued at the moment they
+     * signed in -- reached from `finished`, which is React state. Signing in with Google or Apple
+     * is a **full page navigation**: away to the provider and back to `/?signin=ok`, with the app
+     * torn down and rebuilt in between. By the time the account existed the finished game did
+     * not, so the upload effect found nothing and did nothing, silently. The email code kept the
+     * page alive and so happened to work, which is why this survived.
+     *
+     * An unclaimed entry outlives the round trip because it is in `localStorage`, and `claim`
+     * below hands it to whoever arrives.
+     */
+    const mine = enqueue(account?.userId ?? null, keepable)
+    if (account === null) return
     void drainGames(account.userId).then((drained) => {
       // Only this game's id reaches the screen. The others were queued on earlier visits and
       // have nothing on screen to point at.
@@ -549,6 +563,15 @@ function Session({
     if (account === null) return undefined
     const userId = account.userId
     const flush = (): void => {
+      /*
+       * Claim first, then send.
+       *
+       * This is where a guest's game finds its owner, and it runs whenever an account appears --
+       * a code typed into the dialog, or a return from a provider that rebuilt the whole app. The
+       * second case is the one that was broken: there is no `finished` to read on that load, and
+       * this effect needs none.
+       */
+      claim(userId)
       void drainGames(userId)
     }
     flush()
