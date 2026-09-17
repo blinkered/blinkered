@@ -72,6 +72,7 @@ export const sk: Messages = {
   rules: 'Pravidlá',
   difficulty: 'obťažnosť',
   difficultyNames: { easy: 'ľahká', medium: 'stredná', hard: 'ťažká', insane: 'šialená' },
+  pausedNoBoard: 'Táto hra sa do tabuľky nedostane.',
   about: 'O hre',
   themeLabel: 'téma',
   themeNames: { traditional: 'tradičná', light: 'svetlá', contrast: 'vysoký kontrast' },

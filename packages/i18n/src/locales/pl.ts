@@ -73,6 +73,7 @@ export const pl: Messages = {
   rules: 'Zasady',
   difficulty: 'poziom',
   difficultyNames: { easy: 'łatwy', medium: 'średni', hard: 'trudny', insane: 'szalony' },
+  pausedNoBoard: 'Ta gra nie trafi do rankingu.',
   about: 'O grze',
   themeLabel: 'motyw',
   themeNames: { traditional: 'tradycyjny', light: 'jasny', contrast: 'wysoki kontrast' },

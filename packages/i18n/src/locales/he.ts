@@ -76,6 +76,7 @@ export const he: Messages = {
   rules: 'חוקים',
   difficulty: 'רמת קושי',
   difficultyNames: { easy: 'קל', medium: 'בינוני', hard: 'קשה', insane: 'מטורף' },
+  pausedNoBoard: 'המשחק הזה לא יופיע בטבלת השיאים.',
   about: 'אודות',
   themeLabel: 'ערכת נושא',
   themeNames: { traditional: 'מסורתית', light: 'בהירה', contrast: 'ניגודיות גבוהה' },

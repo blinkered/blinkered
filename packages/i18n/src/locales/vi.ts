@@ -77,6 +77,7 @@ export const vi: Messages = {
   rules: 'Luật chơi',
   difficulty: 'độ khó',
   difficultyNames: { easy: 'dễ', medium: 'vừa', hard: 'khó', insane: 'điên rồ' },
+  pausedNoBoard: 'Lượt chơi này sẽ không lên bảng xếp hạng.',
   about: 'Giới thiệu',
   themeLabel: 'chủ đề',
   themeNames: { traditional: 'truyền thống', light: 'sáng', contrast: 'tương phản cao' },

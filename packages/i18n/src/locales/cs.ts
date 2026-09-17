@@ -72,6 +72,7 @@ export const cs: Messages = {
   rules: 'Pravidla',
   difficulty: 'obtížnost',
   difficultyNames: { easy: 'snadná', medium: 'střední', hard: 'těžká', insane: 'šílená' },
+  pausedNoBoard: 'Tato hra se nedostane do žebříčku.',
   about: 'O hře',
   themeLabel: 'téma',
   themeNames: { traditional: 'tradiční', light: 'světlé', contrast: 'vysoký kontrast' },

@@ -77,6 +77,7 @@ export const pcm: Messages = {
   rules: 'Rules',
   difficulty: 'how e hard',
   difficultyNames: { easy: 'easy', medium: 'medium', hard: 'hard', insane: 'craze' },
+  pausedNoBoard: 'Dis game no go show for di leaderboard.',
   about: 'About am',
   themeLabel: 'look',
   themeNames: { traditional: 'di normal one', light: 'bright one', contrast: 'strong contrast' },

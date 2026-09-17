@@ -258,6 +258,17 @@ export interface Messages {
    * languages would be putting words in his mouth. The chrome around it is localised like every
    * other page: the heading, the way back, and the two links that lead to it.
    */
+  /**
+   * What a stopped clock costs, said on the veil that covers a paused board.
+   *
+   * Said *while* paused rather than afterwards, because afterwards it is a penalty somebody was
+   * not told about. The veil is also where the tab going away lands, so somebody who took a call
+   * mid-game finds out here rather than on the game-over panel.
+   *
+   * It says the game will not be ranked, not that it will not be kept: a paused game is still
+   * stored, still in a history, still worth opening. Only the board is closed to it.
+   */
+  readonly pausedNoBoard: string
   readonly about: string
   readonly themeLabel: string
   readonly themeNames: Readonly<Record<'traditional' | 'light' | 'contrast', string>>

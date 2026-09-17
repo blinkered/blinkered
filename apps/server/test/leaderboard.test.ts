@@ -59,6 +59,7 @@ describe('a board', () => {
         source: 'web',
         imported: false,
         clientKey: null,
+        paused: false,
         leaderboardEligible: true,
         difficulty: 'insane',
         language: 'en',

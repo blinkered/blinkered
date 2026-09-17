@@ -66,6 +66,7 @@ export const ms: Messages = {
   rules: 'Peraturan',
   difficulty: 'kesukaran',
   difficultyNames: { easy: 'mudah', medium: 'sedang', hard: 'sukar', insane: 'ganas' },
+  pausedNoBoard: 'Permainan ini tidak akan masuk papan pendahulu.',
   about: 'Perihal',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradisional', light: 'cerah', contrast: 'kontras tinggi' },

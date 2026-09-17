@@ -73,6 +73,7 @@ export const et: Messages = {
   rules: 'Reeglid',
   difficulty: 'raskusaste',
   difficultyNames: { easy: 'lihtne', medium: 'keskmine', hard: 'raske', insane: 'hullumeelne' },
+  pausedNoBoard: 'See mäng edetabelisse ei jõua.',
   about: 'Teave',
   themeLabel: 'teema',
   themeNames: { traditional: 'traditsiooniline', light: 'hele', contrast: 'suur kontrast' },

@@ -1,6 +1,5 @@
 import type { Messages } from '@blinkered/i18n'
 import { PageHead } from './PageHead.js'
-import { Title } from './Title.js'
 
 /**
  * Who made this, and why it exists at all.
@@ -11,10 +10,12 @@ import { Title } from './Title.js'
  * that in his mouth is not localisation. The chrome around it -- the heading, the way back, the
  * two links that lead here -- is localised like every other page.
  *
- * **The wordmark plays here.** The title bar's copy stands still on a phone, because a shuffle of
- * nine tiles is silly when the row has space for one of them. This page has the whole width and
- * nothing else competing for attention, which is the one place the animation is the point rather
- * than decoration.
+ * **The wordmark plays here**, and it is the head's own mark that does it rather than a second
+ * copy in the body -- which is what the first version had, and Nick's note was exactly that: "the
+ * request was to animate the wordmark at the top, not to have a second wordmark". The title bar's
+ * copy stands still on a phone, because a shuffle of nine tiles is silly when the row has space
+ * for one of them; this page has the width and nothing competing for attention, which is the one
+ * place the animation is the point.
  */
 export function AboutPage({
   messages,
@@ -25,21 +26,16 @@ export function AboutPage({
 }): React.JSX.Element {
   return (
     <section className="about-page" aria-labelledby="about-title">
-      <PageHead back={messages.backToGame} onHome={onHome} />
+      <PageHead back={messages.backToGame} onHome={onHome} play />
 
       <h1 className="page-title" id="about-title">
         {messages.about}
       </h1>
 
-      <div className="about-mark">
-        <Title />
-      </div>
-
       <p>
-        Blinkered was a shower thought of{' '}
-        <a href="mailto:nick.marden@tightlinesoftware.com">Nick Marden</a>: what if you combined the
-        nerdy fun of the New York Times&rsquo; Spelling Bee with the countdown clock stress of
-        Bejeweled?
+        Blinkered started out as a shower thought: what if you combined the nerdy fun of the New
+        York Times&rsquo; Spelling Bee with the countdown clock stress of Bejeweled? And what if you
+        didn&rsquo;t know when each letter would be available?
       </p>
 
       <p>
@@ -47,7 +43,7 @@ export function AboutPage({
         <a href="https://claude.com/" target="_blank" rel="noreferrer">
           Claude Code
         </a>{' '}
-        in the mountains of Western Maine ⛰ 🎣 🍁 🎿.
+        in the mountains of Western Maine ⛰ 🎣 🍁 🎿. We hope you enjoy it!
       </p>
 
       {/*

@@ -66,6 +66,7 @@ export const no: Messages = {
   rules: 'Regler',
   difficulty: 'vanskelighet',
   difficultyNames: { easy: 'lett', medium: 'middels', hard: 'vanskelig', insane: 'brutalt' },
+  pausedNoBoard: 'Dette spillet kommer ikke på resultatlisten.',
   about: 'Om',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradisjonelt', light: 'lyst', contrast: 'høy kontrast' },

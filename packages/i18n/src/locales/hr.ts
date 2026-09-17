@@ -69,6 +69,7 @@ export const hr: Messages = {
   rules: 'Pravila',
   difficulty: 'težina',
   difficultyNames: { easy: 'lako', medium: 'srednje', hard: 'teško', insane: 'brutalno' },
+  pausedNoBoard: 'Ova igra neće doći na ljestvicu.',
   about: 'O igri',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicionalna', light: 'svijetla', contrast: 'visoki kontrast' },

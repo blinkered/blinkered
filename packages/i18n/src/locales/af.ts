@@ -72,6 +72,7 @@ export const af: Messages = {
   rules: 'Reëls',
   difficulty: 'moeilikheid',
   difficultyNames: { easy: 'maklik', medium: 'middel', hard: 'moeilik', insane: 'waansinnig' },
+  pausedNoBoard: 'Hierdie spel kom nie op die ranglys nie.',
   about: 'Oor',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradisioneel', light: 'daglig', contrast: 'hoë kontras' },

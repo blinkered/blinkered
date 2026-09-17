@@ -279,6 +279,15 @@ export const games = blinkered.table(
     engineVersion: text('engine_version').notNull(),
     dictionaryVersion: text('dictionary_version'),
 
+    /**
+     * Whether the clock ever stopped during this game.
+     *
+     * Stored as well as folded into `leaderboard_eligible`, because the two answer different
+     * questions: eligibility is one boolean with three reasons behind it, and this is the reason
+     * somebody would ask about. A history can say "this one was paused" rather than "this one
+     * does not count" with nothing to point at.
+     */
+    paused: boolean('paused').notNull().default(false),
     leaderboardEligible: boolean('leaderboard_eligible').notNull().default(false),
     /** The whole anti-cheat apparatus. Reversible, which a delete is not. */
     hidden: boolean('hidden').notNull().default(false),

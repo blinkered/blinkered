@@ -73,6 +73,7 @@ export const lt: Messages = {
   rules: 'Taisyklės',
   difficulty: 'sudėtingumas',
   difficultyNames: { easy: 'lengvas', medium: 'vidutinis', hard: 'sunkus', insane: 'beprotiškas' },
+  pausedNoBoard: 'Šis žaidimas į lyderių lentelę nepateks.',
   about: 'Apie',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicinė', light: 'šviesi', contrast: 'didelis kontrastas' },

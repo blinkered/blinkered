@@ -70,6 +70,7 @@ export const id: Messages = {
   rules: 'Aturan',
   difficulty: 'kesulitan',
   difficultyNames: { easy: 'mudah', medium: 'sedang', hard: 'sulit', insane: 'brutal' },
+  pausedNoBoard: 'Permainan ini tidak akan masuk papan peringkat.',
   about: 'Tentang',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradisional', light: 'terang', contrast: 'kontras tinggi' },

@@ -37,6 +37,20 @@ export interface ImportedGame {
   /** Whether the ruleset is a published preset, decided here rather than taken from the body. */
   readonly canonical: boolean
   /**
+   * Whether the clock ever stopped during this game -- paused by hand, or the app going away.
+   *
+   * Taken from the body, unlike `canonical`, because it is a fact about how the game was played
+   * and this side has no event log to check it against. Phase C's does. What it buys meanwhile is
+   * that the honest path is closed: screen-cap the board, stop the clock, read the letters off
+   * the photograph, resume, miss nothing. A photograph cannot be prevented -- a second phone
+   * takes one -- so the answer is to decline to rank a game whose clock stopped.
+   *
+   * Absent reads as `false`, which is the reading that keeps old clients working: every client
+   * before this field existed sent games that were ranked, and treating silence as "paused" would
+   * retroactively unrank them.
+   */
+  readonly paused: boolean
+  /**
    * The client's own id for this game, or null from a client that does not send one.
    *
    * Bounded and checked rather than passed through: it reaches a unique index, so an unbounded
@@ -187,6 +201,7 @@ export function parseImport(body: unknown, now: Date): ParsedImport {
       // Asked of the ruleset, not taken from the body. A client that says a game was canonical
       // is a client claiming its own score is rankable, which is not its claim to make.
       canonical: isCanonical(config, difficulty),
+      paused: fields.paused === true,
       seed,
       source: fields.source === 'ios' ? 'ios' : 'web',
       clientKey: parseKey(fields.clientKey),

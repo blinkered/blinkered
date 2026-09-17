@@ -76,6 +76,7 @@ export const ka: Messages = {
   rules: 'წესები',
   difficulty: 'სირთულე',
   difficultyNames: { easy: 'მარტივი', medium: 'საშუალო', hard: 'რთული', insane: 'გიჟური' },
+  pausedNoBoard: 'ეს თამაში რეიტინგში არ მოხვდება.',
   about: 'შესახებ',
   themeLabel: 'თემა',
   themeNames: { traditional: 'ტრადიციული', light: 'ნათელი', contrast: 'მაღალი კონტრასტი' },

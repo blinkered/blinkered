@@ -75,6 +75,7 @@ export const hy: Messages = {
   rules: 'Կանոններ',
   difficulty: 'բարդություն',
   difficultyNames: { easy: 'հեշտ', medium: 'միջին', hard: 'դժվար', insane: 'խելագար' },
+  pausedNoBoard: 'Այս խաղը վարկանիշային աղյուսակում չի հայտնվի։',
   about: 'Մասին',
   themeLabel: 'տեսք',
   themeNames: { traditional: 'ավանդական', light: 'լուսավոր', contrast: 'բարձր հակադրություն' },

@@ -74,6 +74,7 @@ export const en: Messages = {
   rules: 'Rules',
   difficulty: 'difficulty',
   difficultyNames: { easy: 'easy', medium: 'medium', hard: 'hard', insane: 'insane' },
+  pausedNoBoard: 'This game will not appear on a leaderboard.',
   about: 'About',
   themeLabel: 'theme',
   themeNames: { traditional: 'traditional', light: 'light', contrast: 'high contrast' },

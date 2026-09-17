@@ -24,11 +24,20 @@ import type { Board, BoardRow as Row } from './account.js'
  */
 export function BoardPreview({
   result,
+  paused,
   messages,
   me,
   onSignIn,
 }: {
   readonly result: GameResult
+  /**
+   * Whether this game's clock ever stopped, which means it has no place to be projected into.
+   *
+   * The server will refuse to rank it, so showing somebody where it *would* have ranked is a
+   * promise the next screen breaks. Passed in rather than read off `result`, which is the engine's
+   * shape and knows nothing about clocks being stopped.
+   */
+  readonly paused: boolean
   readonly messages: Messages
   /**
    * The reader, when there is one.
@@ -50,6 +59,9 @@ export function BoardPreview({
      * has no board to be on, and asking would be a request whose answer could only be discarded.
      */
     if (!result.canonical) return undefined
+    // Nor for a game whose clock stopped: eligibility is decided the same way on the server, and
+    // a projection the server will not honour is worse than no projection.
+    if (paused) return undefined
     let current = true
     void leaderboard(result.language, result.difficulty).then((found) => {
       if (current) setBoard(found)
@@ -57,7 +69,7 @@ export function BoardPreview({
     return () => {
       current = false
     }
-  }, [result.canonical, result.language, result.difficulty])
+  }, [result.canonical, paused, result.language, result.difficulty])
 
   if (board === null) return null
 

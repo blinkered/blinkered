@@ -71,6 +71,7 @@ export const ru: Messages = {
   rules: 'Правила',
   difficulty: 'сложность',
   difficultyNames: { easy: 'легко', medium: 'средне', hard: 'сложно', insane: 'жестоко' },
+  pausedNoBoard: 'Эта игра не попадёт в таблицу лидеров.',
   about: 'Об игре',
   themeLabel: 'тема',
   themeNames: { traditional: 'традиционная', light: 'светлая', contrast: 'высокий контраст' },

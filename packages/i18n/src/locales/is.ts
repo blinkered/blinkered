@@ -72,6 +72,7 @@ export const is: Messages = {
   rules: 'Reglur',
   difficulty: 'erfiðleikastig',
   difficultyNames: { easy: 'létt', medium: 'miðlungs', hard: 'erfitt', insane: 'brjálað' },
+  pausedNoBoard: 'Þessi leikur kemst ekki á stigatöfluna.',
   about: 'Um',
   themeLabel: 'þema',
   themeNames: { traditional: 'hefðbundið', light: 'ljóst', contrast: 'mikil birtuskil' },

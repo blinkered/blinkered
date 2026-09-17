@@ -66,6 +66,7 @@ export const el: Messages = {
   rules: 'Κανόνες',
   difficulty: 'δυσκολία',
   difficultyNames: { easy: 'εύκολο', medium: 'μέτριο', hard: 'δύσκολο', insane: 'εξοντωτικό' },
+  pausedNoBoard: 'Αυτό το παιχνίδι δεν θα μπει στην κατάταξη.',
   about: 'Σχετικά',
   themeLabel: 'θέμα',
   themeNames: { traditional: 'παραδοσιακό', light: 'φωτεινό', contrast: 'υψηλή αντίθεση' },

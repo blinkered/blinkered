@@ -73,6 +73,7 @@ export const ro: Messages = {
   rules: 'Reguli',
   difficulty: 'dificultate',
   difficultyNames: { easy: 'ușoară', medium: 'medie', hard: 'grea', insane: 'nebunească' },
+  pausedNoBoard: 'Acest joc nu va apărea în clasament.',
   about: 'Despre',
   themeLabel: 'temă',
   themeNames: { traditional: 'tradițională', light: 'luminoasă', contrast: 'contrast ridicat' },

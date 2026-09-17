@@ -70,6 +70,7 @@ export const da: Messages = {
   rules: 'Regler',
   difficulty: 'sværhedsgrad',
   difficultyNames: { easy: 'let', medium: 'mellem', hard: 'svær', insane: 'vanvittig' },
+  pausedNoBoard: 'Dette spil kommer ikke på ranglisten.',
   about: 'Om',
   themeLabel: 'tema',
   themeNames: { traditional: 'traditionelt', light: 'lyst', contrast: 'høj kontrast' },

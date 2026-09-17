@@ -77,6 +77,7 @@ export const fa: Messages = {
   rules: 'قواعد',
   difficulty: 'سختی',
   difficultyNames: { easy: 'آسان', medium: 'متوسط', hard: 'سخت', insane: 'دیوانه‌وار' },
+  pausedNoBoard: 'این بازی در جدول امتیازها نمی\u200cآید.',
   about: 'درباره',
   themeLabel: 'پوسته',
   themeNames: { traditional: 'سنتی', light: 'روشن', contrast: 'کنتراست بالا' },

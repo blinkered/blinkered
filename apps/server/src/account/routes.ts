@@ -219,8 +219,15 @@ export function accountRoutes(deps: AccountDeps): Hono {
          * a server cannot have dealt a seed to a game it never knew about. The change then is to
          * this one expression rather than to any query, which is the whole reason for writing a
          * column instead of filtering at read time.
+         *
+         * **And not paused.** A game whose clock stopped is not ranked, which is Nick's answer to
+         * an exploit that has no technical fix: screen-cap the board, pause, pick the words out
+         * of the photograph, resume, miss nothing. Hiding the letters during a capture is not
+         * possible on iOS and would not stop a second camera anyway; declining to rank the game
+         * is. `stopped` on `Game` argues why the app going to the background counts too.
          */
-        leaderboardEligible: game.canonical && game.score > 0,
+        paused: game.paused,
+        leaderboardEligible: game.canonical && game.score > 0 && !game.paused,
         difficulty: game.difficulty,
         language: game.config.language,
         canonical: game.canonical,

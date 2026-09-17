@@ -243,13 +243,30 @@ false on every row and any board reading it was empty by construction. The colum
 import, in one expression, and that is the only place it is written:
 
 ```ts
-leaderboardEligible: game.canonical && game.score > 0
+leaderboardEligible: game.canonical && game.score > 0 && !game.paused
 ```
 
 - **Canonical.** A custom-rules game is a real game somebody played and is not comparable to a
   preset one. It is kept and shown in their history; it has no board.
 - **A score above zero.** Zero is what an abandoned game scores and what a bad one scores, and a
   board with a tail of noughts has stopped ranking anything.
+- **A clock that never stopped.** Nick found the exploit and it has no technical fix: screen-cap
+  the board, pause, pick the words out of the photograph at leisure, resume, miss nothing. iOS
+  cannot hide a view from a screenshot on request, and a second phone photographing the screen
+  defeats anything that could --- so the game declines to rank a game whose clock stopped instead
+  of pretending to prevent the capture.
+
+  **The tab going away counts too**, which is the part worth arguing. Pausing by hand and
+  switching apps stop the clock identically, and the second is the _easier_ route: leave the game,
+  study the screenshot in Photos, come back. A rule that only counted the Pause button would have
+  a hole in it the shape of the home gesture. The cost is real and falls on honest players: a
+  phone call mid-game closes the board to that score. The veil says so while it is happening,
+  because afterwards it is a penalty nobody was told about.
+
+  It is reported by the client, like everything else in phase A, and worth what the client is
+  worth. The point is not that it cannot be lied about but that the honest path is closed; phase
+  C's event log is what makes it checkable.
+
 - **`imported` does not enter into it**, and that reverses what this file used to say. A claimed
   guest game was never eligible, on the argument that a board entry needs a server-issued seed
   and the envelope check. In phase A **neither exists**, so the rule excluded one of two

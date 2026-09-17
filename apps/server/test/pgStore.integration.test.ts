@@ -151,6 +151,7 @@ describe('keeping games', () => {
     source: 'web',
     imported: true,
     clientKey: null,
+    paused: false,
     leaderboardEligible: true,
     difficulty: 'medium',
     language: 'en',
@@ -315,6 +316,7 @@ describe('keeping games', () => {
       {
         ...gameFor(fine.userId, at(1), 99),
         engineVersion: FILTER_ENGINE,
+        paused: false,
         leaderboardEligible: false,
       },
       detailFor('HOUSE'),
@@ -634,6 +636,7 @@ describe('moderating', () => {
     clientKey: null,
     // False, and the moderation listing asserts it: that panel exists to show the flag, not to
     // set it. The import route decides eligibility; see `accountRoutes`.
+    paused: false,
     leaderboardEligible: false,
     difficulty: 'medium',
     language: over.language ?? 'en',
@@ -1026,6 +1029,7 @@ describe('deleting an account', () => {
     source: 'web',
     imported: false,
     clientKey: null,
+    paused: false,
     leaderboardEligible: false,
     difficulty: 'medium',
     language: 'en',

@@ -73,6 +73,7 @@ export const ko: Messages = {
   rules: '규칙',
   difficulty: '난이도',
   difficultyNames: { easy: '쉬움', medium: '보통', hard: '어려움', insane: '미친' },
+  pausedNoBoard: '이 게임은 순위표에 오르지 않습니다.',
   about: '정보',
   themeLabel: '테마',
   themeNames: { traditional: '기본', light: '밝게', contrast: '고대비' },

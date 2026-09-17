@@ -73,6 +73,7 @@ export const hu: Messages = {
   rules: 'Szabályok',
   difficulty: 'nehézség',
   difficultyNames: { easy: 'könnyű', medium: 'közepes', hard: 'nehéz', insane: 'őrült' },
+  pausedNoBoard: 'Ez a játék nem kerül fel a ranglistára.',
   about: 'Névjegy',
   themeLabel: 'téma',
   themeNames: { traditional: 'hagyományos', light: 'világos', contrast: 'nagy kontraszt' },

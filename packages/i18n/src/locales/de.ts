@@ -69,6 +69,7 @@ export const de: Messages = {
   rules: 'Regeln',
   difficulty: 'Schwierigkeit',
   difficultyNames: { easy: 'leicht', medium: 'mittel', hard: 'schwer', insane: 'brutal' },
+  pausedNoBoard: 'Dieses Spiel kommt nicht in die Rangliste.',
   about: 'Über',
   themeLabel: 'Darstellung',
   themeNames: { traditional: 'traditionell', light: 'hell', contrast: 'hoher Kontrast' },

@@ -38,7 +38,9 @@ export interface GameRow {
   readonly imported: boolean
   /** The client's own id for this game, or null. What makes a queued upload safe to retry. */
   readonly clientKey: string | null
-  /** Whether this game can be ranked. Canonical and not a guest import; see the import route. */
+  /** Whether the clock ever stopped: paused by hand, or the app going away. Not rankable. */
+  readonly paused: boolean
+  /** Whether this game can be ranked. Canonical, scored, and never paused; see the import route. */
   readonly leaderboardEligible: boolean
   readonly difficulty: string
   readonly language: string

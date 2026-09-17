@@ -67,6 +67,7 @@ export const it: Messages = {
   rules: 'Regole',
   difficulty: 'difficoltà',
   difficultyNames: { easy: 'facile', medium: 'medio', hard: 'difficile', insane: 'infernale' },
+  pausedNoBoard: 'Questa partita non entrerà in classifica.',
   about: 'Informazioni',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradizionale', light: 'chiaro', contrast: 'alto contrasto' },

@@ -77,6 +77,7 @@ export const arz: Messages = {
   rules: 'القواعد',
   difficulty: 'الصعوبة',
   difficultyNames: { easy: 'سهل', medium: 'متوسط', hard: 'صعب', insane: 'جنان' },
+  pausedNoBoard: 'اللعبة دي مش هتظهر في لوحة المتصدرين.',
   about: 'عن اللعبة',
   themeLabel: 'الشكل',
   themeNames: { traditional: 'تقليدي', light: 'نهاري', contrast: 'تباين عالي' },

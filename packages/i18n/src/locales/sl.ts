@@ -72,6 +72,7 @@ export const sl: Messages = {
   rules: 'Pravila',
   difficulty: 'težavnost',
   difficultyNames: { easy: 'lahka', medium: 'srednja', hard: 'težka', insane: 'nora' },
+  pausedNoBoard: 'Ta igra ne bo prišla na lestvico.',
   about: 'O igri',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicionalna', light: 'svetla', contrast: 'visok kontrast' },

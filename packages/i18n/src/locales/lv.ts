@@ -73,6 +73,7 @@ export const lv: Messages = {
   rules: 'Noteikumi',
   difficulty: 'grūtība',
   difficultyNames: { easy: 'viegla', medium: 'vidēja', hard: 'grūta', insane: 'trakā' },
+  pausedNoBoard: 'Šī spēle rezultātu tabulā neparādīsies.',
   about: 'Par',
   themeLabel: 'tēma',
   themeNames: { traditional: 'tradicionāla', light: 'gaiša', contrast: 'augsts kontrasts' },

@@ -72,6 +72,7 @@ export const gl: Messages = {
   rules: 'Regras',
   difficulty: 'dificultade',
   difficultyNames: { easy: 'fácil', medium: 'media', hard: 'difícil', insane: 'demencial' },
+  pausedNoBoard: 'Esta partida non aparecerá na clasificación.',
   about: 'Acerca de',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicional', light: 'claro', contrast: 'alto contraste' },

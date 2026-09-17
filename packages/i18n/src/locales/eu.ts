@@ -73,6 +73,7 @@ export const eu: Messages = {
   rules: 'Arauak',
   difficulty: 'zailtasuna',
   difficultyNames: { easy: 'erraza', medium: 'ertaina', hard: 'zaila', insane: 'eroa' },
+  pausedNoBoard: 'Partida hau ez da sailkapenean agertuko.',
   about: 'Honi buruz',
   themeLabel: 'itxura',
   themeNames: { traditional: 'ohikoa', light: 'argia', contrast: 'kontraste handia' },

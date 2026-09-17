@@ -73,6 +73,7 @@ export const ca: Messages = {
   rules: 'Regles',
   difficulty: 'dificultat',
   difficultyNames: { easy: 'fàcil', medium: 'mitjana', hard: 'difícil', insane: 'demencial' },
+  pausedNoBoard: 'Aquesta partida no sortirà a la classificació.',
   about: 'Quant a',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicional', light: 'clar', contrast: 'alt contrast' },

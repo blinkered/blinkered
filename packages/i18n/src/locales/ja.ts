@@ -83,6 +83,7 @@ export const ja: Messages = {
     hard: 'むずかしい',
     insane: 'むちゃくちゃ',
   },
+  pausedNoBoard: 'このゲームはランキングに載りません。',
   about: 'このゲームについて',
   themeLabel: 'テーマ',
   themeNames: { traditional: '従来', light: '明るい', contrast: '高コントラスト' },

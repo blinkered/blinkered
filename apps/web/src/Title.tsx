@@ -42,13 +42,26 @@ interface TitleProps {
    * opens the leaderboard would be a flourish charging rent. Same tiles, same type, same
    * spacing, so the pages look like the game; it just does not perform.
    *
-   * Not a heading either, in that mode: the page has its own `h1` and a second one would leave a
-   * document with two titles. It becomes an image of the name instead, which is what it is.
    */
   readonly still?: boolean
+  /**
+   * Whether this is a mark inside something else rather than the page's own heading.
+   *
+   * Two questions that used to be one. Standing still implied `span`, so a phone's title bar --
+   * where the wordmark is a single tile and does not animate -- left the game with no `h1` at
+   * all; and an animated wordmark inside a page's head would have given that page two. A head's
+   * mark is a mark whether or not it is moving, and the game's wordmark is the game's title
+   * either way.
+   */
+  readonly mark?: boolean
 }
 
-export function Title({ skip = false, onDone, still = false }: TitleProps): React.JSX.Element {
+export function Title({
+  skip = false,
+  onDone,
+  still = false,
+  mark = false,
+}: TitleProps): React.JSX.Element {
   // Standing still is the same starting position as honoring reduced motion: everything already
   // exposed, already taken, already in order.
   const reduced = usePrefersReducedMotion() || still
@@ -172,7 +185,7 @@ export function Title({ skip = false, onDone, still = false }: TitleProps): Reac
     }
   }, [layout])
 
-  const Tag = still ? 'span' : 'h1'
+  const Tag = mark ? 'span' : 'h1'
 
   return (
     // Left to right whatever the page is doing. The wordmark is a name spelled out in tiles, and
@@ -182,7 +195,7 @@ export function Title({ skip = false, onDone, still = false }: TitleProps): Reac
       className="title"
       dir="ltr"
       lang="en"
-      {...(still ? { role: 'img' } : {})}
+      {...(mark ? { role: 'img' } : {})}
       aria-label={TITLE.charAt(0) + TITLE.slice(1).toLowerCase()}
     >
       {order.map((index, position) => {

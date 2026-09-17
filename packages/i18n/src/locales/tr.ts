@@ -73,6 +73,7 @@ export const tr: Messages = {
   rules: 'Kurallar',
   difficulty: 'zorluk',
   difficultyNames: { easy: 'kolay', medium: 'orta', hard: 'zor', insane: 'çılgın' },
+  pausedNoBoard: 'Bu oyun liderlik tablosuna girmez.',
   about: 'Hakkında',
   themeLabel: 'tema',
   themeNames: { traditional: 'geleneksel', light: 'aydınlık', contrast: 'yüksek karşıtlık' },

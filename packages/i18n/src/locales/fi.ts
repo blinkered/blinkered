@@ -69,6 +69,7 @@ export const fi: Messages = {
   rules: 'Säännöt',
   difficulty: 'vaikeustaso',
   difficultyNames: { easy: 'helppo', medium: 'normaali', hard: 'vaikea', insane: 'raaka' },
+  pausedNoBoard: 'Tämä peli ei päädy tulostaululle.',
   about: 'Tietoja',
   themeLabel: 'teema',
   themeNames: { traditional: 'perinteinen', light: 'vaalea', contrast: 'suuri kontrasti' },

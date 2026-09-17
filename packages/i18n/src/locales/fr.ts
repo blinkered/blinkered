@@ -70,6 +70,7 @@ export const fr: Messages = {
   rules: 'Règles',
   difficulty: 'difficulté',
   difficultyNames: { easy: 'facile', medium: 'moyen', hard: 'difficile', insane: 'infernal' },
+  pausedNoBoard: 'Cette partie n’apparaîtra pas au classement.',
   about: 'À propos',
   themeLabel: 'thème',
   themeNames: { traditional: 'traditionnel', light: 'clair', contrast: 'contraste élevé' },

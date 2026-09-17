@@ -468,7 +468,7 @@ function Session({
   }
 
   const onFinish = useCallback(
-    (state: GameState, seed: number, boards: readonly BoardAtRound[]): void => {
+    (state: GameState, seed: number, boards: readonly BoardAtRound[], stopped: boolean): void => {
       const result: GameResult = {
         score: state.score,
         words: state.wordsFound.length,
@@ -504,6 +504,15 @@ function Session({
           // cannot answer.
           source: isNativeApp() ? 'ios' : 'web',
           guest: beganAsGuest.current,
+          /*
+           * Whether the clock ever stopped, which is what costs a game its place on a board.
+           *
+           * Reported by the client, like everything else in phase A, and worth exactly what the
+           * client is worth: the point is not that it cannot be lied about but that the honest
+           * path is closed -- screen-cap, pause, read the photograph, resume. Phase C's event log
+           * is what makes it checkable rather than reported.
+           */
+          paused: stopped,
           // The whole ruleset, not the difficulty label. A label's meaning changes -- medium has
           // been retuned once already -- and a row carrying its own numbers stays explainable
           // after the next retune.
@@ -1083,6 +1092,7 @@ function Session({
                 */}
                 <BoardPreview
                   result={finished.result}
+                  paused={finished.keepable?.paused === true}
                   messages={messages}
                   me={
                     account === null
@@ -1208,6 +1218,8 @@ function Playing({
     state: GameState,
     seed: number,
     boards: readonly { tiles: string; wilds?: readonly number[] }[],
+    /** Whether the clock ever stopped. See `stopped` on `Game`, and what it costs below. */
+    stopped: boolean,
   ) => void
   /**
    * True while the in-app rules cover the game, which only happens in the native shell. Reading
@@ -1263,8 +1275,8 @@ function Playing({
   }, [round, tiles])
 
   useEffect(() => {
-    if (over) onFinish(finalState, seed, [...boards.current])
-  }, [over, finalState, seed, onFinish])
+    if (over) onFinish(finalState, seed, [...boards.current], game.stopped)
+  }, [over, finalState, seed, onFinish, game.stopped])
 
   return (
     <>
@@ -1287,6 +1299,16 @@ function Playing({
         {game.paused && confirming === null ? (
           <div className="veil">
             <p>{messages.paused}</p>
+            {/*
+              What the stop costs, said while it is happening.
+              
+              Afterwards it would be a penalty nobody was told about, and this veil is also where
+              a tab going away lands -- so somebody who took a phone call finds out here rather
+              than on the game-over panel. Only once the clock has actually stopped something:
+              `game.stopped` is latched, so this stays on for the rest of the game and does not
+              blink off when they resume.
+            */}
+            {game.stopped ? <p className="veil-cost">{messages.pausedNoBoard}</p> : null}
             <button
               type="button"
               className="btn"

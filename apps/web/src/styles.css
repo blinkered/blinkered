@@ -52,6 +52,15 @@
      word, red a refused one, blue the current selection; a fourth meaning in any of those hues
      would be read as a fifth state of the third. */
   --wild: #f2cc60;
+  /*
+   * The size of text inside a field, and the one number iOS reads before deciding to zoom.
+   *
+   * A variable rather than a size per rule, because the floor has to beat every one of them and
+   * the cascade is the wrong tool for it: a media query adds no specificity, so
+   * `input { font-size: 1rem }` inside one loses to `.nerd-row input` written earlier in the
+   * file. Inheritance has no such argument -- the touch block raises this and every field follows.
+   */
+  --field-size: 0.85rem;
   --radius: 10px;
   /* How big a tile may get, and how much height the board may claim. Both are retuned in the
      touch block near the bottom of this file; the board computes its tile size from them. */
@@ -122,6 +131,23 @@
 
 * {
   box-sizing: border-box;
+}
+
+/*
+ * No double-tap zoom, anywhere.
+ *
+ * Tiles and buttons have said `touch-action: manipulation` for a while, each for its own reason:
+ * a double-tap on a tile is two taps in a game about tapping tiles, and the browser waiting 300ms
+ * to find out which it was is 300ms of a game. The page as a whole has the same problem and the
+ * same answer -- and after a stray double-tap the way back was another double-tap, which is not
+ * knowledge anybody should need.
+ *
+ * `manipulation` rather than `none`: panning still works, and pinch is left alone here because on
+ * the web it is somebody's way of reading a page. The native shell turns that off too, in
+ * `viewport.ts`, where there is no address bar to undo a stuck zoom with.
+ */
+html {
+  touch-action: manipulation;
 }
 
 body {
@@ -486,7 +512,7 @@ h2 {
   background: var(--panel);
   color: var(--ink);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--field-size);
 }
 
 /* The centered shell puts the loading picker under the title rather than beside it. */
@@ -749,6 +775,16 @@ h2 {
   opacity: 0.85;
 }
 
+/* What a stopped clock costs, under the word Paused. Dim, because it is a consequence rather
+   than an error, and the player is not being told off. */
+.veil-cost {
+  margin: 0;
+  max-width: 18rem;
+  color: var(--dim);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 .veil {
   position: absolute;
   inset: -0.5rem;
@@ -1004,7 +1040,7 @@ kbd {
   background: var(--bg);
   color: var(--ink);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--field-size);
 }
 .nerd-derived {
   display: grid;
@@ -1163,11 +1199,10 @@ kbd {
 .about-page a {
   color: var(--sel);
 }
-/* The wordmark, playing, with room to play in. */
-.about-mark {
-  display: flex;
-  justify-content: center;
-  padding: 0.5rem 0 1rem;
+/* The head's own mark is the animation on this page, so the row it sits in gets a little more
+   air than a head that is only chrome. */
+.about-page .page-head {
+  margin-bottom: 1.75rem;
 }
 /* The link at the foot of the rules, which is a link in both of its forms. */
 .rules-about {
@@ -1665,6 +1700,10 @@ kbd {
   background: transparent;
   color: var(--ink);
   font: inherit;
+  /* Its own size, rather than the 0.85rem it inherited from `.drop`. A field that takes its size
+     from its container is a field nobody thinks about, and this is the one Nick found: focusing it
+     zoomed the game in and cropped the edges. */
+  font-size: var(--field-size);
 }
 /*
  * The box holds focus the whole time the list is open, so a focus ring would be on permanently.
@@ -1781,15 +1820,23 @@ kbd {
   }
 
   /*
-   * iOS zooms the page in when a field takes focus whose text is under 16px, and it does not
-   * zoom back out afterwards: you are left in a magnified game with the board off the edge.
-   * The nerd panel's number fields were 13.6px, so every one of them was a trapdoor.
+   * **Every** field, because iOS zooms the page in when a focused one has text under 16px and
+   * does not zoom back out: you are left in a magnified game with the board's edges off the
+   * screen, and the way out is a double-tap nobody knows about.
+   *
+   * This used to name three controls -- the nerd panel's number fields and the board's difficulty
+   * select -- and naming them is what let the language list's search box keep 13.6px and do it
+   * again. Nick found that one: "clicking on the language drop-down causes the game to zoom in
+   * slightly, cropping the side edges." A rule that has to be remembered per field is a rule that
+   * will be forgotten, so this is every text-entry control there is and every one added later.
    */
+  :root {
+    --field-size: 1rem;
+  }
   .nerd-row input,
   .nerd-row select,
-  /* The board's difficulty selector has the same trapdoor and wants the same floor. */
-  .board-difficulty select {
-    font-size: 1rem;
+  .board-difficulty select,
+  .drop-search {
     min-height: 2.75rem;
   }
   /*
@@ -2346,7 +2393,7 @@ kbd {
   background: var(--bg);
   color: var(--ink);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.8rem;
+  font-size: var(--field-size);
   line-height: 1.4;
   resize: none;
 }
@@ -3746,7 +3793,7 @@ kbd {
   background: var(--panel);
   color: var(--ink);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--field-size);
   cursor: pointer;
   touch-action: manipulation;
 }

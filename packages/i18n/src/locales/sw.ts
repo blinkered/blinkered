@@ -73,6 +73,7 @@ export const sw: Messages = {
   rules: 'Kanuni',
   difficulty: 'ugumu',
   difficultyNames: { easy: 'rahisi', medium: 'wastani', hard: 'gumu', insane: 'kichaa' },
+  pausedNoBoard: 'Mchezo huu hautaonekana kwenye jedwali la viongozi.',
   about: 'Kuhusu',
   themeLabel: 'mandhari',
   themeNames: { traditional: 'ya kawaida', light: 'angavu', contrast: 'utofautiano mkubwa' },

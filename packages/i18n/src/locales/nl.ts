@@ -66,6 +66,7 @@ export const nl: Messages = {
   rules: 'Regels',
   difficulty: 'moeilijkheid',
   difficultyNames: { easy: 'makkelijk', medium: 'gemiddeld', hard: 'moeilijk', insane: 'moordend' },
+  pausedNoBoard: 'Dit spel komt niet op de ranglijst.',
   about: 'Over',
   themeLabel: 'thema',
   themeNames: { traditional: 'traditioneel', light: 'licht', contrast: 'hoog contrast' },

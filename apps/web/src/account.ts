@@ -380,6 +380,14 @@ export interface GameToKeep {
     readonly wilds?: readonly number[]
   }[]
   readonly rounds: number
+  /**
+   * Whether the clock ever stopped: paused by hand, or the tab or app going away.
+   *
+   * It sets `games.paused`, and a paused game is not leaderboard eligible. The exploit it closes
+   * is a screen capture studied while the clock is stopped, which nothing can prevent and this
+   * can decline to rank. See `stopped` on `Game` for why the tab counts as well as the button.
+   */
+  readonly paused: boolean
   readonly dictionaryVersion?: string
   /**
    * Whether nobody was signed in when this game **began**.

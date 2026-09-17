@@ -66,6 +66,7 @@ export const sv: Messages = {
   rules: 'Regler',
   difficulty: 'svårighet',
   difficultyNames: { easy: 'lätt', medium: 'medel', hard: 'svårt', insane: 'brutalt' },
+  pausedNoBoard: 'Det här spelet hamnar inte på topplistan.',
   about: 'Om',
   themeLabel: 'tema',
   themeNames: { traditional: 'traditionellt', light: 'ljust', contrast: 'hög kontrast' },

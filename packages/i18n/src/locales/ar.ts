@@ -79,6 +79,7 @@ export const ar: Messages = {
   rules: 'القواعد',
   difficulty: 'الصعوبة',
   difficultyNames: { easy: 'سهل', medium: 'متوسط', hard: 'صعب', insane: 'جنوني' },
+  pausedNoBoard: 'هذه اللعبة لن تظهر في لوحة المتصدرين.',
   about: 'عن اللعبة',
   themeLabel: 'المظهر',
   themeNames: { traditional: 'تقليدي', light: 'نهاري', contrast: 'تباين عالٍ' },

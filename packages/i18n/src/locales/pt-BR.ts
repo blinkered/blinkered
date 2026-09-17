@@ -70,6 +70,7 @@ export const ptBR: Messages = {
   rules: 'Regras',
   difficulty: 'dificuldade',
   difficultyNames: { easy: 'fácil', medium: 'médio', hard: 'difícil', insane: 'brutal' },
+  pausedNoBoard: 'Esta partida não vai aparecer no ranking.',
   about: 'Sobre',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradicional', light: 'claro', contrast: 'alto contraste' },

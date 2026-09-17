@@ -78,6 +78,7 @@ export const tl: Messages = {
   rules: 'Mga tuntunin',
   difficulty: 'hirap',
   difficultyNames: { easy: 'madali', medium: 'katamtaman', hard: 'mahirap', insane: 'baliw' },
+  pausedNoBoard: 'Hindi lalabas sa leaderboard ang laro na ito.',
   about: 'Tungkol dito',
   themeLabel: 'tema',
   themeNames: { traditional: 'tradisyonal', light: 'maliwanag', contrast: 'mataas na kontrast' },

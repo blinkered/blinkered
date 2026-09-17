@@ -72,6 +72,7 @@ export const uk: Messages = {
   rules: 'Правила',
   difficulty: 'складність',
   difficultyNames: { easy: 'легка', medium: 'середня', hard: 'важка', insane: 'божевільна' },
+  pausedNoBoard: 'Ця гра не потрапить до таблиці лідерів.',
   about: 'Про гру',
   themeLabel: 'тема',
   themeNames: { traditional: 'традиційна', light: 'світла', contrast: 'високий контраст' },

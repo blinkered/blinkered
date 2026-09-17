@@ -77,6 +77,7 @@ export const la: Messages = {
   rules: 'Regulae',
   difficulty: 'difficultas',
   difficultyNames: { easy: 'facilis', medium: 'medius', hard: 'difficilis', insane: 'insanus' },
+  pausedNoBoard: 'Hic ludus in tabula non ponetur.',
   about: 'De hoc ludo',
   themeLabel: 'species',
   themeNames: { traditional: 'traditus', light: 'lucidus', contrast: 'discrimen altum' },

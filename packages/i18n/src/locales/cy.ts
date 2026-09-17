@@ -74,6 +74,7 @@ export const cy: Messages = {
   rules: 'Rheolau',
   difficulty: 'anhawster',
   difficultyNames: { easy: 'hawdd', medium: 'canolig', hard: 'anodd', insane: 'gwallgof' },
+  pausedNoBoard: 'Ni fydd y gêm hon yn ymddangos ar y bwrdd arwain.',
   about: 'Ynghylch',
   themeLabel: 'thema',
   themeNames: { traditional: 'traddodiadol', light: 'golau', contrast: 'cyferbyniad uchel' },

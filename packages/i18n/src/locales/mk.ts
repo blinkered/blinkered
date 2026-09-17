@@ -72,6 +72,7 @@ export const mk: Messages = {
   rules: 'Правила',
   difficulty: 'тежина',
   difficultyNames: { easy: 'лесна', medium: 'средна', hard: 'тешка', insane: 'луда' },
+  pausedNoBoard: 'Оваа игра нема да влезе во ранг-листата.',
   about: 'За играта',
   themeLabel: 'тема',
   themeNames: { traditional: 'традиционална', light: 'светла', contrast: 'висок контраст' },

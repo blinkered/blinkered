@@ -36,6 +36,21 @@ function open(dictionary: WordIndex, spec: GameSpec): Session {
 export interface Game extends Session {
   /** True while the tab is hidden or the player has paused. The clock is stopped. */
   readonly paused: boolean
+  /**
+   * Whether the clock has ever stopped in this game, by either route.
+   *
+   * It is what decides leaderboard eligibility, and the exploit it closes is Nick's: screen-cap
+   * the board, stop the clock, pick the words out of the photograph at leisure, resume, and miss
+   * nothing. Nothing can stop somebody photographing a screen -- a second phone would do it --
+   * so the answer is not to try, and instead to say that a game whose clock stopped is not a
+   * game anybody is ranked on.
+   *
+   * **Including the tab going away**, which is the part worth arguing. Pausing by hand and
+   * switching apps stop the clock identically, and the second one is *easier*: leave the game,
+   * study the screenshot in Photos, come back. A rule that only counted the Pause button would
+   * be a rule with a hole in the shape of the home gesture.
+   */
+  readonly stopped: boolean
   readonly setPaused: (paused: boolean) => void
   readonly dispatch: (event: GameEvent) => void
 }
@@ -75,12 +90,15 @@ function playable(press: KeyboardEvent): boolean {
 export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeyScheme): Game {
   const [session, setSession] = useState<Session>(() => open(dictionary, spec))
   const [manuallyPaused, setManuallyPaused] = useState(false)
+  /** Latched, never cleared within a game: see `stopped` on `Game`. */
+  const [stopped, setStopped] = useState(false)
   const [hidden, setHidden] = useState(() => document.visibilityState === 'hidden')
 
   // Restart whenever the caller hands over a different game to play.
   useEffect(() => {
     setSession(open(dictionary, spec))
     setManuallyPaused(false)
+    setStopped(false)
   }, [dictionary, spec])
 
   const dispatch = useCallback(
@@ -138,6 +156,18 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
 
   const paused = manuallyPaused || hidden
   const over = session.state.status === 'over'
+
+  /*
+   * Latched here rather than in the two places that can pause, because there are three: the
+   * button, the tab going away, and the in-app rules opening over a running game. One effect on
+   * the derived value catches all of them and anything added later.
+   *
+   * Not latched once the game is over: the panel that follows a finished game is not play, and a
+   * tab hidden while somebody reads their score has stopped nothing.
+   */
+  useEffect(() => {
+    if (paused && !over) setStopped(true)
+  }, [paused, over])
   const tickMs = session.state.config.speedMultiplier * 1000
 
   useEffect(() => {
@@ -175,5 +205,5 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
     }
   }, [dispatch])
 
-  return { ...session, paused, setPaused: setManuallyPaused, dispatch }
+  return { ...session, paused, stopped, setPaused: setManuallyPaused, dispatch }
 }

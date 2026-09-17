@@ -73,6 +73,7 @@ export const sr: Messages = {
   rules: 'Правила',
   difficulty: 'тежина',
   difficultyNames: { easy: 'лака', medium: 'средња', hard: 'тешка', insane: 'луда' },
+  pausedNoBoard: 'Ова игра неће доћи на ранг-листу.',
   about: 'О игри',
   themeLabel: 'тема',
   themeNames: { traditional: 'традиционална', light: 'светла', contrast: 'висок контраст' },

@@ -279,6 +279,35 @@ describe('the account surface', () => {
       expect(store.games[0]?.row.leaderboardEligible).toBe(true)
     })
 
+    it('never marks a paused game eligible, and remembers that it was paused', async () => {
+      /*
+       * The exploit this closes has no technical fix: screen-cap the board, stop the clock, pick
+       * the words out of the photograph, resume, miss nothing. iOS cannot hide a view from a
+       * screenshot on request and a second phone defeats anything that could, so the game
+       * declines to rank a game whose clock stopped rather than pretending to prevent the
+       * capture. The row keeps `paused` as well, so a history can say which of the three reasons
+       * applied.
+       */
+      await send('POST', '/v1/games/import', game({ paused: true }))
+      expect(store.games[0]?.row.paused).toBe(true)
+      expect(store.games[0]?.row.leaderboardEligible).toBe(false)
+    })
+
+    it('reads a missing paused field as not paused', async () => {
+      // Every client before this field existed sent games that were ranked; treating silence as
+      // "paused" would unrank them retroactively.
+      await send('POST', '/v1/games/import', game())
+      expect(store.games[0]?.row.paused).toBe(false)
+      expect(store.games[0]?.row.leaderboardEligible).toBe(true)
+    })
+
+    it('ignores a paused flag that is not a boolean', async () => {
+      // `=== true` rather than truthiness, which is the same rule the rest of this body parser
+      // uses: a client sending `"yes"` is a client sending nonsense, not a client pausing.
+      await send('POST', '/v1/games/import', game({ paused: 'yes' }))
+      expect(store.games[0]?.row.paused).toBe(false)
+    })
+
     it('never marks a scoreless game eligible', async () => {
       // No words, so the server scores it zero. Kept, and off every board.
       const response = await send('POST', '/v1/games/import', game({ words: [] }))

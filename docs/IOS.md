@@ -502,6 +502,32 @@ it means "rebuild the app", which the build phase above now does by itself.
   account and a game played in it goes on the real boards. Dev is behind the VPN and a phone
   cannot reach it, so there is no arrangement where this is otherwise.
 
+## No zooming, in three parts
+
+Nick: "clicking on the language drop-down causes the game to zoom in slightly, cropping the side
+edges ... double-tapping the screen anywhere zooms back out, but most users aren't going to know
+that." Three separate mechanisms, each needing its own answer.
+
+**A focused field under 16px.** WKWebView zooms the page in and does not zoom back out. This block
+used to name three controls --- the nerd panel's fields and the board's difficulty select --- and
+naming them is exactly what let the language list's search box keep 13.6px and do it again. It is
+one variable now, `--field-size`, which the touch block raises to 1rem: a media query adds no
+specificity, so `input { font-size: 1rem }` inside one loses to `.nerd-row input` written earlier,
+while inheritance has no such argument. The search box also had no size of its own and inherited
+`.drop`'s --- a field whose size comes from its container is a field nobody thinks about.
+
+**Double-tap.** `touch-action: manipulation` on the root, which keeps panning and pinch and drops
+the 300ms wait that came with double-tap detection. Tiles and buttons have said it for a while,
+each for their own reason; the page as a whole has the same one.
+
+**Pinch, in the shell only.** `viewport.ts` pins the viewport when `isNativeApp()`, and the
+website keeps pinch-zoom deliberately: taking it away is a WCAG 1.4.4 failure on a site that has a
+high-contrast theme precisely because it takes that seriously. An installed app is different ---
+no address bar, so a zoom nobody meant has no obvious way back.
+
+Verified by measuring every focusable field's computed size under an iPhone emulation, on the
+setup screen, the language list, the sign-in dialog and the nerd panel: zero that would zoom.
+
 ## Three palettes, and the arithmetic behind them
 
 Traditional, light and high contrast, chosen from **the title bar** and kept per device --- a fact

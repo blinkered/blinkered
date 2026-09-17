@@ -72,6 +72,7 @@ export const bg: Messages = {
   rules: 'Правила',
   difficulty: 'трудност',
   difficultyNames: { easy: 'лесна', medium: 'средна', hard: 'трудна', insane: 'безумна' },
+  pausedNoBoard: 'Тази игра няма да влезе в класирането.',
   about: 'За играта',
   themeLabel: 'тема',
   themeNames: { traditional: 'традиционна', light: 'светла', contrast: 'висок контраст' },

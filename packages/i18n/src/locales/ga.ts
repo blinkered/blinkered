@@ -75,6 +75,7 @@ export const ga: Messages = {
   rules: 'Rialacha',
   difficulty: 'deacracht',
   difficultyNames: { easy: 'éasca', medium: 'measartha', hard: 'deacair', insane: 'mire' },
+  pausedNoBoard: 'Ní bheidh an cluiche seo ar an gclár ceannais.',
   about: 'Maidir leis',
   themeLabel: 'téama',
   themeNames: { traditional: 'traidisiúnta', light: 'sorcha', contrast: 'codarsnacht ard' },

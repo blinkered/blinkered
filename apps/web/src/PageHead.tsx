@@ -21,6 +21,7 @@ import { useFitRow } from './fitRow.js'
 export function PageHead({
   back,
   onHome,
+  play = false,
   children,
 }: {
   /** The label on the way back, in the page's language. */
@@ -31,6 +32,14 @@ export function PageHead({
    * with no game behind it to go back to.
    */
   readonly onHome?: () => void
+  /**
+   * Whether the mark deals itself rather than standing still.
+   *
+   * One page asks for it: the about page, where the wordmark's animation is the point rather than
+   * decoration. Everywhere else a head is chrome above something somebody came to read, and a
+   * nine-tile shuffle every time they open it would be a flourish charging rent.
+   */
+  readonly play?: boolean
   /** The page's own controls, between the mark and the way back. */
   readonly children?: React.ReactNode
 }): React.JSX.Element {
@@ -46,11 +55,11 @@ export function PageHead({
     <header className="page-head" ref={row}>
       {onHome === undefined ? (
         <a className="page-home" href="/" title={back}>
-          <Title still />
+          <Title mark still={!play} />
         </a>
       ) : (
         <button type="button" className="page-home" title={back} onClick={onHome}>
-          <Title still />
+          <Title mark still={!play} />
         </button>
       )}
 
