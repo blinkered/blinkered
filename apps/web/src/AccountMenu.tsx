@@ -33,6 +33,7 @@ export function AccountMenu({
   onGo,
   onPublicProfile,
   onModerate,
+  onAbout,
   onSignOut,
 }: {
   readonly account: Account | null
@@ -52,6 +53,8 @@ export function AccountMenu({
   readonly onPublicProfile: (username: string) => void
   /** Opens the admin panel. Only ever called from the item that appears for an admin. */
   readonly onModerate: () => void
+  /** Opens the page about the game. In the menu because it is the app's one "learn more" item. */
+  readonly onAbout: () => void
   readonly onSignOut: () => void
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -159,6 +162,19 @@ export function AccountMenu({
             }}
           >
             {messages.menuPublicPage}
+          </button>
+          {/* Who made this. Last of the ordinary items, above moderation and signing out, because
+              it is the one nobody is looking for and everybody can find once. */}
+          <button
+            type="button"
+            role="menuitem"
+            className="account-item"
+            onClick={() => {
+              close()
+              onAbout()
+            }}
+          >
+            {messages.about}
           </button>
           {/*
             Moderation, for the accounts that can.

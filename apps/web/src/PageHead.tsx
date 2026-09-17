@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Icon } from './Icon.js'
 import { Title } from './Title.js'
 import { useFitRow } from './fitRow.js'
 
@@ -58,13 +59,19 @@ export function PageHead({
       {/*
        * The labelled way back as well as the mark, which is two ways home on purpose: the mark is
        * what everybody clicks without reading and the words are what somebody looks for when they
-       * cannot find the way out. The arrow is in the markup rather than in the string, so no
-       * translator has to carry it and no right-to-left locale has to flip it -- the row does
-       * that, because `←` in a `dir="rtl"` page points the way out either way.
+       * cannot find the way out.
+       *
+       * **A control rather than a hint.** It was dim text with a `←` in front of it, and Nick's
+       * note was that it is "a very muted CTA ... too low-contrast to spot for normal human
+       * beings, and there is no iconography". It now borrows the border, background and type of
+       * `.how-to-play`, which is this app's shape for "press this to go somewhere", and carries a
+       * drawn arrow. The glyph is an `Icon` rather than a character in the string, so no
+       * translator has to keep it and it turns with `dir` rather than against it.
        */}
       {onHome === undefined ? null : (
         <button type="button" className="page-back" onClick={onHome}>
-          ← {back}
+          <Icon name="back" />
+          <span>{back}</span>
         </button>
       )}
     </header>

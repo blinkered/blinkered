@@ -51,7 +51,30 @@ export interface Settings {
    * shown the rules" are different facts and only one of them is this one.
    */
   readonly tutorialSeen: boolean
+  /**
+   * Which palette the interface is drawn in.
+   *
+   * A device preference rather than an account one, deliberately: it is a fact about the screen
+   * somebody is looking at -- a phone in sunlight, a laptop at night, eyes that want more
+   * contrast -- and syncing it would mean the account overruling the room.
+   */
+  readonly theme: Theme
 }
+
+/**
+ * The three palettes, and what each is for.
+ *
+ * - `traditional` is what the game has always looked like, and is the default.
+ * - `light` is the same game in daylight, for a bright room and for anybody who finds a dark
+ *   interface harder rather than easier to read.
+ * - `contrast` is black and white with the accents pushed as far as they go: every pairing in it
+ *   clears WCAG AA with room, and the borders clear 1.4.11's 3:1 rather than being suggestions.
+ *
+ * `styles.css` holds the values and `apps/web/test/themes.test.ts` holds the arithmetic, so a
+ * colour cannot be changed into a failing one without a test saying so.
+ */
+export const THEMES = ['traditional', 'light', 'contrast'] as const
+export type Theme = (typeof THEMES)[number]
 
 /**
  * What the browser asks for, if it is one we have, and English otherwise.
@@ -155,6 +178,7 @@ export function defaultSettings(): Settings {
     gameLanguage: guess,
     uiLanguage: guess,
     tutorialSeen: false,
+    theme: 'traditional',
   }
 }
 
@@ -183,11 +207,38 @@ export function loadSettings(): Settings {
       // Anything but a stored `true` means show it: a corrupt value should err towards offering
       // the tour, which costs one click, rather than hiding it from somebody who has never played.
       tutorialSeen: parsed.tutorialSeen === true,
+      // An unknown palette is the traditional one rather than an unstyled page.
+      theme: THEMES.find((name) => name === parsed.theme) ?? fallback.theme,
     }
   } catch {
     // A corrupt or unavailable store is not worth failing a game over.
     return fallback
   }
+}
+
+/**
+ * Puts the chosen palette on `<html>`, where the stylesheet's two theme blocks are keyed.
+ *
+ * The attribute is absent for the traditional theme rather than set to `traditional`, because
+ * that theme is `:root` itself: a page with no attribute at all has to be the game as it was, and
+ * that includes a page this function has never run on.
+ *
+ * `theme-color` moves with it. On iOS that is the status bar over a `black-translucent` web app,
+ * so leaving it at the dark value would put dark-on-dark text above a daylight page.
+ */
+export function applyTheme(theme: Theme): void {
+  const root = document.documentElement
+  if (theme === 'traditional') delete root.dataset.theme
+  else root.dataset.theme = theme
+  const bar = document.querySelector('meta[name="theme-color"]')
+  bar?.setAttribute('content', BAR_COLOURS[theme])
+}
+
+/** Kept beside the palettes they come from; `themes.test.ts` checks they are the real values. */
+const BAR_COLOURS: Record<Theme, string> = {
+  traditional: '#0e1116',
+  light: '#f6f8fa',
+  contrast: '#000000',
 }
 
 export function saveSettings(settings: Settings): void {

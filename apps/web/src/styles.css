@@ -6,6 +6,17 @@
   --dim: #8b949e;
   --up: #f0f6fc;
   --sel: #2f81f7;
+  /* What is written on top of `--sel`. White here and in the light theme; black in the
+     high-contrast one, whose accent is bright enough that white on it would be 2.15:1. Six rules
+     in this file put text on the accent and every one of them reads this. */
+  --on-sel: #ffffff;
+  /* The two sides of a tile. `--face` is an exposed one -- the board's, the wordmark's and the
+     swap panel's big letter, which were three copies of a literal `#1f2630` until the palettes
+     arrived -- and `--face-down` is one still hiding. They have to differ from each other and both
+     from the page, which is the whole reason they are not `--panel`: in daylight a card is white,
+     and a white tile next to a white tile is not a board. */
+  --face: #1f2630;
+  --face-down: #161b22;
   --good: #3fb950;
   --bad: #f85149;
   /* The wild card, wherever it appears: the tile's border, the key, and the letter it gave.
@@ -25,6 +36,66 @@
      touch block near the bottom of this file; the board computes its tile size from them. */
   --tile-max: 4.25rem;
   --board-height: 100rem;
+  color-scheme: dark;
+}
+
+/*
+ * ---------- the other two palettes ----------
+ *
+ * Set on `<html>` by `applyTheme`, and in `index.html` before the first paint so that choosing
+ * the light theme does not mean a dark flash on every launch.
+ *
+ * Every pairing in both is measured in `apps/web/test/themes.test.ts` against the floors WCAG
+ * sets: 4.5:1 for text, 3:1 for a border or a focus ring that has to be found. The numbers are in
+ * that file rather than in a comment here, because a comment cannot fail.
+ *
+ * The same ten tokens carry the same meanings in all three. Nothing in the rest of this file asks
+ * which theme is on -- that is the whole point of having tokens -- with one exception, noted at
+ * `.tile` below, where a face-down tile needs a different treatment in daylight.
+ */
+:root[data-theme='light'] {
+  --bg: #f6f8fa;
+  --panel: #ffffff;
+  /* 3.8:1 against the page, 4.1:1 against a card, 3.2:1 against a face-down tile -- and that last
+     surface is what sets it. A 1px border is how a control is identified in this theme, because a
+     white card on a near-white page is 1.06:1 and could not do it alone, and a tile still hiding
+     is the darkest thing a border has to show up against. */
+  --line: #767f89;
+  --ink: #1f2328;
+  --dim: #57606a;
+  --up: #1f2328;
+  --sel: #0757ba;
+  --on-sel: #ffffff;
+  --good: #0d6a2b;
+  --bad: #b4202b;
+  /* Amber has to go dark to be readable on white, which is the opposite of what it does on the
+     dark page -- the same meaning at the other end of the scale. */
+  --wild: #7a5200;
+  --face: #ffffff;
+  /* Grey, where the card behind it is white: the difference between a tile you have turned over
+     and one you have not is information the player needs at a glance. */
+  --face-down: #dfe4ea;
+  color-scheme: light;
+}
+:root[data-theme='contrast'] {
+  --bg: #000000;
+  /* Not black, so a card is a card without relying only on its border. */
+  --panel: #0f0f0f;
+  --line: #a8b3bf;
+  --ink: #ffffff;
+  /* "Dim" is a role rather than a brightness here: secondary text at 17:1, because the point of
+     this theme is that nothing is quiet. */
+  --dim: #e2e8ee;
+  --up: #ffffff;
+  --sel: #6cb6ff;
+  /* Black on the accent, which is 9.8:1. White on it would be 2.15:1 -- a bright accent and white
+     text is the pairing that looks strong and reads worst. */
+  --on-sel: #000000;
+  --good: #56d364;
+  --bad: #ff7b72;
+  --wild: #ffd75e;
+  --face: #2b2b2b;
+  --face-down: #0f0f0f;
   color-scheme: dark;
 }
 
@@ -258,16 +329,36 @@ h1 {
   gap: 0.5rem;
   margin-inline-start: auto;
 }
+/*
+ * The way back, which is a button and used to read as a footnote.
+ *
+ * Dim text with an arrow character in front of it: the same colour as a caption, no border, and
+ * nothing to say it could be pressed. On the one page whose only exit it is, that is the wrong
+ * amount of confidence. It borrows `.how-to-play`'s box on purpose -- the row now has two
+ * controls that look like controls -- and takes the ink colour rather than the dim one.
+ */
 .page-back {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
   margin-inline-start: auto;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--dim);
+  /* 44pt tall for a thumb, since every one of these pages is reachable from a shared link. */
+  min-height: 2.75rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
   white-space: nowrap;
+  touch-action: manipulation;
+}
+/* The arrow turns around in a right-to-left page, which is the one thing a glyph in the string
+   could not have done. */
+[dir='rtl'] .page-back .icon {
+  transform: scaleX(-1);
 }
 /* Both at once would push the way back off the end; whichever comes second keeps the margin. */
 .page-tools + .page-back {
@@ -275,7 +366,7 @@ h1 {
 }
 @media (hover: hover) {
   .page-back:hover {
-    color: var(--ink);
+    border-color: var(--sel);
   }
 }
 .page-back:focus-visible,
@@ -578,19 +669,19 @@ h2 {
   font-weight: 650;
 }
 .tile-back {
-  background: var(--panel);
+  background: var(--face-down);
   border: 1px solid var(--line);
 }
 .tile-front {
   transform: rotateY(180deg);
-  background: #1f2630;
+  background: var(--face);
   border: 1px solid var(--line);
   color: var(--up);
 }
 .tile.is-selected .tile-front {
   background: var(--sel);
   border-color: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
 }
 .tile.is-spent .tile-back {
   opacity: 0.35;
@@ -753,7 +844,7 @@ h2 {
 .btn-primary {
   background: var(--sel);
   border-color: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
   font-weight: 600;
 }
 kbd {
@@ -936,6 +1027,184 @@ kbd {
   }
 }
 
+/*
+ * ---------- the app's opening ----------
+ *
+ * See `Splash.tsx`. Nine letters in a 3x3 grid, picked out in reading order, travelling into the
+ * word. The tiles are the wordmark's own -- `.title-tile` and its two faces -- so the flip, the
+ * lit colour and the type are the game's rather than a second set that would drift.
+ *
+ * A fixed layer over everything, including the tour at `z-index: 70`: this is the first thing the
+ * app shows and nothing should be able to appear in front of it.
+ */
+.splash {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* A button, so a press anywhere skips it. None of a button's own appearance is wanted. */
+  padding: 0;
+  border: none;
+  background: var(--bg);
+  cursor: pointer;
+  transition: opacity 260ms ease;
+}
+.splash.is-leaving {
+  opacity: 0;
+  /* Nothing to press once it is on its way out, so a tap lands on the game underneath. */
+  pointer-events: none;
+}
+/*
+ * Three by three, which is nine -- and BLINKERED is nine letters, which is the whole reason this
+ * shape works. Bigger tiles than the title bar's, because here they are the only thing on screen.
+ */
+.splash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.5rem;
+}
+/*
+ * And then one row, at a size that fits nine of them across a 320px screen: 9 x 1.9rem plus eight
+ * gaps is 296px, which clears it with the page's gutter to spare.
+ */
+.splash-word {
+  display: flex;
+  gap: 0.18rem;
+}
+.splash-grid .splash-tile {
+  --title-tile: 3.4rem;
+}
+.splash-word .splash-tile {
+  --title-tile: 1.9rem;
+}
+/*
+ * The travel, and the one difference from the wordmark's: it moves in both directions, so the
+ * transition cannot be `transform` on a single axis. Must match `TRAVEL_MS` in `Splash.tsx`.
+ */
+.splash-tile {
+  transition:
+    transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    width 420ms ease,
+    height 420ms ease;
+}
+/* The studio, in the corner a studio goes in, clear of the home indicator. */
+.splash-mark {
+  position: absolute;
+  right: max(1.25rem, env(safe-area-inset-right));
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  width: 9rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The word, assembled, held and gone. Nothing crosses the screen. */
+  .splash-tile {
+    transition: none;
+  }
+}
+
+/*
+ * ---------- who made this ----------
+ *
+ * See `AboutPage.tsx`. One column, read once, so it takes the same measure as the rules page
+ * rather than the full width of a desktop.
+ */
+.about-page {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  line-height: 1.6;
+}
+.about-page p {
+  margin: 0;
+}
+.about-page a {
+  color: var(--sel);
+}
+/* The wordmark, playing, with room to play in. */
+.about-mark {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 1rem;
+}
+/* The link at the foot of the rules, which is a link in both of its forms. */
+.rules-about {
+  margin: 2rem 0 0;
+  text-align: center;
+}
+.rules-about a,
+.rules-about-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sel);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.about-marks {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0 0.5rem;
+}
+/*
+ * Tight Line's own mark, in the variant the palette calls for.
+ *
+ * Two files, one for a dark ground and one for a light one, trimmed and sized from the artwork in
+ * `brand/tightline`. A background image rather than an `<img>`, so which variant is drawn is
+ * decided here beside the palettes instead of in two components -- and only the one that matches
+ * is ever fetched.
+ */
+.tightline-mark {
+  display: block;
+  /* The artwork is 600x98 after trimming; the ratio keeps it from being squashed at any width.
+     The width is the caller's -- `.splash-mark` and `.about-tightline` each set their own, and a
+     `100%` here quietly won over both of them the first time. */
+  aspect-ratio: 600 / 98;
+  background-image: url('/tightline-on-dark.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+:root[data-theme='light'] .tightline-mark {
+  background-image: url('/tightline-on-light.png');
+}
+/* On the about page it sits in a column, so it is capped rather than full width. */
+.about-tightline {
+  width: min(11rem, 60%);
+}
+.about-tightline .tightline-mark {
+  width: 100%;
+}
+
+.about-link {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  /* 44pt, because both of these are links somebody taps with a thumb. */
+  min-height: 2.75rem;
+  color: var(--dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+/* The GitHub mark follows the palette rather than being black on both themes. */
+.about-link svg {
+  color: var(--ink);
+}
+@media (hover: hover) {
+  .about-link:hover,
+  .about-link:hover svg {
+    color: var(--sel);
+  }
+}
+
 /* The wordmark, dealt as a hand of tiles. Same 3D flip as the board, at title size, and the
    same FLIP-driven travel when it sorts itself into a word. */
 .title {
@@ -969,10 +1238,10 @@ kbd {
   transition: transform 260ms cubic-bezier(0.3, 0.8, 0.3, 1);
 }
 .title-back {
-  background: var(--panel);
+  background: var(--face-down);
 }
 .title-front {
-  background: #1f2630;
+  background: var(--face);
   color: var(--up);
   transform: rotateY(180deg);
 }
@@ -987,7 +1256,7 @@ kbd {
 .title-tile.is-lit .title-front {
   background: var(--sel);
   border-color: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
 }
 
 /* A card, not a modal: the language selector above it has to stay reachable. */
@@ -1396,7 +1665,9 @@ kbd {
   font-size: 0.8em;
 }
 .drop-option.is-active .drop-note {
-  color: rgb(255 255 255 / 75%);
+  /* The accent's own ink, softened. A literal white here was white text on a bright blue in the
+     high-contrast theme, which is the one pairing that looks bold and reads worst. */
+  color: color-mix(in srgb, var(--on-sel) 75%, transparent);
 }
 .drop-option {
   display: flex;
@@ -1415,7 +1686,7 @@ kbd {
 }
 .drop-option.is-active {
   background: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
 }
 
 /*
@@ -1790,9 +2061,20 @@ kbd {
    * own label goes: the trigger shows a flag and the language's name for itself, which says
    * "language" better than the word does, and the label stays in the accessibility tree.
    */
-  .picker-label,
-  /* Same trade, same row, same reasoning: the face says "nerd mode" well enough at 320px, and
-     the words stay in the accessibility tree. The `title` covers a pointer. */
+  /*
+   * `.picker-label` used to be hidden here too, and that became wrong twice over.
+   *
+   * It was a title-bar measure -- the row had to fit and the flag says "language" well enough --
+   * but it applied to every picker on the site, including the two on a card in the middle of the
+   * setup screen. Adding the palette's row made that visible: two rows of unlabelled chips, where
+   * "easy medium hard insane" is guessable and "traditional light high contrast" is a riddle.
+   *
+   * The title bar does not need it any more either. `fitRow.ts` hides that label as its first
+   * step, measured, so the row still fits at 320px and nothing else loses a label it has room
+   * for.
+   */
+  /* The nerd toggle's words: the face says it well enough at 320px, and the words stay in the
+     accessibility tree. The `title` covers a pointer. */
   .toggle-text {
     position: absolute;
     width: 1px;
@@ -2043,7 +2325,7 @@ kbd {
 .tile.is-wild.is-selected .tile-front {
   border-style: solid;
   border-color: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
 }
 /*
  * The key. Shown only while a card is actually on the board, and sized to be read once.
@@ -2359,7 +2641,7 @@ kbd {
   aspect-ratio: 1;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #1f2630;
+  background: var(--face);
   color: var(--up);
   /* Tracks the cap above, so the letter stays proportionate to the box it is drawn in. */
   font-size: min(18cqw, 5.4rem);
@@ -3112,7 +3394,7 @@ kbd {
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
   background: var(--sel);
-  color: #fff;
+  color: var(--on-sel);
   font-size: 0.7rem;
   font-weight: 600;
 }

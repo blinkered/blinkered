@@ -55,12 +55,21 @@ export function HowToPlay({
   language,
   onLanguage,
   onBack,
+  onAbout,
 }: {
   messages: Messages
   language: string
   onLanguage: (language: string) => void
   /** Shown only where the page cannot be closed by closing a tab: the native shell. */
   onBack?: () => void
+  /**
+   * Opens the about page in the app rather than as a navigation.
+   *
+   * Given in the app, where `/about` as a link would reload the whole bundle and take a running
+   * game with it. Omitted on the standalone document, which has no app to keep and where an
+   * ordinary link is the better thing anyway -- it can be middle-clicked and copied.
+   */
+  onAbout?: () => void
 }): React.JSX.Element {
   const ends = alphabetEnds(language)
   const sections = [
@@ -173,6 +182,29 @@ export function HowToPlay({
           <dd>{messages.reset}</dd>
         </dl>
       </section>
+
+      {/*
+        Who made this, at the foot of the page somebody reads when they want to know more.
+        
+        A button in the app and a link on the standalone document, which is the same split
+        `HowToPlayLink` makes in the other direction and for the same reason: a WebView has one
+        page and a navigation would cost a game.
+      */}
+      <p className="rules-about">
+        {onAbout === undefined ? (
+          <a href="/about">{messages.about}</a>
+        ) : (
+          <button
+            type="button"
+            className="rules-about-button"
+            onClick={() => {
+              onAbout()
+            }}
+          >
+            {messages.about}
+          </button>
+        )}
+      </p>
     </main>
   )
 }

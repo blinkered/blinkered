@@ -14,7 +14,7 @@
  * Paths are deliberately plain. At 20px nothing subtle survives.
  */
 interface IconProps {
-  readonly name: 'reset' | 'pause' | 'resume' | 'restart' | 'quit' | 'help'
+  readonly name: 'reset' | 'pause' | 'resume' | 'restart' | 'quit' | 'help' | 'back'
 }
 
 export function Icon({ name }: IconProps): React.JSX.Element {
@@ -53,6 +53,19 @@ const PATHS: Record<IconProps['name'], React.JSX.Element> = {
     <>
       <path d="M9 5v14" />
       <path d="M15 5v14" />
+    </>
+  ),
+  /*
+   * The way out of a page, and it needs to be an arrow rather than a chevron.
+   *
+   * A bare chevron at 20px is the same glyph the language picker uses for "this opens", so the
+   * one control on the page that leaves it would have looked like a control that expands. The
+   * shaft is what makes it a direction.
+   */
+  back: (
+    <>
+      <path d="M19 12H5" />
+      <path d="M12 19l-7-7 7-7" />
     </>
   ),
   // Filled, because a hollow triangle at 20px reads as an arrowhead.

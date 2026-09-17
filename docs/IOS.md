@@ -502,6 +502,40 @@ it means "rebuild the app", which the build phase above now does by itself.
   account and a game played in it goes on the real boards. Dev is behind the VPN and a phone
   cannot reach it, so there is no arrangement where this is otherwise.
 
+## Three palettes, and the arithmetic behind them
+
+Traditional, light and high contrast, chosen on the setup screen and kept per device --- a fact
+about the room somebody is in and the eyes they are reading with, which is why it is not synced
+from the account.
+
+Two things had to be true before a second palette was possible at all. **The face of a tile was a
+literal `#1f2630` in three rules**, which is a colour no theme can reach, and in daylight it is a
+dark tile with dark letters on it; it is `--face` now, with `--face-down` for the other side of
+the same tile, because in the light theme a card is white and a white tile beside a white tile is
+not a board. And **the accent had no ink of its own**: six rules wrote `color: #fff` on top of
+`--sel`, which in a high-contrast theme is white on a bright blue at 2.15:1 --- the pairing that
+looks strongest and reads worst. `--on-sel` is black there and white in the other two.
+
+`apps/web/test/themes.test.ts` measures every pairing the interface draws against the floor WCAG
+sets for it: 4.5:1 for text, since none of this interface's text is large by WCAG's definition,
+and 3:1 for the borders and rings that identify a control. It also asserts that each theme defines
+every token, because a missing one inherits the traditional value and looks almost right.
+
+**The traditional theme misses two of those floors and is exempt on purpose.** It is the game as
+it has always looked: white on the accent is 3.75:1 where AA wants 4.5, and its borders are 1.46:1
+against the page where 1.4.11 wants 3. Both are fixed in the other two themes, and the test names
+the exact pairings that are allowed to miss, so a third cannot join them quietly. If those two are
+ever worth fixing in the traditional palette, the change is `--sel` a shade darker and `--line` a
+shade lighter, and the test will say when they pass.
+
+The light theme's border is the one value that was solved rather than picked: `--line` has to
+clear 3:1 against the page, against a white card **and** against a face-down tile, and that last
+surface is the one that sets it at `#767f89`.
+
+`index.html` applies the stored palette before the first paint. Without that, choosing the light
+theme means a dark page flashing on every launch, which is the sort of thing that reads as a bug
+in the app rather than a theme system working correctly.
+
 ## How this was checked, and what that cannot tell us
 
 Playwright driving **WebKit** at real iPhone and iPad device descriptors. Same engine family as

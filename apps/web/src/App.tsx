@@ -19,6 +19,7 @@ import { BoardPreview } from './BoardPreview.js'
 import { Leaderboard } from './Leaderboard.js'
 import { LeaderboardPage } from './LeaderboardPage.js'
 import { NerdPanel } from './NerdPanel.js'
+import { Splash } from './Splash.js'
 import { Title } from './Title.js'
 import { loadCatalogue, loadDictionary } from './dictionary.js'
 import { overFixture } from './fixtures.js'
@@ -27,6 +28,7 @@ import { useFocusRelease, withoutStealingFocus } from './focus.js'
 import { Share } from './Share.js'
 import { AccountMenu } from './AccountMenu.js'
 import type { Destination } from './AccountMenu.js'
+import { AboutPage } from './AboutPage.js'
 import { AccountScreen } from './AccountScreen.js'
 import { AdminScreen } from './AdminScreen.js'
 import { SignInDialog } from './SignInDialog.js'
@@ -48,6 +50,7 @@ import type { Standing } from './scores.js'
 import {
   configOf,
   isCanonical,
+  applyTheme,
   loadSettings,
   saveSettings,
   withOverride,
@@ -96,6 +99,12 @@ export function App(): React.JSX.Element {
   useEffect(() => {
     saveSettings(settings)
   }, [settings])
+
+  // The palette, whenever it changes. `index.html` has already applied the stored one before the
+  // first paint; this is what makes choosing a different one take effect without a reload.
+  useEffect(() => {
+    applyTheme(settings.theme)
+  }, [settings.theme])
 
   // The interface language belongs on the document too, or a screen reader announces Greek in
   // an English voice and the browser hyphenates Finnish by English rules. With it goes the
@@ -227,7 +236,16 @@ function Session({
    * an account swaps a Sign in button for an avatar, which is 35 pixels the row gets back.
    */
   const titlebar = useRef<HTMLDivElement>(null)
-  useFitRow(titlebar, `${settings.uiLanguage}|${account === null ? 'out' : 'in'}`)
+  const fit = useFitRow(titlebar, `${settings.uiLanguage}|${account === null ? 'out' : 'in'}`)
+  /**
+   * Whether the wordmark is down to its single tile, which is when its animation stops earning.
+   *
+   * Nick, on a phone: "a B appears, gets highlighted, a few seconds later it slides around and
+   * comes back as a B." Which is exactly what nine tiles shuffling look like when the stylesheet
+   * is showing one of them. Measured rather than guessed at a width, because the step it happens
+   * at is different in every language -- see `fitRow.ts`.
+   */
+  const markOnly = fit.includes('mark')
 
   /*
    * Coming back from Apple or Google.
@@ -369,6 +387,14 @@ function Session({
 
   // The wordmark deals itself as a hand of Blinkered on arrival. Pressing Start during it hurries
   // it along rather than cutting it off, so the game begins on a title that reads BLINKERED.
+  /**
+   * The app's opening, in the shell only.
+   *
+   * `isNativeApp()` at mount rather than a setting: a website should show somebody the game, and
+   * an app has a launch moment to fill. Reachable exactly once per launch, which in a WebView with
+   * no address bar means once.
+   */
+  const [splash, setSplash] = useState(() => isNativeApp())
   const [titleDone, setTitleDone] = useState(false)
   const [hurried, setHurried] = useState(false)
   const [waitingToStart, setWaitingToStart] = useState(false)
@@ -607,6 +633,9 @@ function Session({
       onRuleset={(ruleset: Ruleset) => {
         onChange(withRuleset(settings, ruleset))
       }}
+      onTheme={(theme) => {
+        onChange({ ...settings, theme })
+      }}
       onStart={start}
     />
   )
@@ -635,6 +664,14 @@ function Session({
         `setup` too -- they have not started a game, because they did not come to play one -- so
         without it the welcome tour opens on top of the game they were sent to look at.
       */}
+      {splash ? (
+        <Splash
+          onDone={() => {
+            setSplash(false)
+          }}
+        />
+      ) : null}
+
       {!settings.tutorialSeen && !tourDone && phase === 'setup' && route.at === 'game' ? (
         <Tutorial
           messages={messages}
@@ -744,7 +781,18 @@ function Session({
 
       {route.at === 'game' || route.at === 'admin' ? null : (
         <div className="rules-overlay account-screen">
-          {route.at === 'board' ? (
+          {route.at === 'about' ? (
+            /* In the overlay with the other public pages, for the same reason: it is reached by a
+               link, from the rules page and from the account menu, and it draws over the game
+               rather than instead of it. */
+            <AboutPage
+              messages={messages}
+              onHome={() => {
+                goTo({ at: 'game' })
+                setRoute({ at: 'game' })
+              }}
+            />
+          ) : route.at === 'board' ? (
             /*
              * A board belongs in this overlay with the other two public pages: all three are
              * reached by a shared link, all three draw over the game rather than instead of it.
@@ -800,6 +848,11 @@ function Session({
             onBack={() => {
               setReadingRules(false)
             }}
+            onAbout={() => {
+              setReadingRules(false)
+              goTo({ at: 'about' })
+              setRoute({ at: 'about' })
+            }}
           />
         </div>
       ) : null}
@@ -817,7 +870,14 @@ function Session({
         data-offline={offline ? 'yes' : undefined}
       >
         <div className="titlebar" ref={titlebar}>
+          {/*
+            Keyed on whether it is playing, so that turning still is a fresh start rather than a
+            prop nobody reads: the animation's state is set up once, at mount, from `still`.
+            Remounting nine spans costs nothing and is honest about what changed.
+          */}
           <Title
+            key={markOnly ? 'still' : 'played'}
+            still={markOnly}
             skip={hurried}
             onDone={() => {
               setTitleDone(true)
@@ -951,6 +1011,10 @@ function Session({
             onPublicProfile={(username) => {
               goTo({ at: 'player', username })
               setRoute({ at: 'player', username })
+            }}
+            onAbout={() => {
+              goTo({ at: 'about' })
+              setRoute({ at: 'about' })
             }}
             onModerate={() => {
               // A route rather than an overlay flag, so the panel survives a reload -- which

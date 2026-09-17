@@ -239,6 +239,28 @@ export interface Messages {
   readonly rules: string
   readonly difficulty: string
   readonly difficultyNames: Readonly<Record<Difficulty, string>>
+  /**
+   * The palette, and the three it can be.
+   *
+   * One record rather than three keys, the same shape `difficultyNames` uses, because it is the
+   * same kind of thing: a closed set of names for a row of chips. Adding a fourth theme then
+   * fails to compile in fifty-one files at once, which is the behaviour worth having.
+   *
+   * The names describe what each is *for* rather than what it looks like. "Dark" and "light" would
+   * be the obvious pair and would leave the third one nameless -- and a reader choosing between
+   * them is choosing a room and a pair of eyes, not a colour.
+   */
+  /**
+   * "About", which is the label on two links and the heading of the page they open.
+   *
+   * The page's prose is English and stays English -- it is one person's account of a shower
+   * thought, with his name and his address in it, and a machine translation of that into fifty-one
+   * languages would be putting words in his mouth. The chrome around it is localised like every
+   * other page: the heading, the way back, and the two links that lead to it.
+   */
+  readonly about: string
+  readonly themeLabel: string
+  readonly themeNames: Readonly<Record<'traditional' | 'light' | 'contrast', string>>
   readonly tiles: string
   readonly secondsPerTick: string
   readonly holdTicks: string

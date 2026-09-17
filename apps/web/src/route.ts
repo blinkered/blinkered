@@ -6,6 +6,7 @@
  *   /g/<id>        one finished game
  *   /u/<username>  one player
  *   /admin         moderation, which is not worth linking to and has an address anyway
+ *   /about         who made this
  *
  * A game id rather than anything prettier, because a game permalink is the link that gets
  * shared and it must not rot. A username in the other, because a profile link is read by people
@@ -49,12 +50,21 @@ export type Route =
    * the server answers 404 for a board that is not one, and the screen says so.
    */
   | { readonly at: 'board'; readonly language: string; readonly difficulty: string }
+  /**
+   * Who made this and why: `/about`.
+   *
+   * An address rather than a dialog, because it is the one page somebody might actually want to
+   * send to a person -- and because the two links on it point outward, which a modal makes
+   * awkward. Exact, like `/admin`, so it cannot grow to swallow a neighbour.
+   */
+  | { readonly at: 'about' }
 
 /** Reads a path. Anything unrecognised is the game, which is what `/` has always been. */
 export function routeOf(pathname: string): Route {
   const parts = pathname.split('/').filter((part) => part !== '')
   const [prefix, value] = parts
   if (parts.length === 1 && prefix === 'admin') return { at: 'admin' }
+  if (parts.length === 1 && prefix === 'about') return { at: 'about' }
   if (parts.length === 2 && value !== undefined && value !== '') {
     if (prefix === 'g') return { at: 'played-game', id: decodeURIComponent(value) }
     if (prefix === 'u') return { at: 'player', username: decodeURIComponent(value) }
@@ -88,6 +98,8 @@ export function pathOf(route: Route): string {
       return `/u/${encodeURIComponent(route.username)}`
     case 'admin':
       return '/admin'
+    case 'about':
+      return '/about'
     case 'board':
       return `/l/${encodeURIComponent(route.language)}/${encodeURIComponent(route.difficulty)}`
     case 'game':

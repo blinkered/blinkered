@@ -23,6 +23,31 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Blinkered" />
     <title>Blinkered</title>
+
+    <!--
+      The palette, before anything is drawn.
+
+      `applyTheme` in the app does this too, but the app is a module: it runs after the first
+      paint, so choosing the light theme would mean a dark page flashing on every single launch.
+      Reading one key here costs a fraction of a millisecond and removes that entirely.
+
+      Duplicated deliberately, and cheaply: the key, the attribute and the three names. The app is
+      still the only thing that *writes* the setting, and `settings.ts` is still the only thing
+      that validates it -- an unknown value here simply sets an attribute no stylesheet matches,
+      which is the traditional theme.
+    -->
+    <script>
+      try {
+        var held = JSON.parse(localStorage.getItem('blinkered.settings.v1') || '{}')
+        if (held.theme === 'light' || held.theme === 'contrast') {
+          document.documentElement.dataset.theme = held.theme
+          var bar = document.querySelector('meta[name="theme-color"]')
+          if (bar) bar.setAttribute('content', held.theme === 'light' ? '#f6f8fa' : '#000000')
+        }
+      } catch (ignored) {
+        /* Blocked storage, private browsing, a corrupt value: the game as it has always looked. */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

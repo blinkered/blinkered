@@ -1,7 +1,7 @@
 import type { Messages } from '@blinkered/i18n'
 import { withoutStealingFocus } from './focus.js'
-import { CUSTOM_RULES, DIFFICULTY_NAMES, hasCustomRules, rulesetOf } from './settings.js'
-import type { Ruleset, Settings } from './settings.js'
+import { CUSTOM_RULES, DIFFICULTY_NAMES, THEMES, hasCustomRules, rulesetOf } from './settings.js'
+import type { Ruleset, Settings, Theme } from './settings.js'
 
 interface GameSetupProps {
   readonly settings: Settings
@@ -10,6 +10,7 @@ interface GameSetupProps {
   readonly ready: boolean
   readonly startLabel: string
   readonly onRuleset: (ruleset: Ruleset) => void
+  readonly onTheme: (theme: Theme) => void
   readonly onStart: () => void
 }
 
@@ -26,11 +27,21 @@ export function GameSetup({
   ready,
   startLabel,
   onRuleset,
+  onTheme,
   onStart,
 }: GameSetupProps): React.JSX.Element {
   return (
     <div className="setup">
       <RulesetPicker settings={settings} messages={messages} onChange={onRuleset} />
+      {/*
+        The palette, under the difficulty and in the same shape as it.
+        
+        Here rather than in the title bar, which is the tightest row in the layout and is measured
+        to stay on one line; and here rather than on the account screen, because it has to be
+        reachable by somebody who has never signed in and is reading a page they find too dark or
+        too bright. This screen is where the other two choices about how to play already are.
+      */}
+      <ThemePicker settings={settings} messages={messages} onChange={onTheme} />
       <button
         type="button"
         className="btn btn-primary btn-start"
@@ -101,6 +112,46 @@ export function RulesetPicker({
              * easiest setting. Anyone who wants the actual numbers has nerd mode.
              */}
             {ruleset === CUSTOM_RULES ? messages.nerdMode : messages.difficultyNames[ruleset]}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Which palette the interface is drawn in. Three chips, the same control as the difficulty row.
+ *
+ * Not a system-preference switch. `prefers-color-scheme` would be the obvious thing to follow and
+ * it answers a different question: it says what somebody's operating system was set to, which on
+ * a phone is usually a schedule, and it has nothing to say about wanting more contrast. An
+ * explicit choice that persists is the one that helps the person it is for.
+ */
+function ThemePicker({
+  settings,
+  messages,
+  onChange,
+}: {
+  readonly settings: Settings
+  readonly messages: Messages
+  readonly onChange: (theme: Theme) => void
+}): React.JSX.Element {
+  return (
+    <div className="ruleset" role="group" aria-label={messages.themeLabel}>
+      <span className="picker-label">{messages.themeLabel}</span>
+      <div className="ruleset-options">
+        {THEMES.map((theme) => (
+          <button
+            key={theme}
+            type="button"
+            className={`chip${theme === settings.theme ? ' is-on' : ''}`}
+            aria-pressed={theme === settings.theme}
+            onMouseDown={withoutStealingFocus}
+            onClick={() => {
+              onChange(theme)
+            }}
+          >
+            {messages.themeNames[theme]}
           </button>
         ))}
       </div>

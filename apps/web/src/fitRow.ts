@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import type { RefObject } from 'react'
 
 /**
@@ -46,20 +46,43 @@ function apply(row: HTMLElement, steps: number): void {
  * @param row the row to keep on one line.
  * @param signature anything that changes what the row contains -- the language, whether there is
  * an account -- so it is measured again when the words in it are different ones.
+ * @returns the steps in force, for the one caller that has to know rather than just be styled.
+ * That is the wordmark: at the `mark` step it is a single tile, and a shuffle of nine letters that
+ * ends by sliding one of them back where it started is silly rather than charming, so `Title` is
+ * told to stand still instead. A width would have been the wrong trigger -- which step the row
+ * lands on is different in every language.
  */
-export function useFitRow(row: RefObject<HTMLElement | null>, signature: string): void {
+export function useFitRow(
+  row: RefObject<HTMLElement | null>,
+  signature: string,
+): readonly string[] {
+  const [taken, setTaken] = useState<readonly string[]>([])
+
   // Before the paint, not after it: a row that has not been measured yet is a row still holding
   // every label, and after a paint that is one frame of it hanging off the edge of the screen.
   useLayoutEffect(() => {
     const node = row.current
     if (node === null) return undefined
 
+    /*
+     * Into React only when the set changes, which is once or twice through a resize rather than on
+     * every frame of one. A re-render does not re-measure -- the effect's dependencies have not
+     * moved and neither has the row's box -- so this cannot drive itself.
+     */
+    const report = (steps: readonly string[]): void => {
+      setTaken((held) => (held.join(' ') === steps.join(' ') ? held : steps))
+    }
+
     const measure = (): void => {
       // Fewest steps that fit, from none upwards, so the row comes back as the window widens.
       for (let steps = 0; steps <= STEPS.length; steps += 1) {
         apply(node, steps)
-        if (fits(node)) return
+        if (fits(node)) {
+          report(STEPS.slice(0, steps))
+          return
+        }
       }
+      report(STEPS)
     }
 
     measure()
@@ -84,4 +107,6 @@ export function useFitRow(row: RefObject<HTMLElement | null>, signature: string)
       observer.disconnect()
     }
   }, [row, signature])
+
+  return taken
 }
