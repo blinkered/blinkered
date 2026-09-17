@@ -257,6 +257,32 @@ cleared everything else.
 Add it when offline play is a feature somebody asked for, and cache the app shell plus the one
 language in play.
 
+## Two commands, every time, or the phone runs an old app
+
+Xcode's Run button does not build `apps/web` and does not copy it. Capacitor does not read
+`apps/web/dist` either: `cap sync` copies it into `ios/App/App/public`, and Xcode bundles
+whatever is sitting in that folder. So the loop for any web change is:
+
+```sh
+pnpm build                                  # refresh apps/web/dist
+pnpm --filter @blinkered/mobile sync        # cap sync ios: dist -> ios/App/App/public
+```
+
+Then Run. Skip either and the build succeeds and installs an older app, which is a failure mode
+with no error message anywhere in it.
+
+It has already happened once, and the drift had two levels rather than one:
+
+| What                                         | When         |
+| -------------------------------------------- | ------------ |
+| `ios/App/App/public` (what was on the phone) | Sep 16 15:46 |
+| `apps/web/dist` (last web build)             | Sep 17 11:53 |
+| `HEAD`                                       | Sep 17 14:05 |
+
+The symptom was a six-screen tour with no mention of signing in -- which is not a bug, it is
+what the tour looked like the day before. Anything that reads as "an older build" on a device is
+this until proven otherwise, and the two timestamps above are how to prove it in ten seconds.
+
 ## What the native app still needs
 
 The Capacitor shell exists and consumes this build unchanged, which was the point of doing the
@@ -307,16 +333,37 @@ Three things are still owed here, and none of them is a detail:
   Capacitor plugin and a way for `apps/web` to reach it, and `platform.ts` exists precisely so
   that this package does not depend on Capacitor. Kept behind `token`, `rememberToken` and
   `forgetToken` so the move is one file.
-- **Google and Apple sign-in are not wired for the shell.** They are navigations off-origin that
-  end at a server redirect setting a cookie, which is the one thing the shell cannot receive. The
-  native flow is `ASWebAuthenticationSession` and a callback that hands back a token instead, and
-  it is not built. **The email code flow works, and is enough**: an app offering no third-party
-  SSO at all is not subject to guideline 4.8, so this does not block a submission -- it just
-  means the shell offers one way in where the website offers three.
-- **None of this has run on a device.** It is tested to the edge of what a Mac can check: the
-  unit suites, the server's bearer and CORS routes, and a simulator build. `WKAppBoundDomains` in
+- **Google and Apple sign-in are not wired for the shell, and the buttons are now hidden there.**
+  Leaving them visible was worse than leaving them unbuilt: on a phone, pressing one **restarted
+  the app at the first screen of the tour**, instantly and with no network involved. `sso.ts`
+  navigates to a root-relative `/v1/auth/<provider>`, and because it is a navigation rather than
+  a fetch it never passes through `api.ts` and never becomes absolute -- so in the shell it asks
+  Capacitor's local server for a path that is not in the bundle, gets `index.html` back the way
+  any unknown path does, and the app boots again. It reads exactly like a crash.
+
+  Two more walls stand behind that one, which is why the answer is not to make the URL absolute.
+  `WKAppBoundDomains` lists this app's own domains and WebKit refuses to navigate an app-bound
+  WebView anywhere else. And Google refuses OAuth in an embedded WebView outright
+  (`disallowed_useragent`), while Apple's `response_mode=form_post` flow assumes a real browser.
+  The handshake has to happen **out of process**: `ASAuthorizationAppleIDProvider` for Apple,
+  `ASWebAuthenticationSession` for Google, a custom-scheme callback carrying a bearer token, and
+  `rememberToken()` to receive it. `sessions.kind` and `platform.ts` were built for that shape.
+
+  Until it exists the shell offers the mailed code, which is a complete way in rather than a
+  degraded one: no provider, no cookie, no second origin. Hiding the buttons also takes guideline
+  4.8 off the table, since Sign in with Apple is required only where another third-party sign-in
+  is offered. `ssoAvailable()` is the one place that decides this, and `apps/web/test/sso.test.ts`
+  runs it as both platforms -- which is the test that did not exist when this shipped broken.
+
+- **It has now run on a phone and in the simulator**, which is what found the above. What a Mac
+  could check -- the unit suites, the server's bearer and CORS routes, geometry under WebKit --
+  was all green while the one thing nobody had run was the shell itself. `WKAppBoundDomains` in
   particular fails in a way that looks like a network outage rather than a configuration error,
   and it is the first thing to check if the shell signs in and then cannot reach anything.
+- **One log line to ignore.** The simulator prints `Error creating CHHapticPattern ...
+hapticpatternlibrary.plist couldn't be opened` whenever a keyboard appears. It is UIKit's
+  keyboard feedback generator on a simulator that has no haptics file, it happens in every app,
+  and it has nothing to do with whatever you were debugging when you saw it.
 
 The original statement of the problem, kept because it is what the fix is shaped by:
 
@@ -348,10 +395,11 @@ That is an architecture decision, not a patch, and the options differ in kind:
 
 The rest, none of which is code:
 
-- **A signing identity.** `security find-identity -v -p codesigning` reports **0 valid
-  identities** on this machine, so there is nothing to sign with yet. A free Apple ID installs
-  to your own phone and expires after seven days; the paid Developer Program signs for a year
-  and is the only thing that unlocks TestFlight. See apps/mobile/README.md.
+- ~~**A signing identity.**~~ Done. Tight Line LLC is in the Apple Developer Program, an Apple ID
+  is signed into Xcode, and the project carries `DEVELOPMENT_TEAM = ZJ3A78KXA4` with automatic
+  signing on both configurations. The earlier note here said `security find-identity` reported
+  **0 valid identities**, which was true of the machine and not of the account: it meant no Apple
+  ID had been signed into Xcode yet, not that there was nothing to sign with.
 - **An App Store Connect record** for `com.tightlinesoftware.blinkered`, which is where the
   TestFlight build goes and where export compliance is answered.
   `ITSAppUsesNonExemptEncryption: false` is already in `Info.plist`, which is the correct answer

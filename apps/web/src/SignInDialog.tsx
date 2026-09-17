@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { requestCode, submitCode, whoAmI } from './account.js'
 import { ignoredByManagers } from './autofill.js'
 import type { Account, SignInResult } from './account.js'
-import { startUrl } from './sso.js'
+import { ssoAvailable, startUrl } from './sso.js'
 
 /**
  * Signing in, as a dialog reached from somewhere that explains why.
@@ -181,25 +181,40 @@ export function SignInDialog({
         </h2>
         <p className="signin-lead">{reason ?? messages.signInLead}</p>
 
-        <div className="signin-providers">
-          {PROVIDERS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className="btn"
-
-              onClick={() => {
-                // A whole navigation rather than a fetch. The handshake has to happen in the
-                // address bar: the provider shows its own sheet on its own origin, and the
-                // session cookie it results in is set by our server on the way back.
-                globalThis.location.assign(startUrl(option.id))
-              }}
-            >
-              {option.id === 'apple' ? messages.continueWithApple : messages.continueWithGoogle}
-            </button>
-          ))}
-        </div>
-        <p className="signin-or">{messages.signInOr}</p>
+        {/*
+          Both buttons, and the word between them, only where they can work.
+          
+          In the native shell they cannot, and what they did instead was restart the app at the
+          first screen of the tour -- a button that looks like sign-in and behaves like a crash.
+          `ssoAvailable()` carries the three reasons why; the short version is that a WebView is
+          not a browser and this handshake needs one. The mailed code is the way in there, and it
+          works over the bearer token the shell already holds.
+          
+          The word "or" goes with them. On its own above the email form it would be an "or"
+          with nothing on the other side of it.
+        */}
+        {ssoAvailable() ? (
+          <>
+            <div className="signin-providers">
+              {PROVIDERS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    // A whole navigation rather than a fetch. The handshake has to happen in the
+                    // address bar: the provider shows its own sheet on its own origin, and the
+                    // session cookie it results in is set by our server on the way back.
+                    globalThis.location.assign(startUrl(option.id))
+                  }}
+                >
+                  {option.id === 'apple' ? messages.continueWithApple : messages.continueWithGoogle}
+                </button>
+              ))}
+            </div>
+            <p className="signin-or">{messages.signInOr}</p>
+          </>
+        ) : null}
 
         <form
           className="signin"
