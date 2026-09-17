@@ -355,7 +355,18 @@ export function pgStore(db: Database): Store {
         country: string | null
         score: number
         rounds_played: number
-        finished_at: Date
+        /*
+         * A string, not a `Date`, and that is the point of typing it honestly.
+         *
+         * Every other query here goes through the query builder, which knows the column is a
+         * timestamp and hands back a `Date`. A raw `execute` does not: postgres.js returns what
+         * the wire gave it, `2026-09-17 16:08:24.495+00`, which is **not ISO 8601** -- a space
+         * instead of the `T` and a two-digit offset. Passed straight out it would be the only
+         * date in this API that is not ISO, and Safari has historically refused to parse that
+         * form, which is the browser iOS uses. V8 happens to accept it, so this would have
+         * worked everywhere it was tested and failed on a phone.
+         */
+        finished_at: string
       }>(sql`
         select
           row_number() over (
@@ -390,7 +401,8 @@ export function pgStore(db: Database): Store {
         country: row.country,
         score: row.score,
         rounds: row.rounds_played,
-        finishedAt: row.finished_at,
+        // Coerced here so the route serialises ISO, like every other date on the wire.
+        finishedAt: new Date(row.finished_at),
       }))
     },
 

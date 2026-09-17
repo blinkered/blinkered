@@ -290,6 +290,19 @@ describe('keeping games', () => {
     expect(rows.filter((row) => row.username === rows[0]?.username)).toHaveLength(2)
     expect(rows[0]?.gameId).toBeTruthy()
     expect(rows[0]?.avatarSeed).toBeTruthy()
+
+    /*
+     * A real `Date`, which only a real database can catch.
+     *
+     * A raw `execute` returns what the wire gave it, and for a timestamptz that is
+     * `2026-09-01 00:01:00+00` -- a space instead of the `T` and a two-digit offset, so **not**
+     * ISO 8601. Left as a string it would serialise as the only non-ISO date in the API, and
+     * Safari has historically refused that form: it would have worked in every test and on
+     * every desktop, and failed on a phone. Found by reading the live response, not by a test.
+     */
+    expect(rows[0]?.finishedAt).toBeInstanceOf(Date)
+    expect(Number.isNaN(rows[0]?.finishedAt.getTime())).toBe(false)
+    expect(rows[0]?.finishedAt.toISOString()).toMatch(/^\d{4}-\d{2}-\d{2}T/)
   })
 
   it('keeps an ineligible, hidden or banned row off the board', async () => {
