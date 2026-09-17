@@ -105,13 +105,6 @@ describe('the three palettes', () => {
 
   for (const theme of THEMES) {
     describe(theme, () => {
-      /*
-       * The traditional theme is held to the token check and not to the contrast floors; the
-       * exemption, the two places it misses and the reason they stand are the last test in this
-       * file. Every new theme is held to all of it.
-       */
-      const strict = theme !== 'traditional'
-
       it('defines every token, rather than inheriting one by accident', () => {
         // A missing token falls back to the traditional value, which in the light theme means a
         // near-black surface under near-black text and nothing in the stylesheet to say why.
@@ -119,7 +112,7 @@ describe('the three palettes', () => {
         expect(TOKENS.filter((token) => found[token] === undefined)).toEqual([])
       })
 
-      it.skipIf(!strict)('clears the contrast floor for everything it draws', () => {
+      it('clears the contrast floor for everything it draws', () => {
         const found = palette(theme)
         const failures = PAIRINGS.map(({ fg, bg, floor, what }) => {
           const ratio = contrast(String(found[fg]), String(found[bg]))
@@ -131,22 +124,23 @@ describe('the three palettes', () => {
   }
 
   /**
-   * The traditional theme is exempt from two of the floors, and that is a decision rather than an
-   * oversight.
+   * The traditional theme used to be exempt from two of these, and is not any more.
    *
-   * It is the game as it has always looked and Nick asked for it unchanged, so the two places it
-   * misses are recorded here instead of being quietly fixed: white on the accent is 3.75:1 where
-   * AA wants 4.5, and its borders are 1.46:1 against the page where 1.4.11 wants 3. Both are
-   * fixed in the other two themes, and the high-contrast one exists largely for this reason.
+   * It missed on white over the accent, 3.75:1 where AA wants 4.5, and on its borders, 1.46:1
+   * where 1.4.11 wants 3 -- both kept on the grounds that it is the game as it has always looked.
+   * Nick asked for them fixed, so the accent went a shade deeper and the border a shade lighter,
+   * and the loop above now holds all three themes to everything.
    *
-   * This test is what stops the exemption growing: it asserts the exact pairings that are allowed
-   * to miss, so a third one cannot join them silently.
+   * This test is what remains of the exemption: an explicit assertion that there is none. It
+   * would have been easy to leave the skip in place and never notice it again.
    */
-  it('is honest about where the traditional theme misses', () => {
-    const found = palette('traditional')
-    const missing = PAIRINGS.filter(
-      ({ fg, bg, floor }) => contrast(String(found[fg]), String(found[bg])) < floor,
-    ).map(({ fg, bg }) => `${fg} on ${bg}`)
-    expect(missing).toEqual(['on-sel on sel', 'line on bg', 'line on panel', 'line on face-down'])
+  it('has no theme left with an exemption', () => {
+    for (const theme of THEMES) {
+      const found = palette(theme)
+      const missing = PAIRINGS.filter(
+        ({ fg, bg, floor }) => contrast(String(found[fg]), String(found[bg])) < floor,
+      ).map(({ fg, bg }) => `${theme}: ${fg} on ${bg}`)
+      expect(missing).toEqual([])
+    }
   })
 })

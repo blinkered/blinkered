@@ -521,12 +521,18 @@ sets for it: 4.5:1 for text, since none of this interface's text is large by WCA
 and 3:1 for the borders and rings that identify a control. It also asserts that each theme defines
 every token, because a missing one inherits the traditional value and looks almost right.
 
-**The traditional theme misses two of those floors and is exempt on purpose.** It is the game as
-it has always looked: white on the accent is 3.75:1 where AA wants 4.5, and its borders are 1.46:1
-against the page where 1.4.11 wants 3. Both are fixed in the other two themes, and the test names
-the exact pairings that are allowed to miss, so a third cannot join them quietly. If those two are
-ever worth fixing in the traditional palette, the change is `--sel` a shade darker and `--line` a
-shade lighter, and the test will say when they pass.
+**The traditional theme missed two of those floors and does not any more.** White on the accent
+was 3.75:1 where AA wants 4.5 -- and the primary button, the selected tile and four other places
+write _on_ the accent rather than beside it -- while its borders were 1.46:1 against the page where
+1.4.11 wants 3. In a dark theme whose cards are 1.09:1 against the page, that border is doing the
+whole job of saying "this is a control", and an input was a shape you inferred from its contents.
+
+Both are fixed at the least change that clears them. The accent is `#1f6feb`: darkening it is
+pulled against by the other direction, because the accent also has to be findable _on_ the page as
+a focus ring, and the window between the two floors is narrow. The border is `#616a74`, where
+`#5d666f` is 2.96:1 against a card and misses. The app icon in `brand/` is still the older blue --
+a fixed mark rather than a token, and re-rendering ten PNGs and an App Store asset for a shade is
+its own decision.
 
 The light theme's border is the one value that was solved rather than picked: `--line` has to
 clear 3:1 against the page, against a white card **and** against a face-down tile, and that last
