@@ -29,7 +29,7 @@ image:
   #
   # Both verified anonymously pullable before installing. GHCR does not always inherit the
   # repository's visibility, and a private package is an ImagePullBackOff with no useful message.
-  tag: sha-bdc9bde
+  tag: sha-170c1e6
 
 api:
   # Cloudflare then Traefik, both of which rewrite the forwarded headers, so a client IP arriving
