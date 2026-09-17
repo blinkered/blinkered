@@ -37,6 +37,18 @@ export type Route =
    * gets an empty panel full of refusals.
    */
   | { readonly at: 'admin' }
+  /**
+   * One board, by language and difficulty: `/l/en/insane`.
+   *
+   * Both parts are in the address rather than in state, which is the point of it being an
+   * address at all: a board is the most shareable thing the game has, and "look at the Finnish
+   * insane board" has to survive being pasted. It also makes the selectors navigation rather
+   * than filtering, so Back works through them.
+   *
+   * Not validated here. `routeOf` reads addresses and does not know which languages exist;
+   * the server answers 404 for a board that is not one, and the screen says so.
+   */
+  | { readonly at: 'board'; readonly language: string; readonly difficulty: string }
 
 /** Reads a path. Anything unrecognised is the game, which is what `/` has always been. */
 export function routeOf(pathname: string): Route {
@@ -46,6 +58,23 @@ export function routeOf(pathname: string): Route {
   if (parts.length === 2 && value !== undefined && value !== '') {
     if (prefix === 'g') return { at: 'played-game', id: decodeURIComponent(value) }
     if (prefix === 'u') return { at: 'player', username: decodeURIComponent(value) }
+  }
+  // Three parts, and both of the last two have to be there: `/l/en` is not half a board, it is
+  // an address this app does not have, and the game is what every such address has always been.
+  if (parts.length === 3 && prefix === 'l') {
+    const [, language, difficulty] = parts
+    if (
+      language !== undefined &&
+      language !== '' &&
+      difficulty !== undefined &&
+      difficulty !== ''
+    ) {
+      return {
+        at: 'board',
+        language: decodeURIComponent(language),
+        difficulty: decodeURIComponent(difficulty),
+      }
+    }
   }
   return { at: 'game' }
 }
@@ -59,6 +88,8 @@ export function pathOf(route: Route): string {
       return `/u/${encodeURIComponent(route.username)}`
     case 'admin':
       return '/admin'
+    case 'board':
+      return `/l/${encodeURIComponent(route.language)}/${encodeURIComponent(route.difficulty)}`
     case 'game':
       return '/'
   }

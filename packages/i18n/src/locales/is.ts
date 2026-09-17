@@ -219,6 +219,13 @@ export const is: Messages = {
   serverBusy: 'Náði ekki í þjóninn. Reyndu aftur eftir augnablik.',
   serverDown: 'Náði ekki í þjóninn.',
   offline: 'Ónettengt',
+  leaderboardTitle: 'Stigatafla',
+  leaderboardEmpty: 'Engir leikir á þessari töflu enn. Verðu fyrstur.',
+  leaderboardWouldBe: 'Hvar þessi leikur myndi standa',
+  leaderboardThisGame: 'Þessi leikur',
+  tutAccountTitle: 'Haltu stigunum þínum',
+  tutAccountBody:
+    'Reikningur vistar leikina þína, setur stigin þín á stigatöfluna og heldur sniðinu þínu.',
   ssoCancelled: 'Hætt við innskráningu.',
   ssoExpired: 'Þetta tók of langan tíma. Skráðu þig inn aftur.',
   ssoNoUsername: 'Náði ekki að klára að stofna aðganginn. Reyndu aftur eftir augnablik.',

@@ -219,6 +219,13 @@ export const lt: Messages = {
   serverBusy: 'Nepavyko pasiekti serverio. Pabandyk po akimirkos.',
   serverDown: 'Nepavyko pasiekti serverio.',
   offline: 'Atsijungta',
+  leaderboardTitle: 'Rezultatų lentelė',
+  leaderboardEmpty: 'Šioje lentelėje dar nėra žaidimų. Būk pirmas.',
+  leaderboardWouldBe: 'Kur būtų šis žaidimas',
+  leaderboardThisGame: 'Šis žaidimas',
+  tutAccountTitle: 'Išsaugok savo rezultatus',
+  tutAccountBody:
+    'Paskyra išsaugo tavo žaidimus, įrašo rezultatus į lentelę ir saugo tavo profilį.',
   ssoCancelled: 'Prisijungimas atšauktas.',
   ssoExpired: 'Užtruko per ilgai. Prisijunk iš naujo.',
   ssoNoUsername: 'Nepavyko sukurti paskyros iki galo. Pabandyk po akimirkos.',

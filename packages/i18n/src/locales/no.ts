@@ -215,6 +215,13 @@ export const no: Messages = {
   serverBusy: 'Fikk ikke kontakt med serveren. Prøv igjen om litt.',
   serverDown: 'Fikk ikke kontakt med serveren.',
   offline: 'Frakoblet',
+  leaderboardTitle: 'Rangliste',
+  leaderboardEmpty: 'Ingen spill på denne ranglisten ennå. Bli den første.',
+  leaderboardWouldBe: 'Hvor dette spillet ville stå',
+  leaderboardThisGame: 'Dette spillet',
+  tutAccountTitle: 'Behold poengene dine',
+  tutAccountBody:
+    'En konto lagrer spillene dine, setter poengene dine på ranglisten og tar vare på profilen din.',
   ssoCancelled: 'Innloggingen ble avbrutt.',
   ssoExpired: 'Det tok for lang tid. Logg inn på nytt.',
   ssoNoUsername: 'Fikk ikke gjort ferdig kontoen. Prøv igjen om litt.',

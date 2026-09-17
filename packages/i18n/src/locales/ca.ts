@@ -222,6 +222,13 @@ export const ca: Messages = {
   serverBusy: "No s'ha pogut contactar amb el servidor. Torna-ho a provar d'aquí a un moment.",
   serverDown: "No s'ha pogut contactar amb el servidor.",
   offline: 'Fora de línia',
+  leaderboardTitle: 'Classificació',
+  leaderboardEmpty: 'Encara no hi ha partides en aquesta classificació. Sigues el primer.',
+  leaderboardWouldBe: 'On quedaria aquesta partida',
+  leaderboardThisGame: 'Aquesta partida',
+  tutAccountTitle: 'Guarda les teves puntuacions',
+  tutAccountBody:
+    'Un compte guarda les teves partides, posa les teves puntuacions a la classificació i manté el teu perfil.',
   ssoCancelled: "S'ha cancel·lat l'inici de sessió.",
   ssoExpired: 'Ha trigat massa. Torna a iniciar la sessió.',
   ssoNoUsername: "No s'ha pogut acabar de crear el compte. Torna-ho a provar d'aquí a un moment.",

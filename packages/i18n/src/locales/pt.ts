@@ -217,6 +217,13 @@ export const pt: Messages = {
   serverBusy: 'Não foi possível contactar o servidor. Tente daqui a pouco.',
   serverDown: 'Não foi possível contactar o servidor.',
   offline: 'Sem ligação',
+  leaderboardTitle: 'Classificação',
+  leaderboardEmpty: 'Ainda não há jogos nesta classificação. Sê o primeiro.',
+  leaderboardWouldBe: 'Onde ficaria este jogo',
+  leaderboardThisGame: 'Este jogo',
+  tutAccountTitle: 'Guarda as tuas pontuações',
+  tutAccountBody:
+    'Uma conta guarda os teus jogos, põe as tuas pontuações na classificação e mantém o teu perfil.',
   ssoCancelled: 'Início de sessão cancelado.',
   ssoExpired: 'Demorou demasiado. Inicie sessão outra vez.',
   ssoNoUsername: 'Não foi possível terminar de criar a conta. Tente daqui a pouco.',

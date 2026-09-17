@@ -236,6 +236,88 @@ wrong:
   mistake. Cached identity makes it correct without a second rule, and the state is seeded
   synchronously at mount so a slow answer cannot open that window either.
 
+### What reaches a board, and the three rules that decide it
+
+`leaderboard_eligible` existed from the first schema and **nothing ever wrote it**, so it was
+false on every row and any board reading it was empty by construction. The column is now set on
+import, in one expression, and that is the only place it is written:
+
+```ts
+leaderboardEligible: game.canonical && game.score > 0
+```
+
+- **Canonical.** A custom-rules game is a real game somebody played and is not comparable to a
+  preset one. It is kept and shown in their history; it has no board.
+- **A score above zero.** Zero is what an abandoned game scores and what a bad one scores, and a
+  board with a tail of noughts has stopped ranking anything.
+- **`imported` does not enter into it**, and that reverses what this file used to say. A claimed
+  guest game was never eligible, on the argument that a board entry needs a server-issued seed
+  and the envelope check. In phase A **neither exists**, so the rule excluded one of two
+  indistinguishable things: a signed-in game and a claimed guest game are both client-seeded and
+  both re-scored on the server from the words. It was also self-defeating, because the score that
+  persuades somebody to sign up was the one score that would not count.
+
+Phase C is where the distinction becomes real -- a server cannot have dealt a seed to a game it
+never knew about -- and at that point the change is to this expression rather than to any query.
+That is the whole reason for writing a column instead of filtering at read time.
+
+### The board is an address, and its language is the page's
+
+`GET /v1/leaderboard/:language/:difficulty`, public, top ten, `?limit` up to a hundred. The
+screen is at `/l/en/insane`, which nginx serves through the same rule as `/g/` and `/u/`.
+
+**Both parts are in the address rather than in state.** A board is the most shareable thing the
+game has, and "look at the Finnish insane board" has to survive being pasted. It also makes both
+selectors navigation rather than filtering, so Back walks through the boards somebody looked at.
+
+**The board's language is the page's language**, which is not how the rest of the app works:
+everywhere else the interface is whatever the reader picked in settings. Here it follows the
+board, because a board is a link sent to a player of that language, who should not have to read
+English to see where they rank. It touches nothing in settings -- a reader whose interface is
+Greek sees a Finnish board in Finnish and is still reading Greek everywhere else.
+
+The engine version is **not** in the URL and is not the caller's to choose. Scores set under
+different rules are not comparable, which is why `games_leaderboard_idx` carries the column, so a
+board is always the current engine's and an old score stops being ranked rather than ranking
+wrongly. A URL that could name a version would be a URL that could ask for a board nobody can
+still play into.
+
+Two strings, because everything else already existed in fifty-one languages and is reused:
+`gameLanguage` and `difficulty` label the selectors, `difficultyNames` fills one, `score` and
+`columnRounds` head the columns, `gamesLoading` covers the wait, `backToGame` is the way out.
+
+### The conversion problem, and the two things aimed at it
+
+One signup in production besides Nick's own, which says the offer of an account was not reaching
+anybody. Two changes, and the second is much the stronger:
+
+**A last screen on the tour**, saying what an account is for, with a button that opens the same
+`SignInDialog` as everywhere else. Not a second sign-in surface inside the tour: that would need
+its own validation, its own code step, its own errors in fifty-one languages, and would give the
+tour a way to fail halfway through.
+
+**The projected board on the game-over panel**, which is Nick's idea and better than the slide.
+A paragraph asks somebody to imagine a reason to sign up; this hands them one they can see --
+their score, in the board's own shape, third from the top among named strangers.
+
+Three things keep it honest, and each is a case where the obvious version misleads:
+
+- **It says "would".** `leaderboardWouldBe` heads it, because a row drawn among real rows and
+  left unlabelled reads as a result that already counts, and for a guest it counts for nothing
+  until they sign in. The projected row carries no game id and so is not a link.
+- **It renders nothing unless the score places.** Not for a custom ruleset, not for a board that
+  could not be read, and not for a score outside the visible five. An inducement that appears
+  whatever you scored is an advertisement, and "you would be eleventh" is an argument against
+  signing up.
+- **The row shares one component with the real board.** The effect depends on looking like the
+  thing it is a projection of, and two copies of that markup would drift the first time either
+  was touched.
+
+The ranking is restated on the client rather than calling `compareResults`, which compares two
+`GameResult`s where one side here is a board row with no engine version, seed or word list.
+Getting it wrong would show somebody a rank they will not get and nothing would look broken, so
+the agreement with the server's order is asserted in `apps/web/test/boardPreview.test.ts`.
+
 ### A finished game is queued, not posted
 
 The second half of the offline design, and the half that needed a column.
@@ -590,7 +672,8 @@ DELETE /v1/me                   account deletion, in-app, required
 GET    /v1/me/games?cursor=
 POST   /v1/games                -> { gameId, seed, config }   the server picks the seed
 POST   /v1/games/:id/finish     -> { words, rounds }  scored by us, stored
-POST   /v1/games/import         the local store and the upload queue. Never eligible. 201 new, 200 already stored
+POST   /v1/games/import         the local store and the upload queue. 201 new, 200 already stored
+GET    /v1/leaderboard/:language/:difficulty   a board, top ten, public. ?limit up to 100
 GET    /v1/leaderboards/:language/:difficulty/:period    phase C
 POST   /v1/reports
 ```
@@ -636,8 +719,19 @@ played, empty boards say they are empty rather than being offered as a menu of d
 and the local table stays where it is for the player who is the only Finnish insane player in the
 world.
 
-**One row per player per board, their best game.** Otherwise one strong player owns the top ten
-and the board stops being a leaderboard and starts being a profile.
+**A player may appear more than once, and this reverses what this file used to say.** It said one
+row per player, their best game, on the argument that otherwise one strong player owns the top
+ten and the board stops being a leaderboard and starts being a profile. Nick overruled it: an
+arcade cabinet let you fill all ten slots, and a board that hides your second-best game is hiding
+something you earned.
+
+The consequence is real and accepted rather than argued away: with three accounts, one player
+owning the whole board is the likely outcome for a while. Two things make it cheaper than the
+original note assumed. `games_leaderboard_idx` is ordered
+`(language, difficulty, engine_version, score desc, rounds_played, finished_at)`, which is
+_exactly_ a plain top-N and cannot serve the `distinct on` a per-player best needs -- so the
+reversal is both simpler and faster. And if it ever does read as a profile, the fix is a
+`distinct on` in one query rather than a schema change.
 
 ## The part that is easy to forget
 
@@ -968,10 +1062,16 @@ that comes with it, and it should be planned rather than arrived at.
 
   One consequence to carry into phase C: **a claimed guest game is never
   `leaderboard_eligible`.** Phase A trusts scores because a personal history is a diary and
-  nobody forges a diary, and that stays true for a claimed game. A leaderboard entry is a
-  different object: it needs a server-issued seed and the envelope check, and a game played
-  before the server knew it existed has neither. It belongs in the person's history and not on a
-  board, and the column for saying so is already there.
+  nobody forges a diary, and that stays true for a claimed game. It belongs in the person's
+  history and not on a board, and the column for saying so is already there.
+
+  **What this passage got wrong, now that boards exist:** it said a leaderboard entry "needs a
+  server-issued seed and the envelope check". The boards shipped before either, so eligibility is
+  currently the weaker rule **canonical and not imported**, set on import. A ranked phase-A score
+  is therefore a score the server re-computed from the words it was sent, on a board the client
+  chose the seed for. That is a real gap and it is the one phase C closes; what it is not is a
+  reason for an empty page, with three accounts and nothing shipped. The rule lives in one
+  expression in the import route, so closing it is a change there and not to any query.
 
 ## Moderation
 

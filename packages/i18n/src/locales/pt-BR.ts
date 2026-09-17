@@ -219,6 +219,13 @@ export const ptBR: Messages = {
   serverBusy: 'Não foi possível falar com o servidor. Tente daqui a pouco.',
   serverDown: 'Não foi possível falar com o servidor.',
   offline: 'Sem conexão',
+  leaderboardTitle: 'Classificação',
+  leaderboardEmpty: 'Ainda não há partidas nesta classificação. Seja o primeiro.',
+  leaderboardWouldBe: 'Onde esta partida ficaria',
+  leaderboardThisGame: 'Esta partida',
+  tutAccountTitle: 'Guarde suas pontuações',
+  tutAccountBody:
+    'Uma conta salva suas partidas, coloca suas pontuações na classificação e mantém seu perfil.',
   ssoCancelled: 'Entrada cancelada.',
   ssoExpired: 'Demorou demais. Tente entrar de novo.',
   ssoNoUsername: 'Não deu para terminar de criar a conta. Tente daqui a pouco.',

@@ -218,6 +218,13 @@ export const ko: Messages = {
   serverBusy: '서버에 연결하지 못했습니다. 잠시 후 다시 시도하세요.',
   serverDown: '서버에 연결하지 못했습니다.',
   offline: '오프라인',
+  leaderboardTitle: '순위표',
+  leaderboardEmpty: '이 순위표에는 아직 기록이 없습니다. 첫 번째가 되어 보세요.',
+  leaderboardWouldBe: '이 기록이 들어갈 자리',
+  leaderboardThisGame: '이 기록',
+  tutAccountTitle: '점수를 남기세요',
+  tutAccountBody:
+    '계정이 있으면 게임이 저장되고, 점수가 순위표에 오르며, 프로필을 관리할 수 있습니다.',
   ssoCancelled: '로그인을 취소했습니다.',
   ssoExpired: '너무 오래 걸렸습니다. 다시 로그인하세요.',
   ssoNoUsername: '계정 생성을 마치지 못했습니다. 잠시 후 다시 시도하세요.',

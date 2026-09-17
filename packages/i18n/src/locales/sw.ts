@@ -221,6 +221,13 @@ export const sw: Messages = {
   serverBusy: 'Hatukuweza kufikia seva. Jaribu tena baada ya muda kidogo.',
   serverDown: 'Hatukuweza kufikia seva.',
   offline: 'Nje ya mtandao',
+  leaderboardTitle: 'Jedwali la Washindi',
+  leaderboardEmpty: 'Hakuna michezo kwenye jedwali hili bado. Kuwa wa kwanza.',
+  leaderboardWouldBe: 'Mchezo huu ungekuwa wapi',
+  leaderboardThisGame: 'Mchezo huu',
+  tutAccountTitle: 'Hifadhi alama zako',
+  tutAccountBody:
+    'Akaunti huhifadhi michezo yako, huweka alama zako kwenye jedwali, na hutunza wasifu wako.',
   ssoCancelled: 'Kuingia kumeghairiwa.',
   ssoExpired: 'Imechukua muda mrefu mno. Ingia tena.',
   ssoNoUsername: 'Hatukuweza kumaliza kutengeneza akaunti. Jaribu tena baada ya muda kidogo.',

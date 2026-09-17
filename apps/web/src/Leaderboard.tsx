@@ -9,6 +9,14 @@ interface LeaderboardProps {
   /** The game that just finished, so it can be pointed at in the table. */
   readonly current: GameResult
   readonly messages: Messages
+  /**
+   * Opens the global board for the rules just played.
+   *
+   * Here rather than only in the account menu, because this panel is the one place a player is
+   * already looking at scores and is the only one a guest sees at all. The board is public, so
+   * putting its only entrance behind an account would be an odd way to advertise one.
+   */
+  readonly onGlobalBoard: () => void
 }
 
 /** Enough to see where you came without scrolling, and to see the top even when you did badly. */
@@ -20,11 +28,17 @@ const SHOWN = 8
  * Guest mode, so "your own" means this browser. Only finished games are here: quitting is not a
  * result, and a game abandoned at a good score is not a good game.
  */
-export function Leaderboard({ standing, current, messages }: LeaderboardProps): React.JSX.Element {
+export function Leaderboard({
+  standing,
+  current,
+  messages,
+  onGlobalBoard,
+}: LeaderboardProps): React.JSX.Element {
   const { ranked, rank } = standing
 
   if (rank === 0) {
     // Custom rules. The game happened and is stored; it simply has nothing to be ranked against.
+    // No global link either: there is no board for a ruleset nobody else is playing.
     return <p className="board-note">{messages.notRanked}</p>
   }
   // Always show the top, and always show the current game even when it is far below it.
@@ -37,6 +51,9 @@ export function Leaderboard({ standing, current, messages }: LeaderboardProps): 
         <h2>{messages.personalBest}</h2>
         <span className="dim">{format(messages.rankOfTotal, { rank, total: ranked.length })}</span>
       </div>
+      <button type="button" className="board-global-link" onClick={onGlobalBoard}>
+        {messages.leaderboardTitle} →
+      </button>
       {/* Only when there was something to beat. Calling a first game a new personal best is
           the same species of nonsense as telling somebody who just finished one that no
           finished games exist yet. */}

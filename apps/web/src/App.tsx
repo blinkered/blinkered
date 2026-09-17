@@ -15,7 +15,9 @@ import { Hud, countOf, formatFinalResult } from './Hud.js'
 import { Icon } from './Icon.js'
 import type { Feedback, WordGain } from './Hud.js'
 import { LanguagePicker } from './LanguagePicker.js'
+import { BoardPreview } from './BoardPreview.js'
 import { Leaderboard } from './Leaderboard.js'
+import { LeaderboardPage } from './LeaderboardPage.js'
 import { NerdPanel } from './NerdPanel.js'
 import { Title } from './Title.js'
 import { loadCatalogue, loadDictionary } from './dictionary.js'
@@ -603,6 +605,9 @@ function Session({
             // played at once, so its board and its words are the same choice.
             onChange({ ...settings, gameLanguage: tag, uiLanguage: tag })
           }}
+          onSignIn={() => {
+            setSigningIn({})
+          }}
           onDone={(hideAgain) => {
             onChange({ ...settings, tutorialSeen: hideAgain })
             setTourDone(true)
@@ -696,7 +701,23 @@ function Session({
 
       {route.at === 'game' || route.at === 'admin' ? null : (
         <div className="rules-overlay account-screen">
-          {route.at === 'player' ? (
+          {route.at === 'board' ? (
+            /*
+             * A board belongs in this overlay with the other two public pages: all three are
+             * reached by a shared link, all three draw over the game rather than instead of it.
+             * The note above about not making a third of a pair was about the moderation panel,
+             * which has a different audience; this has exactly theirs.
+             */
+            <LeaderboardPage
+              language={route.language}
+              difficulty={route.difficulty}
+              catalogue={catalogue}
+              myUsername={account?.username ?? null}
+              onHome={() => {
+                setRoute({ at: 'game' })
+              }}
+            />
+          ) : route.at === 'player' ? (
             <PlayerPage
               messages={messages}
               username={route.username}
@@ -866,10 +887,43 @@ function Session({
                     rounds: finished.result.rounds,
                   })}
                 </p>
+                {/*
+                  Near the top, above the personal table, because it is the thing worth reading
+                  first and the reason somebody might act. It draws nothing at all unless the
+                  score actually places, so the panel is unchanged for most games.
+                */}
+                <BoardPreview
+                  result={finished.result}
+                  messages={messages}
+                  me={
+                    account === null
+                      ? null
+                      : { username: account.username, avatarSeed: account.avatarSeed }
+                  }
+                  onSignIn={() => {
+                    setSigningIn({ reason: messages.signInKeepGame })
+                  }}
+                />
                 <Leaderboard
                   standing={finished.standing}
                   current={finished.result}
                   messages={messages}
+                  onGlobalBoard={() => {
+                    /*
+                     * The board for the game just played, not a menu of boards.
+                     *
+                     * Taken from the finished result rather than from settings, which can have
+                     * moved on: the panel stays open while somebody changes the language for
+                     * their next game, and the link under a finished game has to mean that game.
+                     */
+                    const to = {
+                      at: 'board' as const,
+                      language: finished.result.language,
+                      difficulty: finished.result.difficulty,
+                    }
+                    goTo(to)
+                    setRoute(to)
+                  }}
                 />
                 <FoundWords
                   words={finished.words}

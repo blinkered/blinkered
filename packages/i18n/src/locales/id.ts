@@ -220,6 +220,13 @@ export const id: Messages = {
   serverBusy: 'Tidak bisa menghubungi server. Coba lagi sebentar lagi.',
   serverDown: 'Tidak bisa menghubungi server.',
   offline: 'Offline',
+  leaderboardTitle: 'Papan Peringkat',
+  leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
+  leaderboardWouldBe: 'Di mana permainan ini akan berada',
+  leaderboardThisGame: 'Permainan ini',
+  tutAccountTitle: 'Simpan skormu',
+  tutAccountBody:
+    'Akun menyimpan permainanmu, menempatkan skormu di papan peringkat, dan menjaga profilmu.',
   ssoCancelled: 'Masuk dibatalkan.',
   ssoExpired: 'Terlalu lama. Masuk lagi.',
   ssoNoUsername: 'Pembuatan akun tidak selesai. Coba lagi sebentar lagi.',

@@ -222,6 +222,13 @@ export const hu: Messages = {
   serverBusy: 'A kiszolgáló nem érhető el. Próbáld újra egy pillanat múlva.',
   serverDown: 'A kiszolgáló nem érhető el.',
   offline: 'Offline',
+  leaderboardTitle: 'Ranglista',
+  leaderboardEmpty: 'Ezen a ranglistán még nincsenek játékok. Legyél az első.',
+  leaderboardWouldBe: 'Hol állna ez a játék',
+  leaderboardThisGame: 'Ez a játék',
+  tutAccountTitle: 'Őrizd meg a pontjaid',
+  tutAccountBody:
+    'A fiók elmenti a játékaidat, felteszi a pontjaidat a ranglistára, és megtartja a profilodat.',
   ssoCancelled: 'A bejelentkezés megszakadt.',
   ssoExpired: 'Túl sokáig tartott. Jelentkezz be újra.',
   ssoNoUsername: 'A fiók létrehozása nem fejeződött be. Próbáld újra egy pillanat múlva.',

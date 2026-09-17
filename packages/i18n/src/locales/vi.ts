@@ -222,6 +222,13 @@ export const vi: Messages = {
   serverBusy: 'Không liên hệ được máy chủ. Thử lại sau chốc lát.',
   serverDown: 'Không liên hệ được máy chủ.',
   offline: 'Ngoại tuyến',
+  leaderboardTitle: 'Bảng xếp hạng',
+  leaderboardEmpty: 'Chưa có trận nào trên bảng này. Hãy là người đầu tiên.',
+  leaderboardWouldBe: 'Trận này sẽ đứng ở đâu',
+  leaderboardThisGame: 'Trận này',
+  tutAccountTitle: 'Giữ lại điểm của bạn',
+  tutAccountBody:
+    'Tài khoản lưu các trận của bạn, đưa điểm lên bảng xếp hạng và giữ hồ sơ của bạn.',
   ssoCancelled: 'Đã hủy đăng nhập.',
   ssoExpired: 'Lâu quá. Đăng nhập lại đi.',
   ssoNoUsername: 'Chưa tạo xong tài khoản. Thử lại sau chốc lát.',

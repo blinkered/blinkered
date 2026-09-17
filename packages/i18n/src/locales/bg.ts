@@ -220,6 +220,13 @@ export const bg: Messages = {
   serverBusy: 'Сървърът е недостъпен. Опитай след малко.',
   serverDown: 'Сървърът е недостъпен.',
   offline: 'Офлайн',
+  leaderboardTitle: 'Класиране',
+  leaderboardEmpty: 'Още няма игри в тази класация. Бъди първият.',
+  leaderboardWouldBe: 'Къде би се наредила тази игра',
+  leaderboardThisGame: 'Тази игра',
+  tutAccountTitle: 'Запази резултатите си',
+  tutAccountBody:
+    'Профилът запазва игрите ти, поставя резултатите ти в класирането и пази профила ти.',
   ssoCancelled: 'Влизането е отменено.',
   ssoExpired: 'Отне твърде дълго. Влез отново.',
   ssoNoUsername: 'Профилът не можа да се довърши. Опитай след малко.',

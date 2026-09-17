@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import { ALPHABET_IDS, DIFFICULTIES, ENGINE_VERSION } from '@blinkered/engine'
 import { Hono } from 'hono'
 import { currentUser } from '../auth/routes.js'
 import type { SessionDeps } from '../auth/routes.js'
@@ -75,6 +76,15 @@ function newGameId(): string {
 function newId(): string {
   return randomBytes(16).toString('base64url')
 }
+
+/**
+ * How many rows a board serves, and the most it will serve.
+ *
+ * Ten because that is what an arcade cabinet showed and what Nick asked for. The ceiling exists
+ * because the limit reaches a query: an unbounded one is an unbounded scan for anybody who asks.
+ */
+const DEFAULT_BOARD = 10
+const MAX_BOARD = 100
 
 export function accountRoutes(deps: AccountDeps): Hono {
   const clock = deps.now ?? ((): Date => new Date())
@@ -178,6 +188,39 @@ export function accountRoutes(deps: AccountDeps): Hono {
         source: game.source,
         imported: game.imported,
         clientKey: game.clientKey,
+        /*
+         * Whether this game can be ranked, decided here and nowhere else.
+         *
+         * The column has existed since accounts arrived and nothing ever wrote it, so it was
+         * false on every row and a board reading it was empty by construction.
+         *
+         * **The rule is canonicality alone, and `imported` deliberately does not enter into it.**
+         * A custom-rules game is a real game somebody played and is not comparable to a preset
+         * one, so it stays off. A game played as a guest and claimed on the game-over panel is a
+         * different matter: docs/ACCOUNTS.md used to say such a game is never eligible, on the
+         * argument that a board entry needs a server-issued seed and the envelope check. In phase
+         * A **neither exists**, so that rule excluded one of two indistinguishable things -- a
+         * signed-in game and a claimed guest game are both client-seeded and both re-scored here
+         * from the words. It was also self-defeating: the score that persuades somebody to sign
+         * up was the one score that would not count.
+         *
+         * So `imported` stays what the schema says it is, bookkeeping about where a game came
+         * from, and stops deciding anything.
+         *
+         * **A scoreless game is not eligible either.** Zero is what a game that was started and
+         * abandoned scores, and what a game played badly enough scores, and a board whose tail is
+         * a row of noughts is a board that has stopped ranking anything. It is still kept and
+         * still shown in the player's own history, where it is a fact about their evening rather
+         * than a claim about the world.
+         *
+         * The honest limitation of phase A remains: this is a score the server recomputed from
+         * words it was sent, on a board the client seeded. Phase C closes that by issuing seeds
+         * and checking submissions, and at that point a guest game genuinely cannot qualify --
+         * a server cannot have dealt a seed to a game it never knew about. The change then is to
+         * this one expression rather than to any query, which is the whole reason for writing a
+         * column instead of filtering at read time.
+         */
+        leaderboardEligible: game.canonical && game.score > 0,
         difficulty: game.difficulty,
         language: game.config.language,
         canonical: game.canonical,
@@ -214,6 +257,40 @@ export function accountRoutes(deps: AccountDeps): Hono {
      */
     const created = stored.id === id
     return context.json(stored, created ? 201 : 200)
+  })
+
+  /*
+   * One board, to anybody at all.
+   *
+   * Public and unauthenticated, like a game and a profile: a leaderboard nobody can see without
+   * an account is an argument for an account that nobody can evaluate.
+   *
+   * The engine version is not in the URL and is not the caller's to choose. Scores from
+   * different rule versions are not comparable -- it is why `games_leaderboard_idx` carries the
+   * column -- so the board is always the current engine's, and an old score simply stops being
+   * ranked when the rules change. A URL that could name a version would be a URL that could ask
+   * for a board nobody can still play into.
+   */
+  routes.get('/leaderboard/:language/:difficulty', async (context) => {
+    const language = context.req.param('language')
+    const difficulty = context.req.param('difficulty')
+    // Checked against the engine's own list rather than passed through, so an unknown difficulty
+    // is a 404 rather than an empty board that looks like a board nobody has played.
+    if (!Object.hasOwn(DIFFICULTIES, difficulty)) return context.json({ error: 'no-board' }, 404)
+    if (!ALPHABET_IDS.includes(language)) return context.json({ error: 'no-board' }, 404)
+
+    const asked = Number(context.req.query('limit') ?? DEFAULT_BOARD)
+    // Clamped rather than refused: a caller asking for a thousand rows gets the most we will
+    // serve, and one asking for nonsense gets the default rather than an error about a number.
+    const limit = Number.isInteger(asked) && asked > 0 ? Math.min(asked, MAX_BOARD) : DEFAULT_BOARD
+
+    const rows = await deps.store.leaderboard({
+      language,
+      difficulty,
+      engineVersion: ENGINE_VERSION,
+      limit,
+    })
+    return context.json({ language, difficulty, engineVersion: ENGINE_VERSION, rows })
   })
 
   /*

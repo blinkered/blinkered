@@ -223,6 +223,13 @@ export const af: Messages = {
   serverBusy: 'Kon nie die bediener bereik nie. Probeer weer oor ’n oomblik.',
   serverDown: 'Kon nie die bediener bereik nie.',
   offline: 'Aflyn',
+  leaderboardTitle: 'Ranglys',
+  leaderboardEmpty: 'Nog geen speletjies op hierdie bord nie. Wees die eerste.',
+  leaderboardWouldBe: 'Waar hierdie speletjie sou staan',
+  leaderboardThisGame: 'Hierdie speletjie',
+  tutAccountTitle: 'Hou jou tellings',
+  tutAccountBody:
+    '’n Rekening stoor jou speletjies, plaas jou tellings op die ranglys, en hou jou profiel.',
   ssoCancelled: 'Aanmelding gekanselleer.',
   ssoExpired: 'Dit het te lank geneem. Meld weer aan.',
   ssoNoUsername: 'Kon nie die rekening klaar skep nie. Probeer weer oor ’n oomblik.',

@@ -215,6 +215,13 @@ export const hr: Messages = {
   serverBusy: 'Poslužitelj nije dostupan. Pokušaj za trenutak.',
   serverDown: 'Poslužitelj nije dostupan.',
   offline: 'Izvan mreže',
+  leaderboardTitle: 'Poredak',
+  leaderboardEmpty: 'Na ovom poretku još nema igara. Budi prvi.',
+  leaderboardWouldBe: 'Gdje bi ova igra stajala',
+  leaderboardThisGame: 'Ova igra',
+  tutAccountTitle: 'Sačuvaj svoje rezultate',
+  tutAccountBody:
+    'Račun čuva tvoje igre, stavlja tvoje rezultate na poredak i održava tvoj profil.',
   ssoCancelled: 'Prijava otkazana.',
   ssoExpired: 'Predugo je trajalo. Prijavi se ponovno.',
   ssoNoUsername: 'Račun nije bilo moguće dovršiti. Pokušaj za trenutak.',

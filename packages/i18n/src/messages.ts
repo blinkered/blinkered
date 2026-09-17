@@ -333,6 +333,54 @@ export interface Messages {
    */
   readonly offline: string
 
+  /**
+   * The board at `/l/<language>/<difficulty>`.
+   *
+   * Two strings, because everything else a board needs already exists in every language and is
+   * reused rather than restated: `gameLanguage` and `difficulty` label the two selectors,
+   * `difficultyNames` fills one of them, `score` and `columnRounds` head the columns,
+   * `gamesLoading` covers the wait, and `backToGame` is the way out.
+   *
+   * `leaderboardEmpty` answers both an empty board and a board that does not exist. A language
+   * with no word list has no board and never will, and saying so differently would make the page
+   * report which boards exist.
+   */
+  readonly leaderboardTitle: string
+  readonly leaderboardEmpty: string
+  /**
+   * The heading over the projected board on the game-over panel.
+   *
+   * A projected row is not a real one, and this is what keeps it honest: the row is drawn in the
+   * board's own shape, among real players, so without a heading in the conditional it would read
+   * as a result that already counts. "Would" is doing the work in every language here.
+   *
+   * The call to action beneath it is `signInKeepGame`, which already reads "Sign in to keep this
+   * game, and every one after it." in all fifty-one.
+   */
+  readonly leaderboardWouldBe: string
+  /**
+   * The name on the projected row, for a reader who does not have one yet.
+   *
+   * A guest's row cannot carry a username because a guest has none, and an empty name slot reads
+   * as a broken row rather than as an invitation. A signed-in reader sees their own name there
+   * instead, because they have one.
+   */
+  readonly leaderboardThisGame: string
+
+  /**
+   * The last screen of the tour, which exists because of a number rather than a design.
+   *
+   * One signup in production besides Nick's own, which says the offer of an account is not
+   * reaching anybody. The tour is the one place every player passes through, so the last thing
+   * before Start playing says what an account is for.
+   *
+   * Two strings. The button reuses `signInTitle`, already "Sign in or sign up" in every
+   * language, and opens the same `SignInDialog` the rest of the app uses rather than a second
+   * sign-in surface with its own validation, its own code step and its own way to fail.
+   */
+  readonly tutAccountTitle: string
+  readonly tutAccountBody: string
+
   /** Coming back from Apple or Google. Vague on purpose about which check failed. */
   readonly ssoCancelled: string
   readonly ssoExpired: string

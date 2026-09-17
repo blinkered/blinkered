@@ -223,6 +223,13 @@ export const fr: Messages = {
   serverBusy: 'Serveur injoignable. Réessayez dans un instant.',
   serverDown: 'Serveur injoignable.',
   offline: 'Hors ligne',
+  leaderboardTitle: 'Classement',
+  leaderboardEmpty: 'Aucune partie dans ce classement pour l’instant. Sois le premier.',
+  leaderboardWouldBe: 'Où se classerait cette partie',
+  leaderboardThisGame: 'Cette partie',
+  tutAccountTitle: 'Gardez vos scores',
+  tutAccountBody:
+    'Un compte enregistre vos parties, place vos scores au classement et conserve votre profil.',
   ssoCancelled: 'Connexion annulée.',
   ssoExpired: 'Cela a pris trop de temps. Reconnectez-vous.',
   ssoNoUsername: 'Impossible de terminer la création du compte. Réessayez dans un instant.',

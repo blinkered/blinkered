@@ -223,6 +223,13 @@ export const he: Messages = {
   serverBusy: 'לא הצלחנו להגיע לשרת. נסה שוב בעוד רגע.',
   serverDown: 'לא הצלחנו להגיע לשרת.',
   offline: 'לא מחובר',
+  leaderboardTitle: 'טבלת המובילים',
+  leaderboardEmpty: 'אין עדיין משחקים בטבלה הזו. היה הראשון.',
+  leaderboardWouldBe: 'איפה המשחק הזה היה מדורג',
+  leaderboardThisGame: 'המשחק הזה',
+  tutAccountTitle: 'שמור את הניקוד שלך',
+  tutAccountBody:
+    'חשבון שומר את המשחקים שלך, מכניס את הניקוד שלך לטבלת המובילים, ושומר את הפרופיל שלך.',
   ssoCancelled: 'ההתחברות בוטלה.',
   ssoExpired: 'זה לקח יותר מדי זמן. התחבר שוב.',
   ssoNoUsername: 'לא הצלחנו לסיים ליצור את החשבון. נסה שוב בעוד רגע.',

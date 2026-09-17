@@ -220,6 +220,13 @@ export const fa: Messages = {
   serverBusy: 'سرور در دسترس نبود. کمی بعد دوباره تلاش کنید.',
   serverDown: 'سرور در دسترس نبود.',
   offline: 'آفلاین',
+  leaderboardTitle: 'جدول امتیازات',
+  leaderboardEmpty: 'هنوز بازی‌ای در این جدول نیست. اولین نفر باش.',
+  leaderboardWouldBe: 'این بازی کجا قرار می‌گیرد',
+  leaderboardThisGame: 'این بازی',
+  tutAccountTitle: 'امتیازهایت را نگه دار',
+  tutAccountBody:
+    'یک حساب بازی‌هایت را ذخیره می‌کند، امتیازهایت را در جدول می‌گذارد و نمایه‌ات را نگه می‌دارد.',
   ssoCancelled: 'ورود لغو شد.',
   ssoExpired: 'خیلی طول کشید. دوباره وارد شوید.',
   ssoNoUsername: 'ساخت حساب کامل نشد. کمی بعد دوباره تلاش کنید.',

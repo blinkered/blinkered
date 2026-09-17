@@ -215,6 +215,13 @@ export const sv: Messages = {
   serverBusy: 'Kunde inte nå servern. Försök igen om en stund.',
   serverDown: 'Kunde inte nå servern.',
   offline: 'Offline',
+  leaderboardTitle: 'Topplista',
+  leaderboardEmpty: 'Inga spel på den här topplistan än. Bli först.',
+  leaderboardWouldBe: 'Var det här spelet skulle hamna',
+  leaderboardThisGame: 'Det här spelet',
+  tutAccountTitle: 'Behåll dina poäng',
+  tutAccountBody:
+    'Ett konto sparar dina spel, sätter dina poäng på topplistan och behåller din profil.',
   ssoCancelled: 'Inloggningen avbröts.',
   ssoExpired: 'Det tog för lång tid. Logga in igen.',
   ssoNoUsername: 'Kontot kunde inte skapas färdigt. Försök igen om en stund.',

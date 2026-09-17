@@ -253,6 +253,51 @@ export function fakeStore(): FakeStore {
       games.push({ row, detail })
       return Promise.resolve({ id: row.id, score: row.score })
     },
+    leaderboard: (board) => {
+      /*
+       * The rules the SQL carries, modelled rather than skipped: the tie-break order
+       * `compareResults` uses, banned accounts absent, and **no per-player limit** -- a player
+       * may hold several rows, which is Nick's reversal of the note in docs/ACCOUNTS.md.
+       */
+      // `GameRow` types `finishedAt` and `userId` as present, because `POST /v1/games/import`
+      // only ever carries a game that ended and belongs to somebody. The SQL still guards
+      // `finished_at is not null`, for the phase that writes a row when a game starts; that
+      // state cannot be built through this store, and the integration suite covers it directly.
+      const better = (a: GameRow, b: GameRow): number =>
+        b.score - a.score ||
+        a.roundsPlayed - b.roundsPlayed ||
+        a.finishedAt.getTime() - b.finishedAt.getTime()
+
+      return Promise.resolve(
+        games
+          .map((entry) => entry.row)
+          .filter(
+            (row) =>
+              row.leaderboardEligible &&
+              !hidden.has(row.id) &&
+              row.language === board.language &&
+              row.difficulty === board.difficulty &&
+              row.engineVersion === board.engineVersion &&
+              users.get(row.userId)?.bannedAt == null,
+          )
+          .sort(better)
+          .slice(0, board.limit)
+          .map((row, at) => {
+            const owner = users.get(row.userId)
+            return {
+              rank: at + 1,
+              gameId: row.id,
+              username: owner?.username ?? '',
+              avatarSeed: owner?.avatarSeed ?? '',
+              country: owner?.country ?? null,
+              score: row.score,
+              rounds: row.roundsPlayed,
+              finishedAt: row.finishedAt,
+            }
+          }),
+      )
+    },
+
     gamesOf: (userId, limit) => {
       const mine: GameSummary[] = games
         // Hidden is hidden from its owner too: a score removed from a board that still sits at

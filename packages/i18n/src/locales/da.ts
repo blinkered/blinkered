@@ -220,6 +220,13 @@ export const da: Messages = {
   serverBusy: 'Kunne ikke nå serveren. Prøv igen om lidt.',
   serverDown: 'Kunne ikke nå serveren.',
   offline: 'Offline',
+  leaderboardTitle: 'Rangliste',
+  leaderboardEmpty: 'Der er endnu ingen spil på denne rangliste. Bliv den første.',
+  leaderboardWouldBe: 'Hvor dette spil ville stå',
+  leaderboardThisGame: 'Dette spil',
+  tutAccountTitle: 'Gem dine resultater',
+  tutAccountBody:
+    'En konto gemmer dine spil, sætter dine resultater på ranglisten og holder din profil.',
   ssoCancelled: 'Login blev afbrudt.',
   ssoExpired: 'Det tog for lang tid. Log ind igen.',
   ssoNoUsername: 'Kontoen kunne ikke gøres færdig. Prøv igen om lidt.',

@@ -220,6 +220,13 @@ export const arz: Messages = {
   serverBusy: 'مقدرناش نوصل للسيرفر. جرّب كمان شوية.',
   serverDown: 'مقدرناش نوصل للسيرفر.',
   offline: 'مش متصل',
+  leaderboardTitle: 'لوحة المتصدرين',
+  leaderboardEmpty: 'مفيش مباريات على اللوحة دى لسه. كون الأول.',
+  leaderboardWouldBe: 'المباراة دى هتبقى فين',
+  leaderboardThisGame: 'المباراة دى',
+  tutAccountTitle: 'احفظ نتايجك',
+  tutAccountBody:
+    'الحساب بيحفظ مبارياتك، وبيحط نتايجك على لوحة المتصدرين، وبيحتفظ بالبروفايل بتاعك.',
   ssoCancelled: 'تسجيل الدخول اتلغى.',
   ssoExpired: 'ده خد وقت طويل. سجّل دخول تاني.',
   ssoNoUsername: 'مقدرناش نكمّل عمل الحساب. جرّب كمان شوية.',

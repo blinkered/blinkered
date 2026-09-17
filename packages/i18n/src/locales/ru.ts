@@ -220,6 +220,13 @@ export const ru: Messages = {
   serverBusy: 'Не удалось связаться с сервером. Попробуйте через минуту.',
   serverDown: 'Не удалось связаться с сервером.',
   offline: 'Офлайн',
+  leaderboardTitle: 'Таблица лидеров',
+  leaderboardEmpty: 'В этой таблице пока нет игр. Стань первым.',
+  leaderboardWouldBe: 'Где была бы эта игра',
+  leaderboardThisGame: 'Эта игра',
+  tutAccountTitle: 'Сохрани свои результаты',
+  tutAccountBody:
+    'Аккаунт сохраняет твои игры, помещает результаты в таблицу лидеров и хранит твой профиль.',
   ssoCancelled: 'Вход отменён.',
   ssoExpired: 'Слишком долго. Войдите заново.',
   ssoNoUsername: 'Не удалось создать аккаунт до конца. Попробуйте через минуту.',

@@ -222,6 +222,13 @@ export const gl: Messages = {
   serverBusy: 'Non se puido contactar co servidor. Téntao noutro intre.',
   serverDown: 'Non se puido contactar co servidor.',
   offline: 'Sen conexión',
+  leaderboardTitle: 'Clasificación',
+  leaderboardEmpty: 'Aínda non hai partidas nesta clasificación. Se o primeiro.',
+  leaderboardWouldBe: 'Onde quedaría esta partida',
+  leaderboardThisGame: 'Esta partida',
+  tutAccountTitle: 'Garda as túas puntuacións',
+  tutAccountBody:
+    'Unha conta garda as túas partidas, pon as túas puntuacións na clasificación e mantén o teu perfil.',
   ssoCancelled: 'Cancelouse o inicio de sesión.',
   ssoExpired: 'Tardou de máis. Inicia sesión outra vez.',
   ssoNoUsername: 'Non se puido rematar de crear a conta. Téntao noutro intre.',

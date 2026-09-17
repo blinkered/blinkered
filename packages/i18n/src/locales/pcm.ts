@@ -225,6 +225,13 @@ export const pcm: Messages = {
   serverBusy: 'We no fit reach di server. Try again small time.',
   serverDown: 'We no fit reach di server.',
   offline: 'Net no dey',
+  leaderboardTitle: 'Leaderboard',
+  leaderboardEmpty: 'No game dey dis board yet. Be di first one.',
+  leaderboardWouldBe: 'Where dis game go stand',
+  leaderboardThisGame: 'Dis game',
+  tutAccountTitle: 'Keep your score',
+  tutAccountBody:
+    'Account go save your game, put your score on di leaderboard, and hold your profile.',
   ssoCancelled: 'Dem cancel di sign in.',
   ssoExpired: 'E take too long. Sign in again.',
   ssoNoUsername: 'We no fit finish create di account. Try again small time.',

@@ -4,7 +4,14 @@ import { connect } from '../src/db.js'
 import { runMigrations } from '../src/migrate.js'
 import { freshDatabase, integrationConfig } from './integrationDb.js'
 import { pgStore } from '../src/pgStore.js'
-import { DATABASE_SCHEMA, authIdentities, gameDetail, reports, users } from '../src/schema.js'
+import {
+  DATABASE_SCHEMA,
+  authIdentities,
+  gameDetail,
+  games,
+  reports,
+  users,
+} from '../src/schema.js'
 import type { GameDetail } from '../src/account/types.js'
 import type { Store } from '../src/types.js'
 
@@ -144,6 +151,7 @@ describe('keeping games', () => {
     source: 'web',
     imported: true,
     clientKey: null,
+    leaderboardEligible: true,
     difficulty: 'medium',
     language: 'en',
     canonical: true,
@@ -227,6 +235,110 @@ describe('keeping games', () => {
     await theStore().insertGame(gameFor(userId, older, 12), detailFor('HOUSE'))
     await theStore().insertGame(gameFor(userId, newer, 20), detailFor('RIVER'))
     expect(await theStore().gamesOf(userId, 10)).toHaveLength(2)
+  })
+
+  /*
+   * The board, against a real Postgres.
+   *
+   * The fake models the rules and cannot check the SQL: `row_number() over (order by ...)`,
+   * `banned_at is null` on the join, and whether the order the query asks for is the order the
+   * planner returns are all properties of the database. The rank arriving as a **bigint**, which
+   * postgres.js hands over as a string, is the specific thing a fake would never catch.
+   */
+  /*
+   * A board of their own, and this is not fussiness.
+   *
+   * These suites share one database and `freshDatabase()` runs once in `beforeAll`, so every
+   * other test's games are still there. A board is filtered by engine version, so giving these
+   * rows a version nothing else uses isolates them exactly -- the first version of this test
+   * asserted three scores and got eight, most of them belonging to tests further down the file.
+   */
+  const BOARD_ENGINE = '9.9.9-boards-ranking'
+  /* And one each, because the two board tests otherwise pollute each other for the same reason. */
+  const FILTER_ENGINE = '9.9.9-boards-filters'
+
+  it('ranks a board, numbers it from one, and lets a player hold several rows', async () => {
+    const mine = await account()
+    const theirs = await account()
+    const at = (minutes: number): Date => new Date(Date.UTC(2026, 8, 1, 0, minutes))
+
+    await theStore().insertGame(
+      { ...gameFor(mine.userId, at(1), 40), engineVersion: BOARD_ENGINE },
+      detailFor('HOUSE'),
+    )
+    await theStore().insertGame(
+      { ...gameFor(mine.userId, at(2), 20), engineVersion: BOARD_ENGINE },
+      detailFor('RIVER'),
+    )
+    await theStore().insertGame(
+      { ...gameFor(theirs.userId, at(3), 30), engineVersion: BOARD_ENGINE },
+      detailFor('STONE'),
+    )
+
+    const rows = await theStore().leaderboard({
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: BOARD_ENGINE,
+      limit: 10,
+    })
+
+    expect(rows.map((row) => row.score)).toEqual([40, 30, 20])
+    // Numbered by the database, and a number rather than the string a bigint arrives as.
+    expect(rows.map((row) => row.rank)).toEqual([1, 2, 3])
+    expect(rows.every((row) => typeof row.rank === 'number')).toBe(true)
+    // Two of the three are the same player, which is the arcade rule.
+    expect(rows.filter((row) => row.username === rows[0]?.username)).toHaveLength(2)
+    expect(rows[0]?.gameId).toBeTruthy()
+    expect(rows[0]?.avatarSeed).toBeTruthy()
+  })
+
+  it('keeps an ineligible, hidden or banned row off the board', async () => {
+    const shamed = await account()
+    const fine = await account()
+    const at = (minutes: number): Date => new Date(Date.UTC(2026, 8, 2, 0, minutes))
+
+    // Ineligible, which is what every row written before boards existed looks like.
+    await theStore().insertGame(
+      {
+        ...gameFor(fine.userId, at(1), 99),
+        engineVersion: FILTER_ENGINE,
+        leaderboardEligible: false,
+      },
+      detailFor('HOUSE'),
+    )
+    // Hidden, which is the whole anti-cheat apparatus.
+    const buried = { ...gameFor(fine.userId, at(2), 98), engineVersion: FILTER_ENGINE }
+    await theStore().insertGame(buried, detailFor('RIVER'))
+    await theDb().execute(sql`update ${games} set hidden = true where id = ${buried.id}`)
+    // Banned, for the reason a banned profile 404s.
+    await theStore().insertGame(
+      { ...gameFor(shamed.userId, at(3), 97), engineVersion: FILTER_ENGINE },
+      detailFor('STONE'),
+    )
+    await theStore().setBanned(shamed.userId, new Date())
+    /*
+     * Unfinished, which `GameRow` cannot express -- its `finishedAt` is a plain `Date`, because
+     * `POST /v1/games/import` only ever carries a game that ended. The column is nullable for the
+     * phase that writes a row when a game *starts*, and the query guards it now so that phase
+     * does not put a game in progress on a board. Only SQL can set up the state, so only here.
+     */
+    const running = { ...gameFor(fine.userId, at(5), 96), engineVersion: FILTER_ENGINE }
+    await theStore().insertGame(running, detailFor('WATER'))
+    await theDb().execute(sql`update ${games} set finished_at = null where id = ${running.id}`)
+
+    // And one that should survive all four filters.
+    await theStore().insertGame(
+      { ...gameFor(fine.userId, at(4), 10), engineVersion: FILTER_ENGINE },
+      detailFor('TREES'),
+    )
+
+    const rows = await theStore().leaderboard({
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: FILTER_ENGINE,
+      limit: 10,
+    })
+    expect(rows.map((row) => row.score)).toEqual([10])
   })
 
   it('writes a game and its document together, and lists it newest first', async () => {
@@ -507,6 +619,9 @@ describe('moderating', () => {
     source: 'web',
     imported: false,
     clientKey: null,
+    // False, and the moderation listing asserts it: that panel exists to show the flag, not to
+    // set it. The import route decides eligibility; see `accountRoutes`.
+    leaderboardEligible: false,
     difficulty: 'medium',
     language: over.language ?? 'en',
     canonical: true,
@@ -898,6 +1013,7 @@ describe('deleting an account', () => {
     source: 'web',
     imported: false,
     clientKey: null,
+    leaderboardEligible: false,
     difficulty: 'medium',
     language: 'en',
     canonical: true,

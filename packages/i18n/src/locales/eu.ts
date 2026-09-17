@@ -225,6 +225,13 @@ export const eu: Messages = {
   serverBusy: 'Ezin izan da zerbitzariarekin konektatu. Saiatu berriro une batean.',
   serverDown: 'Ezin izan da zerbitzariarekin konektatu.',
   offline: 'Konexiorik gabe',
+  leaderboardTitle: 'Sailkapena',
+  leaderboardEmpty: 'Oraindik ez dago partidarik sailkapen honetan. Izan zaitez lehena.',
+  leaderboardWouldBe: 'Non egongo litzateke partida hau',
+  leaderboardThisGame: 'Partida hau',
+  tutAccountTitle: 'Gorde zure puntuazioak',
+  tutAccountBody:
+    'Kontu batek zure partidak gordetzen ditu, puntuazioak sailkapenean jartzen eta zure profila mantentzen.',
   ssoCancelled: 'Saio-hasiera bertan behera utzi da.',
   ssoExpired: 'Luzeegi jo du. Hasi saioa berriro.',
   ssoNoUsername: 'Ezin izan da kontua sortzen amaitu. Saiatu berriro une batean.',

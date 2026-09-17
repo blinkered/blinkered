@@ -227,6 +227,13 @@ export const ja: Messages = {
   serverBusy: 'サーバーに接続できませんでした。少し待って試してください。',
   serverDown: 'サーバーに接続できませんでした。',
   offline: 'オフライン',
+  leaderboardTitle: 'ランキング',
+  leaderboardEmpty: 'このランキングにはまだ記録がありません。最初の一人になりましょう。',
+  leaderboardWouldBe: 'この記録が入る位置',
+  leaderboardThisGame: 'この記録',
+  tutAccountTitle: 'スコアを残す',
+  tutAccountBody:
+    'アカウントがあれば、記録が保存され、スコアがランキングに載り、プロフィールを管理できます。',
   ssoCancelled: 'ログインを中止しました。',
   ssoExpired: '時間がかかりすぎました。もう一度ログインしてください。',
   ssoNoUsername: 'アカウントを作成しきれませんでした。少し待って試してください。',

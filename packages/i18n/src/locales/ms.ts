@@ -216,6 +216,13 @@ export const ms: Messages = {
   serverBusy: 'Tidak dapat menghubungi pelayan. Cuba lagi sebentar.',
   serverDown: 'Tidak dapat menghubungi pelayan.',
   offline: 'Luar talian',
+  leaderboardTitle: 'Papan Pendahulu',
+  leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
+  leaderboardWouldBe: 'Di mana permainan ini akan berada',
+  leaderboardThisGame: 'Permainan ini',
+  tutAccountTitle: 'Simpan skor anda',
+  tutAccountBody:
+    'Akaun menyimpan permainan anda, meletakkan skor anda di papan pendahulu, dan menjaga profil anda.',
   ssoCancelled: 'Log masuk dibatalkan.',
   ssoExpired: 'Terlalu lama. Log masuk sekali lagi.',
   ssoNoUsername: 'Akaun tidak sempat disiapkan. Cuba lagi sebentar.',

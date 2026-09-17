@@ -221,6 +221,13 @@ export const de: Messages = {
   serverBusy: 'Server nicht erreichbar. Versuch es gleich noch einmal.',
   serverDown: 'Server nicht erreichbar.',
   offline: 'Offline',
+  leaderboardTitle: 'Rangliste',
+  leaderboardEmpty: 'Noch keine Spiele auf dieser Rangliste. Sei der Erste.',
+  leaderboardWouldBe: 'Wo dieses Spiel stehen würde',
+  leaderboardThisGame: 'Dieses Spiel',
+  tutAccountTitle: 'Punkte behalten',
+  tutAccountBody:
+    'Ein Konto speichert deine Spiele, setzt deine Punkte auf die Rangliste und verwaltet dein Profil.',
   ssoCancelled: 'Anmeldung abgebrochen.',
   ssoExpired: 'Das hat zu lange gedauert. Melde dich noch einmal an.',
   ssoNoUsername: 'Konto konnte nicht fertig angelegt werden. Versuch es gleich noch einmal.',

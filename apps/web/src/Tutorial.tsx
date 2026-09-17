@@ -145,6 +145,14 @@ interface TutorialProps {
   /** Only the languages this build has a word list for, for the picker. */
   readonly catalogue: readonly CatalogueEntry[]
   readonly onLanguage: (language: string) => void
+  /**
+   * Opens the sign-in dialog from the last screen.
+   *
+   * The tour does not close first. The dialog draws over it the way it draws over everything
+   * else, so somebody who changes their mind is still on the screen that offered it, and
+   * somebody who signs in comes back to press Start playing.
+   */
+  readonly onSignIn: () => void
   /** Called once, with whether the player asked not to see this again. */
   readonly onDone: (hideAgain: boolean) => void
 }
@@ -162,6 +170,7 @@ export function Tutorial({
   language,
   catalogue,
   onLanguage,
+  onSignIn,
   onDone,
 }: TutorialProps): React.JSX.Element {
   // Memoised because the frame timer depends on the current step: rebuilt every render, the
@@ -295,7 +304,21 @@ export function Tutorial({
         <h3 className="tut-step-title">{current.title}</h3>
 
         <div className="tut-stage">
-          {current.panel === 'swap' ? (
+          {current.panel === 'account' ? (
+            /*
+             * The words and one button, and nothing that looks like a board.
+             *
+             * The button opens the dialog the rest of the app opens. A second sign-in surface
+             * inside a tour would need its own validation, its own code step, its own errors in
+             * fifty-one languages, and would give the tour a way to fail halfway through.
+             */
+            <div className="tut-account">
+              <p>{beat.caption}</p>
+              <button type="button" className="btn btn-primary" onClick={onSignIn}>
+                {messages.signInTitle}
+              </button>
+            </div>
+          ) : current.panel === 'swap' ? (
             // The real component, replayed on the tour's own clock: a key that changes every
             // frame is what makes it start over rather than sit finished.
             <div className="tut-swap">
@@ -359,7 +382,9 @@ export function Tutorial({
            * frame of those screens rather than appearing at the end, because in a real game it
            * is on screen the whole time; what changes is that it lights when the tour presses it.
            */}
-          {current.panel === 'controls' || current.panel === 'swap' ? null : (
+          {current.panel === 'controls' ||
+          current.panel === 'swap' ||
+          current.panel === 'account' ? null : (
             /*
              * Drawn on every board screen, and only *lit* on the screens that press it.
              *

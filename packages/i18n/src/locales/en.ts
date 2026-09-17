@@ -223,6 +223,13 @@ export const en: Messages = {
   serverBusy: 'Could not reach the server. Try again in a moment.',
   serverDown: 'Could not reach the server.',
   offline: 'Offline',
+  leaderboardTitle: 'Leaderboard',
+  leaderboardEmpty: 'No games on this board yet. Be the first.',
+  leaderboardWouldBe: 'Where this game would rank',
+  leaderboardThisGame: 'This game',
+  tutAccountTitle: 'Keep your scores',
+  tutAccountBody:
+    'An account saves your games, puts your scores on the leaderboard, and keeps your profile.',
   ssoCancelled: 'Signing in was cancelled.',
   ssoExpired: 'That took too long. Try signing in again.',
   ssoNoUsername: 'Could not finish creating an account. Try again in a moment.',

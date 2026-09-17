@@ -100,6 +100,28 @@ boards are public.
 
 ## Wanted, not built
 
+**The boards are uncached, deliberately, and this is the note asking for it later.** Nick's words
+were "when the game has 1341245454351 users". `GET /v1/leaderboard/:language/:difficulty` is one
+index scan and a join, and `games_leaderboard_idx` is ordered
+`(language, difficulty, engine_version, score desc, rounds_played, finished_at)`, which is exactly
+that query. At a size where it stops being free, the answer is a short-lived cache keyed by
+`(language, difficulty, engineVersion)` or a materialised view refreshed on write: a board is the
+same answer for everybody who asks, which makes it the easiest thing in the system to cache and
+the reason not to do it speculatively now. The `TODO` is on the query in `pgStore.ts`.
+
+Three smaller things the boards opened:
+
+- **A board has no periods.** ACCOUNTS.md describes "today and all-time" and the address has room
+  for neither; `/l/en/insane` is all-time. A period belongs in the path when it exists, not in a
+  query parameter, for the same reason the language and the difficulty are there.
+- **Ranked scores are still client-seeded.** Eligibility is `canonical && score > 0`, which is
+  the weaker rule phase A can support: the server re-scores the words it is sent but the seed was
+  the client's. Phase C closes it, and the change is one expression in the import route.
+- **Nothing recomputes eligibility for games already stored.** Every row written before the
+  column was set carries `false`, so the boards start from the games played after this shipped.
+  A backfill is one `UPDATE` and was not run, because deciding retroactively that old games are
+  rankable is a decision rather than a migration.
+
 **The offline design is built, in four steps, and three things are owed out of it.** The product
 commitment was Nick's, on 2026-09-16: sign-in needs a connection; a signed-in player stays signed
 in but cannot write; games are playable either way; and games played offline upload when a

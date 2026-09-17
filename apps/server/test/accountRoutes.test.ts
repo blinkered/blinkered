@@ -258,6 +258,35 @@ describe('the account surface', () => {
       expect(store.games).toHaveLength(2)
     })
 
+    /*
+     * What reaches a board, decided on import and nowhere else.
+     *
+     * Three rules, and two of them were reversals: `imported` used to disqualify a claimed guest
+     * game, which made the score that persuades somebody to sign up the one score that would not
+     * count; and a scoreless game used to qualify, which would have left a board with a tail of
+     * noughts.
+     */
+    it('marks a canonical game with a score as eligible', async () => {
+      await send('POST', '/v1/games/import', game())
+      expect(store.games[0]?.row.leaderboardEligible).toBe(true)
+    })
+
+    it('marks a claimed guest game eligible too', async () => {
+      // `guest` sets `imported`, which is bookkeeping about where the game came from and no
+      // longer decides whether it can be ranked.
+      await send('POST', '/v1/games/import', game({ guest: true }))
+      expect(store.games[0]?.row.imported).toBe(true)
+      expect(store.games[0]?.row.leaderboardEligible).toBe(true)
+    })
+
+    it('never marks a scoreless game eligible', async () => {
+      // No words, so the server scores it zero. Kept, and off every board.
+      const response = await send('POST', '/v1/games/import', game({ words: [] }))
+      expect(response.status).toBe(201)
+      expect(store.games[0]?.row.score).toBe(0)
+      expect(store.games[0]?.row.leaderboardEligible).toBe(false)
+    })
+
     it('keeps what the engine already knew about each word', () => {
       // `roundIndex`, `wilds`, `flips` and `tick` were computed during play and thrown away at
       // the door. In a document they cost a version bump rather than a migration, which is most
@@ -289,12 +318,13 @@ describe('the account surface', () => {
       expect(id).toMatch(/^[A-Za-z0-9_-]+$/)
     })
 
-    it('never marks any game as one for a leaderboard', async () => {
-      await send('POST', '/v1/games/import', game())
-      // The row never mentions eligibility at all, so the column's `false` default is the only
-      // thing that can stand. A route that has no way to say yes cannot be talked into it.
-      expect('leaderboardEligible' in (store.games[0]?.row ?? {})).toBe(false)
-    })
+    /*
+     * This used to assert that the route never mentioned eligibility at all, so the column's
+     * `false` default was the only thing that could stand: "a route that has no way to say yes
+     * cannot be talked into it". True, and it made every board empty by construction, which is
+     * what the three tests above now cover instead. The rule the route decides is written down
+     * in one expression there, and it is the only place that writes the column.
+     */
 
     it('marks a game imported only when it began before the account did', async () => {
       // The bug this exists for: every game was written with `imported: true`, so a history told

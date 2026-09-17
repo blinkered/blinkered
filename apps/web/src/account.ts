@@ -300,6 +300,37 @@ export async function gameDetail(id: string): Promise<PlayedGameDetail | null> {
   return getting(`games/${encodeURIComponent(id)}`)
 }
 
+/** One row of a board, as the server ranks it. */
+export interface BoardRow {
+  readonly rank: number
+  readonly gameId: string
+  readonly username: string
+  readonly avatarSeed: string
+  readonly country: string | null
+  readonly score: number
+  readonly rounds: number
+  readonly finishedAt: string
+}
+
+export interface Board {
+  readonly language: string
+  readonly difficulty: string
+  readonly engineVersion: string
+  readonly rows: readonly BoardRow[]
+}
+
+/**
+ * One board. Null when the question could not be asked, or when there is no such board.
+ *
+ * The two are one answer here, as everywhere else in this file, and the screen says the same
+ * thing about both: a language nobody has a word list for and a server that did not answer are
+ * both "nothing to show you", and telling them apart on a public page would be reporting which
+ * boards exist.
+ */
+export async function leaderboard(language: string, difficulty: string): Promise<Board | null> {
+  return getting(`leaderboard/${encodeURIComponent(language)}/${encodeURIComponent(difficulty)}`)
+}
+
 /** Somebody's public profile, by name. Null for a name nobody has. */
 export async function playerProfile(username: string): Promise<PublicProfile | null> {
   return getting(`users/${encodeURIComponent(username)}`)

@@ -225,6 +225,13 @@ export const cy: Messages = {
   serverBusy: 'Methu cyrraedd y gweinydd. Rho gynnig arall ymhen ennyd.',
   serverDown: 'Methu cyrraedd y gweinydd.',
   offline: 'All-lein',
+  leaderboardTitle: 'Y Bwrdd Arwain',
+  leaderboardEmpty: 'Dim gemau ar y bwrdd hwn eto. Bydd y cyntaf.',
+  leaderboardWouldBe: "Lle byddai'r gêm hon",
+  leaderboardThisGame: 'Y gêm hon',
+  tutAccountTitle: 'Cadw dy sgoriau',
+  tutAccountBody:
+    'Mae cyfrif yn cadw dy gemau, yn rhoi dy sgoriau ar y bwrdd arwain, ac yn cadw dy broffil.',
   ssoCancelled: 'Cafodd y mewngofnodi ei ganslo.',
   ssoExpired: "Cymerodd hynny'n rhy hir. Mewngofnoda eto.",
   ssoNoUsername: "Methu gorffen creu'r cyfrif. Rho gynnig arall ymhen ennyd.",

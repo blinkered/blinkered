@@ -38,6 +38,8 @@ export interface GameRow {
   readonly imported: boolean
   /** The client's own id for this game, or null. What makes a queued upload safe to retry. */
   readonly clientKey: string | null
+  /** Whether this game can be ranked. Canonical and not a guest import; see the import route. */
+  readonly leaderboardEligible: boolean
   readonly difficulty: string
   readonly language: string
   readonly canonical: boolean
@@ -170,6 +172,24 @@ export interface PublicProfile {
 }
 
 /**
+ * One row of a board: a player, their best game on it, and where it ranks.
+ *
+ * `rank` is computed by the store rather than by position in the array, because the two differ
+ * the moment anything filters afterwards, and a medal hung on an array index is a medal that
+ * moves when somebody is banned.
+ */
+export interface LeaderboardRow {
+  readonly rank: number
+  readonly gameId: string
+  readonly username: string
+  readonly avatarSeed: string
+  readonly country: string | null
+  readonly score: number
+  readonly rounds: number
+  readonly finishedAt: Date
+}
+
+/**
  * Everything a signed-in person does, and `ReportWriter` is one of those things.
  *
  * Filing a report is an account action, so it sits here; reading the queue is moderation, so it
@@ -208,6 +228,26 @@ export interface AccountStore extends ReportWriter {
   insertGame(row: GameRow, detail: GameDetail): Promise<{ id: string; score: number }>
   /** Somebody's games, most recently finished first. */
   gamesOf(userId: string, limit: number): Promise<readonly GameSummary[]>
+  /**
+   * One board: the top `limit` players for a language, a difficulty and an engine version.
+   *
+   * **One row per player, their best game**, which docs/ACCOUNTS.md settled and which is not a
+   * detail: without it one strong player owns the top ten and the board stops being a
+   * leaderboard and starts being a profile.
+   *
+   * Ordered the way `compareResults` in @blinkered/engine orders: score descending, then rounds
+   * ascending, then the timestamp ascending so whoever got there first wins a tie. Any other
+   * order produces a board that disagrees with the ranking the client computes from the same
+   * rows.
+   *
+   * Banned accounts are absent, for the same reason their profiles 404.
+   */
+  leaderboard(board: {
+    language: string
+    difficulty: string
+    engineVersion: string
+    limit: number
+  }): Promise<readonly LeaderboardRow[]>
   /**
    * One game in full, or null.
    *

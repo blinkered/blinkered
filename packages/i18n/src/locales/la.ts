@@ -224,6 +224,13 @@ export const la: Messages = {
   serverBusy: 'Servus adiri non potuit. Post momentum retempta.',
   serverDown: 'Servus adiri non potuit.',
   offline: 'Sine nexu',
+  leaderboardTitle: 'Tabula principum',
+  leaderboardEmpty: 'Nulli ludi in hac tabula adhuc. Esto primus.',
+  leaderboardWouldBe: 'Ubi hic ludus staret',
+  leaderboardThisGame: 'Hic ludus',
+  tutAccountTitle: 'Serva numeros tuos',
+  tutAccountBody:
+    'Ratio ludos tuos servat, numeros tuos in tabulam ponit, et personam tuam custodit.',
   ssoCancelled: 'Introitus omissus est.',
   ssoExpired: 'Nimis diu duravit. Iterum intra.',
   ssoNoUsername: 'Ratio perfici non potuit. Post momentum retempta.',

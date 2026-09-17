@@ -322,6 +322,78 @@ export function pgStore(db: Database): Store {
       })
     },
 
+    leaderboard: async (board) => {
+      /*
+       * Raw SQL, on the strength of it being the one query here whose shape is the point.
+       *
+       * **A player may appear more than once.** docs/ACCOUNTS.md used to say one row per player,
+       * their best game, on the argument that otherwise a strong player owns the top ten. Nick
+       * reversed it: an arcade cabinet let you fill all ten slots, and a board that hides your
+       * second-best game is hiding something you earned. The reversal is also simpler and faster
+       * -- `games_leaderboard_idx` is ordered `(language, difficulty, engine_version, score desc,
+       * rounds_played, finished_at)`, which is exactly this query and nothing else, where a
+       * per-player best needs a `distinct on` that the index cannot serve.
+       *
+       * **TODO: uncached, deliberately.** One index scan and a join over a table with single
+       * digits of rows. At a size where that stops being true the answer is a short-lived cache
+       * keyed by `(language, difficulty, engineVersion)` or a materialised view refreshed on
+       * write: a board is the same answer for everybody who asks, which makes it the easiest
+       * thing in the system to cache and the reason not to do it speculatively now.
+       *
+       * The order agrees with `compareResults` in @blinkered/engine -- score descending, rounds
+       * ascending, earliest finish wins the tie -- because any other order produces a board that
+       * disagrees with the ranking the client computes from the same rows.
+       *
+       * `rank` comes from `row_number` rather than an array index, so a medal hangs on a position
+       * the database decided and does not move when a row is filtered after the fact.
+       */
+      const rows = await db.execute<{
+        rank: string
+        game_id: string
+        username: string
+        avatar_seed: string
+        country: string | null
+        score: number
+        rounds_played: number
+        finished_at: Date
+      }>(sql`
+        select
+          row_number() over (
+            order by g.score desc, g.rounds_played asc, g.finished_at asc
+          ) as rank,
+          g.id as game_id,
+          u.username,
+          u.avatar_seed,
+          u.country,
+          g.score,
+          g.rounds_played,
+          g.finished_at
+        from ${games} g
+        join ${users} u on u.id = g.user_id
+        where g.leaderboard_eligible
+          and not g.hidden
+          and g.finished_at is not null
+          and g.language = ${board.language}
+          and g.difficulty = ${board.difficulty}
+          and g.engine_version = ${board.engineVersion}
+          and u.banned_at is null
+        order by g.score desc, g.rounds_played asc, g.finished_at asc
+        limit ${board.limit}
+      `)
+      return rows.map((row) => ({
+        // `row_number` is bigint, which postgres.js hands over as a string rather than losing
+        // precision on it. Nobody is ranked past 2^53, but parsing it is still the honest move.
+        rank: Number(row.rank),
+        gameId: row.game_id,
+        username: row.username,
+        avatarSeed: row.avatar_seed,
+        country: row.country,
+        score: row.score,
+        rounds: row.rounds_played,
+        finishedAt: row.finished_at,
+      }))
+    },
+
     gamesOf: async (userId, limit) => {
       const rows = await db
         .select({

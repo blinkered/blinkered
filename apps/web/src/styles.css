@@ -3175,3 +3175,177 @@ kbd {
 .account-danger .signin-note {
   max-width: 34rem;
 }
+
+/* The global board at /l/<language>/<difficulty>. See LeaderboardPage.tsx.
+
+   A list rather than a table, deliberately. A board is one row per entry with no column a
+   reader compares across rows the way a games table is read, and `<ol>` carries the ranking in
+   the markup rather than in a column somebody has to trust. It also sidesteps the two table
+   traps this stylesheet has already hit: `display: grid` on a `<td>` stops it being a cell, and
+   `table-layout: fixed` leaks to every table that shares the class. */
+.board-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 34rem;
+}
+.board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.board-pickers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+.board-difficulty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.board-difficulty > span {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+.board-difficulty select {
+  /* 1rem, not smaller: a focused field under 16px zooms iOS and does not zoom back. The nerd
+     panel's fields were the same trapdoor; see docs/IOS.md. */
+  min-height: 2.75rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: inherit;
+  font-size: 1rem;
+}
+.board-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.board-row {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  border-block-end: 1px solid var(--line);
+}
+.board-row:last-child {
+  border-block-end: none;
+}
+/* The reader's own row, marked the way the local table marks the game you just played. */
+.board-row.is-mine {
+  background: color-mix(in srgb, var(--sel) 12%, transparent);
+  border-radius: var(--radius);
+}
+.board-rank {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.board-medal {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.board-place {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.board-who {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .board-who:hover .board-name {
+    text-decoration: underline;
+  }
+}
+.board-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.board-country {
+  flex: none;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+.board-score,
+.board-rounds {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.board-unit {
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+/* The way from a finished game to the board it belongs on. A link rather than a button in
+   appearance, because that is what it does, and 44pt tall because a thumb has to hit it. */
+.board-global-link {
+  align-self: start;
+  min-height: 2.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sel);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+@media (hover: hover) {
+  .board-global-link:hover {
+    text-decoration: underline;
+  }
+}
+
+/* The tour's account screen: a paragraph and one button, in a deck of boards. */
+.tut-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  text-align: center;
+}
+.tut-account p {
+  max-width: 26rem;
+  margin: 0;
+  color: var(--dim);
+}
+
+/* The projected board on the game-over panel. See BoardPreview.tsx.
+
+   Set apart from the personal table below it with a border and the selected colour, because it
+   is making a claim about the world rather than about this browser, and a reader has to be able
+   to tell which is which. The heading says "would", which is the other half of that. */
+.board-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--sel) 45%, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--sel) 7%, transparent);
+}
+.board-preview h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+/* Tighter than the full board: this sits above a panel somebody is already reading. */
+.board-preview .board-row {
+  grid-template-columns: 2.8rem 1fr auto auto;
+  padding: 0.35rem 0.15rem;
+}
+.board-preview .btn {
+  align-self: start;
+  margin-block-start: 0.25rem;
+}

@@ -222,6 +222,13 @@ export const ro: Messages = {
   serverBusy: 'Serverul nu a putut fi contactat. Încearcă peste un moment.',
   serverDown: 'Serverul nu a putut fi contactat.',
   offline: 'Deconectat',
+  leaderboardTitle: 'Clasament',
+  leaderboardEmpty: 'Încă nu există jocuri în acest clasament. Fii primul.',
+  leaderboardWouldBe: 'Unde s-ar clasa acest joc',
+  leaderboardThisGame: 'Acest joc',
+  tutAccountTitle: 'Păstrează-ți scorurile',
+  tutAccountBody:
+    'Un cont salvează jocurile tale, pune scorurile în clasament și păstrează profilul tău.',
   ssoCancelled: 'Autentificarea a fost anulată.',
   ssoExpired: 'A durat prea mult. Autentifică-te din nou.',
   ssoNoUsername: 'Contul nu a putut fi finalizat. Încearcă peste un moment.',

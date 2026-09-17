@@ -219,6 +219,13 @@ export const et: Messages = {
   serverBusy: 'Serverini ei jõudnud. Proovi hetke pärast uuesti.',
   serverDown: 'Serverini ei jõudnud.',
   offline: 'Ühenduseta',
+  leaderboardTitle: 'Edetabel',
+  leaderboardEmpty: 'Selles edetabelis pole veel mänge. Ole esimene.',
+  leaderboardWouldBe: 'Kus see mäng asuks',
+  leaderboardThisGame: 'See mäng',
+  tutAccountTitle: 'Hoia oma tulemused alles',
+  tutAccountBody:
+    'Konto salvestab sinu mängud, paneb tulemused edetabelisse ja hoiab sinu profiili.',
   ssoCancelled: 'Sisselogimine katkestati.',
   ssoExpired: 'See võttis liiga kaua. Logi uuesti sisse.',
   ssoNoUsername: 'Konto loomine jäi pooleli. Proovi hetke pärast uuesti.',

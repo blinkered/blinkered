@@ -216,6 +216,13 @@ export const nl: Messages = {
   serverBusy: 'Server niet bereikbaar. Probeer het zo nog eens.',
   serverDown: 'Server niet bereikbaar.',
   offline: 'Offline',
+  leaderboardTitle: 'Ranglijst',
+  leaderboardEmpty: 'Nog geen spellen op deze ranglijst. Wees de eerste.',
+  leaderboardWouldBe: 'Waar dit spel zou staan',
+  leaderboardThisGame: 'Dit spel',
+  tutAccountTitle: 'Bewaar je scores',
+  tutAccountBody:
+    'Een account bewaart je spellen, zet je scores op de ranglijst en houdt je profiel bij.',
   ssoCancelled: 'Inloggen geannuleerd.',
   ssoExpired: 'Dat duurde te lang. Log opnieuw in.',
   ssoNoUsername: 'Het account kon niet worden afgemaakt. Probeer het zo nog eens.',
