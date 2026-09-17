@@ -257,21 +257,35 @@ cleared everything else.
 Add it when offline play is a feature somebody asked for, and cache the app shell plus the one
 language in play.
 
-## Two commands, every time, or the phone runs an old app
+## The build copies the web app, because remembering to did not work
 
-Xcode's Run button does not build `apps/web` and does not copy it. Capacitor does not read
-`apps/web/dist` either: `cap sync` copies it into `ios/App/App/public`, and Xcode bundles
-whatever is sitting in that folder. So the loop for any web change is:
+Xcode's Run button builds neither `apps/web` nor the copy of it that Capacitor bundles: `cap copy`
+puts `apps/web/dist` into `ios/App/App/public`, and Xcode ships whatever is sitting in that
+folder. Skip either step and the build succeeds and installs an older app -- a failure mode with
+no error message anywhere in it.
+
+It happened twice in an afternoon, and neither symptom looked like a stale copy: first "the intro
+screens are just six screens long", then "the sign-in screen doesn't even have the Apple and
+Google options". So it is a build phase now, `sync-web.sh`, first in the target's list:
 
 ```sh
-pnpm build                                  # refresh apps/web/dist
-pnpm --filter @blinkered/mobile sync        # cap sync ios: dist -> ios/App/App/public
+pnpm --filter @blinkered/web build
+pnpm --filter @blinkered/mobile exec cap copy ios
 ```
 
-Then Run. Skip either and the build succeeds and installs an older app, which is a failure mode
-with no error message anywhere in it.
+Run is all that is needed. Three details in it are deliberate: `copy` rather than `sync`, because
+sync also runs `pod install` and CocoaPods is already driving this build; `alwaysOutOfDate = 1`,
+because there are no outputs for Xcode to compare and the whole point is that it runs every time;
+and an explicit `PATH`, because a build phase does not get a login shell and `pnpm` is not on the
+one it gets.
 
-It has already happened once, and the drift had two levels rather than one:
+By hand, if it is ever needed without Xcode:
+
+```sh
+pnpm build && pnpm --filter @blinkered/mobile sync
+```
+
+The drift it caused had two levels rather than one:
 
 | What                                         | When         |
 | -------------------------------------------- | ------------ |
@@ -454,6 +468,23 @@ nothing and decides nothing: it shows a sheet and returns a string. The nonce, t
 exchange, the origin and the token store are in `apps/web/src/nativeAuth.ts`, where `api.ts`
 already knows the answers and where there are tests. Swift that talks to the API is Swift that
 needs a second copy of all of it, and it is the copy no test runs.
+
+### `Capacitor.Plugins` is empty here, and that is not a bug in Capacitor
+
+The first version of this called `Capacitor.Plugins.NativeAuth.signInWithApple(...)`, which is what
+every tutorial shows, and the buttons did not appear on the phone at all. `Plugins` is built by
+`@capacitor/core`'s `registerPlugin`, **in JavaScript** --- and `apps/web` deliberately has no
+dependency on Capacitor, so nothing ever populates it. The availability check read an empty map
+and hid the buttons. `isPluginAvailable` reads the same map and would have agreed with it.
+
+What exists without the package is the bridge the WebView is injected with, and
+`Capacitor.nativePromise(plugin, method, options)` is the call its own internals use ---
+`CapacitorHttp` and `Console` go through it. That is what `nativeAuth.ts` uses now.
+
+The cost of that is real and worth naming: there is no registry to ask what the app supports, so a
+shell older than its web assets gives a failed sign-in with a message rather than a hidden button.
+In a TestFlight or App Store build both halves ship together and it cannot happen; in development
+it means "rebuild the app", which the build phase above now does by itself.
 
 ### Two things in Xcode, and one thing to know
 

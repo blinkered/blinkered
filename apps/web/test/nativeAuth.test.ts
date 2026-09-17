@@ -34,13 +34,20 @@ function fakeStorage(): Storage {
   }
 }
 
-/** The plugin, scripted, and a record of what it was handed. */
+/** The plugin, scripted through the bridge, and a record of what it was handed. */
 interface Script {
   apple?: () => Promise<{ identityToken?: unknown }>
   browser?: () => Promise<{ url?: unknown }>
-  seen: { nonceHash?: string; url?: string; scheme?: string }
+  seen: { nonceHash?: string; url?: string; scheme?: string; methods: string[] }
 }
 
+/**
+ * The shell, as the injected bridge presents it.
+ *
+ * `nativePromise` and not `Plugins.NativeAuth`, which is the mistake this file now guards: that
+ * map is built by `@capacitor/core` in JavaScript, and this app has no dependency on Capacitor,
+ * so it is never populated and the buttons silently never appeared on a device.
+ */
 function beNative(script: Script | null): void {
   if (script === null) {
     Reflect.deleteProperty(globalThis, 'Capacitor')
@@ -49,20 +56,20 @@ function beNative(script: Script | null): void {
   Object.defineProperty(globalThis, 'Capacitor', {
     value: {
       isNativePlatform: () => true,
-      Plugins: {
-        NativeAuth: {
-          signInWithApple: (options: { nonceHash: string }) => {
-            script.seen.nonceHash = options.nonceHash
-            return (script.apple ?? (() => Promise.resolve({ identityToken: 'a.b.c' })))()
-          },
-          signInWithBrowser: (options: { url: string; scheme: string }) => {
-            script.seen.url = options.url
-            script.seen.scheme = options.scheme
-            return (
-              script.browser ?? (() => Promise.resolve({ url: 'blinkered://auth?code=the-code' }))
-            )()
-          },
-        },
+      nativePromise: (plugin: string, method: string, options: Record<string, unknown>) => {
+        script.seen.methods.push(`${plugin}.${method}`)
+        if (method === 'signInWithApple') {
+          script.seen.nonceHash = options.nonceHash as string
+          return (script.apple ?? (() => Promise.resolve({ identityToken: 'a.b.c' })))()
+        }
+        if (method === 'signInWithBrowser') {
+          script.seen.url = options.url as string
+          script.seen.scheme = options.scheme as string
+          return (
+            script.browser ?? (() => Promise.resolve({ url: 'blinkered://auth?code=the-code' }))
+          )()
+        }
+        return Promise.reject(new Error(`${method} is not implemented`))
       },
     },
     configurable: true,
@@ -97,7 +104,7 @@ describe('signing in from the shell', () => {
 
   beforeEach(() => {
     vi.stubGlobal('localStorage', fakeStorage())
-    script = { seen: {} }
+    script = { seen: { methods: [] } }
     beNative(script)
   })
 
@@ -117,17 +124,26 @@ describe('signing in from the shell', () => {
       expect(nativeSsoAvailable()).toBe(false)
     })
 
-    it('is not offered by a shell whose Swift is older than its web build', () => {
-      /*
-       * A real state rather than a hypothetical one: `cap sync` copies the web assets into the
-       * app and nothing keeps the two halves the same age. Offering a button that calls a method
-       * which does not exist is the failure this check exists to prevent.
-       */
+    it('is not offered by a shell with no bridge on it', () => {
+      // Belt and braces: `isNativePlatform` is the platform and `nativePromise` is the way to
+      // speak to it, and a build with the first and not the second cannot sign anybody in.
       Object.defineProperty(globalThis, 'Capacitor', {
-        value: { isNativePlatform: () => true, Plugins: { NativeAuth: {} } },
+        value: { isNativePlatform: () => true },
         configurable: true,
       })
       expect(nativeSsoAvailable()).toBe(false)
+    })
+
+    it('reports a failure when the app is older than its web assets', async () => {
+      /*
+       * A real state rather than a hypothetical one: `cap sync` copies the web assets into the
+       * app and nothing keeps the two halves the same age. There is no registry to ask -- the one
+       * Capacitor builds lives in the package this app does not depend on -- so an absent method
+       * is a rejection from the bridge, which is a failed sign-in and not a broken button.
+       */
+      serving({ '/v1/auth/native/nonce': { body: { nonce: 'n' } } })
+      script.apple = () => Promise.reject(new Error('signInWithApple is not implemented'))
+      expect(await appleNatively()).toEqual({ ok: false, reason: 'failed' })
     })
   })
 
@@ -143,6 +159,8 @@ describe('signing in from the shell', () => {
         '/v1/auth/native/nonce',
         '/v1/auth/native/apple',
       ])
+      // Through the bridge, by name, which is the only registry that exists here.
+      expect(script.seen.methods).toEqual(['NativeAuth.signInWithApple'])
       // A hash, not the nonce: what travels to Apple is not what spends the row.
       expect(script.seen.nonceHash).toBe(await sha256('the-nonce'))
       expect(script.seen.nonceHash).not.toBe('the-nonce')

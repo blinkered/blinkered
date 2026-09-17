@@ -25,47 +25,54 @@ import { isNativeApp } from './platform.js'
  *   that code for a token.
  */
 
-/** What the Swift plugin offers. Two methods, both of them UI and nothing else. */
-interface NativeAuthPlugin {
-  /**
-   * Apple's sheet. `nonceHash` is what goes in the request and comes back inside the token.
-   *
-   * Rejects when somebody dismisses it, which is not an error worth a message: `cancelled`.
-   */
-  signInWithApple(options: { nonceHash: string }): Promise<{ identityToken?: unknown }>
-  /**
-   * A browser session on `url`, ending when it is sent to a URL with `scheme`.
-   *
-   * Returns that final URL, unparsed. Reading it is this side's job, because what is in it is a
-   * decision about our own API rather than about iOS.
-   */
-  signInWithBrowser(options: { url: string; scheme: string }): Promise<{ url?: unknown }>
+/**
+ * The bridge Capacitor injects, and the one call on it this needs.
+ *
+ * **Not `Capacitor.Plugins.NativeAuth`**, which is what the first version of this used and is why
+ * the buttons did not appear on a phone at all. That map is built by `@capacitor/core`'s
+ * `registerPlugin`, in JavaScript --- and `apps/web` deliberately has no dependency on Capacitor,
+ * so in this app it is never populated. `isPluginAvailable` reads the same empty map, so it is no
+ * use either. The injected bridge is what exists without the package, and `nativePromise` is the
+ * call its own internals use (`CapacitorHttp`, `Console`).
+ */
+interface CapacitorBridge {
+  readonly nativePromise?: NativeCall
 }
 
-interface CapacitorWithPlugins {
-  readonly Plugins?: { readonly NativeAuth?: Partial<NativeAuthPlugin> }
+type NativeCall = (
+  plugin: string,
+  method: string,
+  options: Record<string, unknown>,
+) => Promise<unknown>
+
+function bridge(): NativeCall | null {
+  if (!isNativeApp()) return null
+  const found = (globalThis as { Capacitor?: CapacitorBridge }).Capacitor?.nativePromise
+  return typeof found === 'function' ? found : null
 }
 
 /**
- * The plugin, if this build has it.
+ * One call into the plugin, with the answer as an object.
  *
- * Checked method by method rather than by asking whether the object exists, because the failure
- * this guards against is real and specific: a shell whose web assets are newer than its Swift.
- * `cap sync` copies the web build into the app, and nothing makes the two halves the same age --
- * an older app with today's bundle would offer the buttons and then call a function that is not
- * there. See docs/IOS.md, "Two commands, every time".
+ * A missing plugin or a missing method is a rejection from the bridge rather than something
+ * checkable in advance, for the same reason as above: the only registry of what exists is the one
+ * `@capacitor/core` builds. So a shell older than its web assets gives a failed sign-in with a
+ * message instead of a hidden button, which in a TestFlight or App Store build cannot happen --
+ * both halves ship together -- and in development means "rebuild the app".
  */
-function plugin(): NativeAuthPlugin | null {
-  if (!isNativeApp()) return null
-  const found = (globalThis as { Capacitor?: CapacitorWithPlugins }).Capacitor?.Plugins?.NativeAuth
-  if (typeof found?.signInWithApple !== 'function') return null
-  if (typeof found.signInWithBrowser !== 'function') return null
-  return found as NativeAuthPlugin
+async function ask(
+  method: string,
+  options: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const call = bridge()
+  if (call === null) throw new Error('no native bridge')
+  const answer = await call('NativeAuth', method, options)
+  return typeof answer === 'object' && answer !== null ? (answer as Record<string, unknown>) : {}
 }
 
 /** Whether the shell can offer the provider buttons at all. False in a browser, by design. */
 export function nativeSsoAvailable(): boolean {
-  return plugin() !== null
+  return bridge() !== null
 }
 
 /**
@@ -114,13 +121,12 @@ async function sha256Hex(value: string): Promise<string> {
  * client-chosen nonce would prove only that the client agrees with itself.
  */
 export async function appleNatively(): Promise<NativeSignIn> {
-  const native = plugin()
-  if (native === null) return FAILED
+  if (bridge() === null) return FAILED
   try {
     const issued = await jsonOf(await apiFetch('auth/native/nonce', { method: 'POST' }))
     if (typeof issued.nonce !== 'string' || issued.nonce === '') return FAILED
 
-    const credential = await native.signInWithApple({ nonceHash: await sha256Hex(issued.nonce) })
+    const credential = await ask('signInWithApple', { nonceHash: await sha256Hex(issued.nonce) })
     if (typeof credential.identityToken !== 'string' || credential.identityToken === '') {
       return FAILED
     }
@@ -146,10 +152,9 @@ export async function appleNatively(): Promise<NativeSignIn> {
  * of setting a cookie on a page nobody will see.
  */
 export async function googleNatively(): Promise<NativeSignIn> {
-  const native = plugin()
-  if (native === null) return FAILED
+  if (bridge() === null) return FAILED
   try {
-    const ended = await native.signInWithBrowser({
+    const ended = await ask('signInWithBrowser', {
       url: startUrlFor('google'),
       scheme: CALLBACK_SCHEME,
     })
