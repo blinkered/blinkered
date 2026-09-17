@@ -1076,7 +1076,16 @@ function Session({
             {phase === 'setup' ? <div className="panel">{setup(messages.start)}</div> : null}
 
             {phase === 'over' && finished !== null ? (
-              <div className="panel">
+              /*
+               * `panel-over`, because this panel is the one that can outgrow a screen.
+               *
+               * Everything in it earns its place -- the score, where it would rank, your best
+               * games, every word you found -- and on a long game that adds up to roughly twice
+               * an iPhone. Nick found the consequence: "at the end of a game with sufficiently
+               * many words, I can't see the button to start a new game." The class is what lets
+               * the stylesheet cap the word rail and pin the action to the bottom of the screen.
+               */
+              <div className="panel panel-over">
                 <p className="veil-title">{messages.outOfFlips}</p>
                 <p className="result-line">
                   {formatFinalResult(messages, {

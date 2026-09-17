@@ -502,6 +502,27 @@ it means "rebuild the app", which the build phase above now does by itself.
   account and a game played in it goes on the real boards. Dev is behind the VPN and a phone
   cannot reach it, so there is no arrangement where this is otherwise.
 
+## The game-over panel can outgrow a phone
+
+Everything on it earns its place --- the score, where the game would rank, your best games, and
+every word you found --- and on a long game that adds up to roughly twice an iPhone. Nick, after a
+thirty-four word game: "I can't see the button to start a new game at the bottom of the game over
+modal."
+
+Two changes rather than a reordering, because the order it reads in is right. The found-word rail
+is capped at 11rem and scrolls inside itself, with `overscroll-behavior: contain` so reaching its
+end does not start scrolling the page. And the difficulty row with New game is `position: sticky;
+bottom: 0` --- sticky rather than fixed, so it sits in the panel's flow and stops being special the
+moment the panel is short enough not to need it.
+
+Two details in that bar are not decoration. `justify-self: stretch`, because `.panel` centres its
+items and a content-sized bar covered the middle of the rail with chips showing either side of it,
+which reads as a rendering fault. And the safe-area inset in its bottom padding, since on a
+notched phone the home indicator sits exactly where the bar does.
+
+Measured at 14, 30 and 60 words on an iPhone viewport: New game is on screen without scrolling at
+every one of them, where it used to be 500px below the fold.
+
 ## No zooming, in three parts
 
 Nick: "clicking on the language drop-down causes the game to zoom in slightly, cropping the side

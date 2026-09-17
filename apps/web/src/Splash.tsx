@@ -19,15 +19,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 const TITLE = 'BLINKERED'
 
 /**
- * A letter lights every 128ms, and the word travels in 630.
+ * A letter lights every 256ms, and the word travels in 1260.
  *
- * Both were a third of that, and both were wrong: "mobile opening screen is *way* too fast". Half
- * again as slow is still brisk against the title bar's 225ms a letter -- this is an opening rather
- * than an idle flourish -- but it is now something somebody can follow rather than a flicker.
+ * Halved twice from where it started, once each time Nick watched it: 85ms a letter was "*way* too
+ * fast", 128 was still too fast, and this is the answer to "about half as fast as it currently
+ * is". It is slower per letter than the title bar's 225ms, which is right -- the title bar is
+ * something you glance at while a page loads, and this is the only thing on the screen.
  */
-const PICK_MS = 128
+const PICK_MS = 256
 /** Must match the transition on `.splash-tile`. */
-const TRAVEL_MS = 630
+const TRAVEL_MS = 1260
 /**
  * Two seconds with the name assembled, which Nick asked for by the clock.
  *

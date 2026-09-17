@@ -137,7 +137,18 @@ export function overFixture(search: string): Fixture | null {
       difficulty,
       engineVersion: ENGINE_VERSION,
     }),
-    words: WORDS.slice(0, Math.max(0, Math.min(WORDS.length, result.words))),
+    /*
+     * Repeated to length rather than truncated to the canned list.
+     *
+     * `?words=34` used to give fourteen, which is the length of `WORDS` -- so the one state this
+     * fixture exists to make reachable, a long game whose panel runs off the bottom of a phone,
+     * could not be reached with it. Repeats are fine: the rail cares how many there are and how
+     * long each one is, not whether a word appears twice.
+     */
+    words: Array.from(
+      { length: Math.max(0, result.words) },
+      (_, at) => WORDS[at % WORDS.length] as (typeof WORDS)[number],
+    ),
     letters: LETTERS,
   }
 }

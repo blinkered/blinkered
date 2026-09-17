@@ -777,6 +777,50 @@ h2 {
 
 /* What a stopped clock costs, under the word Paused. Dim, because it is a consequence rather
    than an error, and the player is not being told off. */
+/*
+ * ---------- the game-over panel, which can outgrow a screen ----------
+ *
+ * On a long game this panel is about twice an iPhone: the score, the projected board, your best
+ * games, and every word you found, which at thirty-four words is nine rows of chips. The button
+ * that starts the next game is the last thing in it, and it was five hundred pixels below the
+ * fold with nothing to say so.
+ *
+ * Two changes rather than a reordering. The results stay in the order they are worth reading in;
+ * what changes is that the rail stops growing without limit, and the one control somebody is
+ * certainly going to want is always on the screen.
+ */
+.panel-over .found {
+  /* Long enough to see a good game's worth at a glance, short enough to leave room for what is
+     under it. It scrolls, and `contain` stops that scroll turning into the page's once it ends. */
+  max-height: 11rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/*
+ * The difficulty row and New game, pinned to the bottom of the viewport while the panel is on
+ * screen -- sticky rather than fixed, so it sits in the panel's flow and stops being special the
+ * moment the panel is short enough not to need it.
+ *
+ * Opaque, bled to the panel's edges and with a rule along the top, because content scrolling
+ * underneath a transparent bar reads as a rendering fault. The safe-area inset is in the padding
+ * for the same reason it is everywhere else in this file: on a notched phone the home indicator
+ * sits exactly where this bar does.
+ */
+.panel-over .setup {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  /* Stretched, because `.panel` centres its items: sized to its contents, the bar covered the
+     middle of the rail and left chips showing either side of it, which reads as a fault. */
+  justify-self: stretch;
+  /* Bled to the panel's own padding -- 1.25rem inline, 1.5rem at the foot -- so the bar meets the
+     panel's edges rather than floating inside them. */
+  margin: 0.5rem -1.25rem -1.5rem;
+  padding: 0.75rem 1.25rem max(0.75rem, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+
 .veil-cost {
   margin: 0;
   max-width: 18rem;
@@ -1160,9 +1204,9 @@ kbd {
  */
 .splash-tile {
   transition:
-    transform 630ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    width 630ms ease,
-    height 630ms ease;
+    transform 1260ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    width 1260ms ease,
+    height 1260ms ease;
 }
 /* The studio, in the corner a studio goes in, clear of the home indicator. */
 .splash-mark {
