@@ -261,6 +261,26 @@ Phase C is where the distinction becomes real -- a server cannot have dealt a se
 never knew about -- and at that point the change is to this expression rather than to any query.
 That is the whole reason for writing a column instead of filtering at read time.
 
+**The games played before the column was written were backfilled once**, in both environments, by
+the same rule rather than by hand:
+
+```sql
+update games set leaderboard_eligible = true
+where canonical and score > 0 and not leaderboard_eligible;
+```
+
+Dev took one row and prod five. One prod game stayed out --
+`MkxsSSz-gvetTJK3rd3FqA`, en/insane, 93 points -- because it was played on a custom ruleset, which
+is the first rule above and not an accident of the backfill. Nick asked for "all scores" and this
+is the reading that keeps a board comparable; flipping that row as well is one `update` away if he
+wants it.
+
+Two things to know if this ever has to be done again. **The board also requires the game's
+`engine_version` to match the running one**, so a backfill after an engine change makes rows
+eligible without making them visible; every row in both databases was `0.3.0`, which is why this
+one worked. And **the rows changed are recorded in the commit** rather than only in the column, so
+the operation can be undone: the ids above are the whole set.
+
 ### The board is an address, and its language is the page's
 
 `GET /v1/leaderboard/:language/:difficulty`, public, top ten, `?limit` up to a hundred. The
