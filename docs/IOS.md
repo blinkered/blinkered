@@ -108,10 +108,40 @@ the first three on screen together.
 Getting there on a 568px iPhone SE meant finding 42 pixels, and the surprise was where they
 were. Not the board, and not the controls: the **title bar**, which at 320px wrapped the
 wordmark, the language picker and the nerd toggle onto three rows and spent **108px of 568** on
-chrome. Two rows now, mostly by dropping the picker's visible label. The trigger already shows a
-flag and the language's own name for itself, which says "language" better than the word does;
-the label stays in the accessibility tree via `.sr-only` rather than being removed, because
+chrome. Dropping the picker's visible label got it to two. The trigger already shows a flag and
+the language's own name for itself, which says "language" better than the word does; the label
+stays in the accessibility tree via `.sr-only` rather than being removed, because
 `aria-labelledby` points at it.
+
+### One row, measured
+
+Two rows was the wrong target. Six controls coming off the end of a wrapping row meant that
+narrowing the window rearranged the bar -- the account button ending up alone on a line under the
+wordmark, everything moving as the window moved. Nick, watching it: "I wasn't expecting nav
+elements to start hopping all over the screen and down to a second line. I was expecting them to
+get narrow and _stay in the top header area at all times_."
+
+So the row does not wrap and gives up detail instead, in this order: the word "language", the
+words beside the question mark, the words beside the nerd face, two thirds of the wordmark's
+size, the language's name, eight of the nine tiles, and last the medal. `fitRow.ts` applies those
+steps one at a time until the row stops overflowing, and re-measures on resize and when the fonts
+arrive.
+
+**Measured rather than written as breakpoints, because the right width is per language.** Sign in
+is "Iniciar sesión" in Spanish and How to play is "Wie man spielt" in German; a bar tuned in
+English wraps in both. Measuring costs twenty lines and is right in fifty-one languages. What it
+buys is visible at the ends of the range: 320px English keeps every control but the medal, and
+the medal survives to 360px, where the old hand-written breakpoint dropped it at 368px.
+
+**A flex row cannot overflow unless you let it.** Two things had to be true before any of this
+could be measured. `flex: none` on the children, or the flexbox quietly squashes the labels and
+reports no overflow; and `grid-template-columns: minmax(0, 1fr)` on `.shell`, because an implicit
+`auto` track is sized to its widest child's max-content -- so the row simply made the page wider
+than the window and still reported that it fit. In German it pushed the document 386px past a
+320px viewport before that line went in.
+
+The same row is at the head of every page that is not the game, and it is measured the same way:
+see `PageHead.tsx`.
 
 The last six pixels came out of the board's share rather than the button, on the grounds that a
 button you cannot reach is a game you cannot finish. 42% of an SE is still a 55px tile against

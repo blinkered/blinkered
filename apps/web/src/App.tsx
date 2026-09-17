@@ -35,6 +35,7 @@ import { draftKept, routeOfDraft } from './reportDraft.js'
 import { drainGames, saveProfile, signOut, whoAmI } from './account.js'
 import { claim, enqueue } from './pendingGames.js'
 import { dismissTour, tourDismissed } from './visit.js'
+import { useFitRow } from './fitRow.js'
 import { cached } from './identity.js'
 import type { Account, BoardAtRound, GameToKeep, Identity } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -218,6 +219,15 @@ function Session({
   const [offline, setOffline] = useState(false)
   /** Open, and why. The reason is shown in the dialog; `null` means it is not open. */
   const [signingIn, setSigningIn] = useState<{ reason?: string } | null>(null)
+
+  /*
+   * The title bar, measured so it stays one row. See `fitRow.ts`.
+   *
+   * The signature is what changes the words in it: the language changes every label at once, and
+   * an account swaps a Sign in button for an avatar, which is 35 pixels the row gets back.
+   */
+  const titlebar = useRef<HTMLDivElement>(null)
+  useFitRow(titlebar, `${settings.uiLanguage}|${account === null ? 'out' : 'in'}`)
 
   /*
    * Coming back from Apple or Google.
@@ -806,7 +816,7 @@ function Session({
          */
         data-offline={offline ? 'yes' : undefined}
       >
-        <div className="titlebar">
+        <div className="titlebar" ref={titlebar}>
           <Title
             skip={hurried}
             onDone={() => {

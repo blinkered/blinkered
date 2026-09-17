@@ -2,6 +2,7 @@ import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
 import { LOCALES, format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { InterfacePicker } from './LanguagePicker.js'
+import { PageHead } from './PageHead.js'
 
 /**
  * The rules, on their own page, in whatever language the game is being read in.
@@ -73,24 +74,22 @@ export function HowToPlay({
 
   return (
     <main className="rules">
-      <div className="rules-head">
-        <div>
-          {/* Tagged English because the wordmark is a name, not a word in the page's language.
-              `text-transform: uppercase` follows the element's language, so under `lang="tr"`
-              the browser upper-cases the i to İ and the game is called BLİNKERED. */}
-          <h1 lang="en">Blinkered</h1>
-          <p className="rules-lead">{messages.howToPlay}</p>
-        </div>
+      {/*
+       * The same head as every other page. It used to spell the name as plain text and keep the
+       * way back in a button of its own below the heading, which is how five pages ended up with
+       * five different nav bars.
+       *
+       * No `onHome` when there is nothing to go back to: this file is also a standalone document
+       * at `how-to-play.html`, opened in its own tab from the game, and there the mark is a link
+       * to the game rather than a button that closes a page over it.
+       */}
+      <PageHead back={messages.backToGame} {...(onBack === undefined ? {} : { onHome: onBack })}>
         {/* Every locale, whether or not a word list exists for it: reading the rules needs no
             dictionary. Opens on whatever the game was being read in. */}
         <InterfacePicker value={language} label={messages.gameLanguage} onChange={onLanguage} />
-      </div>
+      </PageHead>
 
-      {onBack === undefined ? null : (
-        <button type="button" className="btn rules-back" onClick={onBack}>
-          {messages.backToGame}
-        </button>
-      )}
+      <h1 className="page-title">{messages.howToPlay}</h1>
 
       {sections.map((section) => (
         <section key={section.title}>

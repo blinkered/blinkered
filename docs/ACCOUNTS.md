@@ -304,7 +304,7 @@ gap is precisely the deficit. Moving it beside How to play does not help, becaus
 already 260 of 288 and it wraps straight back down. Shaving the picker would have bought eight
 pixels and still lost in Spanish, where Sign in is "Iniciar sesión".
 
-So it goes at 23rem rather than the 30rem this stylesheet uses elsewhere, because the row fits at
+So it went at 23rem rather than the 30rem this stylesheet uses elsewhere, because the row fits at
 390px and most phones are wider than 368. What is lost there is one route rather than the
 feature: the board is still reached from the link under a finished game, which is where it means
 the most.
@@ -314,9 +314,45 @@ carries no extra specificity, so `.board-link { display: none }` inside one lose
 `.board-link { display: inline-flex }` written later in the file. It matched, it was in the
 stylesheet, and the element stayed visible. Only reading the computed `display` found it.
 
-"nerd mode" collapses the same way and at the same breakpoint the picker's label uses: the face
-stays at every width, the words go to the accessibility tree, and the `title` explains it to a
-pointer.
+**And then the whole approach turned out to be wrong**, which Nick saw by doing the one thing no
+breakpoint survives: dragging the window. A wrapping row of six controls rearranges itself as it
+narrows -- the account button alone on a second line, the medal and the toggle changing places --
+and "it fits in two rows" is not the same property as "it stays where it is". What he wanted was
+the controls getting narrow and staying in the header, always.
+
+The row does not wrap any more. It sheds detail in a fixed order until it fits, and which step it
+lands on is measured rather than written down, because the answer is different in every one of
+the fifty-one languages. `fitRow.ts` and the `[data-fit~='...']` rules in `styles.css` are the
+two halves; IOS.md, "One row, measured", has the order and the two layout facts that had to be
+true first. The 23rem rule is gone: the medal is now the last thing to go rather than a width,
+and in English it survives to 360px.
+
+"nerd mode" is part of the same sequence: the face stays at every width, the words go to the
+accessibility tree, and the `title` explains it to a pointer.
+
+### Every page that is not the game has the same head
+
+There were five heads. The rules page spelled "Blinkered" as plain text over a lead line and put
+its Back button under the heading; the board page had a title and a text link; the account and
+player pages had an avatar, a name and a button called something else; the moderation panel had
+its own. The player page's way home read "← Play Blinkered", in English, in all fifty-one
+languages -- which is what happens to a string nobody who reads English ever sees.
+
+Nick asked whether there was a reason. There was not: they were written one at a time, each
+solving its own way home, and no two of them agreed.
+
+`PageHead.tsx` is now the head on all of them: the wordmark at the start, the page's own controls
+after it, one labelled way back at the end, on one line at every width by the same measurement the
+title bar uses. Two things about it are decisions rather than plumbing:
+
+- **The mark is the game's own tiles, standing still.** `Title` grew a `still` mode rather than
+  these pages growing a second wordmark: same tiles, same type, same spacing, no animation. A
+  nine-tile shuffle replaying every time somebody opens a leaderboard is a flourish charging rent,
+  and these pages are read rather than entered. In that mode it is also not an `h1` -- the page
+  has its own heading, and a document with two titles is a document with none.
+- **The label comes from the caller, not from `Messages`.** The board page's head has to speak the
+  board's language rather than the reader's, and the moderation panel is deliberately English.
+  A head that reached for `messages.backToGame` itself could do neither.
 
 ### The conversion problem, and the two things aimed at it
 
@@ -328,7 +364,15 @@ anybody. Two changes, and the second is much the stronger:
 its own validation, its own code step, its own errors in fifty-one languages, and would give the
 tour a way to fail halfway through.
 
-It went in badly twice before it went in well, and both mistakes are about the screen *before*
+**Taking the offer ends the tour**, and that is not a nicety. The dialog is a `.modal` and the
+tour is a `.tut-modal`, which sits above it deliberately, so pressing Sign in on the last screen
+opened the dialog _underneath_ the card that offered it: the only way to reach it was to press
+Start playing first. Two stacked modals is the bug and raising one above the other would only
+have hidden it, so the button closes the tour through the same `onDone` that Start playing uses --
+which also keeps the "don't show this again" box meaning what it says for somebody who ticks it
+and then signs in.
+
+It went in badly twice before it went in well, and both mistakes are about the screen _before_
 it. The tour's rules screen used to read "That is the whole game" over "Pick a level and play",
 so adding a screen after it announced an ending and then did not end. The first fix was to delete
 the new screen and fold the offer onto that one, which was the wrong end of the problem: it left

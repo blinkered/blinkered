@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { PageHead } from './PageHead.js'
 import { Avatar } from './Avatar.js'
 import {
   banUser,
@@ -86,14 +87,15 @@ export function AdminScreen({
   return (
     <div className="rules-overlay account-screen">
       <div className="account-page admin-page">
+        {/* English, like the rest of this panel: it is a tool for whoever is moderating rather
+            than a page a player reads, so it carries its own label instead of a message key. */}
+        <PageHead back="Back to the game" onHome={onClose} />
+
         <header className="account-head">
           <div>
             <h1 className="account-name">Moderation</h1>
             <p className="dim">Accounts, boards, and what people have objected to</p>
           </div>
-          <button type="button" className="btn account-close" onClick={onClose}>
-            Back to the game
-          </button>
         </header>
 
         <div className="account-tabs" role="tablist">

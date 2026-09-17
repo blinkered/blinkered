@@ -31,13 +31,27 @@ const TRAVEL_MS = 840
 
 interface TitleProps {
   /** Set when the player has started a game and does not want to wait for this. */
-  readonly skip: boolean
+  readonly skip?: boolean
   /** Fired once, when the tiles have finished travelling. */
-  readonly onDone: () => void
+  readonly onDone?: () => void
+  /**
+   * Drawn rather than played: the finished wordmark, in order, with nothing moving.
+   *
+   * This is the mark at the head of every page that is not the game (see `PageHead`). Those
+   * pages are read rather than entered, and a nine-tile shuffle replaying every time somebody
+   * opens the leaderboard would be a flourish charging rent. Same tiles, same type, same
+   * spacing, so the pages look like the game; it just does not perform.
+   *
+   * Not a heading either, in that mode: the page has its own `h1` and a second one would leave a
+   * document with two titles. It becomes an image of the name instead, which is what it is.
+   */
+  readonly still?: boolean
 }
 
-export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
-  const reduced = usePrefersReducedMotion()
+export function Title({ skip = false, onDone, still = false }: TitleProps): React.JSX.Element {
+  // Standing still is the same starting position as honoring reduced motion: everything already
+  // exposed, already taken, already in order.
+  const reduced = usePrefersReducedMotion() || still
   const [order, setOrder] = useState<readonly number[]>(() =>
     reduced ? inOrder() : shuffledOrder(),
   )
@@ -47,7 +61,7 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
   const [selected, setSelected] = useState(() => (reduced ? TITLE.length : 0))
   const [travelling, setTravelling] = useState(reduced)
   /** Dropped once the word is assembled, leaving a clean wordmark rather than a lit one. */
-  const [lit, setLit] = useState(true)
+  const [lit, setLit] = useState(!still)
 
   const nodes = useRef(new Map<number, HTMLSpanElement>())
   const boxes = useRef(new Map<number, DOMRect>())
@@ -107,7 +121,7 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
         setLit(false)
         if (announced.current) return
         announced.current = true
-        finish.current()
+        finish.current?.()
       },
       reduced ? 0 : TRAVEL_MS,
     )
@@ -158,14 +172,17 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
     }
   }, [layout])
 
+  const Tag = still ? 'span' : 'h1'
+
   return (
     // Left to right whatever the page is doing. The wordmark is a name spelled out in tiles, and
     // a flex row under `dir="rtl"` deals them from the other end: the game was called DEREKNILB
     // in Hebrew and Arabic until this line.
-    <h1
+    <Tag
       className="title"
       dir="ltr"
       lang="en"
+      {...(still ? { role: 'img' } : {})}
       aria-label={TITLE.charAt(0) + TITLE.slice(1).toLowerCase()}
     >
       {order.map((index, position) => {
@@ -181,6 +198,15 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
               else nodes.current.delete(index)
             }}
             className={classes.join(' ')}
+            /*
+             * Which letter of BLINKERED this tile is, as opposed to where it is lying.
+             *
+             * The stylesheet keeps tile 0 -- the B, which is the app's own icon -- and drops the
+             * rest when the title bar runs out of room. It cannot use `:first-child` for that:
+             * until the animation has finished travelling, the first tile in the document is
+             * whichever letter the shuffle dealt there.
+             */
+            data-at={index}
             aria-hidden="true"
           >
             <span className="title-face title-back" />
@@ -188,7 +214,7 @@ export function Title({ skip, onDone }: TitleProps): React.JSX.Element {
           </span>
         )
       })}
-    </h1>
+    </Tag>
   )
 }
 

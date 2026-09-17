@@ -2,6 +2,7 @@ import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
+import { PageHead } from './PageHead.js'
 import { GameDetail } from './GameDetail.js'
 import { GamesTable } from './GamesTable.js'
 import { Dropdown } from './Dropdown.js'
@@ -111,15 +112,14 @@ export function AccountScreen({
   return (
     <div className="rules-overlay account-screen">
       <div className="account-page">
+        <PageHead back={messages.backToGame} onHome={onClose} />
+
         <header className="account-head">
           <Avatar seed={account.avatarSeed} size={56} className="avatar-large" />
           <div>
             <h1 className="account-name">{account.username}</h1>
             <p className="dim">{messages.accountTitle}</p>
           </div>
-          <button type="button" className="btn account-close" onClick={onClose}>
-            {messages.backToGame}
-          </button>
         </header>
 
         <div className="account-tabs" role="tablist">

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Avatar } from './Avatar.js'
 import { ignoredByManagers } from './autofill.js'
 import { LanguagePicker } from './LanguagePicker.js'
+import { PageHead } from './PageHead.js'
 import { leaderboard } from './account.js'
 import type { Board, BoardRow as BoardRow_ } from './account.js'
 import { countryName } from './countries.js'
@@ -89,24 +90,21 @@ export function LeaderboardPage({
 
   return (
     <section className="board-page" aria-labelledby="board-title">
-      <header className="board-head">
-        <h2 id="board-title">{messages.leaderboardTitle}</h2>
-        {/*
-          The same way out the public pages use, with the label translated. `PlayerPage` has a
-          private `HomeLink` that hardcodes "Play Blinkered" in English; `backToGame` already
-          exists in every language, so this one says it in the board's.
-        */}
-        <button
-          type="button"
-          className="signin-again game-back"
-          onClick={() => {
-            goTo({ at: 'game' })
-            onHome()
-          }}
-        >
-          ← {messages.backToGame}
-        </button>
-      </header>
+      {/*
+        The shared head, with the label in the board's language rather than the reader's -- this
+        page is localized to the board it shows, and that includes the way out of it.
+      */}
+      <PageHead
+        back={messages.backToGame}
+        onHome={() => {
+          goTo({ at: 'game' })
+          onHome()
+        }}
+      />
+
+      <h1 className="page-title" id="board-title">
+        {messages.leaderboardTitle}
+      </h1>
 
       <div className="board-pickers">
         <LanguagePicker

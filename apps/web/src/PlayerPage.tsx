@@ -2,6 +2,7 @@ import type { Messages } from '@blinkered/i18n'
 import { useEffect, useState } from 'react'
 import type { TieredIndex } from '@blinkered/words'
 import { Avatar } from './Avatar.js'
+import { PageHead } from './PageHead.js'
 import { GameDetail } from './GameDetail.js'
 import { ReportButton } from './ReportDialog.js'
 import { GamesTable } from './GamesTable.js'
@@ -65,7 +66,7 @@ export function PlayerPage({
   if (missing) {
     return (
       <div className="account-page">
-        <HomeLink onHome={onHome} />
+        <HomeLink messages={messages} onHome={onHome} />
         <p className="signin-note is-bad">{messages.playerNotFound}</p>
       </div>
     )
@@ -73,7 +74,7 @@ export function PlayerPage({
   if (profile === null) {
     return (
       <div className="account-page">
-        <HomeLink onHome={onHome} />
+        <HomeLink messages={messages} onHome={onHome} />
         <p className="dim">{messages.profileLoading}</p>
       </div>
     )
@@ -81,7 +82,7 @@ export function PlayerPage({
 
   return (
     <div className="account-page">
-      <HomeLink onHome={onHome} />
+      <HomeLink messages={messages} onHome={onHome} />
       <header className="account-head">
         <Avatar seed={profile.avatarSeed} size={56} className="avatar-large" />
         <div>
@@ -146,7 +147,7 @@ export function PlayedGamePage({
 }): React.JSX.Element {
   return (
     <div className="account-page">
-      <HomeLink onHome={onHome} />
+      <HomeLink messages={messages} onHome={onHome} />
       <GameDetail
         messages={messages}
         id={id}
@@ -159,18 +160,26 @@ export function PlayedGamePage({
   )
 }
 
-function HomeLink({ onHome }: { readonly onHome: () => void }): React.JSX.Element {
+/**
+ * The way home, which is the shared head now.
+ *
+ * It used to be a bare link reading "← Play Blinkered" in English on every one of the fifty-one,
+ * which is the sort of thing that survives because nobody reading English ever sees it.
+ */
+function HomeLink({
+  messages,
+  onHome,
+}: {
+  readonly messages: Messages
+  readonly onHome: () => void
+}): React.JSX.Element {
   return (
-    <button
-      type="button"
-      className="signin-again game-back"
-
-      onClick={() => {
+    <PageHead
+      back={messages.backToGame}
+      onHome={() => {
         goTo({ at: 'game' })
         onHome()
       }}
-    >
-      ← Play Blinkered
-    </button>
+    />
   )
 }

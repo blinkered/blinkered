@@ -53,6 +53,16 @@ body {
 
 .shell {
   display: grid;
+  /*
+   * One column, and never wider than the window.
+   *
+   * An implicit `auto` track is sized to its widest child's max-content, so a row that refuses
+   * to wrap simply made the track -- and with it the page -- as wide as it wanted: in German the
+   * title bar pushed the document 386px past a 320px viewport and the whole page scrolled
+   * sideways. `minmax(0, 1fr)` caps the track at the container, which is what lets the title bar
+   * measure its own overflow at all. Same fix, for the same reason, as `.body.has-nerd` below.
+   */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   max-width: 60rem;
   margin: 0 auto;
@@ -109,9 +119,101 @@ body {
  */
 .titlebar {
   display: flex;
-  flex-wrap: wrap;
+  /*
+   * One row, always. See `fitRow.ts` for the half of this that measures.
+   *
+   * It wrapped until Nick watched it do so: narrowing the window took controls off the end one
+   * at a time and dropped them onto a second and then a third row, so the account button ended
+   * up alone under the wordmark and everything moved as the window moved. A row of navigation
+   * that rearranges itself is harder to use than a row that gets smaller.
+   *
+   * So nothing wraps and nothing shrinks below its content -- `flex: none` is what makes an
+   * overflow measurable rather than letting the flexbox squash the labels quietly -- and the
+   * detail comes off in a fixed order instead. Each `data-fit` word below is one step of that.
+   */
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.5rem 1rem;
+}
+.titlebar > * {
+  flex: none;
+}
+/*
+ * The steps, cheapest first, each one paying for the next few dozen pixels.
+ *
+ * `lang` the word "language", which the flag beside it already says. `help` the words next to the
+ * question mark. `nerd` the words next to the face. `small` two thirds of the wordmark's size,
+ * which is the cheapest sixty pixels in the row and costs nothing but scale. `flag` the
+ * language's name, leaving the flag and the caret. `mark` eight of the nine tiles, leaving the B,
+ * which is the app's own icon. `board` the medal, and it is last because it is the only one of
+ * these that is a way to somewhere rather than a label: what goes is a route, not a feature,
+ * since a board is still reached from the link under a finished game.
+ *
+ * The wordmark shrinks before the language's name goes and disappears after it, which is the one
+ * place this order is a judgement rather than arithmetic: at 600px there is room to be a brand
+ * and at 400px there is not, and a flag plus a caret still says which language is selected.
+ *
+ * The first three are the same trade the stylesheet already made at 30rem, which is why they use
+ * the same visually-hidden treatment: the words stay in the accessibility tree and the `title`
+ * attribute explains each control to a pointer. A screen reader hears the same row at 320px as at
+ * 1280px.
+ */
+[data-fit~='lang'] .picker-label,
+[data-fit~='help'] .btn-text,
+[data-fit~='nerd'] .toggle-text,
+[data-fit~='flag'] .drop-value {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/*
+ * The help control's words, shown whenever they fit rather than above 50rem.
+ *
+ * `.btn-text` is hidden by default and drawn above 50rem, which is right for the control bar
+ * under the board -- those buttons are drawings first. In this row the words are the label and
+ * the measurement is what decides, so at 700px they are there and at 500px they are not.
+ */
+.titlebar .btn-text {
+  display: inline;
+}
+/* Two thirds of the size, which is still legible as a wordmark. */
+[data-fit~='small'] .title-tile {
+  --title-tile: 1.05rem;
+}
+/* And then just the B, which is the mark on the icon and the favicon. By reading position rather
+   than by document position: mid-animation the tiles are in a shuffled order and `:first-child`
+   is whichever letter happens to be lying there. */
+[data-fit~='mark'] .title-tile:not([data-at='0']) {
+  display: none;
+}
+/* At full size again: one tile has room to be the icon it is, and a 17px B reads as a crumb
+   rather than as a mark. After the `small` rule rather than before it, because the two have the
+   same specificity and this is the one that should win. */
+[data-fit~='mark'] .title-tile {
+  --title-tile: 1.5rem;
+}
+[data-fit~='flag'] .drop-trigger {
+  min-width: 0;
+}
+[data-fit~='board'] .board-link {
+  display: none;
+}
+/*
+ * Past the last step, which a long language can still be, the account button gives up its word
+ * rather than the row giving up its shape. "Iniciar sesión" is twice "Sign in" and at 320px
+ * there is no arrangement of six controls that holds it whole.
+ */
+[data-fit~='board'] .account-cta {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 h1 {
   margin: 0;
@@ -119,6 +221,78 @@ h1 {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+/*
+ * ---------- the head on every page that is not the game ----------
+ *
+ * See `PageHead.tsx` for why there is one of these rather than five. The shape is the title
+ * bar's: the mark at the start, the page's controls after it, the way back pinned at the end, and
+ * the whole thing on one line at every width -- `fitRow.ts` measures this row too, so the same
+ * steps in the same order apply to it.
+ */
+.page-head {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.page-head > * {
+  flex: none;
+}
+/* A mark, not a button that looks like one: no border, no background, and the pointer says it
+   goes somewhere. */
+.page-home {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+/* The page's own controls sit with the way back rather than under the mark, so the row reads as
+   one group of chrome at the end and a name at the start. */
+.page-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-inline-start: auto;
+}
+.page-back {
+  margin-inline-start: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* Both at once would push the way back off the end; whichever comes second keeps the margin. */
+.page-tools + .page-back {
+  margin-inline-start: 0;
+}
+@media (hover: hover) {
+  .page-back:hover {
+    color: var(--ink);
+  }
+}
+.page-back:focus-visible,
+.page-home:focus-visible {
+  outline: 2px solid var(--sel);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* The page's own name, under the row rather than in it: a heading competing with the mark for a
+   narrow row is what made these pages disagree about which was which. */
+.page-title {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
 h2 {
   margin: 1rem 0 0.5rem;
   font-size: 0.8rem;
@@ -935,13 +1109,6 @@ kbd {
     max(4rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
   line-height: 1.6;
 }
-.rules-lead {
-  margin: 0.35rem 0 0;
-  color: var(--dim);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-}
 .rules section {
   margin-bottom: 1.75rem;
 }
@@ -1030,20 +1197,6 @@ kbd {
     border-color: var(--sel);
     color: var(--ink);
   }
-}
-
-.rules-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-.rules-head h1 {
-  font-size: 1.35rem;
-}
-.rules-head .rules-lead {
-  margin: 0.35rem 0 0;
 }
 
 /*
@@ -1653,8 +1806,10 @@ kbd {
   .drop-trigger {
     min-width: 7.5rem;
   }
+  /* One row, so there is no row gap to name. Tighter than the 0.75rem it was: five gaps at
+     0.5rem is 20 pixels back, which is most of a step. */
   .titlebar {
-    gap: 0.5rem 0.75rem;
+    gap: 0.5rem;
   }
   .panel {
     padding: 1.25rem 1rem;
@@ -1758,9 +1913,6 @@ kbd {
  * game if the rules were navigated to in place. Same words, same color, so it reads as the link
  * it is everywhere else.
  */
-.rules-back {
-  margin-bottom: 1.5rem;
-}
 
 /*
  * The rules over the top of the game, which is how the native shell shows them.
@@ -3203,12 +3355,6 @@ kbd {
   margin-inline: auto;
   padding-inline: 1rem;
 }
-.board-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-}
 .board-pickers {
   display: flex;
   flex-wrap: wrap;
@@ -3412,27 +3558,15 @@ kbd {
 }
 
 /*
- * The medal goes at the very narrowest, and only there.
+ * The medal goes last and only when the row cannot hold it, which is the `board` step in
+ * `fitRow.ts` rather than a width written down here.
  *
- * Measured rather than guessed: at 320px the bar has 288px of content width, row two spends 234
- * on the picker, the toggle and the medal, and the account button needs 75. The medal's 44 plus
- * its gap is exactly the deficit, so it is what puts the account button on a third row -- the
- * regression IOS.md records fixing once, where the third row is what pushed Complete word off
- * the bottom of an iPhone SE. Moving it beside How to play does not help: that row is 260 of 288
- * already, so it wraps straight back down.
- *
- * 23rem rather than the 30rem this file uses elsewhere, because the row fits at 390px and most
- * phones are wider than 368. Shaving the picker instead would have bought eight pixels and still
- * lost in Spanish, where Sign in is "Iniciar sesión".
- *
- * What is lost is one route, not the feature: the board is still reached from the link under a
- * finished game, which is where it means the most anyway.
+ * It was `@media (max-width: 23rem)`, measured once in English against a bar that could still
+ * wrap. Both halves of that have gone: the row is one line now, so the medal is not competing
+ * with a second row's worth of controls, and the answer differs by language anyway -- the same
+ * 320px holds the medal in English and cannot in Spanish. What is lost when it goes is one route
+ * rather than the feature: a board is still reached from the link under a finished game.
  */
-@media (max-width: 23rem) {
-  .board-link {
-    display: none;
-  }
-}
 
 /* The projected board on the game-over panel. See BoardPreview.tsx.
 

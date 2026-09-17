@@ -317,7 +317,25 @@ export function Tutorial({
              */
             <div className="tut-account">
               <p>{beat.caption}</p>
-              <button type="button" className="btn btn-primary" onClick={onSignIn}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  /*
+                   * Taking the offer ends the tour, and it has to: the sign-in dialog is a modal
+                   * of its own and `.tut-modal` sits above `.modal` on purpose, so the dialog
+                   * opened *underneath* this card and the only way to reach it was to press
+                   * Start playing. Two stacked modals is the bug; raising one above the other
+                   * would only have hidden it.
+                   *
+                   * Through `onDone` rather than by closing quietly, so the checkbox on this
+                   * screen still means what it says. Somebody who ticks it and then signs in
+                   * has said "never again" as clearly as somebody who ticks it and plays.
+                   */
+                  onDone(hideAgain)
+                  onSignIn()
+                }}
+              >
                 {messages.signInTitle}
               </button>
             </div>
