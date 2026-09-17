@@ -226,7 +226,6 @@ export const ar: Messages = {
   leaderboardEmpty: 'لا توجد مباريات على هذه اللوحة بعد. كن الأول.',
   leaderboardWouldBe: 'أين ستحل هذه المباراة',
   leaderboardThisGame: 'هذه المباراة',
-  tutAccountTitle: 'احفظ نتائجك',
   tutAccountBody: 'الحساب يحفظ مبارياتك، ويضع نتائجك على لوحة المتصدرين، ويحتفظ بملفك الشخصي.',
   ssoCancelled: 'أُلغي تسجيل الدخول.',
   ssoExpired: 'استغرق وقتًا طويلًا. سجّل الدخول مرة أخرى.',

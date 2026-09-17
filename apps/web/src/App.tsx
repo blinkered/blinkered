@@ -34,6 +34,7 @@ import { clearSignInParam, returnedFromSso, ssoProblem } from './sso.js'
 import { draftKept, routeOfDraft } from './reportDraft.js'
 import { drainGames, saveProfile, signOut, whoAmI } from './account.js'
 import { claim, enqueue } from './pendingGames.js'
+import { dismissTour, tourDismissed } from './visit.js'
 import { cached } from './identity.js'
 import type { Account, BoardAtRound, GameToKeep, Identity } from './account.js'
 import { isNativeApp } from './platform.js'
@@ -368,8 +369,14 @@ function Session({
    * Closing the tour without ticking the box has to hold for this visit, or the tour reopens the
    * instant it closes: `tutorialSeen` stays false on purpose in that case, since "not now" and
    * "never again" are different answers and only the box means the second one.
+   *
+   * **"This visit" outlives a page load, which this used to get wrong.** It was React state, so
+   * signing in with Google reopened the tour: that round trip is a full page navigation, the
+   * state went with the page, and somebody who had dismissed the tour and then signed in to keep
+   * a game landed back on its first screen. `sessionStorage` has exactly the right lifetime; see
+   * `visit.ts`.
    */
-  const [tourDone, setTourDone] = useState(false)
+  const [tourDone, setTourDone] = useState(tourDismissed)
 
   const config = useMemo(() => configOf(settings), [settings])
   const playing = phase === 'playing'
@@ -633,6 +640,9 @@ function Session({
           }}
           onDone={(hideAgain) => {
             onChange({ ...settings, tutorialSeen: hideAgain })
+            // Both: the setting is "never again" and only the box sets it, and this is "not now",
+            // which has to survive a reload without becoming permanent.
+            dismissTour()
             setTourDone(true)
           }}
         />
@@ -822,6 +832,46 @@ function Session({
             }}
           />
 
+          {/*
+            The way to a board, beside How to play rather than beside the nerd toggle.
+            
+            It goes to **the board for what is currently selected**, which is the only default
+            that needs no explaining: somebody looking at an English insane setup wants the
+            English insane board. Both parts are still in the address, so the selectors on the
+            page can move from there and the link stays shareable.
+            
+            **Here because of where it wraps.** The bar is the tightest row in the layout, and
+            next to the nerd toggle this pushed the account button onto a third row at 320px --
+            the exact regression IOS.md records fixing once already, where the third row is what
+            put Complete word off the bottom of an iPhone SE. The wordmark's row has room beside
+            the How to play control and this one takes it. Shaving pixels off the picker would
+            have bought eight of them and still lost in Spanish, where Sign in is "Iniciar
+            sesion".
+
+            It also groups better: How to play and the leaderboard are both places to go and
+            read, where the nerd toggle changes the game in front of you.
+
+            A medal rather than a word for the same reason of space. The name is in the tooltip
+            and in the accessibility tree, where a screen reader reads it instead of the glyph.
+          */}
+          <button
+            type="button"
+            className="board-link"
+            title={messages.leaderboardTitle}
+            aria-label={messages.leaderboardTitle}
+            onClick={() => {
+              const to = {
+                at: 'board' as const,
+                language: settings.gameLanguage,
+                difficulty: settings.difficulty,
+              }
+              goTo(to)
+              setRoute(to)
+            }}
+          >
+            <span aria-hidden="true">🥇</span>
+          </button>
+
           {/* Always here, and live except while a game is running. Somebody arriving at a page
             in a language they cannot read has to be able to fix that before anything else. */}
           <LanguagePicker
@@ -839,7 +889,7 @@ function Session({
               if (account !== null) void saveProfile({ uiLanguage: tag, gameLanguage: tag })
             }}
           />
-          <label className="toggle">
+          <label className="toggle" title={messages.nerdMode}>
             <input
               type="checkbox"
               checked={settings.nerdMode}
@@ -851,7 +901,24 @@ function Session({
                 onChange({ ...settings, nerdMode: e.target.checked })
               }}
             />
-            <span>{messages.nerdMode}</span>
+            {/*
+              The face is always there; the words go when the row is tight.
+              
+              The title bar is the most expensive thing on a small screen -- IOS.md records it
+              taking 108px of a 568px iPhone before the language picker's label was dropped -- and
+              a medal has since been added to the same row. So this follows that precedent rather
+              than inventing a second one: the glyph carries the control at every width, and the
+              text collapses to the accessibility tree below 30rem, where the `title` is what
+              explains it to a pointer.
+              
+              `aria-hidden` on the glyph because the label's text is the checkbox's accessible
+              name, hidden or not, and a screen reader saying "nerd face nerd mode" is worse than
+              either alone.
+            */}
+            <span className="toggle-icon" aria-hidden="true">
+              🤓
+            </span>
+            <span className="toggle-text">{messages.nerdMode}</span>
           </label>
 
           {/*

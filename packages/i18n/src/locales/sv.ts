@@ -219,7 +219,6 @@ export const sv: Messages = {
   leaderboardEmpty: 'Inga spel på den här topplistan än. Bli först.',
   leaderboardWouldBe: 'Var det här spelet skulle hamna',
   leaderboardThisGame: 'Det här spelet',
-  tutAccountTitle: 'Behåll dina poäng',
   tutAccountBody:
     'Ett konto sparar dina spel, sätter dina poäng på topplistan och behåller din profil.',
   ssoCancelled: 'Inloggningen avbröts.',

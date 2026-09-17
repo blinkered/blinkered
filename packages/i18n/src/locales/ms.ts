@@ -220,7 +220,6 @@ export const ms: Messages = {
   leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
   leaderboardWouldBe: 'Di mana permainan ini akan berada',
   leaderboardThisGame: 'Permainan ini',
-  tutAccountTitle: 'Simpan skor anda',
   tutAccountBody:
     'Akaun menyimpan permainan anda, meletakkan skor anda di papan pendahulu, dan menjaga profil anda.',
   ssoCancelled: 'Log masuk dibatalkan.',

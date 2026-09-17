@@ -228,7 +228,6 @@ export const hy: Messages = {
   leaderboardEmpty: 'Այս ցանկում դեռ խաղեր չկան։ Եղիր առաջինը։',
   leaderboardWouldBe: 'Որտեղ կլիներ այս խաղը',
   leaderboardThisGame: 'Այս խաղը',
-  tutAccountTitle: 'Պահիր քո միավորները',
   tutAccountBody: 'Հաշիվը պահում է քո խաղերը, դնում է միավորներդ ցանկում և պահում է քո պրոֆիլը։',
   ssoCancelled: 'Մուտքը չեղարկվեց։',
   ssoExpired: 'Չափազանց երկար տևեց։ Նորից մուտք գործեք։',

@@ -226,7 +226,6 @@ export const ro: Messages = {
   leaderboardEmpty: 'Încă nu există jocuri în acest clasament. Fii primul.',
   leaderboardWouldBe: 'Unde s-ar clasa acest joc',
   leaderboardThisGame: 'Acest joc',
-  tutAccountTitle: 'Păstrează-ți scorurile',
   tutAccountBody:
     'Un cont salvează jocurile tale, pune scorurile în clasament și păstrează profilul tău.',
   ssoCancelled: 'Autentificarea a fost anulată.',

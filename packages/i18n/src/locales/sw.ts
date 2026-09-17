@@ -225,7 +225,6 @@ export const sw: Messages = {
   leaderboardEmpty: 'Hakuna michezo kwenye jedwali hili bado. Kuwa wa kwanza.',
   leaderboardWouldBe: 'Mchezo huu ungekuwa wapi',
   leaderboardThisGame: 'Mchezo huu',
-  tutAccountTitle: 'Hifadhi alama zako',
   tutAccountBody:
     'Akaunti huhifadhi michezo yako, huweka alama zako kwenye jedwali, na hutunza wasifu wako.',
   ssoCancelled: 'Kuingia kumeghairiwa.',

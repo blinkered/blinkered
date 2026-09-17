@@ -226,7 +226,6 @@ export const tr: Messages = {
   leaderboardEmpty: 'Bu sıralamada henüz oyun yok. İlk sen ol.',
   leaderboardWouldBe: 'Bu oyun nerede yer alırdı',
   leaderboardThisGame: 'Bu oyun',
-  tutAccountTitle: 'Puanlarını sakla',
   tutAccountBody: 'Hesap oyunlarını kaydeder, puanlarını sıralamaya koyar ve profilini saklar.',
   ssoCancelled: 'Giriş iptal edildi.',
   ssoExpired: 'Çok uzun sürdü. Tekrar giriş yap.',

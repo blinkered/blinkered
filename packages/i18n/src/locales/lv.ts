@@ -225,7 +225,6 @@ export const lv: Messages = {
   leaderboardEmpty: 'Šajā tabulā vēl nav spēļu. Esi pirmais.',
   leaderboardWouldBe: 'Kur būtu šī spēle',
   leaderboardThisGame: 'Šī spēle',
-  tutAccountTitle: 'Saglabā savus rezultātus',
   tutAccountBody: 'Konts saglabā tavas spēles, ieliek rezultātus tabulā un uztur tavu profilu.',
   ssoCancelled: 'Pieteikšanās atcelta.',
   ssoExpired: 'Tas ilga par ilgu. Piesakies vēlreiz.',

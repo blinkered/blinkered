@@ -224,7 +224,6 @@ export const mk: Messages = {
   leaderboardEmpty: 'Сè уште нема игри на оваа листа. Биди првиот.',
   leaderboardWouldBe: 'Каде би стоела оваа игра',
   leaderboardThisGame: 'Оваа игра',
-  tutAccountTitle: 'Зачувај ги своите резултати',
   tutAccountBody:
     'Сметката ги чува твоите игри, ги става резултатите на ранг-листата и го одржува твојот профил.',
   ssoCancelled: 'Најавата е откажана.',

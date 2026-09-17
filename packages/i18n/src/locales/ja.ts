@@ -231,7 +231,6 @@ export const ja: Messages = {
   leaderboardEmpty: 'このランキングにはまだ記録がありません。最初の一人になりましょう。',
   leaderboardWouldBe: 'この記録が入る位置',
   leaderboardThisGame: 'この記録',
-  tutAccountTitle: 'スコアを残す',
   tutAccountBody:
     'アカウントがあれば、記録が保存され、スコアがランキングに載り、プロフィールを管理できます。',
   ssoCancelled: 'ログインを中止しました。',

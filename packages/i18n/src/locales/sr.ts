@@ -223,7 +223,6 @@ export const sr: Messages = {
   leaderboardEmpty: 'На овој листи још нема игара. Буди први.',
   leaderboardWouldBe: 'Где би стајала ова игра',
   leaderboardThisGame: 'Ова игра',
-  tutAccountTitle: 'Сачувај своје резултате',
   tutAccountBody: 'Рачун чува твоје игре, поставља резултате на ранг-листу и одржава твој профил.',
   ssoCancelled: 'Пријава је отказана.',
   ssoExpired: 'Предуго је трајало. Пријави се поново.',

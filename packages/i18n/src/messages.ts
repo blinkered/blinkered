@@ -374,11 +374,12 @@ export interface Messages {
    * reaching anybody. The tour is the one place every player passes through, so the last thing
    * before Start playing says what an account is for.
    *
-   * Two strings. The button reuses `signInTitle`, already "Sign in or sign up" in every
-   * language, and opens the same `SignInDialog` the rest of the app uses rather than a second
-   * sign-in surface with its own validation, its own code step and its own way to fail.
+   * One string. The button reuses `signInTitle`, already "Sign in or sign up" in every language,
+   * and opens the same `SignInDialog` the rest of the app uses rather than a second sign-in
+   * surface with its own validation, its own code step and its own way to fail. The screen's
+   * heading is `tutDoneTitle`, because this is not a screen of its own any more: it was one, and
+   * following "That is the whole game" with another screen read as a false ending.
    */
-  readonly tutAccountTitle: string
   readonly tutAccountBody: string
 
   /** Coming back from Apple or Google. Vague on purpose about which check failed. */

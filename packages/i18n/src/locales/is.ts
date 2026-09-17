@@ -223,7 +223,6 @@ export const is: Messages = {
   leaderboardEmpty: 'Engir leikir á þessari töflu enn. Verðu fyrstur.',
   leaderboardWouldBe: 'Hvar þessi leikur myndi standa',
   leaderboardThisGame: 'Þessi leikur',
-  tutAccountTitle: 'Haltu stigunum þínum',
   tutAccountBody:
     'Reikningur vistar leikina þína, setur stigin þín á stigatöfluna og heldur sniðinu þínu.',
   ssoCancelled: 'Hætt við innskráningu.',

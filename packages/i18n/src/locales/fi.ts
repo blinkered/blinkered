@@ -223,7 +223,6 @@ export const fi: Messages = {
   leaderboardEmpty: 'Tällä taululla ei ole vielä pelejä. Ole ensimmäinen.',
   leaderboardWouldBe: 'Mihin tämä peli sijoittuisi',
   leaderboardThisGame: 'Tämä peli',
-  tutAccountTitle: 'Säilytä tuloksesi',
   tutAccountBody: 'Tili tallentaa pelisi, vie tuloksesi tulostaululle ja säilyttää profiilisi.',
   ssoCancelled: 'Kirjautuminen peruttiin.',
   ssoExpired: 'Siihen meni liian kauan. Kirjaudu uudelleen.',

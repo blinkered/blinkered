@@ -222,7 +222,6 @@ export const uk: Messages = {
   leaderboardEmpty: 'У цій таблиці ще немає ігор. Стань першим.',
   leaderboardWouldBe: 'Де була б ця гра',
   leaderboardThisGame: 'Ця гра',
-  tutAccountTitle: 'Збережи свої результати',
   tutAccountBody:
     'Акаунт зберігає твої ігри, додає результати до таблиці лідерів і зберігає твій профіль.',
   ssoCancelled: 'Вхід скасовано.',

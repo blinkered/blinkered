@@ -304,21 +304,7 @@ export function Tutorial({
         <h3 className="tut-step-title">{current.title}</h3>
 
         <div className="tut-stage">
-          {current.panel === 'account' ? (
-            /*
-             * The words and one button, and nothing that looks like a board.
-             *
-             * The button opens the dialog the rest of the app opens. A second sign-in surface
-             * inside a tour would need its own validation, its own code step, its own errors in
-             * fifty-one languages, and would give the tour a way to fail halfway through.
-             */
-            <div className="tut-account">
-              <p>{beat.caption}</p>
-              <button type="button" className="btn btn-primary" onClick={onSignIn}>
-                {messages.signInTitle}
-              </button>
-            </div>
-          ) : current.panel === 'swap' ? (
+          {current.panel === 'swap' ? (
             // The real component, replayed on the tour's own clock: a key that changes every
             // frame is what makes it start over rather than sit finished.
             <div className="tut-swap">
@@ -405,6 +391,31 @@ export function Tutorial({
         </div>
 
         <p className="tut-caption">{beat.caption}</p>
+
+        {/*
+          What an account is for, and one button, after the closing line rather than before it.
+          
+          Outside the stage, because it is not part of the board, and **after** the caption
+          because the caption is what closes the tour -- "Pick a level and play". Inside the
+          stage it landed between the board and that line, which put the pitch in the middle of
+          the ending. Here it is the last thing before Start playing, which is the moment it is
+          for.
+          
+          The caption is not repeated here: drawing `beat.caption` as well is what made this
+          screen say the same sentence twice.
+          
+          The button opens the dialog the rest of the app opens. A second sign-in surface inside
+          a tour would need its own validation, its own code step, its own errors in fifty-one
+          languages, and would give the tour a way to fail halfway through.
+        */}
+        {current.panel === 'account' ? (
+          <div className="tut-account">
+            <p>{messages.tutAccountBody}</p>
+            <button type="button" className="btn btn-primary" onClick={onSignIn}>
+              {messages.signInTitle}
+            </button>
+          </div>
+        ) : null}
 
         {last ? (
           <label className="toggle">

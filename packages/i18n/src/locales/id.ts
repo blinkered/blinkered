@@ -224,7 +224,6 @@ export const id: Messages = {
   leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
   leaderboardWouldBe: 'Di mana permainan ini akan berada',
   leaderboardThisGame: 'Permainan ini',
-  tutAccountTitle: 'Simpan skormu',
   tutAccountBody:
     'Akun menyimpan permainanmu, menempatkan skormu di papan peringkat, dan menjaga profilmu.',
   ssoCancelled: 'Masuk dibatalkan.',

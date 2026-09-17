@@ -286,6 +286,38 @@ Two strings, because everything else already existed in fifty-one languages and 
 `gameLanguage` and `difficulty` label the selectors, `difficultyNames` fills one, `score` and
 `columnRounds` head the columns, `gamesLoading` covers the wait, `backToGame` is the way out.
 
+### The title bar is the tightest row, and a medal proved it again
+
+The way to a board from anywhere is a gold medal in the title bar, going to **the board for what
+is currently selected** -- the only default that needs no explaining. Both parts stay in the
+address, so the page's own selectors can move from there and the link stays shareable.
+
+An icon rather than a word, and hidden below 23rem, both for the same reason: that row is the
+most expensive thing on a small screen. IOS.md records it taking 108px of a 568px iPhone before
+the language picker's label was dropped, and adding the medal **put the account button back onto
+a third row at 320px** -- the exact regression that note records fixing, where the third row is
+what pushed Complete word off the bottom.
+
+Measured rather than guessed. At 320px the bar has 288px of content width; row two spends 234 on
+the picker, the nerd toggle and the medal; the account button needs 75. The medal's 44 plus its
+gap is precisely the deficit. Moving it beside How to play does not help, because that row is
+already 260 of 288 and it wraps straight back down. Shaving the picker would have bought eight
+pixels and still lost in Spanish, where Sign in is "Iniciar sesión".
+
+So it goes at 23rem rather than the 30rem this stylesheet uses elsewhere, because the row fits at
+390px and most phones are wider than 368. What is lost there is one route rather than the
+feature: the board is still reached from the link under a finished game, which is where it means
+the most.
+
+**The rule had no effect when first written**, and the reason is worth remembering: a media query
+carries no extra specificity, so `.board-link { display: none }` inside one loses to
+`.board-link { display: inline-flex }` written later in the file. It matched, it was in the
+stylesheet, and the element stayed visible. Only reading the computed `display` found it.
+
+"nerd mode" collapses the same way and at the same breakpoint the picker's label uses: the face
+stays at every width, the words go to the accessibility tree, and the `title` explains it to a
+pointer.
+
 ### The conversion problem, and the two things aimed at it
 
 One signup in production besides Nick's own, which says the offer of an account was not reaching

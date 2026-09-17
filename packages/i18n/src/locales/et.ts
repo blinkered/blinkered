@@ -223,7 +223,6 @@ export const et: Messages = {
   leaderboardEmpty: 'Selles edetabelis pole veel mänge. Ole esimene.',
   leaderboardWouldBe: 'Kus see mäng asuks',
   leaderboardThisGame: 'See mäng',
-  tutAccountTitle: 'Hoia oma tulemused alles',
   tutAccountBody:
     'Konto salvestab sinu mängud, paneb tulemused edetabelisse ja hoiab sinu profiili.',
   ssoCancelled: 'Sisselogimine katkestati.',

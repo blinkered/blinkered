@@ -229,7 +229,6 @@ export const ka: Messages = {
   leaderboardEmpty: 'ამ რეიტინგში ჯერ თამაშები არ არის. იყავი პირველი.',
   leaderboardWouldBe: 'სად იქნებოდა ეს თამაში',
   leaderboardThisGame: 'ეს თამაში',
-  tutAccountTitle: 'შეინახე შენი ქულები',
   tutAccountBody: 'ანგარიში ინახავს შენს თამაშებს, დებს ქულებს რეიტინგში და ინახავს შენს პროფილს.',
   ssoCancelled: 'შესვლა გაუქმდა.',
   ssoExpired: 'ძალიან დიდხანს გაგრძელდა. შედით ხელახლა.',

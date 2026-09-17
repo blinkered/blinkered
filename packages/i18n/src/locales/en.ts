@@ -227,7 +227,6 @@ export const en: Messages = {
   leaderboardEmpty: 'No games on this board yet. Be the first.',
   leaderboardWouldBe: 'Where this game would rank',
   leaderboardThisGame: 'This game',
-  tutAccountTitle: 'Keep your scores',
   tutAccountBody:
     'An account saves your games, puts your scores on the leaderboard, and keeps your profile.',
   ssoCancelled: 'Signing in was cancelled.',

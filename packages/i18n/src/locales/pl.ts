@@ -225,7 +225,6 @@ export const pl: Messages = {
   leaderboardEmpty: 'Nie ma jeszcze gier w tej tabeli. Bądź pierwszy.',
   leaderboardWouldBe: 'Gdzie znalazłaby się ta gra',
   leaderboardThisGame: 'Ta gra',
-  tutAccountTitle: 'Zachowaj swoje wyniki',
   tutAccountBody: 'Konto zapisuje twoje gry, umieszcza wyniki w tabeli i przechowuje twój profil.',
   ssoCancelled: 'Logowanie anulowane.',
   ssoExpired: 'To trwało za długo. Zaloguj się jeszcze raz.',

@@ -227,7 +227,6 @@ export const he: Messages = {
   leaderboardEmpty: 'אין עדיין משחקים בטבלה הזו. היה הראשון.',
   leaderboardWouldBe: 'איפה המשחק הזה היה מדורג',
   leaderboardThisGame: 'המשחק הזה',
-  tutAccountTitle: 'שמור את הניקוד שלך',
   tutAccountBody:
     'חשבון שומר את המשחקים שלך, מכניס את הניקוד שלך לטבלת המובילים, ושומר את הפרופיל שלך.',
   ssoCancelled: 'ההתחברות בוטלה.',

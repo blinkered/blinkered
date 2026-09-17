@@ -220,7 +220,6 @@ export const nl: Messages = {
   leaderboardEmpty: 'Nog geen spellen op deze ranglijst. Wees de eerste.',
   leaderboardWouldBe: 'Waar dit spel zou staan',
   leaderboardThisGame: 'Dit spel',
-  tutAccountTitle: 'Bewaar je scores',
   tutAccountBody:
     'Een account bewaart je spellen, zet je scores op de ranglijst en houdt je profiel bij.',
   ssoCancelled: 'Inloggen geannuleerd.',

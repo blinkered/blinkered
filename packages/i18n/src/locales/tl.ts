@@ -238,7 +238,6 @@ export const tl: Messages = {
   leaderboardEmpty: 'Wala pang laro sa talaang ito. Maging una ka.',
   leaderboardWouldBe: 'Saan mapupunta ang larong ito',
   leaderboardThisGame: 'Ang larong ito',
-  tutAccountTitle: 'Itago ang iyong mga puntos',
   tutAccountBody:
     'Ang account ay nag-iingat ng mga laro mo, naglalagay ng puntos mo sa talaan, at nag-iingat ng profile mo.',
   ssoCancelled: 'Kinansela ang pag-sign in.',

@@ -224,7 +224,6 @@ export const ru: Messages = {
   leaderboardEmpty: 'В этой таблице пока нет игр. Стань первым.',
   leaderboardWouldBe: 'Где была бы эта игра',
   leaderboardThisGame: 'Эта игра',
-  tutAccountTitle: 'Сохрани свои результаты',
   tutAccountBody:
     'Аккаунт сохраняет твои игры, помещает результаты в таблицу лидеров и хранит твой профиль.',
   ssoCancelled: 'Вход отменён.',

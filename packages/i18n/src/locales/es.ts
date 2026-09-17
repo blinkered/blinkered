@@ -221,7 +221,6 @@ export const es: Messages = {
   leaderboardEmpty: 'Todavía no hay partidas en esta clasificación. Sé el primero.',
   leaderboardWouldBe: 'Dónde quedaría esta partida',
   leaderboardThisGame: 'Esta partida',
-  tutAccountTitle: 'Guarda tus puntuaciones',
   tutAccountBody:
     'Una cuenta guarda tus partidas, pone tus puntuaciones en la clasificación y mantiene tu perfil.',
   ssoCancelled: 'Se canceló el inicio de sesión.',

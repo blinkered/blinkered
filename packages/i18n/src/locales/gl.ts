@@ -226,7 +226,6 @@ export const gl: Messages = {
   leaderboardEmpty: 'Aínda non hai partidas nesta clasificación. Se o primeiro.',
   leaderboardWouldBe: 'Onde quedaría esta partida',
   leaderboardThisGame: 'Esta partida',
-  tutAccountTitle: 'Garda as túas puntuacións',
   tutAccountBody:
     'Unha conta garda as túas partidas, pon as túas puntuacións na clasificación e mantén o teu perfil.',
   ssoCancelled: 'Cancelouse o inicio de sesión.',

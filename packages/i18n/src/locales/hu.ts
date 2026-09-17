@@ -226,7 +226,6 @@ export const hu: Messages = {
   leaderboardEmpty: 'Ezen a ranglistán még nincsenek játékok. Legyél az első.',
   leaderboardWouldBe: 'Hol állna ez a játék',
   leaderboardThisGame: 'Ez a játék',
-  tutAccountTitle: 'Őrizd meg a pontjaid',
   tutAccountBody:
     'A fiók elmenti a játékaidat, felteszi a pontjaidat a ranglistára, és megtartja a profilodat.',
   ssoCancelled: 'A bejelentkezés megszakadt.',

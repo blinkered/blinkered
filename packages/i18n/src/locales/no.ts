@@ -219,7 +219,6 @@ export const no: Messages = {
   leaderboardEmpty: 'Ingen spill på denne ranglisten ennå. Bli den første.',
   leaderboardWouldBe: 'Hvor dette spillet ville stå',
   leaderboardThisGame: 'Dette spillet',
-  tutAccountTitle: 'Behold poengene dine',
   tutAccountBody:
     'En konto lagrer spillene dine, setter poengene dine på ranglisten og tar vare på profilen din.',
   ssoCancelled: 'Innloggingen ble avbrutt.',

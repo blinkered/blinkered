@@ -229,7 +229,6 @@ export const pcm: Messages = {
   leaderboardEmpty: 'No game dey dis board yet. Be di first one.',
   leaderboardWouldBe: 'Where dis game go stand',
   leaderboardThisGame: 'Dis game',
-  tutAccountTitle: 'Keep your score',
   tutAccountBody:
     'Account go save your game, put your score on di leaderboard, and hold your profile.',
   ssoCancelled: 'Dem cancel di sign in.',

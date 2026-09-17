@@ -224,7 +224,6 @@ export const fa: Messages = {
   leaderboardEmpty: 'هنوز بازی‌ای در این جدول نیست. اولین نفر باش.',
   leaderboardWouldBe: 'این بازی کجا قرار می‌گیرد',
   leaderboardThisGame: 'این بازی',
-  tutAccountTitle: 'امتیازهایت را نگه دار',
   tutAccountBody:
     'یک حساب بازی‌هایت را ذخیره می‌کند، امتیازهایت را در جدول می‌گذارد و نمایه‌ات را نگه می‌دارد.',
   ssoCancelled: 'ورود لغو شد.',

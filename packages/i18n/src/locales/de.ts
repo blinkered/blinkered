@@ -225,7 +225,6 @@ export const de: Messages = {
   leaderboardEmpty: 'Noch keine Spiele auf dieser Rangliste. Sei der Erste.',
   leaderboardWouldBe: 'Wo dieses Spiel stehen würde',
   leaderboardThisGame: 'Dieses Spiel',
-  tutAccountTitle: 'Punkte behalten',
   tutAccountBody:
     'Ein Konto speichert deine Spiele, setzt deine Punkte auf die Rangliste und verwaltet dein Profil.',
   ssoCancelled: 'Anmeldung abgebrochen.',

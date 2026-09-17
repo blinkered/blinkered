@@ -221,7 +221,6 @@ export const sk: Messages = {
   leaderboardEmpty: 'V tejto tabuľke ešte nie sú žiadne hry. Buď prvý.',
   leaderboardWouldBe: 'Kde by táto hra stála',
   leaderboardThisGame: 'Táto hra',
-  tutAccountTitle: 'Ulož si svoje skóre',
   tutAccountBody: 'Konto ukladá tvoje hry, zapisuje skóre do tabuľky a spravuje tvoj profil.',
   ssoCancelled: 'Prihlásenie zrušené.',
   ssoExpired: 'Trvalo to príliš dlho. Prihlás sa znova.',

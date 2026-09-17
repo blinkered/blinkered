@@ -222,7 +222,6 @@ export const ko: Messages = {
   leaderboardEmpty: '이 순위표에는 아직 기록이 없습니다. 첫 번째가 되어 보세요.',
   leaderboardWouldBe: '이 기록이 들어갈 자리',
   leaderboardThisGame: '이 기록',
-  tutAccountTitle: '점수를 남기세요',
   tutAccountBody:
     '계정이 있으면 게임이 저장되고, 점수가 순위표에 오르며, 프로필을 관리할 수 있습니다.',
   ssoCancelled: '로그인을 취소했습니다.',

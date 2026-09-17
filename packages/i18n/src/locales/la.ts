@@ -228,7 +228,6 @@ export const la: Messages = {
   leaderboardEmpty: 'Nulli ludi in hac tabula adhuc. Esto primus.',
   leaderboardWouldBe: 'Ubi hic ludus staret',
   leaderboardThisGame: 'Hic ludus',
-  tutAccountTitle: 'Serva numeros tuos',
   tutAccountBody:
     'Ratio ludos tuos servat, numeros tuos in tabulam ponit, et personam tuam custodit.',
   ssoCancelled: 'Introitus omissus est.',

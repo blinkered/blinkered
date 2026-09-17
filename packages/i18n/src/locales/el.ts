@@ -220,7 +220,6 @@ export const el: Messages = {
   leaderboardEmpty: 'Δεν υπάρχουν ακόμη παιχνίδια σε αυτήν την κατάταξη. Γίνε ο πρώτος.',
   leaderboardWouldBe: 'Πού θα έμπαινε αυτό το παιχνίδι',
   leaderboardThisGame: 'Αυτό το παιχνίδι',
-  tutAccountTitle: 'Κρατήστε τα σκορ σας',
   tutAccountBody:
     'Ένας λογαριασμός κρατά τα παιχνίδια σας, βάζει τα σκορ σας στην κατάταξη και διατηρεί το προφίλ σας.',
   ssoCancelled: 'Η σύνδεση ακυρώθηκε.',

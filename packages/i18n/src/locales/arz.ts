@@ -224,7 +224,6 @@ export const arz: Messages = {
   leaderboardEmpty: 'مفيش مباريات على اللوحة دى لسه. كون الأول.',
   leaderboardWouldBe: 'المباراة دى هتبقى فين',
   leaderboardThisGame: 'المباراة دى',
-  tutAccountTitle: 'احفظ نتايجك',
   tutAccountBody:
     'الحساب بيحفظ مبارياتك، وبيحط نتايجك على لوحة المتصدرين، وبيحتفظ بالبروفايل بتاعك.',
   ssoCancelled: 'تسجيل الدخول اتلغى.',

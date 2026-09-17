@@ -197,29 +197,29 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
       panel: 'swap',
       frames: [{ up: all, sel: [], caption: messages.htSwapBody }],
     },
+    /*
+     * The last screen, which now carries the offer of an account as well.
+     *
+     * It was a seventh screen of its own and that was wrong twice over. It repeated itself,
+     * because the deck already draws the frame's caption and the panel drew it again. And it
+     * followed a screen headed "That is the whole game" with another screen, which is a false
+     * ending -- Nick's words: "then...brings you to another screen. Seems weird."
+     *
+     * So the offer lives here, where the deck says the tour is over and the only thing left is
+     * Start playing. That is also where it belongs on its own merits: it is the last moment
+     * before somebody plays, and the reason it exists at all is that one signup in production
+     * says the offer was reaching nobody.
+     *
+     * The board stays. `panel: 'account'` puts the button where the inert Complete button goes
+     * on the other screens rather than replacing the swapped board, which is the one thing the
+     * game itself only shows for a moment.
+     */
     {
       title: messages.tutDoneTitle,
       // The swapped board, face up. The one thing the game itself only shows for a moment.
       tiles: swapped,
-      frames: [{ up: all, sel: [], caption: messages.tutDoneBody }],
-    },
-    /*
-     * What an account is for, and it is last on purpose.
-     *
-     * It exists because of a number rather than a design: one signup in production besides
-     * Nick's own, which says the offer is not reaching anybody. The tour is the one place every
-     * player passes through, and the last screen is the one still on the glass when they decide
-     * whether to press Start playing.
-     *
-     * No board and no frames that matter -- one frame, because the deck's machinery wants at
-     * least one and the caption is what this screen is. The panel draws the words and the
-     * button, which opens the same `SignInDialog` the rest of the app uses.
-     */
-    {
-      title: messages.tutAccountTitle,
-      tiles: swapped,
       panel: 'account',
-      frames: [{ up: all, sel: [], caption: messages.tutAccountBody }],
+      frames: [{ up: all, sel: [], caption: messages.tutDoneBody }],
     },
   ]
 }

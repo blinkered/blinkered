@@ -223,7 +223,6 @@ export const lt: Messages = {
   leaderboardEmpty: 'Šioje lentelėje dar nėra žaidimų. Būk pirmas.',
   leaderboardWouldBe: 'Kur būtų šis žaidimas',
   leaderboardThisGame: 'Šis žaidimas',
-  tutAccountTitle: 'Išsaugok savo rezultatus',
   tutAccountBody:
     'Paskyra išsaugo tavo žaidimus, įrašo rezultatus į lentelę ir saugo tavo profilį.',
   ssoCancelled: 'Prisijungimas atšauktas.',

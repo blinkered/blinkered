@@ -222,7 +222,6 @@ export const it: Messages = {
   leaderboardEmpty: 'Ancora nessuna partita in questa classifica. Sii il primo.',
   leaderboardWouldBe: 'Dove si classificherebbe questa partita',
   leaderboardThisGame: 'Questa partita',
-  tutAccountTitle: 'Conserva i tuoi punteggi',
   tutAccountBody:
     'Un account salva le tue partite, mette i tuoi punteggi in classifica e conserva il tuo profilo.',
   ssoCancelled: 'Accesso annullato.',

@@ -221,7 +221,6 @@ export const cs: Messages = {
   leaderboardEmpty: 'V tomto žebříčku ještě nejsou žádné hry. Buď první.',
   leaderboardWouldBe: 'Kde by tato hra stála',
   leaderboardThisGame: 'Tato hra',
-  tutAccountTitle: 'Ulož si své skóre',
   tutAccountBody: 'Účet ukládá tvé hry, zapisuje tvé skóre do žebříčku a spravuje tvůj profil.',
   ssoCancelled: 'Přihlášení zrušeno.',
   ssoExpired: 'Trvalo to moc dlouho. Přihlas se znovu.',

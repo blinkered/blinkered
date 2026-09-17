@@ -219,7 +219,6 @@ export const hr: Messages = {
   leaderboardEmpty: 'Na ovom poretku još nema igara. Budi prvi.',
   leaderboardWouldBe: 'Gdje bi ova igra stajala',
   leaderboardThisGame: 'Ova igra',
-  tutAccountTitle: 'Sačuvaj svoje rezultate',
   tutAccountBody:
     'Račun čuva tvoje igre, stavlja tvoje rezultate na poredak i održava tvoj profil.',
   ssoCancelled: 'Prijava otkazana.',

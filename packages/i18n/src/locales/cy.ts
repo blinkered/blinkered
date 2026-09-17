@@ -229,7 +229,6 @@ export const cy: Messages = {
   leaderboardEmpty: 'Dim gemau ar y bwrdd hwn eto. Bydd y cyntaf.',
   leaderboardWouldBe: "Lle byddai'r gêm hon",
   leaderboardThisGame: 'Y gêm hon',
-  tutAccountTitle: 'Cadw dy sgoriau',
   tutAccountBody:
     'Mae cyfrif yn cadw dy gemau, yn rhoi dy sgoriau ar y bwrdd arwain, ac yn cadw dy broffil.',
   ssoCancelled: 'Cafodd y mewngofnodi ei ganslo.',

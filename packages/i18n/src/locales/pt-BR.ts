@@ -223,7 +223,6 @@ export const ptBR: Messages = {
   leaderboardEmpty: 'Ainda não há partidas nesta classificação. Seja o primeiro.',
   leaderboardWouldBe: 'Onde esta partida ficaria',
   leaderboardThisGame: 'Esta partida',
-  tutAccountTitle: 'Guarde suas pontuações',
   tutAccountBody:
     'Uma conta salva suas partidas, coloca suas pontuações na classificação e mantém seu perfil.',
   ssoCancelled: 'Entrada cancelada.',

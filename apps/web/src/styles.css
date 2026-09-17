@@ -1322,7 +1322,9 @@ kbd {
    * The nerd panel's number fields were 13.6px, so every one of them was a trapdoor.
    */
   .nerd-row input,
-  .nerd-row select {
+  .nerd-row select,
+  /* The board's difficulty selector has the same trapdoor and wants the same floor. */
+  .board-difficulty select {
     font-size: 1rem;
     min-height: 2.75rem;
   }
@@ -1336,7 +1338,8 @@ kbd {
    * wheel at the bottom of the screen under your thumb. This is the opposite of the Chrome on
    * macOS problem that `Dropdown.tsx` exists to solve, which is why these three stay native.
    */
-  .nerd-row select {
+  .nerd-row select,
+  .board-difficulty select {
     appearance: none;
     -webkit-appearance: none;
     padding-inline-end: 1.6rem;
@@ -1347,7 +1350,8 @@ kbd {
   }
   /* The one arrow that cannot be expressed logically: `background-position` has no
      inline-start. Two lines here beat re-drawing the caret as an element. */
-  [dir='rtl'] .nerd-row select {
+  [dir='rtl'] .nerd-row select,
+  [dir='rtl'] .board-difficulty select {
     background-position: left 0.55rem center;
   }
 
@@ -1633,7 +1637,10 @@ kbd {
    * own label goes: the trigger shows a flag and the language's name for itself, which says
    * "language" better than the word does, and the label stays in the accessibility tree.
    */
-  .picker-label {
+  .picker-label,
+  /* Same trade, same row, same reasoning: the face says "nerd mode" well enough at 320px, and
+     the words stay in the accessibility tree. The `title` covers a pointer. */
+  .toggle-text {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -3205,28 +3212,54 @@ kbd {
 .board-pickers {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
-  gap: 0.75rem;
+  /* Centre, not `end`. The two controls are the same height now, and baseline alignment on a
+     flex row whose items are themselves flex rows lines up the wrong things. */
+  align-items: center;
+  gap: 1rem;
 }
+/*
+   The difficulty selector, built to match the language one beside it rather than to its own taste.
+
+   It did not, and the result read as two unrelated controls: this one stacked its label above a
+   taller box in a larger font with a different corner radius, while `.drop` puts its label inline
+   at 0.85rem against a 6px corner. Four differences in one row.
+
+   So the geometry here is `.drop`'s and the box is `.drop-trigger`'s, deliberately duplicated
+   rather than shared: one is a native `select` and the other is a custom listbox, so there is no
+   element to put a common class on, and a selector naming both would tie two components together
+   that are different on purpose. See `Dropdown.tsx` for why the language picker is not native.
+*/
 .board-difficulty {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.board-difficulty > span {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
   color: var(--dim);
   font-size: 0.85rem;
 }
+.board-difficulty > span {
+  white-space: nowrap;
+}
 .board-difficulty select {
-  /* 1rem, not smaller: a focused field under 16px zooms iOS and does not zoom back. The nerd
-     panel's fields were the same trapdoor; see docs/IOS.md. */
-  min-height: 2.75rem;
-  padding: 0 0.6rem;
+  /*
+   * The two controls came out 30px and 28px, which is exactly the kind of two-pixel mismatch
+   * that reads as janky without being nameable. Same padding, same border, same font: the
+   * difference is the inner line box, because a native `select` measures its text and
+   * `.drop-trigger` is a flex row measuring a span.
+   *
+   * Guarded to pointer devices, because the touch rules at the top of this file put both
+   * controls at 2.75rem for a thumb and this file's later position would otherwise let 1.875rem
+   * win there. That is the 44pt floor docs/IOS.md audited, and it is not this rule's to undo.
+   */
+  min-width: 9rem;
+  padding: 0.25rem 0.45rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: inherit;
-  font-size: 1rem;
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 .board-rows {
   margin: 0;
@@ -3313,19 +3346,92 @@ kbd {
   }
 }
 
-/* The tour's account screen: a paragraph and one button, in a deck of boards. */
+/* The offer of an account on the tour's last screen, in the slot the inert Complete button
+   occupies elsewhere. Centred and tight, because it sits under the board rather than instead
+   of it and the card's height is fixed across screens for the reason `.tut-controls` gives. */
 .tut-account {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 0;
+  gap: 0.5rem;
   text-align: center;
 }
 .tut-account p {
   max-width: 26rem;
   margin: 0;
   color: var(--dim);
+  font-size: 0.85rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .board-difficulty select {
+    min-height: 1.875rem;
+  }
+}
+
+/* The nerd toggle's face, sized with the medal beside it so the row reads as one set of
+   controls rather than two typographic accidents. */
+.toggle-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+/* The way to a board from the title bar.
+
+   An icon, because that row is the tightest in the layout: it already wraps at 320px, and the
+   comment in App.tsx about packing is what happens when something is added to it carelessly. The
+   name lives in `title` and `aria-label`, so a screen reader says "Leaderboard" rather than
+   reading out an emoji.
+
+   44pt square, because a thumb has to hit it and this row is reachable on a phone. */
+.board-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  touch-action: manipulation;
+}
+@media (hover: hover) {
+  .board-link:hover {
+    /* The medal is already gold; a colour change would say nothing. Scale reads as a press
+       target without inventing a second accent. */
+    transform: scale(1.12);
+  }
+}
+.board-link:focus-visible {
+  outline: 2px solid var(--sel);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/*
+ * The medal goes at the very narrowest, and only there.
+ *
+ * Measured rather than guessed: at 320px the bar has 288px of content width, row two spends 234
+ * on the picker, the toggle and the medal, and the account button needs 75. The medal's 44 plus
+ * its gap is exactly the deficit, so it is what puts the account button on a third row -- the
+ * regression IOS.md records fixing once, where the third row is what pushed Complete word off
+ * the bottom of an iPhone SE. Moving it beside How to play does not help: that row is 260 of 288
+ * already, so it wraps straight back down.
+ *
+ * 23rem rather than the 30rem this file uses elsewhere, because the row fits at 390px and most
+ * phones are wider than 368. Shaving the picker instead would have bought eight pixels and still
+ * lost in Spanish, where Sign in is "Iniciar sesión".
+ *
+ * What is lost is one route, not the feature: the board is still reached from the link under a
+ * finished game, which is where it means the most anyway.
+ */
+@media (max-width: 23rem) {
+  .board-link {
+    display: none;
+  }
 }
 
 /* The projected board on the game-over panel. See BoardPreview.tsx.

@@ -224,7 +224,6 @@ export const bg: Messages = {
   leaderboardEmpty: 'Още няма игри в тази класация. Бъди първият.',
   leaderboardWouldBe: 'Къде би се наредила тази игра',
   leaderboardThisGame: 'Тази игра',
-  tutAccountTitle: 'Запази резултатите си',
   tutAccountBody:
     'Профилът запазва игрите ти, поставя резултатите ти в класирането и пази профила ти.',
   ssoCancelled: 'Влизането е отменено.',

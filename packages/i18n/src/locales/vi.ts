@@ -226,7 +226,6 @@ export const vi: Messages = {
   leaderboardEmpty: 'Chưa có trận nào trên bảng này. Hãy là người đầu tiên.',
   leaderboardWouldBe: 'Trận này sẽ đứng ở đâu',
   leaderboardThisGame: 'Trận này',
-  tutAccountTitle: 'Giữ lại điểm của bạn',
   tutAccountBody:
     'Tài khoản lưu các trận của bạn, đưa điểm lên bảng xếp hạng và giữ hồ sơ của bạn.',
   ssoCancelled: 'Đã hủy đăng nhập.',

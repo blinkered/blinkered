@@ -232,7 +232,6 @@ export const ga: Messages = {
   leaderboardEmpty: 'Níl aon chluiche ar an gclár seo go fóill. Bí ar an gcéad duine.',
   leaderboardWouldBe: 'Cén áit a mbeadh an cluiche seo',
   leaderboardThisGame: 'An cluiche seo',
-  tutAccountTitle: 'Coinnigh do scóir',
   tutAccountBody:
     'Sábhálann cuntas do chluichí, cuireann sé do scóir ar an gclár, agus coinníonn sé do phróifíl.',
   ssoCancelled: 'Cuireadh an síniú isteach ar ceal.',

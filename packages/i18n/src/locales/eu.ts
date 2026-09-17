@@ -229,7 +229,6 @@ export const eu: Messages = {
   leaderboardEmpty: 'Oraindik ez dago partidarik sailkapen honetan. Izan zaitez lehena.',
   leaderboardWouldBe: 'Non egongo litzateke partida hau',
   leaderboardThisGame: 'Partida hau',
-  tutAccountTitle: 'Gorde zure puntuazioak',
   tutAccountBody:
     'Kontu batek zure partidak gordetzen ditu, puntuazioak sailkapenean jartzen eta zure profila mantentzen.',
   ssoCancelled: 'Saio-hasiera bertan behera utzi da.',

@@ -227,7 +227,6 @@ export const af: Messages = {
   leaderboardEmpty: 'Nog geen speletjies op hierdie bord nie. Wees die eerste.',
   leaderboardWouldBe: 'Waar hierdie speletjie sou staan',
   leaderboardThisGame: 'Hierdie speletjie',
-  tutAccountTitle: 'Hou jou tellings',
   tutAccountBody:
     '’n Rekening stoor jou speletjies, plaas jou tellings op die ranglys, en hou jou profiel.',
   ssoCancelled: 'Aanmelding gekanselleer.',

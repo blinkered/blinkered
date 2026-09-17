@@ -223,7 +223,6 @@ export const sl: Messages = {
   leaderboardEmpty: 'Na tej lestvici še ni iger. Bodi prvi.',
   leaderboardWouldBe: 'Kje bi bila ta igra',
   leaderboardThisGame: 'Ta igra',
-  tutAccountTitle: 'Shrani svoje rezultate',
   tutAccountBody: 'Račun shrani tvoje igre, uvrsti rezultate na lestvico in ohrani tvoj profil.',
   ssoCancelled: 'Prijava preklicana.',
   ssoExpired: 'Trajalo je predolgo. Prijavi se znova.',
