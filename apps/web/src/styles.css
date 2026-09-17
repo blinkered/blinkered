@@ -3189,6 +3189,12 @@ kbd {
   gap: 1rem;
   width: 100%;
   max-width: 34rem;
+  /* `.rules-overlay` pads only for the safe-area insets, which are zero on a desktop, so a
+     child that does not centre itself sits against the left edge -- which this did, clipping
+     the heading and the language label. The inline padding is also the 16px side gutter a phone
+     needs. Found by looking at it; the layout was correct in every other respect. */
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
 .board-head {
   display: flex;
@@ -3344,6 +3350,18 @@ kbd {
 .board-preview .board-row {
   grid-template-columns: 2.8rem 1fr auto auto;
   padding: 0.35rem 0.15rem;
+}
+/*
+   The country and the unit words come off in the preview, and that is not decoration.
+
+   At this width they squeezed the name column until it ellipsised: "quick-ott…" against
+   "brave-heron-3…". The whole effect of the projection is somebody seeing their score among
+   *named* strangers, so the names are the last thing that may be truncated. The heading already
+   says what the numbers are.
+*/
+.board-preview .board-country,
+.board-preview .board-unit {
+  display: none;
 }
 .board-preview .btn {
   align-self: start;
