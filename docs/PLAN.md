@@ -40,6 +40,10 @@ Revealing a tile decrements flips remaining by 1, so a round that runs its full 
 
 Under `shuffle` mode (see 1.10) a round can end early, having revealed fewer than N tiles and so having cost fewer than N flips. That has sharp economic consequences, covered there.
 
+**A round also ends early when it can no longer produce a word** (0.4.0). Count the letters it can still put in front of the player: the ones face up and unspent, plus the ones a flip could still turn over. If that is below the minimum word length, nothing the player does for the rest of the round can matter, so the next board is dealt instead of the remaining ticks being spent. Playtesting: "the remaining flips count down at the normal rate which is a waste of user time."
+
+Nothing is charged for the tiles it skips, since flips are spent by reveals that happened and by nothing else; billing for reveals that did not happen would make clearing a board dearer than dawdling on one. The view covers the board and says why for 1.5s before the next round starts, because a board that deals itself early with no warning reads as a bug. The clock is held while that notice is up, so reading it is free, and it is not the pause flag: a hold the game imposed is not the player stopping the clock, and must not cost them leaderboard eligibility.
+
 ### 1.3 Forming words
 
 **The keyboard is the primary input device.** You type the word. Pointer input exists and is equal in power, but the keyboard is what makes the game playable at speed.
@@ -94,12 +98,14 @@ Giving 1, 2, 3, 5, 8, 13, 21, 34 for lengths 2 through 9. Time remaining never a
 
 ### 1.6 Game end
 
-The game ends when flips remaining is 0 and either of these is true:
+The game ends when nothing the player can do, in this round or in any round after it, can produce another word. Both halves have to be false for it to continue:
 
-- the current round completes, or
-- fewer tiles are exposed and unspent than the minimum word length. No word can be formed and no further tile can be turned over, so the rest of the round is dead time and the clock should not run it down
+- **this round is dead**: the letters face up and unspent, plus the letters a flip could still turn over, come to fewer than the minimum word length
+- **every future round is dead too**: a fresh board deals every tile back unspent, so what it would offer is `min(N, flips remaining)`, and that is also below the minimum
 
-Otherwise the round is allowed to finish, so a player can bank one last word with what is already exposed. That is not necessarily a losing position: under any economy but `none` a word pays flips back, which revives the round and lets reveals resume. The same dead-board test also fires immediately after a word is accepted, since spending the last usable tiles strands the board just as surely as running out of flips does. The word still scores.
+Otherwise the round is allowed to finish, so a player can bank one last word with what is already exposed. That is not necessarily a losing position: under any economy but `none` a word pays flips back, which revives the round and lets reveals resume. The test fires after any event, so spending the last usable tiles in a word ends the game just as surely as running out of flips does. The word still scores.
+
+**This used to be "flips remaining is 0, and ..."** (before 0.4.0), which made a game with two flips left and a four-letter floor formally unfinished: it went on turning tiles over at full speed to reach a position that was already decided. Counting what the flips can still _reach_ ends it at the moment it becomes true. It is also what makes the early deal in 1.2 safe from looping: reaching that rule means a fresh board offers enough letters, so the round it deals cannot be barren in turn.
 
 **The economy is deliberately lossy.** A full round costs N flips and pays back whatever the flip economy awards for the words made. Breaking even generally means using nearly every revealed letter. So flips decay, every game ends, and the score is how long you held out. Expected game length is roughly `initialFlips / (N - averageFlipsEarnedPerRound)` rounds.
 
@@ -145,16 +151,33 @@ Everything random is drawn from a seeded PRNG whose state lives in the game stat
 
 ### 1.9 Difficulty
 
-Opening bids, to be replaced by whatever the balance simulator says.
+Still bids rather than simulator output, but twice revised by playing. `DIFFICULTIES` in
+`packages/engine/src/difficulty.ts` is the source of truth; this table is the current state of it
+and the reasoning for each column lives beside the code.
 
-| Level  | Seconds per tick | Hold | Rounds of life | Min word | Round (at N=12) | Full board |
-| ------ | ---------------- | ---- | -------------- | -------- | --------------- | ---------- |
-| Easy   | 1.6              | 4    | 14             | 3        | 25.6s           | 8.0s       |
-| Medium | 1.2              | 2    | 12             | 3        | 16.8s           | 3.6s       |
-| Hard   | 0.9              | 1    | 11             | 4        | 11.7s           | 1.8s       |
-| Insane | 0.7              | 0    | 10             | 4        | 8.4s            | 0.7s       |
+| Level  | Seconds per tick | Hold | Rounds of life | Min word | Round (at N=12) | Full board | Floor    |
+| ------ | ---------------- | ---- | -------------- | -------- | --------------- | ---------- | -------- |
+| Easy   | 1.5              | 5    | 7              | 3        | 25.5s           | 7.5s       | 2.98 min |
+| Medium | 1.3              | 4    | 8              | 3        | 20.8s           | 5.2s       | 2.77 min |
+| Hard   | 1.2              | 3    | 9              | 4        | 18.0s           | 3.6s       | 2.70 min |
+| Insane | 0.9              | 2    | 10             | 4        | 12.6s           | 2.10 min   | 2.10 min |
 
-The last column is the one that decides how a level feels: how long you hold the whole board in front of you. It falls from eight seconds to under one.
+Two columns decide how a level feels, and they are not the same thing.
+
+**Full board** is the perception budget: how long you hold the whole thing in front of you. The
+first retune (0.2.0) existed because this column used to read 8.0s, 3.6s, 1.8s, 0.7s and then 0s
+at the bottom -- insane gave no thinking time at all and hard gave a glance, so the top of the
+ladder had nothing between its rungs. It halves now instead of vanishing.
+
+**Floor** is the endurance budget: how long a game lasts if you score nothing, which is every
+round the flip budget pays for at that level's own pace. The second retune (0.4.0) existed
+because this column read 7.1 minutes on easy, and a first game nobody can lose for seven minutes
+is a first game people put down. Playtesting: "too many flips for so slow a game."
+
+**Rounds of life read backwards on purpose.** They climb, 7 to 10, while the floor falls. A round
+is 25.5s on easy and 12.6s on insane, so equal round counts would be unequal sittings; what a
+player feels is the wall clock, so that is the column held in order and the round count is
+whatever produces it.
 
 **Board size is a player's choice, on an axis of its own.** N is absent from the table because it is not a difficulty dial. A bigger board is harder to track and gives less time per tile, but it admits far more words and much longer ones, so it is easier to score on; under the fibonacci economy the small board is the harsher one, since at N=6 a seven-letter word is arithmetically impossible and only 17% of raw draws hold even a six. The default is **12**, laid out 4x3 in landscape and 3x4 in portrait, where every draw contains a six-letter word and 97% contain a seven. A player can pick another size and keep whatever difficulty they were playing.
 
