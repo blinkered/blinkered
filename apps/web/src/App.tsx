@@ -1717,6 +1717,16 @@ function useFeedback(
           // and the word line shows that plainly; under `advance` the word simply does not
           // grow. Neither needs narrating.
           return null
+        case 'TILE_HIDDEN':
+          /*
+           * Said, because a player who cannot see the board gets nothing otherwise: the tile
+           * turning back over is the whole signal, and it is a visual one.
+           *
+           * Without the letter, deliberately. Somebody watching sees which tile went and cannot
+           * re-read it; printing the letter here would hand it back, against the one mechanic
+           * that is about remembering the board.
+           */
+          return { kind: 'note', epoch, text: messages.letterHidden }
         case 'REVEALED':
         case 'SELECTED':
         case 'DESELECTED':

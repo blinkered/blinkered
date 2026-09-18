@@ -45,6 +45,10 @@ const aGame = fc.record({
   mode: fc.constantFrom<WordCompleteMode>('shuffle', 'spend', 'keep'),
   chargeFullRound: fc.boolean(),
   initialFlips: fc.integer({ min: 1, max: 60 }),
+  // Letters that hide, across the whole range including certainty, because every invariant below
+  // has to hold while the board is taking letters back. Zero is in the range on purpose: it is
+  // what easy ships with, and the sample would otherwise never check a board that stays put.
+  hideChance: fc.constantFrom(0, 0.05, 0.5, 1),
   events: fc.array(anEvent, { maxLength: 250 }),
 })
 
@@ -60,6 +64,7 @@ function runGame(sample: {
   mode: WordCompleteMode
   chargeFullRound: boolean
   initialFlips: number
+  hideChance: number
   events: readonly GameEvent[]
 }): Run {
   const config = configFor('easy', {
@@ -68,6 +73,7 @@ function runGame(sample: {
     wordCompleteMode: sample.mode,
     chargeFullRound: sample.chargeFullRound,
     initialFlips: sample.initialFlips,
+    hideChance: sample.hideChance,
   })
   const [start, opening] = createGame({ config, letters: [...BOARD], seed: sample.seed })
   const { state, effects } = replay(start, sample.events, WORDS)
@@ -84,10 +90,20 @@ describe('invariants that must hold for any sequence of inputs', () => {
   })
 
   it('balances the flip ledger exactly', () => {
+    /*
+     * Every reveal spends one flip and every hide hands one back, with no exceptions either way.
+     * The hide term is what lets a letter turn back over and return without the economy noticing:
+     * the pair is a refund and a re-spend, so a game with hiding costs exactly what the same game
+     * without it would have.
+     *
+     * A returning letter emits `REVEALED` like any other, because it is one -- it costs a flip and
+     * a tick. That is why hiding needed an effect of its own rather than a reversed reveal.
+     */
     fc.assert(
       fc.property(aGame, (sample) => {
         const { state, effects, initialFlips } = runGame(sample)
         const revealed = effects.filter((e) => e.type === 'REVEALED').length
+        const hidden = effects.filter((e) => e.type === 'TILE_HIDDEN').length
         const charged = effects.reduce(
           (sum, e) => (e.type === 'ROUND_ENDED' ? sum + e.flipsCharged : sum),
           0,
@@ -96,7 +112,7 @@ describe('invariants that must hold for any sequence of inputs', () => {
           (sum, e) => (e.type === 'WORD_ACCEPTED' ? sum + e.flips : sum),
           0,
         )
-        expect(state.flipsRemaining).toBe(initialFlips - revealed - charged + earned)
+        expect(state.flipsRemaining).toBe(initialFlips - revealed - charged + earned + hidden)
       }),
     )
   })

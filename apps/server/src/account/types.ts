@@ -56,6 +56,7 @@ export interface GameRow {
   readonly chargeFullRound: boolean
   readonly wildChance: number
   readonly replaceChance: number
+  readonly hideChance: number
   readonly score: number
   readonly wordsCount: number
   readonly roundsPlayed: number

@@ -75,6 +75,7 @@ describe('a board', () => {
         chargeFullRound: false,
         wildChance: 0.02,
         replaceChance: 0.5,
+        hideChance: 0,
         wordsCount: 1,
         roundsPlayed: 6,
         engineVersion: ENGINE_VERSION,

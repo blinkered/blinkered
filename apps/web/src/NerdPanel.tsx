@@ -148,6 +148,22 @@ export function NerdPanel({
             onOverride({ replaceChance })
           }}
         />
+        {/*
+         * Per tick, and bounded by one a round however high it goes, so this dial changes how
+         * often a letter is taken back rather than how much it costs. Zero turns it off, which is
+         * what easy ships with.
+         */}
+        <Number
+          label={messages.hideChance}
+          value={config.hideChance}
+          min={0}
+          max={1}
+          step={0.01}
+          disabled={locked}
+          onChange={(hideChance) => {
+            onOverride({ hideChance })
+          }}
+        />
         <Choice
           label={messages.wordCompleteMode}
           value={config.wordCompleteMode}

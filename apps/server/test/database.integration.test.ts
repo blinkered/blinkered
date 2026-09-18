@@ -170,6 +170,7 @@ describe('the schema', () => {
       chargeFullRound: false,
       wildChance: 0.02,
       replaceChance: 0.25,
+      hideChance: 0,
       engineVersion: '0.3.0',
     })
     const [stored] = await database()
@@ -217,6 +218,7 @@ describe('the schema', () => {
         chargeFullRound: false,
         wildChance: 0.02,
         replaceChance: 0,
+        hideChance: 0,
         engineVersion: '0.3.0',
       })
 

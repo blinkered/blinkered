@@ -242,6 +242,7 @@ export function accountRoutes(deps: AccountDeps): Hono {
         chargeFullRound: game.config.chargeFullRound,
         wildChance: game.config.wildChance,
         replaceChance: game.config.replaceChance,
+        hideChance: game.config.hideChance,
         score: game.score,
         wordsCount: game.words.length,
         roundsPlayed: game.rounds,

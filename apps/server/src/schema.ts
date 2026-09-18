@@ -271,6 +271,12 @@ export const games = blinkered.table(
     chargeFullRound: boolean('charge_full_round').notNull(),
     wildChance: doublePrecision('wild_chance').notNull(),
     replaceChance: doublePrecision('replace_chance').notNull(),
+    /*
+     * Defaulted to zero, which is what every game recorded before the rule existed was played
+     * under: no letter ever turned back over in one. The default is for those rows rather than
+     * for new writes, which always send a value.
+     */
+    hideChance: doublePrecision('hide_chance').notNull().default(0),
 
     score: integer('score').notNull().default(0),
     wordsCount: integer('words_count').notNull().default(0),

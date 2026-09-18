@@ -1,7 +1,9 @@
-import { shuffle } from './rng.js'
+import { nextFloat, nextInt, shuffle } from './rng.js'
+import { at } from './invariant.js'
 import { WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
 import { replaceLetter } from './replace.js'
 import { alphabetFor } from './languages.js'
+import { MAX_HIDES_PER_ROUND } from './difficulty.js'
 import { flipReward, wordScore } from './score.js'
 import {
   freeWild,
@@ -18,6 +20,8 @@ import type {
   GameState,
   IgnoredReason,
   RejectReason,
+  RngState,
+  Tile,
 } from './types.js'
 
 export type Reduction = readonly [GameState, readonly Effect[]]
@@ -56,8 +60,12 @@ function reselect(
  */
 function stillToCome(state: GameState): number {
   const exposed = state.tiles.filter(isEligible).length
-  const unrevealed = state.config.n - state.revealsThisRound
-  return exposed + Math.min(unrevealed, state.flipsRemaining)
+  const undealt = state.config.n - state.revealsThisRound
+  // A withdrawn letter is coming back and costs a flip to bring back, exactly like an undealt
+  // one. Leaving it out of this count is how a letter merely being away would read as a board
+  // that had run out of letters, and end the game.
+  const owed = state.withdrawn.length + undealt
+  return exposed + Math.min(owed, state.flipsRemaining)
 }
 
 /** What a fresh board would offer, since a deal hands every tile back unspent. */
@@ -144,12 +152,36 @@ function apply(state: GameState, event: GameEvent, dictionary: Dictionary): Redu
   }
 }
 
-/** Reveals the next tile in reading order, if the board still has one and flips remain. */
+/** Turns over the next letter this round owes: one that went back over, else one never dealt. */
 export function revealNext(state: GameState): Reduction {
-  // Once the board is fully up, the remaining ticks of the round are hold time.
-  if (state.revealsThisRound >= state.config.n) return [state, []]
   if (state.flipsRemaining <= 0) return [state, []]
-  const tile = tileAt(state, state.revealsThisRound)
+
+  /*
+   * A letter that went back over returns before any letter the deal has not reached.
+   *
+   * Deterministic on purpose. Choosing at random between returning and pressing on would mean
+   * the reveal no longer has a defined next thing, which is the one property the deal has always
+   * had, and the point of the mechanic is that the player cannot tell the difference anyway.
+   * Ordering them oldest-first bounds how long a letter can be away.
+   */
+  const returning = state.withdrawn[0]
+  if (returning !== undefined) {
+    const tiles = state.tiles.map((candidate) =>
+      candidate.id === returning ? { ...candidate, revealed: true } : candidate,
+    )
+    // `revealsThisRound` counts slots the deal has reached, and this slot was reached already.
+    const next: GameState = {
+      ...state,
+      tiles,
+      withdrawn: state.withdrawn.slice(1),
+      flipsRemaining: state.flipsRemaining - 1,
+    }
+    return [next, [{ type: 'REVEALED', tileId: returning }]]
+  }
+
+  // Once every slot has been dealt and nothing is away, the rest of the round is hold time.
+  if (state.revealsThisRound >= state.config.n) return [state, []]
+  const tile = tileAt(state, at(state.revealOrder, state.revealsThisRound))
   const tiles = state.tiles.map((candidate) =>
     candidate.id === tile.id ? { ...candidate, revealed: true } : candidate,
   )
@@ -162,9 +194,75 @@ export function revealNext(state: GameState): Reduction {
   return [next, [{ type: 'REVEALED', tileId: tile.id }]]
 }
 
+/**
+ * Which letter this tick takes back, if any, and the stream it rolled against.
+ *
+ * The roll only happens where a hide is possible, so a round with nothing to take does not spend
+ * randomness on finding that out. Replay is unaffected: the same seed and the same events give
+ * the same states, so they give the same eligibility.
+ */
+function pickHide(state: GameState): [Tile | null, RngState] {
+  const { config } = state
+  if (config.hideChance <= 0) return [null, state.rng]
+  // Which, at a cap of one, is also what keeps a single letter away at a time. A separate
+  // `withdrawn.length > 0` guard said that in its own right and could never run, so it is stated
+  // on the constant instead of sitting here untested.
+  if (state.hidesThisRound >= MAX_HIDES_PER_ROUND) return [null, state.rng]
+
+  const exposed = state.tiles.filter(isEligible)
+  // Never the last letter showing: a board with nothing on it is not a harder board, it is a
+  // broken one.
+  if (exposed.length < 2) return [null, state.rng]
+
+  /*
+   * A selected letter is pinned and cannot be taken.
+   *
+   * Which makes selecting a defensive move as well as a constructive one, and the cost of
+   * changing your mind is that a selection cannot be reordered in place: clearing it to spell
+   * something else unpins every letter in it, at the moment you were about to use them.
+   */
+  const held = new Set(state.selection)
+  const candidates = exposed.filter((tile) => !held.has(tile.id))
+  // Every letter showing is spoken for, so there is nothing to take. The tick then behaves as
+  // any other tick, which is what stops a full selection being a way to buy time.
+  if (candidates.length === 0) return [null, state.rng]
+
+  const [roll, rolled] = nextFloat(state.rng)
+  if (roll >= config.hideChance) return [null, rolled]
+  const [index, next] = nextInt(rolled, candidates.length)
+  return [at(candidates, index), next]
+}
+
+/**
+ * One tick: either a letter turns up, or one turns back over.
+ *
+ * A hide **adds** a tick rather than spending one, and refunds the flip the letter cost. So the
+ * pair of a hide and the return that follows it leaves both counters exactly where they were, and
+ * the round is two ticks longer for it. That is deliberate and it is the whole shape of the
+ * mechanic: it cannot shorten the window with the whole board up, because a letter always comes
+ * back before the deal is finished with. What it spends is the player's time and their memory of
+ * the board, and nothing else.
+ */
 function tick(state: GameState, dictionary: Dictionary): Reduction {
+  const [hiding, rng] = pickHide(state)
+  if (hiding !== null) {
+    const tiles = state.tiles.map((candidate) =>
+      candidate.id === hiding.id ? { ...candidate, revealed: false } : candidate,
+    )
+    const next: GameState = {
+      ...state,
+      rng,
+      tiles,
+      withdrawn: [...state.withdrawn, hiding.id],
+      hidesThisRound: state.hidesThisRound + 1,
+      ticksRemaining: state.ticksRemaining + 1,
+      flipsRemaining: state.flipsRemaining + 1,
+      tick: state.tick + 1,
+    }
+    return [next, [{ type: 'TILE_HIDDEN', tileId: hiding.id }]]
+  }
   const ticksRemaining = state.ticksRemaining - 1
-  const advanced: GameState = { ...state, ticksRemaining, tick: state.tick + 1 }
+  const advanced: GameState = { ...state, rng, ticksRemaining, tick: state.tick + 1 }
   if (ticksRemaining <= 0) return endRound(advanced, dictionary)
   return revealNext(advanced)
 }
@@ -184,9 +282,14 @@ function endRound(state: GameState, dictionary: Dictionary, cutShort = false): R
     return [over, [{ type: 'GAME_OVER' }]]
   }
 
-  const [layout, rng] = shuffle(
+  const [layout, laid] = shuffle(
     state.rng,
     state.tiles.map((tile) => tile.id),
+  )
+  // A fresh order for the deal as well as a fresh layout, off the same seeded stream.
+  const [revealOrder, rng] = shuffle(
+    laid,
+    state.tiles.map((_, position) => position),
   )
   const reset = state.tiles.map((tile) => ({
     ...tile,
@@ -224,6 +327,9 @@ function endRound(state: GameState, dictionary: Dictionary, cutShort = false): R
     flipsRemaining,
     roundIndex: state.roundIndex + 1,
     ticksRemaining: config.n + config.holdTicks,
+    revealOrder,
+    withdrawn: [],
+    hidesThisRound: 0,
     revealsThisRound: 0,
     selection: [],
     wildIntent: {},

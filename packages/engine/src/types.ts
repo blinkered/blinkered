@@ -45,6 +45,15 @@ export interface GameConfig {
   readonly flipEconomy: FlipEconomy
   /** Charge the full N flips for a round even when it ends early. See docs/PLAN.md 1.10. */
   readonly chargeFullRound: boolean
+  /**
+   * Chance per tick that an exposed, unselected letter turns back over instead of a new one
+   * turning up.
+   *
+   * Zero on `easy`. Per tick rather than per round because that is what makes it feel like the
+   * board acting rather than a rule firing: any tick can be the one. `MAX_HIDES_PER_ROUND` bounds
+   * what it can cost, so this number decides how often rather than how much.
+   */
+  readonly hideChance: number
   /** BCP 47 tag naming the alphabet the board was drawn from and words are folded with. */
   readonly language: string
   readonly engineVersion: string
@@ -123,6 +132,24 @@ export interface GameState {
   readonly wildIntent: Readonly<Record<number, string>>
   readonly roundIndex: number
   readonly ticksRemaining: number
+  /**
+   * Which grid slot each tick turns over, in order. A fresh permutation every round.
+   *
+   * The reveal used to walk positions in reading order. It does not, because a letter that goes
+   * back over has to be indistinguishable from one the deal has not reached yet, and against a
+   * predictable sweep it would stand out as the only gap behind the front.
+   *
+   * It costs less than it sounds. The rule that actually matters -- a word can only be started
+   * early if its letters arrive in the order it is spelled (see PLAN.md 1.3) -- binds on arrival
+   * order, and arrival order was already luck, because every tile is dealt a new slot each round.
+   * What reading order bought was knowing where to look next, not what was coming.
+   */
+  readonly revealOrder: readonly number[]
+  /** Tiles turned back over and waiting to return, oldest first. */
+  readonly withdrawn: readonly number[]
+  /** How many letters this round has taken back, against `MAX_HIDES_PER_ROUND`. */
+  readonly hidesThisRound: number
+  /** How many slots the deal has reached. Indexes `revealOrder`, and a return does not move it. */
   readonly revealsThisRound: number
   readonly flipsRemaining: number
   readonly score: number
@@ -173,6 +200,14 @@ export type IgnoredReason =
 /** What the UI animates and sounds. Emitted instead of making the view diff state. */
 export type Effect =
   | { readonly type: 'REVEALED'; readonly tileId: number }
+  /**
+   * A letter turned back over, of its own accord.
+   *
+   * Its own effect rather than a `REVEALED` in reverse, because the two do opposite things to the
+   * flip ledger: a reveal spends one and this refunds one, and the property test that keeps the
+   * economy honest counts both.
+   */
+  | { readonly type: 'TILE_HIDDEN'; readonly tileId: number }
   | { readonly type: 'SELECTED'; readonly tileId: number }
   | { readonly type: 'DESELECTED'; readonly tileIds: readonly number[] }
   | { readonly type: 'INPUT_IGNORED'; readonly reason: IgnoredReason }

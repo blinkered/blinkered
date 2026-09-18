@@ -1,6 +1,6 @@
 import { alphabetFor } from './languages.js'
 import { reduce, revealNext, settle, type Reduction } from './reducer.js'
-import { seedRng } from './rng.js'
+import { seedRng, shuffle } from './rng.js'
 import { dealWilds } from './wild.js'
 import type { Dictionary, Effect, GameConfig, GameEvent, GameState, Tile } from './types.js'
 
@@ -9,13 +9,22 @@ export interface NewGame {
   /** Exactly config.n letters, supplied by @blinkered/words so the board is known solvable. */
   readonly letters: readonly string[]
   readonly seed: number
+  /**
+   * Which slot each tick turns over, in order. Shuffled off the seed when it is not given.
+   *
+   * The same seam as `letters`: a caller that wants a legible deal supplies one, exactly as it
+   * supplies a legible board, and a caller that wants a game supplies neither. Only the engine's
+   * own tests and the tutorial pass it -- a reading-order deal makes a test about what a reveal
+   * does readable, where a shuffled one makes it a test about the shuffle.
+   */
+  readonly revealOrder?: readonly number[]
 }
 
 /**
  * Opens a game. The first tile is revealed immediately, so the timer reads N with one
  * tile already face up and the last tile lands with one tick left. See docs/PLAN.md 1.2.
  */
-export function createGame({ config, letters, seed }: NewGame): Reduction {
+export function createGame({ config, letters, seed, revealOrder: given }: NewGame): Reduction {
   if (config.n < 2) throw new RangeError('a board needs at least two tiles')
   if (letters.length !== config.n) {
     throw new RangeError(`expected ${String(config.n)} letters, got ${String(letters.length)}`)
@@ -35,9 +44,17 @@ export function createGame({ config, letters, seed }: NewGame): Reduction {
     wild: false,
   }))
 
-  // The first round's wilds come off the same seeded stream as everything else, so the whole
-  // game is still reproducible from the seed alone.
-  const [tiles, rng] = dealWilds(seedRng(seed), dealt, config.wildChance)
+  // The first round's wilds and its deal order come off the same seeded stream as everything
+  // else, so the whole game is still reproducible from the seed alone.
+  const [tiles, dealtRng] = dealWilds(seedRng(seed), dealt, config.wildChance)
+  const positions = letters.map((_, position) => position)
+  if (given !== undefined && given.length !== config.n) {
+    throw new RangeError(`expected ${String(config.n)} positions, got ${String(given.length)}`)
+  }
+  const [shuffled, shuffledRng] = shuffle(dealtRng, positions)
+  const revealOrder = given ?? shuffled
+  // The stream advances either way, so supplying an order changes the deal and nothing else.
+  const rng = shuffledRng
 
   return settle(
     revealNext({
@@ -48,6 +65,9 @@ export function createGame({ config, letters, seed }: NewGame): Reduction {
       wildIntent: {},
       roundIndex: 0,
       ticksRemaining: config.n + config.holdTicks,
+      revealOrder,
+      withdrawn: [],
+      hidesThisRound: 0,
       revealsThisRound: 0,
       flipsRemaining: config.initialFlips,
       score: 0,

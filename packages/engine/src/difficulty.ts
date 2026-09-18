@@ -18,6 +18,27 @@ export const ENGINE_VERSION = '0.4.0'
 export const DEFAULT_BOARD_SIZE = 12
 
 /**
+ * How many letters one round may take back.
+ *
+ * The cap is what makes `hideChance` safe to raise. A hide adds a tick and its return spends one,
+ * so every hide makes the round two ticks longer; uncapped at a per-tick chance of 0.3 that runs
+ * a round about 80% long, which would hand back the wall clock the 0.4.0 retune reclaimed and
+ * would do it hardest at the top of the ladder, where `hideChance` is highest. At one a round the
+ * cost is two ticks whatever the chance, so the chance decides how often it happens and nothing
+ * else.
+ *
+ * It also makes the rule sayable in one line, which a drifting probability is not: at most once a
+ * round, a letter you have seen may turn back over, and it comes straight back.
+ *
+ * **At one, this is also the rule that only one letter is ever away at a time**, and that is the
+ * thing to re-state if it is ever raised. Nothing breaks without it -- `revealNext` returns
+ * withdrawn tiles oldest-first and `stillToCome` counts however many there are -- but a board that
+ * can take three letters at once is a different mechanic from one that takes one and gives it
+ * straight back, and the difference will not announce itself.
+ */
+export const MAX_HIDES_PER_ROUND = 1
+
+/**
  * Chance per tile per deal of a wild card, before nerd mode says otherwise.
  *
  * 0.02 against twelve tiles puts a wild in 21.5% of rounds and two in 2.2%, which is between two
@@ -63,6 +84,14 @@ export interface DifficultyProfile {
   readonly minWordLength: number
   /** Chance per deal that one tile's letter is replaced. Zero on `easy`; see the note above. */
   readonly replaceChance: number
+  /**
+   * Chance per tick that an exposed, unselected letter turns back over. Zero on `easy`.
+   *
+   * The game is called Blinkered and until this existed the letters did not hide from anybody;
+   * they queued, in an order the grid could be read for. This is the mechanic that makes the name
+   * literal.
+   */
+  readonly hideChance: number
 }
 
 /*
@@ -128,6 +157,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 7,
     minWordLength: 3,
     replaceChance: 0,
+    hideChance: 0,
   },
   medium: {
     speedMultiplier: 1.3,
@@ -135,6 +165,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 8,
     minWordLength: 3,
     replaceChance: 0.25,
+    hideChance: 0.03,
   },
   hard: {
     speedMultiplier: 1.2,
@@ -142,6 +173,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 9,
     minWordLength: 4,
     replaceChance: 0.5,
+    hideChance: 0.06,
   },
   insane: {
     speedMultiplier: 0.9,
@@ -149,6 +181,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 10,
     minWordLength: 4,
     replaceChance: 0.5,
+    hideChance: 0.1,
   },
 }
 
@@ -310,6 +343,7 @@ export function configFor(difficulty: Difficulty, overrides: Partial<GameConfig>
     wordCompleteMode: 'spend',
     flipEconomy: 'fibonacci',
     chargeFullRound: false,
+    hideChance: overrides.hideChance ?? profile.hideChance,
     language,
     engineVersion: ENGINE_VERSION,
   }

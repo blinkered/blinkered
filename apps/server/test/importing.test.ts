@@ -157,6 +157,7 @@ describe('reading a game a browser played before there was an account', () => {
       { ...CONFIG, minWordLength: 0 },
       { ...CONFIG, wildChance: 1.5 },
       { ...CONFIG, replaceChance: -0.1 },
+      { ...CONFIG, hideChance: 2 },
       { ...CONFIG, wordCompleteMode: 'vanish' },
       { ...CONFIG, flipEconomy: 'generous' },
       { ...CONFIG, chargeFullRound: 'no' },
@@ -178,6 +179,24 @@ describe('reading a game a browser played before there was an account', () => {
     delete missing.engineVersion
     const guessed = parseImport(body({ config: missing }), NOW)
     expect(guessed.ok && guessed.game.config.engineVersion).toBe(ENGINE_VERSION)
+  })
+
+  it('reads a game from before letters could hide as one where none did', () => {
+    /*
+     * An older client sends no `hideChance`, and zero is what such a game was really played
+     * under: no letter ever turned back over in it. Recording it as zero rather than refusing the
+     * game is the point, and the consequence is worth pinning: zero is not what medium's preset
+     * says now, so the game stops being canonical, which is correct. It was played under
+     * different rules, and `engineVersion` is what keeps the two off one board.
+     */
+    const missing = { ...CONFIG } as Record<string, unknown>
+    delete missing.hideChance
+    const parsed = parseImport(body({ config: missing }), NOW)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.game.config.hideChance).toBe(0)
+    expect(parsed.game.canonical).toBe(false)
+    expect(configFor('medium').hideChance).toBeGreaterThan(0)
   })
 
   it('refuses boards that are not the board the ruleset describes', () => {

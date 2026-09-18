@@ -148,6 +148,10 @@ function describe(effects: readonly Effect[]): string | null {
       }
       case 'LETTER_REPLACED':
         return `${dim}${effect.from} \u2192 ${effect.to}${reset}`
+      // Without the letter, as in the app: a player watching sees the tile turn back and cannot
+      // re-read it, and naming it here would be a memory aid against a memory mechanic.
+      case 'TILE_HIDDEN':
+        return `${dim}a letter hid${reset}`
       case 'ROUND_ENDED':
         // The cut is worth saying here too: a round that deals early looks like a dropped frame
         // in a terminal, where there is no veil to explain it.

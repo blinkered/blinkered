@@ -107,6 +107,7 @@ const LIMITS = {
   minWordLength: [1, 64],
   wildChance: [0, 1],
   replaceChance: [0, 1],
+  hideChance: [0, 1],
 } as const
 
 /**
@@ -260,6 +261,15 @@ function parseConfig(value: unknown): GameConfig | null {
   const minWordLength = bounded(fields.minWordLength, LIMITS.minWordLength, true)
   const wildChance = bounded(fields.wildChance, LIMITS.wildChance, false)
   const replaceChance = bounded(fields.replaceChance, LIMITS.replaceChance, false)
+  /*
+   * Absent means zero, rather than rejecting the game.
+   *
+   * A game played before letters could hide had no such rule, so zero is what it was played
+   * under, and it is the honest value to record. It also means such a game is not canonical on
+   * any preset that now hides, which is correct: it was played under different rules, and
+   * `ENGINE_VERSION` is what keeps the two off the same board.
+   */
+  const hideChance = bounded(fields.hideChance ?? 0, LIMITS.hideChance, false)
   if (
     n === null ||
     speedMultiplier === null ||
@@ -268,7 +278,8 @@ function parseConfig(value: unknown): GameConfig | null {
     wMin === null ||
     minWordLength === null ||
     wildChance === null ||
-    replaceChance === null
+    replaceChance === null ||
+    hideChance === null
   ) {
     return null
   }
@@ -283,6 +294,7 @@ function parseConfig(value: unknown): GameConfig | null {
     n,
     wildChance,
     replaceChance,
+    hideChance,
     speedMultiplier,
     initialFlips,
     wMin,

@@ -146,7 +146,20 @@ export function open(letters: string, overrides: Partial<GameConfig> = {}, seed 
     replaceChance: 0,
     ...overrides,
   })
-  const [state, effects] = createGame({ config, letters: [...letters], seed })
+  /*
+   * And the deal walks the board in reading order, for the same reason as the two above.
+   *
+   * Real play shuffles it, so that a letter turning back over is indistinguishable from one the
+   * deal has not reached. A suite whose boards are written as `ATESON` wants the letters to
+   * arrive as they read, or every test about what a reveal *does* becomes a test about where the
+   * shuffle put things. `reveal.test.ts` is where the shuffled order is checked.
+   */
+  const [state, effects] = createGame({
+    config,
+    letters: [...letters],
+    seed,
+    revealOrder: [...letters].map((_, position) => position),
+  })
   return { state, effects }
 }
 

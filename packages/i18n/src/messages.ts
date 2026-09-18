@@ -213,6 +213,14 @@ export interface Messages {
   /** `{letter}` */
   readonly noSuchLetterUp: string
   readonly nothingUp: string
+  /**
+   * One letter turned back over of its own accord.
+   *
+   * Says that it happened and not which letter it was, which is parity rather than coyness: a
+   * player watching sees a tile turn back and cannot re-read it either. Naming it here would make
+   * this row a memory aid against the one mechanic that is about memory.
+   */
+  readonly letterHidden: string
   readonly shuffled: string
   /** `{flips}` */
   readonly shuffledAndBilled: string
@@ -288,6 +296,8 @@ export interface Messages {
   readonly startingFlips: string
   readonly wildChance: string
   readonly replaceChance: string
+  /** Nerd mode: chance per tick that an exposed, unselected letter turns back over. */
+  readonly hideChance: string
   readonly wordCompleteMode: string
   readonly wordCompleteNames: Readonly<Record<WordCompleteMode, string>>
   readonly flipEconomy: string
