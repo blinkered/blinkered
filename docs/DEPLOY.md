@@ -1,21 +1,25 @@
 # Deploying
 
-Blinkered is a static site once built: two HTML pages, one bundle, and a word list per language. So
-the container is nginx serving files, nothing at runtime is Node, and there is no database and
-no server-side state yet. That will change when accounts arrive; until then this is about as
-simple as a deployment gets.
+Blinkered is three things to deploy: nginx serving the built front end, a Node API, and a
+Postgres. Accounts arrived, so the "it is a static site" framing this page opened with for months
+is gone, and with it the `kubectl set image` deploy it described. Everything goes through a Helm
+chart now.
 
 ## The short version
 
 ```
-git push                                   # CI builds and pushes ghcr.io/blinkered/blinkered
-kubectl -n blinkered-prod set image deployment/blinkered \
-  web=ghcr.io/blinkered/blinkered:sha-<short>
+git push                                   # CI builds and pushes both images
+deploy/deploy.sh dev  sha-<short>          # roll dev
+deploy/deploy.sh prod sha-<short>          # then prod
 ```
 
-A routine deploy is that second command alone. **`kubectl apply -f deploy/k8s/` resets the image
-to `:latest`**, because that is what the manifest says, so use it only when a manifest actually
-changed, and follow it with `set image` to get back to a pinned digest.
+A routine deploy is that script, and **not `helm upgrade` by hand** -- it deletes the previous
+migrate Job first and passes `--wait=legacy`, and the section on Helm 4 below is what happens
+without either. With no tag it deploys whatever is current on `main`.
+
+**`deploy/k8s/` is the old path and is not what runs.** It holds a web-only Deployment named
+`blinkered` with no API and no database, from before the chart; the chart's web Deployment is
+`blinkered-web`. Applying it would be a deploy backwards. See "Migrating off deploy/k8s/" below.
 
 ## Where the image comes from
 
@@ -27,6 +31,11 @@ cluster almost certainly runs; a build on an Apple Silicon machine produces an *
 which will be pulled successfully and then fail to start with `exec format error`. If you do
 build locally, `deploy/release.sh` forces `--platform linux/amd64` for exactly this reason, and
 it will be slow because it is emulating.
+
+**Two images, tagged in step.** `release.yml` builds `ghcr.io/blinkered/blinkered` from the
+`serve` target and `ghcr.io/blinkered/blinkered-api` from the `api` target, and `deploy.sh` passes
+one tag for both, so the front end and the API a release puts in a cluster always came out of the
+same commit. A doc that named only the first is how you end up rolling one of them.
 
 Tags the workflow pushes:
 
@@ -109,8 +118,10 @@ router out of service rather than failing quietly, so it is not a thing to be re
 
 ## The word lists, and who compresses them
 
-They are the payload: 122MB of text across fifty-one languages. Hungarian alone is 17.2MB, and
-Arabic, Russian and Turkish are 8.5 to 9MB each. Only the chosen language is ever fetched, when
+They are the payload: 126MB of text across fifty-one languages. Hungarian alone is 17.2MB,
+Arabic is 9.8MB, and Russian and Turkish are 8.5MB each. Those are byte counts in decimal MB,
+which is worth saying because `du -sm` reports the directory as 122 and the difference is block
+rounding, not disagreement; the two numbers were both in these docs, quoted against each other. Only the chosen language is ever fetched, when
 it is chosen, so nobody downloads all of it. The manifest at `/words/manifest.json` is 3KB and is
 all the app needs to know what exists.
 
@@ -227,7 +238,7 @@ it by `age` climbing on repeat requests to the same colo.
 The Dockerfile builds three things from one source tree: `serve` is nginx and the built site,
 `api` is Node and the Hono server, and `build` is the shared stage both come from. The API image
 is assembled with `pnpm deploy`, which resolves the workspace links into a self-contained
-directory of production dependencies; copying the tree wholesale would carry the 122MB of word
+directory of production dependencies; copying the tree wholesale would carry the 126MB of word
 lists and the whole toolchain into an image that needs none of it.
 
 `deploy/nginx.shared.conf` holds everything the two environments have in common and is included
@@ -436,6 +447,18 @@ At the edge rather than at the pod, two more, both of which need the same reques
 
 ## What is not here yet
 
-No accounts, no server, no database, so nothing to back up and no secrets to manage beyond a
-possible pull secret. Scores live in the player's own browser. When PLAN.md phase 4 lands this
-page grows a Postgres and a real backend; until then a rollback is one `kubectl set image`.
+This section used to say "no accounts, no server, no database, so nothing to back up" -- and
+ACCOUNTS.md predicted it would be the sentence that went stale. All three arrived, so what is
+actually missing is narrower and more serious:
+
+- **Point-in-time recovery.** The Postgres is in-cluster on a `Retain` volume, which survives the
+  release being deleted and does not survive a bad `delete from`. It was the reason Neon was
+  attractive, and the reason the chart treats the database as an interface with two
+  implementations. See ACCOUNTS.md.
+- **A backup at all**, in the sense of something taken on a schedule and restored at least once.
+  `pg_dump` from a pod is the manual version.
+- **A staging environment that is not dev.** Dev is where changes are tried and also where the
+  migrations run first, which is the same machine wearing two hats.
+
+A rollback is `deploy/deploy.sh prod sha-<older>`, and it is only a rollback of the images: a
+migration that has run has run, which is why they are written to be additive.

@@ -70,7 +70,7 @@ does not tell a phone to type. See docs/IOS.md.
 
 ## The word lists are inside the app
 
-All fifty-one, about 120MB of the bundle. In the browser they are fetched from the server when a
+All fifty-one, about 126MB of the bundle. In the browser they are fetched from the server when a
 language is chosen; here they are already on the device, so a game works in aeroplane mode and no
 request leaves the phone. `dictionary.ts` needed no change for this, because it builds its URLs
 from `import.meta.env.BASE_URL` and the WebView serves the bundle from the app's own root.

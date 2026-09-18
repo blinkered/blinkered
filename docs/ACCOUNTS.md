@@ -294,9 +294,16 @@ wants it.
 
 Two things to know if this ever has to be done again. **The board also requires the game's
 `engine_version` to match the running one**, so a backfill after an engine change makes rows
-eligible without making them visible; every row in both databases was `0.3.0`, which is why this
-one worked. And **the rows changed are recorded in the commit** rather than only in the column, so
-the operation can be undone: the ids above are the whole set.
+eligible without making them visible; every row in both databases was `0.3.0` when this ran, which
+is why it worked. And **the rows changed are recorded in the commit** rather than only in the
+column, so the operation can be undone: the ids above are the whole set.
+
+**Then 0.4.0 proved the point.** The retune bumped the version, the query stopped matching those
+rows, and the production boards read empty until the rows were re-stamped to `0.4.0` by hand --
+which Nick did deliberately, on the grounds that there were few of them and they were not
+particularly strong. Worth knowing that it leaves prod holding scores set under the old budgets,
+where easy and medium had about twice the flips. **Dev was not re-stamped**, so its rows are still
+`0.3.0` and its boards read empty, which is the expected state rather than a fault.
 
 ### The board is an address, and its language is the page's
 
@@ -632,8 +639,14 @@ It sits here rather than at the end for one reason: **`ENGINE_VERSION` gets expe
 
 Today a bump costs a player their own local table, which is a shame. With global boards it wipes
 every board in the game, in every language, at every difficulty, and there is no way to explain
-that to somebody who was first. The engine is at 0.3.0 and STATUS.md still lists the difficulty
+that to somebody who was first. The engine is at 0.4.0, and STATUS.md still lists the difficulty
 ladder, `wildChance` and `replaceChance` as bids awaiting exactly this simulator.
+
+**This is no longer hypothetical: the boards were public when 0.4.0 shipped**, and it emptied them.
+What made that survivable is the only thing that was ever going to -- there were five scores in
+production and their owner was the person who bumped it, and he re-stamped them to 0.4.0 by hand
+rather than lose them. That is the last time that trick is available. The paragraph below was
+written as advice and is now a description of a debt.
 
 Opening public boards on numbers you already intend to replace is choosing to wipe them. Do the
 measuring first, take the version bump while nobody is watching, and open the boards on numbers
@@ -843,10 +856,12 @@ it produces a board that disagrees with the ranking the client computes from the
 
 and `(user_id, finished_at desc)` for history.
 
-Today's board is `finished_at >= date_trunc('day', now() at time zone 'utc')`. **The day is
-UTC**, said out loud in the interface. A local day makes the board different for every viewer,
-which means it cannot be cached and means two players comparing screens disagree about who is
-on today's board.
+**There is no today's board yet.** `GET /v1/leaderboard/:language/:difficulty` takes no period and
+the query has no date filter, so what ships is all-time and nothing else. The design for the
+other one stands, in the future tense it should have been written in: today's board is
+`finished_at >= date_trunc('day', now() at time zone 'utc')`, and **the day is UTC**, said out
+loud in the interface. A local day makes the board different for every viewer, which means it
+cannot be cached and means two players comparing screens disagree about who is on today's board.
 
 At this scale the boards are a query. Materializing them is a thing to do when a query says so.
 
@@ -854,27 +869,44 @@ At this scale the boards are a query. Materializing them is a thing to do when a
 
 Same origin, under `/v1`, which is one Traefik rule and no CORS.
 
+This was written as a plan and three of its lines never got built, so it is now what the server
+answers, with the unbuilt ones marked.
+
 ```
-POST   /v1/auth/code            email -> sends a six-digit code
-POST   /v1/auth/code/verify     email + code -> session
-GET    /v1/auth/:provider       google | apple
+POST   /v1/auth/code             email -> sends a six-digit code
+POST   /v1/auth/code/verify      email + code -> session
+GET    /v1/auth/:provider        google | apple; ?native=1 marks a shell flow
+GET    /v1/auth/:provider/callback
+POST   /v1/auth/native/nonce     a nonce for the Apple system sheet
+POST   /v1/auth/native/apple     an Apple identity token -> a bearer token
+POST   /v1/auth/native/exchange  a browser-flow code -> a bearer token
 POST   /v1/auth/signout
-GET    /v1/usernames/:name      availability, rate-limited, because this enumerates
-POST   /v1/me                   create the profile: username, country, languages
-PATCH  /v1/me                   edit it
-DELETE /v1/me                   account deletion, in-app, required
-GET    /v1/me/games?cursor=
-POST   /v1/games                -> { gameId, seed, config }   the server picks the seed
-POST   /v1/games/:id/finish     -> { words, rounds }  scored by us, stored
-POST   /v1/games/import         the local store and the upload queue. 201 new, 200 already stored
+GET    /v1/usernames/:name       availability, rate-limited, because this enumerates
+GET    /v1/me                    the signed-in account
+PATCH  /v1/me                    edit username, bio, country, languages
+POST   /v1/me/deletion-code      a code that authorises the next call
+DELETE /v1/me                    account deletion, in-app, required
+GET    /v1/me/games?limit=
+POST   /v1/games/import          the local store and the upload queue. 201 new, 200 already stored
+GET    /v1/games/:id             one game, for a shared link
+GET    /v1/users/:username       a public profile
+GET    /v1/users/:username/games somebody else's history
 GET    /v1/leaderboard/:language/:difficulty   a board, top ten, public. ?limit up to 100
-GET    /v1/leaderboards/:language/:difficulty/:period    phase C
 POST   /v1/reports
+/v1/admin/*                      users, users/:id, ban, unban, games, reports
 ```
 
+Three lines that were here and are not routes. **`POST /v1/me`** was to create the profile; an
+account is created on first sign-in instead, with a username generated for it, so there was never
+a moment where a profile had to be posted. **`POST /v1/games`** and **`POST /v1/games/:id/finish`**
+are the server-issued-seed design, which is phase C; `POST /v1/games/import` is what phase A has,
+and it scores a finished game from its words. **`?cursor=`** on the history route is `?limit=`:
+there is no cursor pagination anywhere.
+
 Sessions are an httpOnly, Secure, SameSite=Lax cookie on the web, so the browser never holds a
-token in JavaScript, and a Bearer token in Keychain in the native shell. That split is PLAN.md's
-and it is right; it is also the fiddliest part of the phase and deserves the spike PLAN gives it.
+token in JavaScript, and a bearer token in the native shell -- in `localStorage` rather than the
+Keychain, which STATUS.md records as accepted rather than done. That split is PLAN.md's and it is
+right; it was also the fiddliest part of the phase, as PLAN predicted.
 
 ## The game-over flow, which is the whole point of item 6
 

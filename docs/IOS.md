@@ -249,8 +249,8 @@ a file served as the wrong type is a thing waiting to break.
 
 The obvious next PWA box to tick, and it is not ticked. Offline is not something the game does
 on the web either, so adding it here would be new behavior rather than parity, and the payload
-is fifty-one word lists, 122MB of them, of which Hungarian is 17.2MB and Arabic, Russian and
-Turkish are 8.5 to 9MB each. Caching that is a decision about a player's storage, not a detail. A
+is fifty-one word lists, 126MB of them, of which Hungarian is 17.2MB, Arabic 9.8MB, and Russian
+and Turkish 8.5MB each. Caching that is a decision about a player's storage, not a detail. A
 stale service worker is also the classic way to serve last week's bundle to somebody who has
 cleared everything else.
 
@@ -331,7 +331,10 @@ Four pieces, and each one is in a single place on purpose:
   through `revoked_at`, which is what makes a year acceptable rather than merely convenient.
 - **`WKAppBoundDomains`** in `Info.plist`. `limitsNavigationsToAppBoundDomains` is still on, and
   with no list it meant the local bundle and nothing else, which is what made this unreachable
-  rather than merely broken.
+  rather than merely broken. **Two domains are listed, not one**: `playblinkered.com` for the API
+  and `tightlinesoftware.com`, which the dev sign-in client redirects through. The cap is ten
+  domains and the list cannot be changed without an app update, which is the reason to notice a
+  second entry rather than assume it is a duplicate.
 
 The API grew CORS for exactly one origin, `capacitor://localhost`, and
 **`Access-Control-Allow-Credentials` is deliberately absent**: without it a browser will not send
@@ -408,7 +411,7 @@ The rest, none of which is code:
   DRM around a share-alike data file. On the web attribution is the whole obligation and we meet
   it; a binary is a different question. Dropping them was tolerable at five and is not at
   twenty-one. See the end of DICTIONARIES.md.
-- **A decision about the 120MB of word lists** in the bundle -- fifty-one of them, not the
+- **A decision about the 126MB of word lists** in the bundle -- fifty-one of them, not the
   sixteen this and apps/mobile/README.md both used to say. Fine for a development install, and
   worth weighing against downloading on demand before distribution.
 
@@ -427,7 +430,7 @@ different attempted fix, which is why they are all written down:
    `capacitor://localhost`, Capacitor's local server answers an unknown path with `index.html`,
    and **the app restarts at the first screen of the tour**. That is what a tester sees: an
    instant crash, with no network involved.
-2. Making it absolute gets as far as `WKAppBoundDomains`, which lists this app's own domains and
+2. Making it absolute gets as far as `WKAppBoundDomains`, which lists this app's two domains and
    stops WebKit navigating an app-bound WebView anywhere else.
 3. Turning that off gets as far as Google, which refuses OAuth in an embedded WebView outright
    (`disallowed_useragent`), and Apple, whose `response_mode=form_post` flow assumes a browser.

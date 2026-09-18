@@ -1,10 +1,15 @@
 # Blinkered
 
-A word game where the letters hide from you.
+A word game where the letters hide from you. Play it at
+**[playblinkered.com](https://playblinkered.com)**.
 
 Tiles flip face up one per tick, in reading order. You spell words from what is exposed.
 Every reveal costs a flip; every word pays some back. When the flips run out, the game is
 over. The full rules, and the decisions behind them, are in [docs/PLAN.md](docs/PLAN.md).
+
+Fifty-one languages, four difficulties, three colour palettes. Sign in with an email code,
+Google or Apple to keep a history and appear on a leaderboard, or play signed out and keep
+nothing. There is an iOS app built from the same front end.
 
 ## Play it in a browser
 
@@ -90,11 +95,13 @@ playing: what an accepted word does to the board (`--mode`), what a word pays in
 
 `--hold` is the difficulty dial worth reaching for first. It is how many extra ticks the
 board stays fully exposed after the last tile appears. At zero you get a single tick with
-everything visible; the presets run from three on easy down to zero on insane. It buys time
+everything visible; the presets run from five on easy down to two on insane. It buys time
 without making the letters easier, and it does not change what a round costs in flips.
 
-The harness reads `/usr/share/dict/words` as a placeholder. The real two-tier word list
-arrives in phase 2.
+The harness still reads `/usr/share/dict/words`, which is a macOS file and a placeholder. The
+two-tier lists it should be reading have shipped for all fifty-one languages -- see
+[docs/DICTIONARIES.md](docs/DICTIONARIES.md) -- and wiring the harness to them is the outstanding
+bit.
 
 ## Layout
 
@@ -113,8 +120,10 @@ apps/server         Hono API. Accounts, history and leaderboards; owns no game r
                     Its README has the local Postgres and how to run the migrations
 apps/mobile         Capacitor iOS shell. Runs apps/web's build; owns no game code
 docs/IOS.md         what had to change for a phone, and how each bit was measured
-docs/PROPOSALS.md   features that are wanted but not built, and what each still needs
-docs/ACCOUNTS.md    accounts, history and leaderboards: the design, not yet built
+docs/PROPOSALS.md   sharing, wild cards and letter replacement: the reasoning, now built
+docs/ACCOUNTS.md    accounts, history and leaderboards: the design, and what shipped
+docs/AUTH.md        the two OAuth consoles, and what the phone does differently
+docs/DEPLOY.md      the Helm chart, the two images, and the deploy script
 docs/LANGUAGES.md   which languages are next, and what each one costs
 ```
 
@@ -194,19 +203,23 @@ about first.
 ## Deploying it
 
 ```
-git push                          # CI builds and pushes the image to GHCR
-kubectl apply -f deploy/k8s/
+git push                                # CI builds and pushes both images to GHCR
+deploy/deploy.sh dev  sha-<short>       # roll dev
+deploy/deploy.sh prod sha-<short>       # then prod
 ```
 
-The container is nginx serving the built files, which is all Blinkered needs until accounts
-arrive. [docs/DEPLOY.md](docs/DEPLOY.md) covers the rest: why the image is built in CI rather
-than on a laptop (an Apple Silicon build is arm64 and will not start on an amd64 node), how to
-let the cluster pull from GHCR, and why the word lists are pre-compressed at build time.
+Three things are deployed, not one: nginx serving the built front end, the Node API, and a
+Postgres, all from the Helm chart in `deploy/helm/blinkered`. Use the script rather than
+`helm upgrade` by hand -- it deletes the previous migrate Job and passes `--wait=legacy`, and
+[docs/DEPLOY.md](docs/DEPLOY.md) explains what happens without either. It also covers why the
+images are built in CI rather than on a laptop (an Apple Silicon build is arm64 and will not
+start on an amd64 node), how to let the cluster pull from GHCR, and why the word lists are
+pre-compressed at build time. `deploy/k8s/` is the pre-Helm path and is not what runs.
 
 ## Checks
 
 ```
-pnpm check          typecheck, lint, format, coverage, and the database suites if one is up
+pnpm check          typecheck, lint, lint:sources, format, coverage, and the database suites if one is up
 pnpm test           tests only
 pnpm coverage       tests with the 100% engine coverage gate
 pnpm test:integration   the database suites, which need a Postgres
@@ -234,7 +247,8 @@ merely an attribution one.
 
 ## Status
 
-Phase 0 and 1 are done: workspace, CI, the engine, and the harness. Phase 2 is the packed
-two-tier dictionary, the board generator that guarantees W words, and the balance simulator
-that replaces the guessed difficulty numbers. Phases 3 onward are the web game, accounts,
-and the Capacitor builds.
+Live at [playblinkered.com](https://playblinkered.com), with accounts, history, leaderboards
+and an iOS app. [docs/STATUS.md](docs/STATUS.md) is the honest, current version of this and
+is kept up to date; what is left is a Playwright suite, a game that survives a reload, and
+the balance simulator that would replace the difficulty numbers with measurements. Those
+numbers are the only guesses left in the repo.

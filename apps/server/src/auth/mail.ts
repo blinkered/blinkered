@@ -1,10 +1,11 @@
 /**
  * Where a login code goes, behind one function.
  *
- * The provider is not chosen yet — docs/AUTH.md has Resend, Postmark and SES as equivalent at
- * this volume, and picking one is a DNS afternoon rather than a code change. What matters now is
- * that the flow does not wait for that decision: `consoleMailer` makes the code available in the
- * pod's log, which is enough to build and exercise sign-in end to end on the dev host.
+ * Mail goes out through SMTP, and the host is Google Workspace's own relay
+ * (`smtp-relay.gmail.com`, set in the chart). docs/AUTH.md argues for a transactional sender
+ * instead -- Resend, Postmark or SES -- and that argument still stands and is still deferred: what
+ * it buys is bounce and complaint webhooks and a suppression list, which matter at a volume this
+ * has not reached. `consoleMailer` remains for local work, where it puts the code in the log.
  *
  * The port is deliberately narrow. Delivery is the product for a game whose sign-in is a code, so
  * the thing a provider is chosen for is not an API shape, it is bounce and complaint webhooks and

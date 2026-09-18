@@ -14,21 +14,45 @@ Two environments, and they are not symmetrical:
 
 ## The shape of the flow, which decides most of the settings
 
-Both providers only ever see a **web** client, and only ever see our domains. Nothing is
-registered as an iOS client, and neither Google nor Apple is ever spoken to by the phone.
+**Google only ever sees a web client, and only ever sees our domains.** Nothing is registered as
+an iOS client for Google, and Google is never spoken to by the phone:
 
 ```
 phone  ->  ASWebAuthenticationSession
-           -> https://playblinkered.com/v1/auth/<provider>
-              -> provider's consent page
-                 -> https://playblinkered.com/v1/auth/<provider>/callback
-                    -> blinkered://auth/callback?code=<one-time>
-                       -> app exchanges it for a session token, into Keychain
+           -> https://playblinkered.com/v1/auth/google?native=1
+              -> Google's consent page
+                 -> https://playblinkered.com/v1/auth/google/callback
+                    -> blinkered://auth?code=<one-time>
+                       -> POST /v1/auth/native/exchange -> a bearer token
 ```
 
-That is worth knowing before touching either console, because the obvious reading of "we have an
-iOS app" is that Google wants an iOS OAuth client and Apple wants a native configuration, and
-neither is true here. The redirect target is always our own server.
+That is worth knowing before touching the console, because the obvious reading of "we have an iOS
+app" is that Google wants an iOS OAuth client, and it does not. The redirect target is always our
+own server.
+
+**Apple is different, and this document used to say it was not.** The phone talks to Apple
+directly, through the system sheet rather than a browser:
+
+```
+phone  ->  POST /v1/auth/native/nonce             -> a nonce, kept server-side
+       ->  ASAuthorizationAppleIDProvider          -> the system sheet, on device
+           -> an identity token, audience = the App ID
+              -> POST /v1/auth/native/apple        -> a bearer token
+```
+
+So there are effectively two Apple client ids: the **Services ID** for the browser flow, and the
+**App ID bundle identifier** for the native one. `appleNativeProvider` in `auth/apple.ts` is the
+same verifier with the audience swapped, which is the whole difference. `BLINKERED_APPLE_BUNDLE_ID`
+carries it.
+
+Why both, rather than the native sheet everywhere: the native sheet offers only the Apple ID the
+phone is signed in to, with no account picker. That is what the provider does, and the browser
+flow was the only way to get a choice.
+
+**The token goes to `localStorage`, not the Keychain.** An earlier version of this diagram said
+Keychain, which was the intention: a secure-storage plugin needs `@capacitor/core` in `apps/web`,
+which it deliberately does not have. It is behind three functions in `api.ts`, and STATUS.md
+records it as accepted rather than done.
 
 **One prerequisite in the native shell.** `apps/mobile/capacitor.config.ts` sets
 `limitsNavigationsToAppBoundDomains: true`, and its own comment predicted this: "Anything that
@@ -255,7 +279,19 @@ What it does not buy is transactional sending. Workspace is built for mail that 
 - It puts the company's own mail reputation and the game's on the same operational footing, which
   is fine right up until the first time it is not.
 
-### So: a transactional sender, on playblinkered.com
+### What shipped: the Workspace relay, for now
+
+**This section argued for a transactional sender and the deployment uses the Workspace relay**, so
+the recommendation is a recommendation rather than a description. `values-prod.yaml` points
+`BLINKERED_SMTP_HOST` at `smtp-relay.gmail.com`, and `auth/smtp.ts` sends through nodemailer. The
+reasoning above is unchanged and none of it turned out to be wrong; it was deferred, because a
+relay that works today beats a DNS afternoon before the first sign-in, and every objection below
+is about what happens at volume this has not reached.
+
+What that defers, precisely: no bounce or complaint webhooks, no suppression list, and Workspace's
+own sending limits. The first unanswerable "it never arrived" is the signal to finish this.
+
+### The sender it should become, on playblinkered.com
 
 Any of Resend, Postmark or SES. All three DKIM-sign as the domain, all three have delivery and
 bounce webhooks, and at this volume all three are free or cost cents. Postmark is the
@@ -277,11 +313,18 @@ that live outside the app.
 Secrets, one per environment:
 
 ```
-GOOGLE_CLIENT_SECRET      per environment
-APPLE_PRIVATE_KEY         the .p8, and never a generated six-month secret
-EMAIL_API_KEY             the transactional provider
-SESSION_SECRET            for signing the cookie
+BLINKERED_GOOGLE_CLIENT_SECRET   per environment
+BLINKERED_APPLE_PRIVATE_KEY      the .p8, and never a generated six-month secret
+BLINKERED_SMTP_USER              the relay account
+BLINKERED_SMTP_PASSWORD          its app password
 ```
+
+Every variable this server reads is `BLINKERED_`-prefixed; an earlier version of this list dropped
+the prefix, which made none of them greppable. Two entries on it were imaginary:
+**`EMAIL_API_KEY`** belonged to the transactional provider argued for below, and mail goes through
+SMTP instead; **`SESSION_SECRET`** was for signing a cookie, and nothing is signed. A session token
+is 32 random bytes, stored as a SHA-256 hash and looked up in Postgres, so there is no key to keep
+-- which also means a leaked database cannot be used to mint one.
 
 **Three of Apple's four values are in the chart rather than in a secret**, which the earlier
 version of this document got wrong by listing everything together. The Team ID is the prefix on

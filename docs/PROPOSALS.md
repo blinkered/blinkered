@@ -109,7 +109,8 @@ worth wanting on purpose.
 - **The player finds out afterwards, in the rail.** No live preview. They select and hope, and the
   word they were given appears with its wild letters marked. The gamble is the mechanic.
 - **Frequency is one fixed number**, 0.02, adjustable in nerd mode, and not part of the difficulty
-  table. `n` is 12 on every setting and only the clock and the minimum word length change, so the
+  table. _Still true of `wildChance`, and no longer true of `replaceChance`, which became a
+  difficulty column in 0.3.0 -- see the letter-replacement section below._ `n` is 12 on every setting and only the clock and the minimum word length change, so the
   same rate is worth less on a harder setting because there is less time to use it: the mechanic
   self-balances without a second number to guess. Making it level-dependent later is one field in
   `DIFFICULTIES`, so nothing is lost by waiting for play to say it is needed.
@@ -140,8 +141,11 @@ worth wanting on purpose.
 
 - **Can a wild be part of a two-letter word** where the minimum length is 3? Not a real question
   unless the minimum is ever 2.
-- **Whether three wilds in one word should be refused outright.** At 0.02 the odds are about two in
-  a thousand rounds, but a word made entirely of wilds is a word the engine wrote by itself.
+- ~~**Whether three wilds in one word should be refused outright.**~~ **Answered by the cap**, which
+  this document had already decided two bullets up: `MAX_WILDS` is 2 and it applies to the deal, so
+  three in one word cannot happen and there is nothing to refuse. Capping the board rather than the
+  word is what removed the question instead of hiding it -- refusing a word for holding three wilds
+  tells the player "not a word" about a selection that is thousands of words at once.
 
 ---
 
@@ -223,9 +227,14 @@ on.
   every long game by refusing to change anything.
 - **One letter per deal, not a chance per letter.** A replacement is announced and watched; two at
   once would be two things to watch and the player would catch neither.
-- **0.5, fixed, adjustable in nerd mode.** Set against the cheat rather than against the feel: a
-  transcribed board is wrong within a round or two. Not a column in the difficulty table, for the
-  same reason `wildChance` is not.
+- ~~**0.5, fixed, adjustable in nerd mode.**~~ **A difficulty column since 0.3.0**: 0, 0.25, 0.5,
+  0.5 across easy, medium, hard and insane, still adjustable in nerd mode. It was set against the
+  cheat rather than against the feel -- a transcribed board is wrong within a round or two -- and
+  the reason it moved was not balance: whether the letters hold still changes what kind of game a
+  level is, which made it the second named pressure on a ladder that otherwise escalated three
+  numbers and changed the game once. So easy has none, and the rate stops climbing at hard. The
+  bullet below it about `wildChance` still stands, and the difference is that a wild is a gift
+  whose value self-balances against the clock while a swap is a cost that does not.
 - **Nothing at all rather than a broken floor.** When no tile has a valid replacement the deal
   passes. Churn is a defense against a cheat and the floor is a promise to the player. Measured
   over 432 swaps across three languages and four difficulties, it never came up.
@@ -281,9 +290,14 @@ which leaves the phone layout, where the ask was made, untouched.
 
 ### Still open
 
-- **Is the rate right?** 0.5 was chosen against the cheat and has not been played. It is one nerd
-  mode number.
-- **The balance simulator** would settle it, along with `wildChance` and the difficulty tables.
+- ~~**Is the rate right?**~~ **Played, and it became a difficulty column** in 0.3.0: 0, 0.25, 0.5,
+  0.5 for easy, medium, hard and insane. What play said was not that 0.5 was wrong but that the
+  mechanic changes the _kind_ of game rather than its difficulty -- with the letters fixed you can
+  learn a board and carry a word list between rounds, and once they drift you cannot -- so easy has
+  none at all. The rate stops climbing at hard, because a stale memorised list costs nothing on a
+  level that shows the whole board for 1.8 seconds. See PLAN.md 1.12.
+- **The balance simulator** would still settle the numbers, along with `wildChance` and the
+  difficulty tables. Two retunes have happened without it, both from playing.
 
 ## The help page was part of the feature
 

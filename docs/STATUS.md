@@ -16,8 +16,8 @@ next.
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three. Two languages CLDR
   cannot reliably name carry their own table of exonyms; see LANGUAGES.md.
 - **`packages/words/data`** — fifty-one playable languages, generated and committed, each with
-  its own `LICENSE` and `PROVENANCE.md`. 122MB, about 100KB gzipped per language, though
-  Hungarian is 17.2MB on its own and Arabic, Russian and Turkish are 8.5 to 9MB each.
+  its own `LICENSE` and `PROVENANCE.md`. 126MB, about 100KB gzipped per language, though
+  Hungarian is 17.2MB on its own, Arabic 9.8MB, and Russian and Turkish 8.5MB each.
 - **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
