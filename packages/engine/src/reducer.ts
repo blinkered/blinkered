@@ -5,14 +5,7 @@ import { replaceLetter } from './replace.js'
 import { alphabetFor } from './languages.js'
 import { MAX_HIDES_PER_ROUND } from './difficulty.js'
 import { flipReward, wordScore } from './score.js'
-import {
-  freeWild,
-  isEligible,
-  letterAvailability,
-  tileAt,
-  tileById,
-  wildsAskedFor,
-} from './selection.js'
+import { freeWild, isEligible, letterAvailability, tileById, wildsAskedFor } from './selection.js'
 import type {
   Dictionary,
   Effect,
@@ -60,12 +53,11 @@ function reselect(
  */
 function stillToCome(state: GameState): number {
   const exposed = state.tiles.filter(isEligible).length
-  const undealt = state.config.n - state.revealsThisRound
-  // A withdrawn letter is coming back and costs a flip to bring back, exactly like an undealt
-  // one. Leaving it out of this count is how a letter merely being away would read as a board
-  // that had run out of letters, and end the game.
-  const owed = state.withdrawn.length + undealt
-  return exposed + Math.min(owed, state.flipsRemaining)
+  // Every letter that is face down, whether it has been shown before or not, and each of them
+  // costs one flip to turn over. Counting them off the board rather than off a reveal tally is
+  // what keeps a letter that is merely away from reading as a board out of letters.
+  const down = state.tiles.filter((tile) => !tile.revealed && !tile.spent).length
+  return exposed + Math.min(down, state.flipsRemaining)
 }
 
 /** What a fresh board would offer, since a deal hands every tile back unspent. */
@@ -152,41 +144,34 @@ function apply(state: GameState, event: GameEvent, dictionary: Dictionary): Redu
   }
 }
 
-/** Turns over the next letter this round owes: one that went back over, else one never dealt. */
+/**
+ * Turns over one letter, chosen at random from every letter that is face down.
+ *
+ * **Face down is face down.** A letter the deal has never shown and a letter that turned back over
+ * are the same thing to this function, which is the point rather than an economy: a player cannot
+ * tell them apart either, so a hide is indistinguishable from the deal simply not having got
+ * there yet. Nick asked for exactly that and I twice built something else -- the withdrawn letter
+ * returning first, which made it blink back next tick, then returning last, which was a different
+ * invented rule. Both came from trying to preserve a defined next tile, and the random deal had
+ * already given that up.
+ *
+ * So there is no reveal order held anywhere and no record of what went back: the candidates are
+ * read off the board, and the roll comes off the seeded stream like every other decision.
+ */
 export function revealNext(state: GameState): Reduction {
   if (state.flipsRemaining <= 0) return [state, []]
+  const down = state.tiles.filter((tile) => !tile.revealed && !tile.spent)
+  // Nothing face down: every letter is showing or spent, and the rest of the round is hold time.
+  if (down.length === 0) return [state, []]
 
-  /*
-   * A letter that went back over returns before any letter the deal has not reached.
-   *
-   * Deterministic on purpose. Choosing at random between returning and pressing on would mean
-   * the reveal no longer has a defined next thing, which is the one property the deal has always
-   * had, and the point of the mechanic is that the player cannot tell the difference anyway.
-   * Ordering them oldest-first bounds how long a letter can be away.
-   */
-  const returning = state.withdrawn[0]
-  if (returning !== undefined) {
-    const tiles = state.tiles.map((candidate) =>
-      candidate.id === returning ? { ...candidate, revealed: true } : candidate,
-    )
-    // `revealsThisRound` counts slots the deal has reached, and this slot was reached already.
-    const next: GameState = {
-      ...state,
-      tiles,
-      withdrawn: state.withdrawn.slice(1),
-      flipsRemaining: state.flipsRemaining - 1,
-    }
-    return [next, [{ type: 'REVEALED', tileId: returning }]]
-  }
-
-  // Once every slot has been dealt and nothing is away, the rest of the round is hold time.
-  if (state.revealsThisRound >= state.config.n) return [state, []]
-  const tile = tileAt(state, at(state.revealOrder, state.revealsThisRound))
+  const [index, rng] = nextInt(state.rng, down.length)
+  const tile = at(down, index)
   const tiles = state.tiles.map((candidate) =>
     candidate.id === tile.id ? { ...candidate, revealed: true } : candidate,
   )
   const next: GameState = {
     ...state,
+    rng,
     tiles,
     revealsThisRound: state.revealsThisRound + 1,
     flipsRemaining: state.flipsRemaining - 1,
@@ -204,9 +189,12 @@ export function revealNext(state: GameState): Reduction {
 function pickHide(state: GameState): [Tile | null, RngState] {
   const { config } = state
   if (config.hideChance <= 0) return [null, state.rng]
-  // Which, at a cap of one, is also what keeps a single letter away at a time. A separate
-  // `withdrawn.length > 0` guard said that in its own right and could never run, so it is stated
-  // on the constant instead of sitting here untested.
+  /*
+   * The only thing this round remembers about hiding, and it is a budget rather than a record of
+   * what happened: it says how many more letters may go, not which ones went. Nothing anywhere
+   * distinguishes a letter that was taken back from one the deal has not reached, which is the
+   * point -- the board's state is meant to be independent of the path that reached it.
+   */
   if (state.hidesThisRound >= MAX_HIDES_PER_ROUND) return [null, state.rng]
 
   const exposed = state.tiles.filter(isEligible)
@@ -253,7 +241,6 @@ function tick(state: GameState, dictionary: Dictionary): Reduction {
       ...state,
       rng,
       tiles,
-      withdrawn: [...state.withdrawn, hiding.id],
       hidesThisRound: state.hidesThisRound + 1,
       ticksRemaining: state.ticksRemaining + 1,
       flipsRemaining: state.flipsRemaining + 1,
@@ -273,8 +260,10 @@ function tick(state: GameState, dictionary: Dictionary): Reduction {
  */
 function endRound(state: GameState, dictionary: Dictionary, cutShort = false): Reduction {
   const { config } = state
-  const unrevealed = config.n - state.revealsThisRound
-  const flipsCharged = config.chargeFullRound ? Math.min(unrevealed, state.flipsRemaining) : 0
+  // Counted off the board rather than from a reveal tally, which no longer says the same thing:
+  // a letter that went back over and never returned is face down and unbilled either way.
+  const faceDown = state.tiles.filter((tile) => !tile.revealed && !tile.spent).length
+  const flipsCharged = config.chargeFullRound ? Math.min(faceDown, state.flipsRemaining) : 0
   const flipsRemaining = state.flipsRemaining - flipsCharged
 
   if (flipsRemaining <= 0) {
@@ -282,14 +271,9 @@ function endRound(state: GameState, dictionary: Dictionary, cutShort = false): R
     return [over, [{ type: 'GAME_OVER' }]]
   }
 
-  const [layout, laid] = shuffle(
+  const [layout, rng] = shuffle(
     state.rng,
     state.tiles.map((tile) => tile.id),
-  )
-  // A fresh order for the deal as well as a fresh layout, off the same seeded stream.
-  const [revealOrder, rng] = shuffle(
-    laid,
-    state.tiles.map((_, position) => position),
   )
   const reset = state.tiles.map((tile) => ({
     ...tile,
@@ -327,8 +311,6 @@ function endRound(state: GameState, dictionary: Dictionary, cutShort = false): R
     flipsRemaining,
     roundIndex: state.roundIndex + 1,
     ticksRemaining: config.n + config.holdTicks,
-    revealOrder,
-    withdrawn: [],
     hidesThisRound: 0,
     revealsThisRound: 0,
     selection: [],

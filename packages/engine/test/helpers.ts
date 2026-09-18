@@ -146,21 +146,62 @@ export function open(letters: string, overrides: Partial<GameConfig> = {}, seed 
     replaceChance: 0,
     ...overrides,
   })
-  /*
-   * And the deal walks the board in reading order, for the same reason as the two above.
-   *
-   * Real play shuffles it, so that a letter turning back over is indistinguishable from one the
-   * deal has not reached. A suite whose boards are written as `ATESON` wants the letters to
-   * arrive as they read, or every test about what a reveal *does* becomes a test about where the
-   * shuffle put things. `reveal.test.ts` is where the shuffled order is checked.
-   */
-  const [state, effects] = createGame({
-    config,
-    letters: [...letters],
-    seed,
-    revealOrder: [...letters].map((_, position) => position),
-  })
+  const [state, effects] = createGame({ config, letters: [...letters], seed })
   return { state, effects }
+}
+
+/**
+ * The same board, with the letters laid so that the **deal** spells the string.
+ *
+ * `open` keeps tile `k` carrying letter `k`, which is what a test asserting on tile ids or on the
+ * board in slot order needs. This is for the other kind: a test about what is showing after three
+ * ticks, which used to be answered by reading order and cannot be now, because a tick turns over
+ * a letter chosen from whatever is face down.
+ *
+ * There is no order to inject -- the engine holds none, deliberately -- so this runs the game once
+ * with no input to learn which slots the seed turns over and in what order, then lays the first
+ * letter in the first of those slots and so on. Sound because a pick depends only on the stream
+ * and on how many tiles are face down, never on what is written on them, so the probe and the
+ * real game deal the same slots in the same order.
+ *
+ * The board therefore reads as some arrangement of the string rather than as the string, and the
+ * letters arrive in the order written. A test that hides or spends letters diverges from the probe
+ * at that point, which is why the ones using this tick without touching anything first.
+ */
+export function dealt(letters: string, overrides: Partial<GameConfig> = {}, seed = 1): Harness {
+  const config = configFor('easy', {
+    n: letters.length,
+    holdTicks: 0,
+    wildChance: 0,
+    replaceChance: 0,
+    ...overrides,
+  })
+  const probe = createGame({ config: { ...config, hideChance: 0 }, letters: [...letters], seed })[0]
+  const slots = faceUpSlots(probe)
+  let walked = probe
+  while (slots.length < letters.length) {
+    const step = replay(walked, [tick], WORDS)
+    if (step.state === walked) break
+    walked = step.state
+    for (const slot of faceUpSlots(walked)) {
+      if (!slots.includes(slot)) slots.push(slot)
+    }
+  }
+
+  const arranged = [...letters]
+  slots.forEach((slot, at) => {
+    arranged[slot] = letters[at] as string
+  })
+  const [state, effects] = createGame({ config, letters: arranged, seed })
+  return { state, effects }
+}
+
+/** Which slots are face up, in slot order, which is all the probe needs. */
+function faceUpSlots(state: GameState): number[] {
+  return state.tiles
+    .filter((tile) => tile.revealed)
+    .map((tile) => tile.position)
+    .sort((a, b) => a - b)
 }
 
 export function play(

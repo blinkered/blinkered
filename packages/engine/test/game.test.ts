@@ -58,18 +58,13 @@ describe('createGame', () => {
 
   it('opens an already-dead game when there is only one flip to spend', () => {
     const config = configFor('easy', { n: 6, initialFlips: 1 })
-    // Reading order given, so the tile in the effect below is the one the board starts with
-    // rather than wherever the shuffle would have begun. What is under test is the game being
-    // dead on arrival, not where the deal starts.
-    const [state, effects] = createGame({
-      config,
-      letters: [...'ATESON'],
-      seed: 1,
-      revealOrder: [0, 1, 2, 3, 4, 5],
-    })
+    const [state, effects] = createGame({ config, letters: [...'ATESON'], seed: 1 })
     expect(state.flipsRemaining).toBe(0)
     expect(state.status).toBe('over')
-    expect(effects).toEqual([{ type: 'REVEALED', tileId: 0 }, { type: 'GAME_OVER' }])
+    // Whichever letter the deal happened to pick, and then nothing else it can do.
+    expect(effects).toHaveLength(2)
+    expect(effects[0]).toMatchObject({ type: 'REVEALED' })
+    expect(effects[1]).toEqual({ type: 'GAME_OVER' })
   })
 
   it('normalizes letters to upper case', () => {

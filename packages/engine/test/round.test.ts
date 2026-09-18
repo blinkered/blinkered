@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { letter, open, play, revealedLetters, submit, tick } from './helpers.js'
+import { dealt, letter, open, play, revealedLetters, submit, tick } from './helpers.js'
 import type { Effect } from '../src/index.js'
 
 const revealsIn = (effects: readonly Effect[]): number =>
@@ -7,21 +7,37 @@ const revealsIn = (effects: readonly Effect[]): number =>
 
 describe('round lifecycle', () => {
   it('opens with one tile face up and the timer reading N', () => {
-    const { state, effects } = open('ATESON')
+    const { state, effects } = dealt('ATESON')
     expect(state.ticksRemaining).toBe(6)
     expect(state.revealsThisRound).toBe(1)
+    // `open` lays the letters so the deal spells its argument, so the first one is always A. Which
+    // slot holds it is the seed's business and is deliberately not asserted.
     expect(revealedLetters(state)).toBe('A')
-    expect(effects).toEqual([{ type: 'REVEALED', tileId: 0 }])
+    expect(effects).toHaveLength(1)
+    expect(effects[0]).toMatchObject({ type: 'REVEALED' })
   })
 
-  it('reveals in reading order, one per tick', () => {
-    let current = open('ATESON').state
+  it('reveals one letter a tick until the board is full', () => {
+    /*
+     * This used to assert reading order, `A` then `AT` then `ATE`, and there is no reading order
+     * any more: a tick turns over a letter chosen from whatever is face down. What survives is
+     * the part the round is built on -- exactly one letter arrives per tick, and none arrives
+     * twice -- so it is counted rather than spelled.
+     *
+     * `revealedLetters` reads the board in slot order, which is what a player sees, and after k
+     * ticks that is some arrangement of the first k letters this helper laid down.
+     */
+    let current = dealt('ATESON').state
     const seen: string[] = [revealedLetters(current)]
     for (let i = 0; i < 5; i++) {
       current = play(current, [tick]).state
       seen.push(revealedLetters(current))
     }
-    expect(seen).toEqual(['A', 'AT', 'ATE', 'ATES', 'ATESO', 'ATESON'])
+    expect(seen.map((letters) => letters.length)).toEqual([1, 2, 3, 4, 5, 6])
+    for (const [at, letters] of seen.entries()) {
+      expect([...letters].sort().join('')).toBe([...'ATESON'.slice(0, at + 1)].sort().join(''))
+    }
+    expect(seen.at(-1)).toHaveLength(6)
   })
 
   it('shows the last tile with exactly one tick left', () => {
@@ -139,7 +155,7 @@ describe('round lifecycle', () => {
      * zero, so it turned over the second letter first. Nothing about that tile could matter,
      * which is the whole objection: the player was watching a game that was already over.
      */
-    const { state, effects } = open('ATESON', { initialFlips: 2 })
+    const { state, effects } = dealt('ATESON', { initialFlips: 2 })
     expect(revealedLetters(state)).toBe('A')
     expect(state.flipsRemaining).toBe(1)
     expect(state.status).toBe('over')
@@ -148,15 +164,16 @@ describe('round lifecycle', () => {
   })
 
   it('keeps going when exactly enough letters are exposed to spell something', () => {
-    const { state } = play(open('ATESON', { initialFlips: 3 }).state, [tick, tick])
-    expect(revealedLetters(state)).toBe('ATE')
+    const { state } = play(dealt('ATESON', { initialFlips: 3 }).state, [tick, tick])
+    // Slot order, so the three letters the deal laid down come back in some arrangement.
+    expect([...revealedLetters(state)].sort().join('')).toBe('AET')
     expect(state.flipsRemaining).toBe(0)
     expect(state.status).toBe('playing')
   })
 
   it('ends when a word spends the last letters it could have used', () => {
     // The word still scores. It just leaves nothing behind to play with.
-    const exposed = play(open('ATESON', { initialFlips: 3, flipEconomy: 'none' }).state, [
+    const exposed = play(dealt('ATESON', { initialFlips: 3, flipEconomy: 'none' }).state, [
       tick,
       tick,
     ]).state
@@ -178,7 +195,7 @@ describe('round lifecycle', () => {
      * that cannot reach another word is not a revival, and the engine no longer pretends
      * otherwise by spending it a tile at a time.
      */
-    const exposed = play(open('ATESON', { initialFlips: 4 }).state, [tick, tick]).state
+    const exposed = play(dealt('ATESON', { initialFlips: 4 }).state, [tick, tick]).state
     const { state } = play(exposed, [letter('A'), letter('T'), letter('E'), submit])
     expect(state.status).toBe('playing')
     expect(state.flipsRemaining).toBe(3)

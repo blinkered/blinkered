@@ -133,23 +133,14 @@ export interface GameState {
   readonly roundIndex: number
   readonly ticksRemaining: number
   /**
-   * Which grid slot each tick turns over, in order. A fresh permutation every round.
+   * How many letters this round has taken back, against `MAX_HIDES_PER_ROUND`.
    *
-   * The reveal used to walk positions in reading order. It does not, because a letter that goes
-   * back over has to be indistinguishable from one the deal has not reached yet, and against a
-   * predictable sweep it would stand out as the only gap behind the front.
-   *
-   * It costs less than it sounds. The rule that actually matters -- a word can only be started
-   * early if its letters arrive in the order it is spelled (see PLAN.md 1.3) -- binds on arrival
-   * order, and arrival order was already luck, because every tile is dealt a new slot each round.
-   * What reading order bought was knowing where to look next, not what was coming.
+   * A budget, not a record: it says how many more may go, and nothing anywhere says which ones
+   * went. A letter that turned back over is a face-down tile and nothing else, indistinguishable
+   * from one the deal has not reached, so the board cannot be read for the path that produced it.
    */
-  readonly revealOrder: readonly number[]
-  /** Tiles turned back over and waiting to return, oldest first. */
-  readonly withdrawn: readonly number[]
-  /** How many letters this round has taken back, against `MAX_HIDES_PER_ROUND`. */
   readonly hidesThisRound: number
-  /** How many slots the deal has reached. Indexes `revealOrder`, and a return does not move it. */
+  /** Letters turned over this round, counting one that went back over and came round again. */
   readonly revealsThisRound: number
   readonly flipsRemaining: number
   readonly score: number

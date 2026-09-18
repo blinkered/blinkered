@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { configFor, createGame, replay } from '../src/index.js'
 import { MAX_HIDES_PER_ROUND } from '../src/index.js'
-import { WORDS, letter, play, submit, tick } from './helpers.js'
+import { WORDS, letter, play, submit, tap, tick } from './helpers.js'
 import type { Effect, GameState } from '../src/index.js'
 
 /**
@@ -14,7 +14,7 @@ import type { Effect, GameState } from '../src/index.js'
  * that went back would be the only gap behind the front.
  */
 
-/** A board dealt in reading order with hiding on, so a test can say which tile went where. */
+/** A board with hiding on, and the seed a test can vary to get a different deal. */
 function board(letters: string, overrides = {}, seed = 1) {
   const config = configFor('easy', {
     n: letters.length,
@@ -24,20 +24,21 @@ function board(letters: string, overrides = {}, seed = 1) {
     hideChance: 1,
     ...overrides,
   })
-  const [state, effects] = createGame({
-    config,
-    letters: [...letters],
-    seed,
-    revealOrder: [...letters].map((_, position) => position),
-  })
+  const [state, effects] = createGame({ config, letters: [...letters], seed })
   return { state, effects }
 }
 
 const hides = (effects: readonly Effect[]): readonly number[] =>
   effects.filter((effect) => effect.type === 'TILE_HIDDEN').map((effect) => effect.tileId)
 
+const reveals = (effects: readonly Effect[]): readonly number[] =>
+  effects.filter((effect) => effect.type === 'REVEALED').map((effect) => effect.tileId)
+
 const exposed = (state: GameState): number =>
   state.tiles.filter((tile) => tile.revealed && !tile.spent).length
+
+const faceDown = (state: GameState): readonly number[] =>
+  state.tiles.filter((tile) => !tile.revealed && !tile.spent).map((tile) => tile.id)
 
 describe('a letter turning back over', () => {
   it('adds a tick and hands back the flip the letter cost', () => {
@@ -50,37 +51,46 @@ describe('a letter turning back over', () => {
     expect(hides(effects)).toHaveLength(1)
     expect(state.ticksRemaining).toBe(before.ticks + 1)
     expect(state.flipsRemaining).toBe(before.flips + 1)
-    expect(state.withdrawn).toHaveLength(1)
-    // One of the two that were showing is gone, and the deal has not moved on.
+    // One of the two that were showing is face down again, and it is face down in the only sense
+    // the board has: there is nothing anywhere recording that it was ever up.
     expect(exposed(state)).toBe(1)
-    expect(state.revealsThisRound).toBe(opened.revealsThisRound)
+    expect(faceDown(state)).toContain(hides(effects)[0])
   })
 
-  it('brings it back on the next tick, at the price it was refunded', () => {
+  it('is indistinguishable from a letter the deal has not reached', () => {
     /*
-     * The pair is a no-op on both counters, which is the whole shape of the mechanic: it cannot
-     * shorten the window with the whole board up, because the letter is always back before the
-     * deal is finished with. What it spends is time and the player's memory of the board.
+     * The principle the mechanic is built on, in Nick's words: the state machine of the board
+     * should be as independent as possible from the path used to arrive at a given state.
+     *
+     * So a withdrawn letter goes back into the same pool as every letter never dealt, and the
+     * deal picks from that pool at random. Two earlier versions of this each imposed an order --
+     * the withdrawn letter first, so it blinked back next tick, then last -- and both let a
+     * player read the board for its own history. Nothing does now, and there is no field left in
+     * the state to read.
      */
-    const opened = play(board('ATESON').state, [tick]).state
-    const before = { ticks: opened.ticksRemaining, flips: opened.flipsRemaining }
-    const { state, effects } = play(opened, [tick, tick])
+    const taken = play(board('ATESON').state, [tick, tick])
+    const hidden = hides(taken.effects)[0]
+    expect(hidden).toBeDefined()
 
-    expect(hides(effects)).toHaveLength(1)
-    expect(state.withdrawn).toEqual([])
-    expect(state.ticksRemaining).toBe(before.ticks)
-    expect(state.flipsRemaining).toBe(before.flips)
-    // The tile that came back is the one that went, and the deal has not moved on past it.
-    const returned = effects.filter((effect) => effect.type === 'REVEALED').at(-1)
-    expect(returned).toEqual({ type: 'REVEALED', tileId: hides(effects)[0] })
-    expect(state.revealsThisRound).toBe(opened.revealsThisRound)
+    // Over many seeds the letter comes back at every point in the round rather than always next.
+    const positions = new Set<number>()
+    for (let seed = 1; seed <= 40; seed++) {
+      const round = play(
+        board('ATESON', {}, seed).state,
+        Array.from({ length: 8 }, () => tick),
+      )
+      const went = hides(round.effects)[0]
+      if (went === undefined) continue
+      const order = reveals(round.effects)
+      const back = order.indexOf(went, order.indexOf(went) + 1)
+      positions.add(back === -1 ? -1 : back)
+    }
+    expect(positions.size).toBeGreaterThan(1)
   })
 
   it('takes at most one letter a round, however certain the chance', () => {
     // `hideChance` of 1 would take a letter every tick without the cap, and every hide makes the
     // round two ticks longer, so the cap is what keeps the chance safe to raise.
-    // Nine ticks, which is inside one round: six tiles and two hold ticks is an eight-tick round,
-    // and the hide plus its return make this one ten.
     const { state, effects } = play(
       board('ATESON').state,
       Array.from({ length: 9 }, () => tick),
@@ -91,53 +101,26 @@ describe('a letter turning back over', () => {
     expect(state.hidesThisRound).toBeLessThanOrEqual(MAX_HIDES_PER_ROUND)
   })
 
-  /** Ticks in one round with every letter showing at the moment the tick begins. */
-  function ticksWithEverythingUp(state: GameState): number {
-    let full = 0
-    let cycles = 0
-    while (state.status === 'playing' && cycles < 40) {
-      if (state.revealsThisRound === state.config.n && state.withdrawn.length === 0) full += 1
-      state = replay(state, [tick], WORDS).state
-      cycles += 1
-      if (state.roundIndex > 0) break
+  it('shows every letter before the round ends, and the hold opens on a full board', () => {
+    /*
+     * What the added tick buys. A hide adds one and the reveal that brings the letter round again
+     * spends one, so the round is two ticks longer and the window with everything showing is the
+     * window the level always had. Two retunes went into setting that window and this leaves it
+     * alone.
+     */
+    for (const hideChance of [0, 1]) {
+      let state = board('ATESON', { hideChance }).state
+      let cycles = 0
+      let full = 0
+      while (state.status === 'playing' && cycles < 40) {
+        if (faceDown(state).length === 0) full += 1
+        state = replay(state, [tick], WORDS).state
+        cycles += 1
+        if (state.roundIndex > 0) break
+      }
+      // Three, being `holdTicks` of two plus the tick the last letter lands on.
+      expect(full, `hideChance ${String(hideChance)}`).toBe(3)
     }
-    return full
-  }
-
-  it('does not shorten the window with the whole board up', () => {
-    /*
-     * The claim the mechanic rests on, and the reason it is safe to raise `hideChance` without
-     * re-tuning the perception budget two retunes went into setting. A hide adds a tick and its
-     * return spends one, so the letter is always back before the deal is finished with, and the
-     * hold that follows is the hold the level always had. The round is two ticks longer instead.
-     */
-    const taking = board('ATESON', { hideChance: 1 }).state
-    const still = board('ATESON', { hideChance: 0 }).state
-    expect(ticksWithEverythingUp(taking)).toBe(ticksWithEverythingUp(still))
-  })
-
-  it('lengthens it by one when the letter is taken after the board is complete', () => {
-    /*
-     * Which is the honest other half, and it surprised me: a hide during the hold is *generous*
-     * in time. The board was complete when the tick began, so that tick counts, and the tick the
-     * hide added is spent bringing the letter back, after which the hold plays out in full.
-     *
-     * Measured over two hundred games it comes to about a tenth of a tick a round, because most
-     * hides land during the deal where there is far more room for them. It is worth pinning
-     * rather than rounding away, because "the window is exactly preserved" is the sort of claim
-     * that gets quoted later.
-     */
-    const complete = play(board('ATESON', { hideChance: 0 }).state, [
-      tick,
-      tick,
-      tick,
-      tick,
-      tick,
-    ]).state
-    expect(complete.revealsThisRound).toBe(complete.config.n)
-
-    const taking = { ...complete, config: { ...complete.config, hideChance: 1 } }
-    expect(ticksWithEverythingUp(taking)).toBe(ticksWithEverythingUp(complete) + 1)
   })
 
   it('never takes a letter that is selected', () => {
@@ -147,8 +130,8 @@ describe('a letter turning back over', () => {
      * it to spell something else unpins every letter in it, at the moment you meant to use them.
      */
     const opened = play(board('ATESON', { hideChance: 0 }).state, [tick, tick]).state
-    const held = play(opened, [letter('A'), letter('T')]).state
-    expect(held.selection).toHaveLength(2)
+    const held = play(opened, [letter(opened.tiles.find((t) => t.revealed)?.letter ?? 'A')]).state
+    expect(held.selection).toHaveLength(1)
 
     const { state, effects } = replay(
       { ...held, config: { ...held.config, hideChance: 1 } },
@@ -164,13 +147,11 @@ describe('a letter turning back over', () => {
   it('does nothing when every letter showing is selected, and the tick behaves as any other', () => {
     // Otherwise a full selection would be a way to buy time: a tick that always hid would always
     // add a tick, and a player could hold the board still by holding every letter.
-    const full = play(board('ATE', { hideChance: 0, holdTicks: 2 }).state, [
-      tick,
-      tick,
-      letter('A'),
-      letter('T'),
-      letter('E'),
-    ]).state
+    const dealt = play(board('ATE', { hideChance: 0, holdTicks: 2 }).state, [tick, tick]).state
+    const full = play(
+      dealt,
+      dealt.tiles.map((tile) => tap(tile.id)),
+    ).state
     expect(full.selection).toHaveLength(3)
 
     const { state, effects } = replay(
@@ -200,35 +181,33 @@ describe('a letter turning back over', () => {
     expect(configFor('easy').hideChance).toBe(0)
   })
 
-  it('forgets what it took when the next board is dealt', () => {
+  it('forgets its budget when the next board is dealt', () => {
     const { state } = play(
       board('ATESON').state,
       Array.from({ length: 20 }, () => tick),
     )
     expect(state.roundIndex).toBeGreaterThan(0)
     expect(state.hidesThisRound).toBe(0)
-    expect(state.withdrawn).toEqual([])
   })
 
   it('does not end the game over a letter that is merely away', () => {
     /*
-     * `stillToCome` decides both whether a round is dead and whether the game is over, and a
-     * withdrawn letter is neither face up nor waiting to be dealt. Left out of that count, a
-     * letter going away would read as a board that had run out of letters.
+     * `stillToCome` decides both whether a round is dead and whether the game is over, and it
+     * counts what is face down rather than what was dealt. Counted the other way, a letter going
+     * away would read as a board that had run out of letters.
      */
     const opened = board('ATE', { hideChance: 1, minWordLength: 3, initialFlips: 40 }).state
     const { state } = play(opened, [tick, tick])
-    // One letter away, one showing, one still to be dealt: below the three-letter floor on every
-    // count that ignores the letter that is coming back.
-    expect(state.withdrawn).toHaveLength(1)
-    expect(state.tiles.filter((tile) => tile.revealed)).toHaveLength(1)
+    expect(exposed(state)).toBe(1)
+    expect(faceDown(state)).toHaveLength(2)
     expect(state.status).toBe('playing')
   })
 
   it('still replays identically from the same seed', () => {
-    // The roll comes off the seeded stream like every other decision, which is what lets a server
-    // recompute a game rather than believe it.
-    const events = [tick, tick, tick, letter('A'), tick, submit, tick]
+    // Every roll comes off the seeded stream -- which letter hides, and which face-down letter
+    // the next tick turns over -- which is what lets a server recompute a game rather than
+    // believe it.
+    const events = [tick, tick, tick, tick, submit, tick]
     const once = play(board('ATESON').state, events)
     const twice = play(board('ATESON').state, events)
     expect(once.state).toEqual(twice.state)
@@ -236,55 +215,38 @@ describe('a letter turning back over', () => {
   })
 })
 
-describe('the deal no longer walks the board in reading order', () => {
-  it('shuffles the order, and covers every slot exactly once', () => {
+describe('the deal', () => {
+  it('turns over a letter chosen from whatever is face down', () => {
+    // Not a precomputed order: there is no order held in the state at all, so the board cannot be
+    // read for what comes next any more than for what came before.
     const config = configFor('medium', { n: 9, wildChance: 0, replaceChance: 0, hideChance: 0 })
-    const [state] = createGame({ config, letters: [...'ATESONRIP'], seed: 7 })
-    expect([...state.revealOrder].sort((a, b) => a - b)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    expect(state.revealOrder).not.toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8])
-  })
-
-  it('deals a fresh order every round', () => {
-    const config = configFor('medium', { n: 6, wildChance: 0, replaceChance: 0, hideChance: 0 })
-    const [opened] = createGame({ config, letters: [...'ATESON'], seed: 3 })
-    const next = replay(
-      opened,
-      Array.from({ length: config.n + config.holdTicks }, () => tick),
-      WORDS,
-    ).state
-    expect(next.roundIndex).toBe(1)
-    expect(next.revealOrder).not.toEqual(opened.revealOrder)
-    expect([...next.revealOrder].sort((a, b) => a - b)).toEqual([0, 1, 2, 3, 4, 5])
-  })
-
-  it('turns tiles over in that order and no other', () => {
-    const config = configFor('medium', { n: 6, wildChance: 0, replaceChance: 0, hideChance: 0 })
-    const [opened, effects] = createGame({ config, letters: [...'ATESON'], seed: 5 })
-    const turned = [
-      ...effects.filter((effect) => effect.type === 'REVEALED').map((effect) => effect.tileId),
-    ]
+    const [opened] = createGame({ config, letters: [...'ATESONRIP'], seed: 7 })
     let state = opened
+    const seen: number[] = []
     for (let i = 0; i < config.n - 1; i++) {
       const step = replay(state, [tick], WORDS)
+      seen.push(...reveals(step.effects))
       state = step.state
-      for (const effect of step.effects) {
-        if (effect.type === 'REVEALED') turned.push(effect.tileId)
-      }
     }
-    // Position order, read through the round's own sequence.
-    const byPosition = (position: number): number =>
-      state.tiles.filter((tile) => tile.position === position).map((tile) => tile.id)[0] as number
-    expect(turned).toEqual(opened.revealOrder.map(byPosition))
+    // Every slot exactly once, and not in reading order.
+    expect([...seen].sort((a, b) => a - b)).toHaveLength(config.n - 1)
+    expect(new Set(seen).size).toBe(config.n - 1)
+    expect(faceDown(state)).toHaveLength(0)
   })
 
-  it('refuses an order that is not one position per tile', () => {
-    expect(() =>
-      createGame({
-        config: configFor('easy', { n: 3 }),
-        letters: [...'ATE'],
-        seed: 1,
-        revealOrder: [0, 1],
-      }),
-    ).toThrow(RangeError)
+  it('deals a different order from the same board on a different seed', () => {
+    const config = configFor('medium', { n: 6, wildChance: 0, replaceChance: 0, hideChance: 0 })
+    const order = (seed: number): readonly number[] => {
+      const [opened, effects] = createGame({ config, letters: [...'ATESON'], seed })
+      let state = opened
+      const seen = [...reveals(effects)]
+      for (let i = 0; i < config.n - 1; i++) {
+        const step = replay(state, [tick], WORDS)
+        seen.push(...reveals(step.effects))
+        state = step.state
+      }
+      return seen
+    }
+    expect(order(3)).not.toEqual(order(4))
   })
 })

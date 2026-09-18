@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { letter, open, play, submit, tick, WORDS } from './helpers.js'
+import { dealt, letter, open, play, submit, tick, WORDS } from './helpers.js'
 import type { FlipEconomy, GameConfig, GameState } from '../src/index.js'
 
 /** ATESON exposes A T E S O N in reading order, which spells plenty. */
@@ -118,7 +118,7 @@ describe('word-complete modes', () => {
 
   it('shuffle can bill the unrevealed tiles when told to', () => {
     const early = play(
-      open('ATESON', { wordCompleteMode: 'shuffle', chargeFullRound: true }).state,
+      dealt('ATESON', { wordCompleteMode: 'shuffle', chargeFullRound: true }).state,
       [tick, tick],
     ).state
     const { effects } = spell(early, 'ATE')
@@ -127,7 +127,7 @@ describe('word-complete modes', () => {
   })
 
   it('shuffle bills nothing by default', () => {
-    const early = play(open('ATESON', { wordCompleteMode: 'shuffle' }).state, [tick, tick]).state
+    const early = play(dealt('ATESON', { wordCompleteMode: 'shuffle' }).state, [tick, tick]).state
     const { effects } = spell(early, 'ATE')
     const ended = effects.find((effect) => effect.type === 'ROUND_ENDED')
     expect(ended).toMatchObject({ flipsCharged: 0 })

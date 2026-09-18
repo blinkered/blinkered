@@ -100,10 +100,6 @@ function stateOf(frame: Frame, tiles: readonly string[], language: string): Game
     wildIntent: {},
     roundIndex: 0,
     ticksRemaining: config.n,
-    // Reading order, and the tour is the one place that is still the truth: a scripted frame says
-    // which tiles are up, so the order they would have arrived in is not part of the lesson.
-    revealOrder: board.map((_, position) => position),
-    withdrawn: [],
     hidesThisRound: 0,
     revealsThisRound: 0,
     flipsRemaining: config.initialFlips,

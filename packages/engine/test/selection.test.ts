@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { clearLetter, letter, open, play, resetWord, tap, tick, undo } from './helpers.js'
-import { keyToEvent, letterAvailability, selectedLetters } from '../src/index.js'
+import { keyToEvent, letterAvailability, selectedLetters, tileAt } from '../src/index.js'
 import type { GameEvent, GameState } from '../src/index.js'
 
 /** BANANA gives three A's and two N's, which is where the keyboard rules earn their keep. */
@@ -76,9 +76,13 @@ describe('typing letters', () => {
   })
 
   it('says nothing about letters that are still face down', () => {
-    // The T of ATE sits at position 1 and has not been revealed yet. If the keyboard
-    // answered here it would be an oracle for the hidden board.
-    const { state, effects } = play(open('ATE').state, [letter('T')])
+    // Only one letter of ATE is up when a round opens, and which one is the deal's business, so
+    // the test asks for one that is not. If the keyboard answered it would be an oracle for the
+    // hidden board.
+    const opened = open('ATE').state
+    const down = opened.tiles.find((tile) => !tile.revealed)
+    expect(down).toBeDefined()
+    const { state, effects } = play(opened, [letter(down?.letter ?? '')])
     expect(state.selection).toEqual([])
     expect(effects).toEqual([{ type: 'INPUT_IGNORED', reason: 'no-such-letter' }])
   })
@@ -156,6 +160,29 @@ describe('undo and reset', () => {
   it('reset on an empty word is a no-op', () => {
     const { effects } = play(banana(), [resetWord])
     expect(effects).toEqual([{ type: 'INPUT_IGNORED', reason: 'nothing-selected' }])
+  })
+})
+
+describe('finding a tile by its slot', () => {
+  /*
+   * `tileAt` is what the terminal harness uses for its number keys: 1 through 0 tap the first ten
+   * slots, so it needs the tile in a slot rather than a tile by id.
+   *
+   * It has its own test because the reducer stopped calling it. The deal used to walk slots in
+   * order and look each one up; it now picks from whatever is face down and already has the tile
+   * in hand, so this is API for a caller outside the engine and is tested as such.
+   */
+  it('answers with the tile in that slot', () => {
+    const { state } = open('ATE')
+    for (const tile of state.tiles) {
+      expect(tileAt(state, tile.position)).toBe(tile)
+    }
+  })
+
+  it('covers every slot of the board exactly once', () => {
+    const { state } = open('ATESON')
+    const slots = state.tiles.map((_, position) => tileAt(state, position).id)
+    expect(new Set(slots).size).toBe(state.config.n)
   })
 })
 
