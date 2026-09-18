@@ -206,10 +206,16 @@ let the cluster pull from GHCR, and why the word lists are pre-compressed at bui
 ## Checks
 
 ```
-pnpm check          typecheck, lint, format, and the test suite with coverage
+pnpm check          typecheck, lint, format, coverage, and the database suites if one is up
 pnpm test           tests only
 pnpm coverage       tests with the 100% engine coverage gate
+pnpm test:integration   the database suites, which need a Postgres
 ```
+
+`pnpm check` finishes with the suites that need a real Postgres, but only when one answers;
+with no database up it says loudly that it skipped them rather than passing in silence. So
+`docker compose up -d postgres` before `pnpm check` is the difference between checking the
+committed migrations and taking them on trust. CI runs them either way, in a job of their own.
 
 The engine is held at 100% lines, branches, functions and statements. That is affordable
 only because the engine is pure: the reducer takes a state, an event and a dictionary, and

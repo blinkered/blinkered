@@ -191,6 +191,16 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   files are covered elsewhere is not being checked. Giving the integration run its own gate is
   the fix, and is better than either an exclusion or a pragma.
 
+  Half of that is now done. `pnpm check` ends with `pnpm test:integration:when-up`, which runs
+  those suites when a Postgres answers at `BLINKERED_DB_HOST`/`BLINKERED_DB_PORT` and prints a
+  deliberately shouty skip when none does (`tools/integration-gate.sh`). What prompted it: the
+  table list in `database.integration.test.ts` went stale when `native_handshakes` arrived, and
+  because nothing on a development machine ran that suite, CI went red on six consecutive pushes
+  before anybody looked. A developer with the stack up now finds out before pushing.
+
+  The coverage half is still open and the gate does not touch it: those runs still measure
+  nothing, so the exclusions for `db.ts` and `migrate.ts` still rest on a claim nobody checks.
+
 - **The database is in-cluster on tl-prod**, not Neon, and the chart already treats it as an
   interface with two implementations so the decision is reversible. What does not come with it
   is point-in-time recovery, which was the reason Neon was attractive. See ACCOUNTS.md.
