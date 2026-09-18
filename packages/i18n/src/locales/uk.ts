@@ -61,6 +61,7 @@ export const uk: Messages = {
   nothingUp: 'нічого не відкрито',
   shuffled: 'перемішано',
   shuffledAndBilled: 'перемішано, зараховано {flips} невикористаних',
+  tooFewLetters: 'Залишилося замало літер',
 
   gameLanguage: 'мова',
   interfaceLanguage: 'інтерфейс',

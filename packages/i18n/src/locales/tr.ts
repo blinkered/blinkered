@@ -62,6 +62,7 @@ export const tr: Messages = {
   nothingUp: 'açık değil',
   shuffled: 'karıldı',
   shuffledAndBilled: 'karıldı, kullanılmayan {flips} çevirme düşüldü',
+  tooFewLetters: 'Kalan harf sayısı çok az',
 
   gameLanguage: 'dil',
   interfaceLanguage: 'arayüz',

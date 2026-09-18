@@ -2705,6 +2705,60 @@ kbd {
  * is there without reading it; this one is meant to read as the board having been cleared, and a
  * solid ground also means the one tile the round already turned cannot show through.
  */
+/*
+ * The round that could not make another word, said over a covered board.
+ *
+ * Borrowed wholesale from `.swap-veil` below, because it is the same job: cover the board, say
+ * one thing, get out of the way. What differs is the type size. The swap has two big letters and
+ * an arrow to carry it and can afford a modest heading; this has only a sentence, it is up for
+ * 1.5s rather than 3.6s, and the ask was a sufficiently large font, so it is set near the size
+ * the board's own tiles use and allowed to wrap.
+ *
+ * `--up` rather than a new colour: every hue on this board is spoken for -- gold is a wild, blue
+ * is selection, green accepted, red refused -- and this is a statement about the board rather
+ * than about any tile on it.
+ */
+.fewer-veil {
+  position: absolute;
+  inset: -0.5rem;
+  z-index: 5;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--bg);
+  animation: fewer-veil var(--fewer-ms) ease-out both;
+}
+.fewer-title {
+  margin: 0;
+  max-width: 24ch;
+  color: var(--up);
+  font-size: clamp(1.1rem, 8cqw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}
+/*
+ * In fast, out gently, opaque for most of it. The fade at the end is what makes the next board
+ * feel dealt rather than snapped into place, and the percentages are of `--fewer-ms`, so
+ * retiming the notice needs no change here.
+ *
+ * No reduced-motion override: a cross-fade is not motion, and there is nothing moving to still.
+ */
+@keyframes fewer-veil {
+  0% {
+    opacity: 0;
+  }
+  8%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 .swap-veil {
   position: absolute;
   inset: -0.5rem;

@@ -3,6 +3,7 @@ import { createGame, keyToEvent, reduce } from '@blinkered/engine'
 import type { Effect, GameConfig, GameEvent, GameState, KeyScheme } from '@blinkered/engine'
 import { generateBoard } from '@blinkered/words'
 import { SWAP_MS } from './LetterSwap.js'
+import { TOO_FEW_MS } from './TooFewLetters.js'
 import type { GeneratedBoard, WordIndex } from '@blinkered/words'
 import { alphabetFor } from '@blinkered/engine'
 
@@ -51,6 +52,14 @@ export interface Game extends Session {
    * be a rule with a hole in the shape of the home gesture.
    */
   readonly stopped: boolean
+  /**
+   * True while the notice about a round that ran out of usable letters is up.
+   *
+   * The clock is stopped for this too, and deliberately not through `paused`: that flag is what
+   * costs a player their place on the leaderboard, and a hold the game itself imposed is not the
+   * player stopping the clock. Nothing they did earned the penalty, so nothing here applies it.
+   */
+  readonly fewerLetters: boolean
   readonly setPaused: (paused: boolean) => void
   readonly dispatch: (event: GameEvent) => void
 }
@@ -147,6 +156,35 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
       setSwapping(false)
     }, SWAP_MS)
   }, [session.effects])
+
+  /*
+   * And it stops again while the player is told why a round ended early.
+   *
+   * Same shape as the swap above and for the same two reasons: the hold has to be as long as the
+   * notice, and the timer belongs in a ref because `effects` is a new array on every dispatch, so
+   * a cleanup tied to it would cancel the hold the moment the player touched anything.
+   *
+   * Free, like the swap. The engine has already dealt the next board by the time this effect
+   * arrives -- the reducer is where a round ends -- so what is being held is the first tick of
+   * the new round, and a round is only spent by ticks.
+   */
+  const [fewerLetters, setFewerLetters] = useState(false)
+  const fewerTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    const cut = session.effects.some((effect) => effect.type === 'ROUND_ENDED' && effect.cutShort)
+    if (!cut) return
+    setFewerLetters(true)
+    if (fewerTimer.current !== null) clearTimeout(fewerTimer.current)
+    fewerTimer.current = setTimeout(() => {
+      setFewerLetters(false)
+    }, TOO_FEW_MS)
+  }, [session.effects])
+  useEffect(
+    () => () => {
+      if (fewerTimer.current !== null) clearTimeout(fewerTimer.current)
+    },
+    [],
+  )
   useEffect(
     () => () => {
       if (swapTimer.current !== null) clearTimeout(swapTimer.current)
@@ -171,14 +209,14 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
   const tickMs = session.state.config.speedMultiplier * 1000
 
   useEffect(() => {
-    if (paused || over || swapping) return undefined
+    if (paused || over || swapping || fewerLetters) return undefined
     const timer = setInterval(() => {
       dispatch({ type: 'TICK' })
     }, tickMs)
     return () => {
       clearInterval(timer)
     }
-  }, [paused, over, swapping, tickMs, dispatch])
+  }, [paused, over, swapping, fewerLetters, tickMs, dispatch])
 
   // The listener is bound once. It no longer needs to read game state at all: keyToEvent
   // maps a keystroke to an intent and the reducer resolves it against live state, so there
@@ -205,5 +243,5 @@ export function useGame(dictionary: WordIndex, spec: GameSpec, keyScheme: KeySch
     }
   }, [dispatch])
 
-  return { ...session, paused, stopped, setPaused: setManuallyPaused, dispatch }
+  return { ...session, paused, stopped, fewerLetters, setPaused: setManuallyPaused, dispatch }
 }

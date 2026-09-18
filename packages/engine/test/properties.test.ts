@@ -172,7 +172,17 @@ describe('invariants that must hold for any sequence of inputs', () => {
     )
   })
 
-  it('always runs out of flips if the player only watches', () => {
+  it('always runs out of usable flips if the player only watches', () => {
+    /*
+     * Was `toBe(0)`, and the game now stops a little sooner than that: it ends once the flips
+     * left could not turn over enough tiles to reach the shortest word, whether that is zero
+     * flips or two against a four-letter floor. Spending the last unspendable ones changed
+     * nothing and took the player's time, which is what the playtest objected to.
+     *
+     * Still the same invariant underneath -- watching cannot go on forever -- and still the one
+     * worth stating as a property, since the loop below would hang rather than fail if that
+     * stopped being true.
+     */
     fc.assert(
       fc.property(aGame, (sample) => {
         let state = runGame(sample).state
@@ -182,7 +192,7 @@ describe('invariants that must hold for any sequence of inputs', () => {
           ticks += 1
           expect(ticks).toBeLessThan(2000)
         }
-        expect(state.flipsRemaining).toBe(0)
+        expect(state.flipsRemaining).toBeLessThan(state.config.minWordLength)
       }),
     )
   })

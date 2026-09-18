@@ -61,6 +61,7 @@ export const mk: Messages = {
   nothingUp: 'ништо не е откриено',
   shuffled: 'промешано',
   shuffledAndBilled: 'промешано, одбиени {flips} неискористени',
+  tooFewLetters: 'Останаа премалку букви',
 
   gameLanguage: 'јазик',
   interfaceLanguage: 'изглед',

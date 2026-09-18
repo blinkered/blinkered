@@ -61,6 +61,7 @@ export const is: Messages = {
   nothingUp: 'ekkert snúið upp',
   shuffled: 'stokkað',
   shuffledAndBilled: 'stokkað, {flips} ónotaðir dregnir frá',
+  tooFewLetters: 'Of fáir stafir eftir',
 
   gameLanguage: 'tungumál',
   interfaceLanguage: 'viðmót',

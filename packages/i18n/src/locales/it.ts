@@ -56,6 +56,7 @@ export const it: Messages = {
   nothingUp: 'niente scoperto',
   shuffled: 'mescolato',
   shuffledAndBilled: 'mescolato, addebitati {flips} giri non usati',
+  tooFewLetters: 'Sono rimaste troppo poche lettere',
 
   gameLanguage: 'lingua',
   interfaceLanguage: 'interfaccia',

@@ -65,6 +65,7 @@ export const ka: Messages = {
   nothingUp: 'არაფერია გადმობრუნებული',
   shuffled: 'აირია',
   shuffledAndBilled: 'აირია, ჩამოგეჭრათ {flips} გამოუყენებელი',
+  tooFewLetters: 'დარჩენილი ასოები ძალიან ცოტაა',
 
   gameLanguage: 'ენა',
   interfaceLanguage: 'ინტერფეისი',

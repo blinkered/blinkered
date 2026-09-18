@@ -66,6 +66,7 @@ export const arz: Messages = {
   nothingUp: 'مش مكشوفة',
   shuffled: 'اتخلطت',
   shuffledAndBilled: 'اتخلطت، واتحسب عليك {flips} ماستعملتهاش',
+  tooFewLetters: 'مفيش حروف كفاية',
 
   gameLanguage: 'اللغة',
   interfaceLanguage: 'الشاشة',

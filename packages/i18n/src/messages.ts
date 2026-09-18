@@ -216,6 +216,15 @@ export interface Messages {
   readonly shuffled: string
   /** `{flips}` */
   readonly shuffledAndBilled: string
+  /**
+   * Shown large, over a cleared board, when a round ends because its letters cannot make another
+   * word.
+   *
+   * Not a message-bar line like the two above it: this one stands in for the board for a moment
+   * and is the only warning that the next round is coming early, so it is read at a glance rather
+   * than alongside anything else.
+   */
+  readonly tooFewLetters: string
 
   // Choosing a language.
   readonly gameLanguage: string

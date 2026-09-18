@@ -63,6 +63,7 @@ export const cy: Messages = {
   nothingUp: 'dim yn y golwg',
   shuffled: 'wedi’i gymysgu',
   shuffledAndBilled: 'wedi’i gymysgu, codwyd {flips} heb eu defnyddio',
+  tooFewLetters: 'Rhy ychydig o lythrennau ar ôl',
 
   gameLanguage: 'iaith',
   interfaceLanguage: 'rhyngwyneb',

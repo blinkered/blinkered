@@ -62,6 +62,7 @@ export const pl: Messages = {
   nothingUp: 'nic nie odkryto',
   shuffled: 'przetasowano',
   shuffledAndBilled: 'przetasowano, policzono {flips} niewykorzystanych',
+  tooFewLetters: 'Zostało za mało liter',
 
   gameLanguage: 'język',
   interfaceLanguage: 'interfejs',

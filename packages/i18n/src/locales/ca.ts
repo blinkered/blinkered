@@ -62,6 +62,7 @@ export const ca: Messages = {
   nothingUp: 'res destapat',
   shuffled: 'barrejat',
   shuffledAndBilled: 'barrejat, s’han cobrat {flips} sense usar',
+  tooFewLetters: 'Queden massa poques lletres',
 
   gameLanguage: 'llengua',
   interfaceLanguage: 'interfície',

@@ -22,10 +22,44 @@ describe('difficulty profiles', () => {
   it('escalates the clock and shrinks the hold as levels rise', () => {
     const speeds = levels.map((level) => DIFFICULTIES[level].speedMultiplier)
     const holds = levels.map((level) => DIFFICULTIES[level].holdTicks)
-    const rounds = levels.map((level) => DIFFICULTIES[level].initialRounds)
     expect(speeds).toEqual([...speeds].sort((a, b) => b - a))
     expect(holds).toEqual([...holds].sort((a, b) => b - a))
-    expect(rounds).toEqual([...rounds].sort((a, b) => b - a))
+  })
+
+  it('gives an easier level the longer sitting, counted in seconds rather than rounds', () => {
+    /*
+     * This used to assert that `initialRounds` fell as levels rose, and it no longer does: the
+     * counts now climb, 7 through 10. A round is not a comparable unit between levels -- 25.5s on
+     * easy against 12.6s on insane -- so equal round counts would be unequal sittings, and the
+     * playtest that prompted the retune was about the sitting. "Too many flips for so slow a
+     * game."
+     *
+     * So the ordering moved to the thing a player actually feels: the floor in seconds, which is
+     * every round the flip budget pays for at that level's own pace, with nothing scored.
+     */
+    const floors = levels.map((level) => {
+      const config = configFor(level)
+      const rounds = config.initialFlips / config.n
+      return rounds * (config.n + config.holdTicks) * config.speedMultiplier
+    })
+    expect(floors).toEqual([...floors].sort((a, b) => b - a))
+
+    // And pinned, because "monotone" is also true of four numbers nobody would ship. Roughly
+    // three minutes at the top of the ladder and two at the bottom, where easy alone used to be
+    // seven. Rounded to the tenth of a second the arithmetic produces.
+    expect(floors.map((seconds) => Math.round(seconds * 10) / 10)).toEqual([178.5, 166.4, 162, 126])
+  })
+
+  it('keeps the whole board up for longer on an easier level', () => {
+    // The perception budget, which is the axis the previous retune set and this one only
+    // shortened as a side effect of the faster clock. Still halving, near enough, all the way
+    // down: 7.5s, 5.2s, 3.6s, 1.8s.
+    const windows = levels.map((level) => {
+      const config = configFor(level)
+      return config.holdTicks * config.speedMultiplier
+    })
+    expect(windows).toEqual([...windows].sort((a, b) => b - a))
+    expect(windows.map((seconds) => Math.round(seconds * 10) / 10)).toEqual([7.5, 5.2, 3.6, 1.8])
   })
 
   it('never makes a harder level swap letters less often than an easier one', () => {
@@ -93,8 +127,9 @@ describe('overrides', () => {
   it('derives the flip budget and word floor from an overridden board size', () => {
     const small = configFor('medium', { n: 6 })
     const large = configFor('medium', { n: 12 })
-    expect(small.initialFlips).toBe(72)
-    expect(large.initialFlips).toBe(144)
+    // Eight rounds either way, which is medium's budget; the flips scale with the board.
+    expect(small.initialFlips).toBe(48)
+    expect(large.initialFlips).toBe(96)
     expect(large.wMin).toBeGreaterThan(small.wMin)
   })
 

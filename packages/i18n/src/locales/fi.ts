@@ -58,6 +58,7 @@ export const fi: Messages = {
   nothingUp: 'ei mitään näkyvissä',
   shuffled: 'sekoitettu',
   shuffledAndBilled: 'sekoitettu, veloitettiin {flips} käyttämätöntä siirtoa',
+  tooFewLetters: 'Liian vähän kirjaimia jäljellä',
 
   gameLanguage: 'kieli',
   interfaceLanguage: 'käyttöliittymä',

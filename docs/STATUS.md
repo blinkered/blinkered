@@ -312,6 +312,33 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   bid; `initialRounds` was deliberately left alone so the next play has one variable to speak to.
   `ENGINE_VERSION` went to 0.2.0 with it, and the leaderboard now groups on that, so scores set
   under the old presets are kept but no longer ranked against new ones.
+
+  Then the variable that was left alone got its answer (0.4.0). Playtesting: "too many flips for
+  so slow a game. The users' first experience goes on too long." Easy guaranteed 14 rounds of
+  30.6s, so seven minutes had to pass before the game could end, and that was the floor rather
+  than a typical game. The cuts are a gradient, because the complaint named two levels rather
+  than all four: easy loses half its flips, medium a third, hard a sixth, and insane keeps all of
+  its own. The clock also stepped up on easy and medium, 1.8s to 1.5s and 1.5s to 1.3s.
+
+  What the ladder holds in order is no longer the round count but the floor in seconds -- 2.98,
+  2.77, 2.70, 2.10 minutes -- because a round is 25.5s on easy and 12.6s on insane, so equal
+  round counts were never equal sittings. The round counts now read backwards (7, 8, 9, 10) and
+  the seconds read forwards. Checked against the real English list rather than asserted: a player
+  who only watches gets exactly those four numbers.
+
+- **a round that cannot make another word ends early** (0.4.0), rather than spending its
+  remaining ticks in front of a player who can do nothing. Also playtesting, and the same
+  complaint underneath: "the remaining flips count down at the normal rate which is a waste of
+  user time." Nothing is charged for the tiles it skips, so clearing a board stays cheaper than
+  dawdling on one.
+
+  It fires on more than half of all rounds once somebody is playing properly, which is worth
+  knowing before adding an interstitial to it, so the notice was measured rather than assumed:
+  across eight seeds at each level a cut skips a median of three to seven ticks and never fewer
+  than two, so it removes 71 to 119 seconds of dead time a game against the 17 to 27 seconds the
+  1.5s notices cost. That measurement is also the argument against a "only cut if it saves
+  enough" threshold, which would never have fired.
+
 - **whether letters change is now a difficulty, not a slider** (0.3.0). It shipped as one flat
   rate on the grounds that one guessed number beats four, and play said otherwise for a better
   reason than balance: with the letters fixed you can learn the board and carry a word list

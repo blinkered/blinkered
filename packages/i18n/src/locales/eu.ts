@@ -62,6 +62,7 @@ export const eu: Messages = {
   nothingUp: 'ez dago ezer agerian',
   shuffled: 'nahastuta',
   shuffledAndBilled: 'nahastuta, {flips} erabili gabe kobratuta',
+  tooFewLetters: 'Letra gutxiegi geratzen dira',
 
   gameLanguage: 'hizkuntza',
   interfaceLanguage: 'interfazea',

@@ -65,6 +65,7 @@ export const he: Messages = {
   nothingUp: 'לא גלוי',
   shuffled: 'עורבב',
   shuffledAndBilled: 'עורבב, חויבתם ב־{flips} מהלכים שלא נוצלו',
+  tooFewLetters: 'נשארו מעט מדי אותיות',
 
   gameLanguage: 'שפה',
   interfaceLanguage: 'ממשק',

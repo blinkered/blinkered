@@ -62,6 +62,7 @@ export const hu: Messages = {
   nothingUp: 'semmi sincs felfordítva',
   shuffled: 'megkeverve',
   shuffledAndBilled: 'megkeverve, {flips} felhasználatlan levonva',
+  tooFewLetters: 'Túl kevés betű maradt',
 
   gameLanguage: 'nyelv',
   interfaceLanguage: 'felület',

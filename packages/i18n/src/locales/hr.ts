@@ -58,6 +58,7 @@ export const hr: Messages = {
   nothingUp: 'ništa otkriveno',
   shuffled: 'promiješano',
   shuffledAndBilled: 'promiješano, naplaćeno {flips} neiskorištenih okreta',
+  tooFewLetters: 'Ostalo je premalo slova',
 
   gameLanguage: 'jezik',
   interfaceLanguage: 'sučelje',

@@ -131,14 +131,19 @@ describe('round lifecycle', () => {
   })
 
   it('ends the moment the board goes dead, without running the timer down', () => {
-    // Two letters up, no flips left to turn over a third, and a three-letter minimum.
-    // Nothing the player does can matter, so the remaining ticks are dead time.
-    const opened = open('ATESON', { initialFlips: 2 }).state
-    expect(opened.flipsRemaining).toBe(1)
-    const { state, effects } = play(opened, [tick])
-    expect(revealedLetters(state)).toBe('AT')
+    /*
+     * One letter up, one flip left, and a three-letter minimum: the flip can buy a second letter
+     * and there is no third, so the game is already decided and ends on the deal.
+     *
+     * It used to take one more tick to get here -- the old rule waited for the flips to reach
+     * zero, so it turned over the second letter first. Nothing about that tile could matter,
+     * which is the whole objection: the player was watching a game that was already over.
+     */
+    const { state, effects } = open('ATESON', { initialFlips: 2 })
+    expect(revealedLetters(state)).toBe('A')
+    expect(state.flipsRemaining).toBe(1)
     expect(state.status).toBe('over')
-    expect(state.ticksRemaining).toBe(5)
+    expect(state.ticksRemaining).toBe(6)
     expect(effects.at(-1)).toEqual({ type: 'GAME_OVER' })
   })
 
@@ -163,12 +168,109 @@ describe('round lifecycle', () => {
   })
 
   it('can be revived by a word that pays for more flips', () => {
-    // Same position, but fibonacci pays two flips for ATE, so reveals resume.
-    const exposed = play(open('ATESON', { initialFlips: 3 }).state, [tick, tick]).state
+    /*
+     * Near enough the same position, but fibonacci pays two flips for ATE and the budget starts
+     * one higher, so the three left over can reach the three letters a word needs and reveals
+     * resume.
+     *
+     * The extra flip is load-bearing now. At the old budget the word paid for two reveals and
+     * two is short of the three-letter floor, so the game ends rather than reviving: a payment
+     * that cannot reach another word is not a revival, and the engine no longer pretends
+     * otherwise by spending it a tile at a time.
+     */
+    const exposed = play(open('ATESON', { initialFlips: 4 }).state, [tick, tick]).state
     const { state } = play(exposed, [letter('A'), letter('T'), letter('E'), submit])
     expect(state.status).toBe('playing')
-    expect(state.flipsRemaining).toBe(2)
+    expect(state.flipsRemaining).toBe(3)
     expect(revealedLetters(play(state, [tick]).state)).toBe('S')
+  })
+
+  /*
+   * The rule playtesting asked for: a round that cannot produce another word deals the next board
+   * instead of spending its remaining ticks in front of a player who can do nothing.
+   *
+   * "The remaining flips count down at the normal rate which is a waste of user time."
+   */
+  describe('a round with too few letters left', () => {
+    /** Six letters, three-letter floor, and flips enough that the budget is never the reason. */
+    const roomy = { initialFlips: 40 } as const
+
+    it('deals the next board as soon as a word takes the count below the floor', () => {
+      // ATE and SON both score, which spends all six: nothing is left to spell a third word
+      // with, and five ticks of the round are still unused.
+      const full = play(
+        open('ATESON', roomy).state,
+        Array.from({ length: 5 }, () => tick),
+      ).state
+      expect(full.revealsThisRound).toBe(6)
+      const { state, effects } = play(full, [
+        letter('A'),
+        letter('T'),
+        letter('E'),
+        submit,
+        letter('S'),
+        letter('O'),
+        letter('N'),
+        submit,
+      ])
+      const ended = effects.filter((effect) => effect.type === 'ROUND_ENDED')
+      expect(ended).toHaveLength(1)
+      expect(ended[0]).toMatchObject({ cutShort: true, flipsCharged: 0 })
+      expect(state.roundIndex).toBe(1)
+      expect(state.status).toBe('playing')
+      // Both words still count, and the board is fresh with its first tile up.
+      expect(state.wordsFound.map((found) => found.word)).toEqual(['ATE', 'SON'])
+      expect(state.revealsThisRound).toBe(1)
+    })
+
+    it('charges nothing for the tiles it skips', () => {
+      // A flip is spent by a reveal and by nothing else, which is what makes clearing a board
+      // cheaper than dawdling on one rather than dearer.
+      const full = play(
+        open('ATESON', roomy).state,
+        Array.from({ length: 5 }, () => tick),
+      ).state
+      const before = full.flipsRemaining
+      const { state } = play(full, [letter('A'), letter('T'), letter('E'), submit])
+      // ATE spends three tiles and pays two flips; three letters are left, which is exactly the
+      // floor, so this round is not cut and nothing but the word has changed the budget.
+      expect(state.flipsRemaining).toBe(before + 2)
+      expect(state.roundIndex).toBe(0)
+
+      const { state: cut } = play(state, [letter('S'), letter('O'), letter('N'), submit])
+      // SON pays two more. The cut itself is free: the deal that follows spends one flip on the
+      // first tile of the new board, the way any deal does.
+      expect(cut.flipsRemaining).toBe(before + 4 - 1)
+    })
+
+    it('says a round ended normally was not cut short', () => {
+      const { effects } = play(
+        open('ATESON', roomy).state,
+        Array.from({ length: 6 }, () => tick),
+      )
+      const ended = effects.filter((effect) => effect.type === 'ROUND_ENDED')
+      expect(ended).toHaveLength(1)
+      expect(ended[0]).toMatchObject({ cutShort: false })
+    })
+
+    it('ends the game instead when no future board could reach a word either', () => {
+      // Three flips against a four-letter floor: this round is dead and so is every round after
+      // it, because a fresh board would only turn over three tiles. That is game over, not a
+      // cut, and the distinction is the reason `settle` runs first.
+      const { state, effects } = open('ATESON', { initialFlips: 3, minWordLength: 4 })
+      expect(state.status).toBe('over')
+      expect(effects.filter((effect) => effect.type === 'ROUND_ENDED')).toHaveLength(0)
+      expect(effects.at(-1)).toEqual({ type: 'GAME_OVER' })
+    })
+
+    it('counts the letters a flip could still turn over, not only the ones showing', () => {
+      // One letter up and a three-letter floor, so the count showing is below the floor and the
+      // round survives anyway: there are five tiles face down and the flips to pay for them.
+      const { state } = open('ATESON', roomy)
+      expect(state.tiles.filter((tile) => tile.revealed)).toHaveLength(1)
+      expect(state.status).toBe('playing')
+      expect(state.roundIndex).toBe(0)
+    })
   })
 
   it('ignores every input once the game is over', () => {

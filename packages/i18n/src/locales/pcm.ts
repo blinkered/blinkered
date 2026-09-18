@@ -66,6 +66,7 @@ export const pcm: Messages = {
   nothingUp: 'nothing dey open',
   shuffled: 'dem don shuffle am',
   shuffledAndBilled: 'dem shuffle am, and charge {flips} wey you no use',
+  tooFewLetters: 'Di letters wey remain too small',
 
   gameLanguage: 'language',
   interfaceLanguage: 'interface',

@@ -59,6 +59,7 @@ export const fr: Messages = {
   nothingUp: 'rien de retourné',
   shuffled: 'mélangé',
   shuffledAndBilled: 'mélangé, {flips} coups inutilisés facturés',
+  tooFewLetters: 'Trop peu de lettres restantes',
 
   gameLanguage: 'langue',
   interfaceLanguage: 'interface',

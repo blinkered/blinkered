@@ -5,9 +5,14 @@ import type { Difficulty, GameConfig } from './types.js'
 /**
  * Bumped when a rule changes what a game is, because results carry it and the leaderboard groups
  * on it. 0.2.0 was the difficulty retune; 0.3.0 makes the swap rate a difficulty column, which
- * among other things means `easy` no longer changes its letters at all.
+ * among other things means `easy` no longer changes its letters at all. 0.4.0 cuts the flip
+ * budgets after playtesting and ends a round that can no longer produce a word.
+ *
+ * A bump empties the boards, since they group on this, and that is the point rather than a cost:
+ * an easy score set over seven minutes and 168 flips is not the same achievement as one set over
+ * three minutes and 84. The old games keep their scores and stay in their players' history.
  */
-export const ENGINE_VERSION = '0.3.0'
+export const ENGINE_VERSION = '0.4.0'
 
 /** Twelve tiles, 4x3 in landscape and 3x4 in portrait. A player may pick another size. */
 export const DEFAULT_BOARD_SIZE = 12
@@ -76,28 +81,56 @@ export interface DifficultyProfile {
  * across the board, each level landing roughly where the level below it used to be. Insane is
  * still comfortably the hardest: 0.9s a tile is the old hard, with barely two seconds to look.
  *
- * `initialRounds` is untouched on purpose. It is the endurance budget rather than the perception
- * budget, and moving both at once would leave nothing to learn from the next play.
+ * Then playtested, which said the opposite thing about the other axis: the first game goes on far
+ * too long. Easy guaranteed 14 rounds of 30.6s -- seven minutes before the game could end, and
+ * that is the floor, since every word buys more. "Too many flips for so slow a game."
+ *
+ * So the endurance budget moved, and the round count stopped being the thing held in order.
+ *
+ * A round is not a comparable unit between levels: it is 25.5s on easy and 12.6s on insane, so
+ * equal round counts are unequal sittings, and the number a player feels is the wall clock. What
+ * the ladder now keeps monotone is the floor in seconds -- 2.98, 2.77, 2.70, 2.10 minutes at the
+ * default size -- which reads the right way round while the round counts (7, 8, 9, 10) read
+ * backwards. They are backwards for the reason above, and that inversion is the whole point of
+ * writing the floor down here:
+ *
+ *              per tile   hold   full board up   rounds   floor
+ *   easy          1.5s      5        7.5s           7     2.98 min
+ *   medium        1.3s      4        5.2s           8     2.77 min
+ *   hard          1.2s      3        3.6s           9     2.70 min
+ *   insane        0.9s      2        1.8s          10     2.10 min
+ *
+ * The cuts are a gradient rather than a flat trim, because the complaint was not "games are
+ * long", it was "easy and medium are long": easy loses half its flips (168 to 84 at twelve
+ * tiles), medium a third (144 to 96), hard a sixth (132 to 108), and insane keeps all 120 of its
+ * own, since two minutes was never the problem and insane is supposed to have flips to play with.
+ *
+ * The clock also stepped up on the two levels that were called slow, 1.8s to 1.5s and 1.5s to
+ * 1.3s. That shortens the think window as a side effect -- easy's full board was up for 9.0s and
+ * is now up for 7.5s -- which is a real cost and is accepted rather than compensated with a
+ * larger `holdTicks`: adding hold ticks lengthens the round, and the round being long is what
+ * started this. 7.5s with twelve letters that never change is still the most generous window in
+ * the game by a factor of four.
  */
 export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
   easy: {
-    speedMultiplier: 1.8,
+    speedMultiplier: 1.5,
     holdTicks: 5,
-    initialRounds: 14,
+    initialRounds: 7,
     minWordLength: 3,
     replaceChance: 0,
   },
   medium: {
-    speedMultiplier: 1.5,
+    speedMultiplier: 1.3,
     holdTicks: 4,
-    initialRounds: 12,
+    initialRounds: 8,
     minWordLength: 3,
     replaceChance: 0.25,
   },
   hard: {
     speedMultiplier: 1.2,
     holdTicks: 3,
-    initialRounds: 11,
+    initialRounds: 9,
     minWordLength: 4,
     replaceChance: 0.5,
   },

@@ -55,6 +55,7 @@ export const pt: Messages = {
   nothingUp: 'nada à vista',
   shuffled: 'baralhado',
   shuffledAndBilled: 'baralhado, cobradas {flips} viradas não usadas',
+  tooFewLetters: 'Restam poucas letras',
 
   gameLanguage: 'idioma',
   interfaceLanguage: 'interface',

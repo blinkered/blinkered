@@ -55,6 +55,7 @@ export const ms: Messages = {
   nothingUp: 'tiada yang terbuka',
   shuffled: 'dikocak',
   shuffledAndBilled: 'dikocak, {flips} balikan tidak digunakan dicaj',
+  tooFewLetters: 'Huruf yang tinggal terlalu sedikit',
 
   gameLanguage: 'bahasa',
   interfaceLanguage: 'antara muka',

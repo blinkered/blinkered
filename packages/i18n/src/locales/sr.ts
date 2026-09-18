@@ -62,6 +62,7 @@ export const sr: Messages = {
   nothingUp: 'ништа није откривено',
   shuffled: 'промешано',
   shuffledAndBilled: 'промешано, наплаћено {flips} неискоришћених',
+  tooFewLetters: 'Остало је премало слова',
 
   gameLanguage: 'језик',
   interfaceLanguage: 'сучеље',

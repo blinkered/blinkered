@@ -63,6 +63,7 @@ export const en: Messages = {
   nothingUp: 'not up',
   shuffled: 'shuffled',
   shuffledAndBilled: 'shuffled, billed {flips} unused flips',
+  tooFewLetters: 'Too few letters remaining',
 
   gameLanguage: 'language',
   interfaceLanguage: 'interface',

@@ -61,6 +61,7 @@ export const af: Messages = {
   nothingUp: 'nie oop nie',
   shuffled: 'geskommel',
   shuffledAndBilled: 'geskommel, {flips} ongebruikte skuiwe gehef',
+  tooFewLetters: 'Te min letters oor',
 
   gameLanguage: 'taal',
   interfaceLanguage: 'koppelvlak',

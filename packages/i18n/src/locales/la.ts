@@ -66,6 +66,7 @@ export const la: Messages = {
   nothingUp: 'non aperta',
   shuffled: 'permixtae',
   shuffledAndBilled: 'permixtae, versus {flips} non usi exacti',
+  tooFewLetters: 'Nimis paucae litterae relictae',
 
   gameLanguage: 'lingua',
   interfaceLanguage: 'interfacies',

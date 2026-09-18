@@ -7,6 +7,7 @@ import type { TieredIndex } from '@blinkered/words'
 import { Board } from './Board.js'
 import { LetterSwap, SWAP_MS } from './LetterSwap.js'
 import type { Swap } from './LetterSwap.js'
+import { TooFewLetters } from './TooFewLetters.js'
 import { GameSetup } from './GameSetup.js'
 import { Tutorial } from './Tutorial.js'
 import { HowToPlay } from './HowToPlay.js'
@@ -1305,6 +1306,9 @@ function Playing({
             not give away, since the deal has already happened and naming a position would hand
             the player a free reveal every time. */}
         {swap === null ? null : <LetterSwap swap={swap} messages={messages} />}
+        {/* Why the next board arrived early. The clock is held for exactly as long as this is
+            up, so it costs the player nothing to read. */}
+        {game.fewerLetters ? <TooFewLetters epoch={game.epoch} messages={messages} /> : null}
         {game.paused && confirming === null ? (
           <div className="veil">
             <p>{messages.paused}</p>

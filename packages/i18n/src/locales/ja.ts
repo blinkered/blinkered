@@ -67,6 +67,7 @@ export const ja: Messages = {
   nothingUp: '表になっていません',
   shuffled: 'シャッフルしました',
   shuffledAndBilled: 'シャッフルしました。使わなかった{flips}を差し引きます',
+  tooFewLetters: '残りの文字が足りません',
 
   gameLanguage: '言語',
   interfaceLanguage: '表示',

@@ -61,6 +61,7 @@ export const sl: Messages = {
   nothingUp: 'nič ni odkrito',
   shuffled: 'premešano',
   shuffledAndBilled: 'premešano, zaračunanih {flips} neporabljenih',
+  tooFewLetters: 'Ostalo je premalo črk',
 
   gameLanguage: 'jezik',
   interfaceLanguage: 'vmesnik',

@@ -55,6 +55,7 @@ export const el: Messages = {
   nothingUp: 'τίποτα ανοιχτό',
   shuffled: 'ανακατεύτηκε',
   shuffledAndBilled: 'ανακατεύτηκε, χρεώθηκαν {flips} αχρησιμοποίητες κινήσεις',
+  tooFewLetters: 'Έμειναν πολύ λίγα γράμματα',
 
   gameLanguage: 'γλώσσα',
   interfaceLanguage: 'περιβάλλον',

@@ -56,6 +56,7 @@ export const es: Messages = {
   nothingUp: 'nada descubierto',
   shuffled: 'mezclado',
   shuffledAndBilled: 'mezclado, {flips} giros sin usar cobrados',
+  tooFewLetters: 'Quedan muy pocas letras',
 
   gameLanguage: 'idioma',
   interfaceLanguage: 'interfaz',

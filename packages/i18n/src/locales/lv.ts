@@ -62,6 +62,7 @@ export const lv: Messages = {
   nothingUp: 'nekas nav atklāts',
   shuffled: 'sajaukts',
   shuffledAndBilled: 'sajaukts, ieskaitīti {flips} neizmantoti',
+  tooFewLetters: 'Palicis pārāk maz burtu',
 
   gameLanguage: 'valoda',
   interfaceLanguage: 'saskarne',

@@ -149,6 +149,9 @@ function describe(effects: readonly Effect[]): string | null {
       case 'LETTER_REPLACED':
         return `${dim}${effect.from} \u2192 ${effect.to}${reset}`
       case 'ROUND_ENDED':
+        // The cut is worth saying here too: a round that deals early looks like a dropped frame
+        // in a terminal, where there is no veil to explain it.
+        if (effect.cutShort) return `${dim}too few letters left, next board${reset}`
         return effect.flipsCharged > 0
           ? `${dim}shuffled, billed ${String(effect.flipsCharged)} unused flips${reset}`
           : `${dim}shuffled${reset}`

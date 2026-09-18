@@ -64,6 +64,7 @@ export const hy: Messages = {
   nothingUp: 'ոչինչ բացված չէ',
   shuffled: 'խառնվեց',
   shuffledAndBilled: 'խառնվեց, հաշվարկվեց {flips} չօգտագործված',
+  tooFewLetters: 'Չափազանց քիչ տառ է մնացել',
 
   gameLanguage: 'լեզու',
   interfaceLanguage: 'միջերես',

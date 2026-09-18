@@ -407,12 +407,15 @@ describe('a wild in a real game', () => {
     }
     const { state, effects } = play(wilded, [tap(0), tap(1), tap(2), submit])
     expect(state.wordsFound.map((found) => found.word)).toEqual(['OAT'])
-    expect(effects.at(-1)).toEqual({
+    // Contained rather than last: this board is three tiles and the word spent all three, so
+    // the round cannot produce another word and the next one is dealt behind this effect.
+    expect(effects).toContainEqual({
       type: 'WORD_ACCEPTED',
       word: 'OAT',
       points: 2,
       flips: 2,
       wilds: [1],
     })
+    expect(effects.some((effect) => effect.type === 'ROUND_ENDED' && effect.cutShort)).toBe(true)
   })
 })

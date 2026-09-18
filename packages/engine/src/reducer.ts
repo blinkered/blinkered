@@ -47,12 +47,41 @@ function reselect(
 }
 
 /**
- * No flips left to reveal with, and not enough exposed to spell anything with. Nothing the
- * player can do will change that, so the round has no reason to keep running.
+ * Letters this round can still put in front of the player: the ones face up and unspent, plus
+ * the ones a flip could still turn over.
+ *
+ * The second half is why this is not simply a count of eligible tiles. A round with two letters
+ * showing is not finished if eight more are waiting face down and there are flips to pay for
+ * them.
+ */
+function stillToCome(state: GameState): number {
+  const exposed = state.tiles.filter(isEligible).length
+  const unrevealed = state.config.n - state.revealsThisRound
+  return exposed + Math.min(unrevealed, state.flipsRemaining)
+}
+
+/** What a fresh board would offer, since a deal hands every tile back unspent. */
+function nextRoundWouldOffer(state: GameState): number {
+  return Math.min(state.config.n, state.flipsRemaining)
+}
+
+/** Fewer letters than the shortest word this level accepts, so no word can be made from them. */
+function tooFewFor(count: number, state: GameState): boolean {
+  return count < state.config.minWordLength
+}
+
+/**
+ * Nothing the player can do, this round or any round after it, will produce another word.
+ *
+ * This used to read "no flips left, and not enough exposed to spell anything with", which is the
+ * same test with `flipsRemaining` at zero and a weaker one above it. With two flips left and a
+ * four-letter floor the game was not over by that definition, so it went on turning tiles over
+ * at full speed to reach a position that was already decided. Counting what the flips can still
+ * reach ends it at the moment it becomes true, which is the same waiting the round-cutting rule
+ * below exists to stop.
  */
 function isStranded(state: GameState): boolean {
-  if (state.flipsRemaining > 0) return false
-  return state.tiles.filter(isEligible).length < state.config.minWordLength
+  return tooFewFor(stillToCome(state), state) && tooFewFor(nextRoundWouldOffer(state), state)
 }
 
 /** Ends a game that has nothing left in it, whichever event exposed that. */
@@ -62,12 +91,36 @@ export function settle([state, effects]: Reduction): Reduction {
 }
 
 /**
+ * Deals the next board early when this one cannot produce another word.
+ *
+ * Playtesting found the dead time: pick the board clean and the last few letters cannot make
+ * anything, but the clock keeps spending flips at the usual pace until the round runs out. The
+ * player sits and watches a round they have already finished. So the round ends when it becomes
+ * unwinnable rather than when its ticks run out, and the view is told to say why before the next
+ * board arrives -- unannounced, a board appearing early would read as a bug.
+ *
+ * Nothing is charged for the tiles it skips. `chargeFullRound` is off, so flips have only ever
+ * been spent by reveals that happened, and billing for reveals that did not would make clearing
+ * a board cost more than dawdling on one. Clearing a board is the skilful thing.
+ *
+ * It cannot fire twice over: `settle` runs first, so reaching here means a fresh board offers at
+ * least `minWordLength` letters, and the round this deals is therefore not barren itself.
+ */
+function cutBarrenRound([state, effects]: Reduction, dictionary: Dictionary): Reduction {
+  if (state.status === 'over' || !tooFewFor(stillToCome(state), state)) return [state, effects]
+  const [next, ended] = endRound(state, dictionary, true)
+  return [next, [...effects, ...ended]]
+}
+
+/**
  * The whole game, as one pure function. No clock, no randomness beyond the seeded
  * state it carries, no I/O. That is what makes a game replayable on a server.
  */
 export function reduce(state: GameState, event: GameEvent, dictionary: Dictionary): Reduction {
   if (state.status === 'over') return ignored(state, 'game-over')
-  return settle(apply(state, event, dictionary))
+  // Settled before cut, so that a game with nothing left in it ends rather than dealing a board
+  // the player cannot use.
+  return cutBarrenRound(settle(apply(state, event, dictionary)), dictionary)
 }
 
 function apply(state: GameState, event: GameEvent, dictionary: Dictionary): Reduction {
@@ -120,7 +173,7 @@ function tick(state: GameState, dictionary: Dictionary): Reduction {
  * Hides everything, shuffles, and opens the next round. Also the single place the
  * game can end, since the rule is that a round always finishes first.
  */
-function endRound(state: GameState, dictionary: Dictionary): Reduction {
+function endRound(state: GameState, dictionary: Dictionary, cutShort = false): Reduction {
   const { config } = state
   const unrevealed = config.n - state.revealsThisRound
   const flipsCharged = config.chargeFullRound ? Math.min(unrevealed, state.flipsRemaining) : 0
@@ -186,7 +239,10 @@ function endRound(state: GameState, dictionary: Dictionary): Reduction {
             to: replacement.to,
           },
         ]
-  return [opened, [{ type: 'ROUND_ENDED', layout, flipsCharged }, ...announced, ...effects]]
+  return [
+    opened,
+    [{ type: 'ROUND_ENDED', layout, flipsCharged, cutShort }, ...announced, ...effects],
+  ]
 }
 
 /**

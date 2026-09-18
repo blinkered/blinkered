@@ -68,6 +68,7 @@ export const ar: Messages = {
   nothingUp: 'غير مكشوفة',
   shuffled: 'خُلطت',
   shuffledAndBilled: 'خُلطت، وحُسبت عليك {flips} لم تُستخدم',
+  tooFewLetters: 'لم تتبق حروف كافية',
 
   gameLanguage: 'اللغة',
   interfaceLanguage: 'الواجهة',

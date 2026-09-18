@@ -62,6 +62,7 @@ export const sw: Messages = {
   nothingUp: 'hakijafunuliwa',
   shuffled: 'vimechanganywa',
   shuffledAndBilled: 'vimechanganywa, umetozwa hatua {flips} zisizotumika',
+  tooFewLetters: 'Herufi zilizosalia ni chache mno',
 
   gameLanguage: 'lugha',
   interfaceLanguage: 'kiolesura',

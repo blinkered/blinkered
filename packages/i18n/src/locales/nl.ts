@@ -55,6 +55,7 @@ export const nl: Messages = {
   nothingUp: 'niets open',
   shuffled: 'geschud',
   shuffledAndBilled: 'geschud, {flips} ongebruikte zetten in rekening gebracht',
+  tooFewLetters: 'Te weinig letters over',
 
   gameLanguage: 'taal',
   interfaceLanguage: 'interface',

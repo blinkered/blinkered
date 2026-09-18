@@ -62,6 +62,7 @@ export const et: Messages = {
   nothingUp: 'midagi pole lahti',
   shuffled: 'segatud',
   shuffledAndBilled: 'segatud, arvestati {flips} kasutamata',
+  tooFewLetters: 'Liiga vähe tähti jäänud',
 
   gameLanguage: 'keel',
   interfaceLanguage: 'liides',

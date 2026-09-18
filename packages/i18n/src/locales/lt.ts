@@ -62,6 +62,7 @@ export const lt: Messages = {
   nothingUp: 'niekas neatversta',
   shuffled: 'sumaišyta',
   shuffledAndBilled: 'sumaišyta, nuskaityta {flips} nepanaudotų',
+  tooFewLetters: 'Liko per mažai raidžių',
 
   gameLanguage: 'kalba',
   interfaceLanguage: 'sąsaja',

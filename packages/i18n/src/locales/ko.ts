@@ -62,6 +62,7 @@ export const ko: Messages = {
   nothingUp: '열리지 않았습니다',
   shuffled: '섞었습니다',
   shuffledAndBilled: '섞었고, 쓰지 않은 {flips}를 청구했습니다',
+  tooFewLetters: '남은 글자가 너무 적습니다',
 
   gameLanguage: '언어',
   interfaceLanguage: '화면',

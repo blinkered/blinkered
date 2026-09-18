@@ -194,6 +194,15 @@ export type Effect =
       /** New tile id per grid position, for the shuffle animation. */
       readonly layout: readonly number[]
       readonly flipsCharged: number
+      /**
+       * The round ended because it could not produce another word, rather than because its ticks
+       * ran out.
+       *
+       * The view owes the player a word about it. A board that deals itself early with no
+       * explanation reads as a bug, and the explanation is also the only place the rule is
+       * visible: it is the difference between a round ending and a round being taken away.
+       */
+      readonly cutShort: boolean
     }
   /**
    * One tile's letter became another, at the deal.

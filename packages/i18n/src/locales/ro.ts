@@ -62,6 +62,7 @@ export const ro: Messages = {
   nothingUp: 'nimic întors',
   shuffled: 'amestecat',
   shuffledAndBilled: 'amestecat, s-au scăzut {flips} nefolosite',
+  tooFewLetters: 'Au rămas prea puține litere',
 
   gameLanguage: 'limbă',
   interfaceLanguage: 'interfață',

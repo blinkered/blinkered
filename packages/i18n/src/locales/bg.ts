@@ -61,6 +61,7 @@ export const bg: Messages = {
   nothingUp: 'нищо не е отворено',
   shuffled: 'разбъркано',
   shuffledAndBilled: 'разбъркано, приспаднати {flips} неизползвани',
+  tooFewLetters: 'Останаха твърде малко букви',
 
   gameLanguage: 'език',
   interfaceLanguage: 'интерфейс',

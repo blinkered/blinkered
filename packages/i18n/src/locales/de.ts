@@ -58,6 +58,7 @@ export const de: Messages = {
   nothingUp: 'nichts offen',
   shuffled: 'gemischt',
   shuffledAndBilled: 'gemischt, {flips} unbenutzte Züge berechnet',
+  tooFewLetters: 'Zu wenige Buchstaben übrig',
 
   gameLanguage: 'Sprache',
   interfaceLanguage: 'Oberfläche',

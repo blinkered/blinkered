@@ -67,6 +67,7 @@ export const tl: Messages = {
   nothingUp: 'hindi bukas',
   shuffled: 'binalasa',
   shuffledAndBilled: 'binalasa, siningil ang {flips} na hindi nagamit',
+  tooFewLetters: 'Kakaunti na ang natitirang letra',
 
   gameLanguage: 'wika',
   interfaceLanguage: 'interface',

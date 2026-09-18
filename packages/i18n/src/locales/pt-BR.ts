@@ -59,6 +59,7 @@ export const ptBR: Messages = {
   nothingUp: 'nada à vista',
   shuffled: 'embaralhado',
   shuffledAndBilled: 'embaralhado, cobradas {flips} viradas não usadas',
+  tooFewLetters: 'Restam poucas letras',
 
   gameLanguage: 'idioma',
   interfaceLanguage: 'interface',

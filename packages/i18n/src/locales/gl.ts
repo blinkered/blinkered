@@ -61,6 +61,7 @@ export const gl: Messages = {
   nothingUp: 'nada descuberto',
   shuffled: 'barallado',
   shuffledAndBilled: 'barallado, cobráronse {flips} sen usar',
+  tooFewLetters: 'Quedan moi poucas letras',
 
   gameLanguage: 'lingua',
   interfaceLanguage: 'interface',

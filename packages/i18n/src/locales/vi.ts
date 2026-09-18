@@ -66,6 +66,7 @@ export const vi: Messages = {
   nothingUp: 'chưa mở quân nào',
   shuffled: 'đã xáo',
   shuffledAndBilled: 'đã xáo, trừ {flips} chưa dùng',
+  tooFewLetters: 'Còn quá ít chữ cái',
 
   gameLanguage: 'ngôn ngữ',
   interfaceLanguage: 'giao diện',

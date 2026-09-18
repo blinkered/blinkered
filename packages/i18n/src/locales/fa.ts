@@ -66,6 +66,7 @@ export const fa: Messages = {
   nothingUp: 'چیزی رو نیست',
   shuffled: 'برزده شد',
   shuffledAndBilled: 'برزده شد، {flips} استفاده‌نشده کسر شد',
+  tooFewLetters: 'حروف کافی باقی نمانده است',
 
   gameLanguage: 'زبان',
   interfaceLanguage: 'نمایش',

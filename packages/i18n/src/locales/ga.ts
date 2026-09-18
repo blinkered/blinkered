@@ -64,6 +64,7 @@ export const ga: Messages = {
   nothingUp: 'níl aon rud iompaithe',
   shuffled: 'suaite',
   shuffledAndBilled: 'suaite, gearradh {flips} gan úsáid',
+  tooFewLetters: 'Ró-bheagán litreacha fágtha',
 
   gameLanguage: 'teanga',
   interfaceLanguage: 'comhéadan',

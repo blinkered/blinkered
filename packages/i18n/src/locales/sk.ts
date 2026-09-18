@@ -61,6 +61,7 @@ export const sk: Messages = {
   nothingUp: 'nič nie je odkryté',
   shuffled: 'zamiešané',
   shuffledAndBilled: 'zamiešané, započítaných {flips} nevyužitých',
+  tooFewLetters: 'Zostalo príliš málo písmen',
 
   gameLanguage: 'jazyk',
   interfaceLanguage: 'rozhranie',

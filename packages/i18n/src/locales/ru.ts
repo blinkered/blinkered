@@ -60,6 +60,7 @@ export const ru: Messages = {
   nothingUp: 'ничего не открыто',
   shuffled: 'перемешано',
   shuffledAndBilled: 'перемешано, списано {flips} неиспользованных ходов',
+  tooFewLetters: 'Осталось слишком мало букв',
 
   gameLanguage: 'язык',
   interfaceLanguage: 'интерфейс',

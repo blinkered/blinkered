@@ -59,6 +59,7 @@ export const id: Messages = {
   nothingUp: 'tidak ada yang terbuka',
   shuffled: 'diacak',
   shuffledAndBilled: 'diacak, {flips} balikan tak terpakai ditagih',
+  tooFewLetters: 'Huruf yang tersisa terlalu sedikit',
 
   gameLanguage: 'bahasa',
   interfaceLanguage: 'antarmuka',

@@ -55,6 +55,7 @@ export const sv: Messages = {
   nothingUp: 'inget uppe',
   shuffled: 'blandat',
   shuffledAndBilled: 'blandat, {flips} oanvända drag debiterade',
+  tooFewLetters: 'För få bokstäver kvar',
 
   gameLanguage: 'språk',
   interfaceLanguage: 'gränssnitt',

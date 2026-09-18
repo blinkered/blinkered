@@ -59,6 +59,7 @@ export const da: Messages = {
   nothingUp: 'intet vendt',
   shuffled: 'blandet',
   shuffledAndBilled: 'blandet, trak {flips} ubrugte',
+  tooFewLetters: 'For få bogstaver tilbage',
 
   gameLanguage: 'sprog',
   interfaceLanguage: 'grænseflade',

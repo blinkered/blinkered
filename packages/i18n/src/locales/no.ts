@@ -55,6 +55,7 @@ export const no: Messages = {
   nothingUp: 'ingenting oppe',
   shuffled: 'stokket',
   shuffledAndBilled: 'stokket, {flips} ubrukte trekk belastet',
+  tooFewLetters: 'For få bokstaver igjen',
 
   gameLanguage: 'språk',
   interfaceLanguage: 'grensesnitt',
