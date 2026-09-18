@@ -1307,8 +1307,16 @@ function Playing({
             the player a free reveal every time. */}
         {swap === null ? null : <LetterSwap swap={swap} messages={messages} />}
         {/* Why the next board arrived early. The clock is held for exactly as long as this is
-            up, so it costs the player nothing to read. */}
-        {game.fewerLetters ? <TooFewLetters epoch={game.epoch} messages={messages} /> : null}
+            up, so it costs the player nothing to read.
+            
+            Keyed on the round rather than on `game.epoch`, which is what `useSwap` latches for
+            itself and for the same reason: the epoch moves on every dispatch, so a player who
+            typed while reading this would remount it and restart its fade. One cut belongs to
+            one round, and two cuts in a row are two rounds, so the round index both holds still
+            while it is up and changes when it should replay. */}
+        {game.fewerLetters ? (
+          <TooFewLetters round={game.state.roundIndex} messages={messages} />
+        ) : null}
         {game.paused && confirming === null ? (
           <div className="veil">
             <p>{messages.paused}</p>

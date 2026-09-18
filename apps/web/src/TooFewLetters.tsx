@@ -28,16 +28,22 @@ export const TOO_FEW_MS = 1500
  * mid-sentence.
  */
 export function TooFewLetters({
-  epoch,
+  round,
   messages,
 }: {
-  /** Changes on every cut round, so two in a row each replay from the first frame. */
-  readonly epoch: number
+  /**
+   * Which round was cut, used as the key so two cuts in a row each replay from the first frame.
+   *
+   * The round rather than the dispatch epoch, which is the mistake this was written with first:
+   * the epoch moves on every input, so a player typing while they read this would remount it and
+   * restart the fade. One cut belongs to one round.
+   */
+  readonly round: number
   readonly messages: Messages
 }): React.JSX.Element {
   return (
     <div
-      key={epoch}
+      key={round}
       className="fewer-veil"
       role="status"
       // The stylesheet times its fade off this, so the clock hold in `useGame` and the animation
