@@ -6,7 +6,7 @@ A word game where the letters hide from you.
 
 | Question        | Decision                                                                                                 | Why                                                                                                       |
 | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Client platform | React + TypeScript + Vite on the web, wrapped by Capacitor for iOS/Android                               | One codebase, one rendering model, one test suite; the native shells are additive and can come later      |
+| Client platform | React + TypeScript + Vite on the web, wrapped by Capacitor for iOS (an Android shell is not built)       | One codebase, one rendering model, one test suite; the native shells are additive and can come later      |
 | Backend         | Own Node API (Hono) + Postgres in-cluster on tl-prod, Auth.js for SSO, Drizzle for schema                | The client holds no database credential at all, only a session; score verification is just a route        |
 | Round rule      | `spend`. A completed word takes its letters off the board and the round continues                        | Decided by playing it: spending the letters adds anxiety. `shuffle` and `keep` stay available as settings |
 | Flip economy    | Also a runtime setting (`none`, `perLetter`, `fibonacci`, `overMinimum`), default hypothesis `fibonacci` | Fibonacci flips are what actually make short words cost you ground and long words pay; see 1.10           |
@@ -155,12 +155,12 @@ Still bids rather than simulator output, but twice revised by playing. `DIFFICUL
 `packages/engine/src/difficulty.ts` is the source of truth; this table is the current state of it
 and the reasoning for each column lives beside the code.
 
-| Level  | Seconds per tick | Hold | Rounds of life | Min word | Round (at N=12) | Full board | Floor    |
-| ------ | ---------------- | ---- | -------------- | -------- | --------------- | ---------- | -------- |
-| Easy   | 1.5              | 5    | 7              | 3        | 25.5s           | 7.5s       | 2.98 min |
-| Medium | 1.3              | 4    | 8              | 3        | 20.8s           | 5.2s       | 2.77 min |
-| Hard   | 1.2              | 3    | 9              | 4        | 18.0s           | 3.6s       | 2.70 min |
-| Insane | 0.9              | 2    | 10             | 4        | 12.6s           | 2.10 min   | 2.10 min |
+| Level  | Seconds per tick | Hold | Rounds of life | Min word | Swap rate | Round (at N=12) | Full board | Floor    |
+| ------ | ---------------- | ---- | -------------- | -------- | --------- | --------------- | ---------- | -------- |
+| Easy   | 1.5              | 5    | 7              | 3        | 0         | 25.5s           | 7.5s       | 2.98 min |
+| Medium | 1.3              | 4    | 8              | 3        | 0.25      | 20.8s           | 5.2s       | 2.77 min |
+| Hard   | 1.2              | 3    | 9              | 4        | 0.5       | 18.0s           | 3.6s       | 2.70 min |
+| Insane | 0.9              | 2    | 10             | 4        | 0.5       | 12.6s           | 1.8s       | 2.10 min |
 
 Two columns decide how a level feels, and they are not the same thing.
 
@@ -179,7 +179,21 @@ is 25.5s on easy and 12.6s on insane, so equal round counts would be unequal sit
 player feels is the wall clock, so that is the column held in order and the round count is
 whatever produces it.
 
-**Board size is a player's choice, on an axis of its own.** N is absent from the table because it is not a difficulty dial. A bigger board is harder to track and gives less time per tile, but it admits far more words and much longer ones, so it is easier to score on; under the fibonacci economy the small board is the harsher one, since at N=6 a seven-letter word is arithmetically impossible and only 17% of raw draws hold even a six. The default is **12**, laid out 4x3 in landscape and 3x4 in portrait, where every draw contains a six-letter word and 97% contain a seven. A player can pick another size and keep whatever difficulty they were playing.
+**Board size is a player's choice, on an axis of its own.** N is absent from the table because it
+is not a difficulty dial. A bigger board is harder to track and gives less time per tile, but it
+admits far more words and much longer ones, so it is easier to score on; under the fibonacci
+economy the small board is the harsher one, since at N=6 a seven-letter word is arithmetically
+impossible and only 8% of raw draws reach even a six. The default is **12**, laid out 4x3 in
+landscape and 3x4 in portrait, where 97% of raw draws reach a six-letter word. A player can pick
+another size and keep whatever difficulty they were playing.
+
+Those two percentages are measured with `Dictionary.profile`, which is the board generator's own
+solver and counts **the common tier only**. That matters, because the same question answered
+against the full tier gives a much friendlier number -- a seven-letter word is there in 98% of
+twelve-tile draws by the full list and 84% by the common one -- and both are true of different
+things. The floor is what a board is required to hold; credit is what a player is allowed to find.
+Earlier drafts of this section quoted the two instruments against each other, and once quoted the
+five-letter figure as if it were the six.
 
 That only works if the two rules that scale with the board are derived from it rather than fixed:
 
@@ -192,7 +206,18 @@ Everything else in a difficulty profile is board-independent by construction: th
 
 **Minimum word length is not a pure difficulty dial either.** Raising it removes the option of short words, which makes it harder to find anything, but the words it forbids are exactly the ones that lose you flips under fibonacci. So a higher floor is harder to score against and gentler on the life meter at the same time. Another thing for the simulator to weigh rather than assume.
 
-**N is inverted as a difficulty dial, which this table does not yet reflect.** A bigger board is harder to track and leaves less time per tile, but it admits far more words and much longer ones. Under fibonacci that makes it economically _more generous_: at N=6 only about half of generated boards contain a six-letter word and a seven-letter word is arithmetically impossible, so easy is the level where playing well helps least. Insane, at N=12, has a seven-letter answer 98% of the time. Either the ladder stops using N as a dial and holds it at 8 or above, carrying difficulty on hold, speed and minimum word length, or easy needs a gentler economy than the rest. Open, and it changes the difficulty tuple in the brief.
+**N is inverted as an economic dial, and the ladder does not use it.** A bigger board is harder to
+track and leaves less time per tile, but it admits far more words and much longer ones, which
+under fibonacci makes it economically _more generous_. A seven-letter word is arithmetically
+impossible at N=6, and only 8% of six-tile draws even reach a six, so a player who wants the
+generous economy plays a bigger board rather than an easier level.
+
+That is why the ladder carries difficulty on the clock, the hold, the minimum word length and the
+swap rate, and why board size sits outside it as the player's own choice: the two would otherwise
+fight. Every accepted board reaches six letters at any size by construction -- `ceilingMin` is 6
+and the generator retries until it clears -- so the 8% is how hard the generator has to work at
+N=6, not what the player is handed. Since board size is part of the recorded ruleset, ranked play
+groups by it.
 
 Minimum word length is a runtime setting, not a constant. Two-letter words are a dictionary-trivia contest (AA, XI, ZA) worth 1 point, and allowing them makes the game more obscure rather than easier, so the floor is 3. Raising it to 4 on the harder levels is a way to make difficulty about vocabulary rather than only about speed, and the simulator can say whether that is better than just turning the clock up.
 
@@ -238,6 +263,68 @@ Settled so far: `spend` by playing it. Minimum 3 and `fibonacci` remain hypothes
 
 **Comparability.** Because these settings change the game rather than decorate it, a score is only comparable against others produced under the same full ruleset. Leaderboard eligibility keys on the whole config, not just the difficulty name, and non-canonical settings are stored and shown but never ranked.
 
+### 1.11 Wild cards
+
+A tile can be dealt showing a wild instead of its letter, at `wildChance` per tile per deal, 0.02
+by default. It stands for whatever letter completes a word, and the player finds out what it
+became when the word is accepted: `WORD_ACCEPTED` carries `wilds`, the indices that came from one,
+and the view marks them so a player sees what they were given rather than what they chose.
+
+**A mask, not a substitution.** The letter underneath is untouched and shows again next round, so
+the board is the same letters from first deal to last. That is exactly the line between this and
+1.12. It also means masking can never make a board unsolvable -- a wild is strictly better than
+the letter it hides, since it can always become that letter -- so the generator and the word floor
+need to know nothing about any of it.
+
+**At most two on the board at once** (`MAX_WILDS`). Resolution costs a dictionary lookup per
+candidate, so one wild is an alphabet's worth and two is that squared, about a thousand for
+Russian; three is thirty-five thousand. The cap is on the deal rather than on the submission,
+which is the way round that has nothing left to explain: refusing a word for holding three wilds
+would tell a player "not a word" about a selection that is thousands of words at once. With a
+three-letter minimum it also guarantees one real letter in every word, so the engine never writes
+one entirely by itself.
+
+A wild is a card rather than a blank, because a blank is indistinguishable from a tile that has
+not turned over yet, and that is the one thing the board must never be ambiguous about. A
+keystroke onto a wild is remembered as an intent (`GameState.wildIntent`) and tried first, so
+typing is not less expressive than tapping; it is a preference and not a promise, and resolution
+falls back to the ordinary search. When every letter the wild could have been makes a word already
+found, the rejection is its own reason, `all-found`, because "not a word" would be a lie about a
+selection the player cannot see inside.
+
+### 1.12 Letter replacement
+
+At `replaceChance` per deal, one tile's letter becomes another one, permanently, and the old
+letter is gone. This is the mechanic wilds deliberately are not.
+
+**Why it exists:** the hold phase shows the whole board face up on purpose, so a player can
+photograph twelve letters and hand them to an anagram solver. Nothing closes that by hiding,
+because the exposure is the mechanic. What closes it is the board going stale.
+
+The replacement is drawn from the letters that could take the slot **without dropping the board
+below its floor** -- the generator's own acceptance test, applied to a board that already exists:
+at least `wMin` common words and one of at least `ceilingMin` tiles. It takes no notice of what
+the player has already found, because the promise a board makes is that it holds W words, not that
+it holds W words nobody has played, and a floor that shrank as the game went on would end every
+long game by refusing to change anything. The outgoing letter is excluded, since replacing E with
+E after an animation promising a change is a broken promise the player cannot tell from a bug.
+
+It is announced by `LETTER_REPLACED` and the view stops the clock to play it over the whole board
+-- **never on the tile itself**, which was the first version and gave the position away: the deal
+has already happened, so flipping up the changed tile is one free reveal per swap in a game whose
+whole economy is paying flips for exactly that.
+
+Replacement runs before wilds are dealt and never on the same tile, so one tile cannot arrive
+carrying two announcements at once. It is safe in that order for the same reason it needs no
+change to board generation: it leaves the board above its floor, and a wild is strictly better
+than the letter it hides.
+
+**It is a difficulty column, not a slider** (0, 0.25, 0.5, 0.5 by level). With the letters fixed
+you can learn a board and carry a word list between rounds; once they drift you cannot, and that
+is a different game rather than a harder one. So easy has none at all, and the rate stops
+climbing at hard, because what a swap costs is a stale memorised list and insane shows the whole
+board for 1.8 seconds.
+
 ## 2. Architecture
 
 pnpm workspaces, TypeScript strict everywhere, one lint/format config at the root.
@@ -247,16 +334,26 @@ blinkered/
   packages/
     engine/       pure TS state machine. Zero dependencies. No clock, no RNG calls, no DOM
     words/        word lists, anagram solver, board generator, weight derivation
-    shared/       difficulty tables, DTOs, zod schemas shared by client and server
+    i18n/         every string the game says, in fifty-one languages
   apps/
-    web/          React + Vite + PWA. Owns the wall clock and the pixels
+    web/          React + Vite. Owns the wall clock and the pixels
     mobile/       Capacitor project. Consumes apps/web's build output
-    server/       Hono + Auth.js + Drizzle
-  db/             Drizzle migrations
+    server/       Hono + Drizzle, migrations under apps/server/drizzle
   tools/
-    build-dict/   SCOWL to packed binary
-    simulate/     bot player for balance tuning
+    dictionary/   builds a language's word list from its sources
+    derive/       draw weights and word-count calibration
+    harness/      the engine in a terminal, every rule a flag
 ```
+
+Three things in the original sketch never existed, and the reasons are worth keeping.
+
+**`packages/shared`** was to hold the difficulty table, the DTOs and the zod schemas. The
+difficulty table lives in `engine`, next to the reducer that reads it, and the server imports
+`@blinkered/engine` directly; a package whose whole job is to be imported by two others earns its
+keep the day they disagree about a type, and they never did. **`db/`** is
+`apps/server/drizzle`, because the migrations belong to the app that runs them. **`tools/simulate`**
+is still unbuilt, and is item 3 in STATUS.md's list; `tools/harness` is what exists instead, and
+it plays the game rather than measuring it. `packages/i18n` was not foreseen at all.
 
 ### 2.1 The engine
 
@@ -287,34 +384,43 @@ type FlipEconomy = 'none' | 'perLetter' | 'fibonacci' | 'overMinimum'
 interface GameConfig {
   n: number
   speedMultiplier: number
+  holdTicks: number
   initialFlips: number
   wMin: number
   minWordLength: number
+  ceilingMin: number // the longest word a generated board must admit
   wordCompleteMode: WordCompleteMode
   flipEconomy: FlipEconomy
   chargeFullRound: boolean // a round costs N flips even if it ends early
+  wildChance: number // per tile per deal
+  replaceChance: number // per deal, one tile's letter becomes another
+  language: string
   engineVersion: string
 }
 
 interface Tile {
+  id: number
   letter: string
   position: number // index in the current grid layout, reading order
   revealed: boolean
   spent: boolean
-  selected: boolean
+  wild: boolean // showing as a wild this round; `letter` is untouched underneath
 }
 
 interface GameState {
   readonly config: GameConfig // frozen for the life of the game
   readonly rng: RngState // serializable PRNG state
-  tiles: Tile[] // stable identity; position changes on shuffle
-  selection: number[] // tile ids, in tap order
-  roundIndex: number
-  ticksRemaining: number
-  flipsRemaining: number
-  score: number
-  wordsFound: FoundWord[] // { word, length, points, roundIndex, tick }
-  status: 'playing' | 'over'
+  readonly tiles: readonly Tile[] // stable identity; position changes on shuffle
+  readonly selection: readonly number[] // tile ids, in tap order
+  readonly wildIntent: Readonly<Record<number, string>> // letters typed onto a wild
+  readonly roundIndex: number
+  readonly ticksRemaining: number
+  readonly revealsThisRound: number
+  readonly flipsRemaining: number
+  readonly score: number
+  readonly wordsFound: readonly FoundWord[] // { word, length, points, roundIndex, tick }
+  readonly tick: number
+  readonly status: 'playing' | 'over'
 }
 
 type GameEvent =
@@ -322,81 +428,173 @@ type GameEvent =
   | { type: 'TAP_TILE'; tileId: number } // pointer
   | { type: 'SELECT_LETTER'; letter: string } // keyboard: take the next copy
   | { type: 'CLEAR_LETTER'; letter: string } // keyboard: drop every copy
+  | { type: 'CYCLE_LETTER'; letter: string } // keyboard: take the next, or clear them all
   | { type: 'UNDO_LETTER' } // backspace
   | { type: 'RESET_WORD' } // escape
   | { type: 'SUBMIT_WORD' } // enter
+
+type RejectReason = 'unknown' | 'duplicate' | 'too-short' | 'all-found'
 
 type Effect =
   | { type: 'REVEALED'; tileId: number }
   | { type: 'SELECTED'; tileId: number }
   | { type: 'DESELECTED'; tileIds: number[] }
   | { type: 'INPUT_IGNORED'; reason: IgnoredReason }
-  | { type: 'WORD_ACCEPTED'; word: string; points: number; flips: number }
-  | { type: 'WORD_REJECTED'; word: string; reason: 'unknown' | 'duplicate' | 'too-short' }
-  | { type: 'ROUND_ENDED'; layout: number[]; flipsCharged: number }
+  | { type: 'WORD_ACCEPTED'; word: string; points: number; flips: number; wilds: number[] }
+  | { type: 'WORD_REJECTED'; word: string; reason: RejectReason }
+  | { type: 'ROUND_ENDED'; layout: number[]; flipsCharged: number; cutShort: boolean }
+  | { type: 'LETTER_REPLACED'; tileId: number; from: string; to: string }
   | { type: 'GAME_OVER' }
 
 function reduce(state: GameState, event: GameEvent, dict: Dictionary): [GameState, Effect[]]
-function keyToEvent(state: GameState, press: KeyPress, scheme: KeyScheme): GameEvent | null
+function keyToEvent(press: KeyPress, scheme: KeyScheme): GameEvent | null
 ```
+
+Two things in that listing were added after the sketch and have their own rules below: a tile can
+be dealt as a **wild** (1.11), and a deal can **replace one letter** (1.12). `selected` is not a
+field on `Tile`: the selection is `GameState.selection`, in tap order, and it is the sole source
+of truth for the current word, because a board where two places record the same fact is a board
+that can contradict itself. `keyToEvent` takes no state for the same reason -- a view deciding
+between SELECT and CLEAR from a snapshot gives different answers depending on whether it
+happened to re-render between two keystrokes.
 
 Effects exist so the UI knows what to animate and what sound to play without inspecting state diffs. The event log plus the seed is the complete record of a game.
 
 ### 2.2 The words package
 
-Build step, run in CI and committed as an artifact:
+Built by `pnpm dictionary build --language=<tag>` and committed, one directory per language under
+`packages/words/data`. SCOWL was the sketch and is now one source among many: each language names
+its own sources in `tools/dictionary/src/manifest.ts`, because SCOWL is English and fifty of these
+are not. See [DICTIONARIES.md](DICTIONARIES.md) for the pipeline and
+[LANGUAGES.md](LANGUAGES.md) for what each language draws on.
 
-1. Take SCOWL's size bands. Size 60 becomes the **full** list (accepted for credit); size 35 intersected with a frequency list becomes the **common** list (counted toward W)
-2. Filter to A-Z only, drop anything shorter than 2 or longer than 12, since nothing longer than the largest N is reachable
-3. Pack to a compact binary: sorted word blob for validation by binary search, plus an anagram index keyed by sorted letters for the solver
+1. Order a corpus by frequency, then filter it through every validator that language has. The
+   **common** tier is what survives above the candidate cut and is counted toward W; the **full**
+   tier is everything accepted, and is what scores
+2. Fold to the language's own alphabet and drop anything outside 3 to 16 tiles
+3. Write one `words.txt` per language, common tier first, with a header giving the tier sizes and
+   a digest: `#blinkered/wordlist/2 language=en common=16575 full=174456 digest=...`
 
-Runtime: the package builds its indices lazily, once. In the browser this happens in a Web Worker so the first paint is not blocked; on the server it happens at boot. Validation is a binary search over the blob. Solving a board enumerates the sub-multisets of N letters (4096 at most, deduped by sorted key) and looks each up in the anagram index, which is fast enough to redraw boards freely.
+Runtime: `parseWordList` splits the two tiers out of that one file and `buildTieredIndex` gives
+them their two jobs -- `has` answers from the full tier, so an unusual word still scores, and
+`profile` counts only the common tier, so a board is solvable from vocabulary people use.
 
-Licensing task: vendor SCOWL's copyright notice and confirm the attribution terms before shipping. Do not assume.
+**This runs on the main thread, not in a Web Worker**, which the sketch had backwards.
+`Dictionary.has` is synchronous and the reducer calls it inside a pure function; a worker would
+make validation async and change the engine's contract, which is the one thing in this repo that
+is not allowed to depend on an environment. `apps/web/src/dictionary.ts` says so at the point of
+decision. Solving a board still enumerates the sub-multisets of N letters, 4096 at most, deduped
+by sorted key, and looks each up in the anagram index.
+
+Licensing is settled and recorded per language: every directory carries its own `LICENSE` and
+`PROVENANCE.md`, twenty-one of them CC BY-SA, nothing GPL. See the end of DICTIONARIES.md for the
+store-build question that comes with the share-alike ones.
 
 ### 2.3 The server
 
-Hono on Node, deployed to tl-prod alongside the site, Postgres in the same cluster. Auth.js (`@auth/core`) with Google, Facebook and Apple providers. See ACCOUNTS.md for why in-cluster, and for the part that does not come with it: point-in-time recovery.
+Hono on Node, deployed to tl-prod alongside the site, Postgres in the same cluster. See
+[ACCOUNTS.md](ACCOUNTS.md) for why in-cluster, and for the part that does not come with it:
+point-in-time recovery.
+
+**Auth.js is not what shipped, and there is no Facebook.** `@auth/core` appears nowhere in the
+tree. Sign-in is an email one-time code (`auth/routes.ts`, `auth/policy.ts`, `auth/secrets.ts`)
+plus hand-written OIDC clients for Google and Apple only (`auth/google.ts`, `auth/apple.ts`,
+`auth/oidc.ts`). Two providers rather than three because Sign in with Apple is compulsory the
+moment any third-party SSO is offered, and a third one buys nothing an email code does not. See
+[AUTH.md](AUTH.md).
 
 **Sign in with Apple is not optional.** App Store guideline 4.8 requires it if we offer any other third-party SSO.
 
 Two session mechanisms, because web and native genuinely differ:
 
-- **Web**: standard Auth.js httpOnly, Secure, SameSite=Lax session cookie. The browser never holds a token in JavaScript
-- **Native**: `@capacitor/browser` opens the API's sign-in URL in `ASWebAuthenticationSession` (iOS) or a Custom Tab (Android). The callback redirects to a custom scheme, `blinkered://auth/callback`, carrying a one-time code. The app exchanges it for a session token and stores that in Keychain/Keystore via a secure-storage plugin, never in WebView `localStorage`. API calls then use `Authorization: Bearer`
+- **Web**: an httpOnly, Secure, SameSite=Lax session cookie. The browser never holds a token in
+  JavaScript
+- **Native**: a Swift plugin with two methods and no networking. `signInWithApple` runs
+  `ASAuthorizationAppleIDProvider` against a nonce from `/v1/auth/native/nonce`;
+  `signInWithBrowser` runs `ASWebAuthenticationSession` for Google and returns the code, which
+  `/v1/auth/native/exchange` trades for a bearer token. The scheme is `blinkered://auth`
 
-This dual path is the fiddliest work in the whole project and deserves its own spike.
+The dual path did deserve its spike, and two details came out of it that the sketch did not
+foresee. The web half reaches the plugin through `Capacitor.nativePromise`, not
+`Capacitor.Plugins`: `apps/web` has no `@capacitor/core` dependency, so nothing builds that
+registry and there is no way to ask whether a method exists. And **the token is in
+`localStorage`, not the Keychain** -- a secure-storage plugin needs that same dependency, so it is
+behind three functions in `api.ts` and recorded as accepted in STATUS.md rather than done.
 
 Routes:
 
 ```
-POST /v1/games            -> { gameId, seed, difficulty, config }   server picks and pre-validates the seed
-POST /v1/games/:id/finish -> { events } -> replayed, scored, stored, canonical result returned
-GET  /v1/me/games?cursor= -> paginated history
-GET  /v1/leaderboards/:difficulty/:period                          (phase 6)
+POST   /v1/auth/code            -> email a one-time code
+POST   /v1/auth/code/verify     -> code for a session
+GET    /v1/auth/{google,apple}  -> start OIDC; ?native=1 marks a shell flow
+POST   /v1/auth/native/nonce    -> a nonce for ASAuthorizationAppleIDProvider
+POST   /v1/auth/native/apple    -> an Apple identity token for a bearer token
+POST   /v1/auth/native/exchange -> a browser-flow code for a bearer token
+POST   /v1/auth/signout
+GET    /v1/me                   -> the signed-in account
+PATCH  /v1/me                   -> username, bio, country, languages
+GET    /v1/me/games             -> own history, paginated
+POST   /v1/me/deletion-code     -> a code that authorises the next call
+DELETE /v1/me
+POST   /v1/games/import         -> a finished game, scored from its words
+GET    /v1/games/:id            -> one game, for a shared link
+GET    /v1/usernames/:name      -> is this name free
+GET    /v1/users/:username       -> a public profile
+GET    /v1/users/:username/games -> somebody else's history
+GET    /v1/leaderboard/:language/:difficulty
+POST   /v1/reports              -> report a name, a bio or a game
+/v1/admin/*                     -> users, users/:id, ban, unban, games, reports
 ```
 
-Scores are never accepted from the client. `finish` imports `@blinkered/engine`, replays the event log against the server-generated seed, and stores the result it computed itself. It also rejects implausible logs: taps on tiles that were not revealed yet, more events than the tick count allows, superhuman inter-tap intervals. Per-user rate limits and a hard cap on log length.
+**The seed-issuing, log-replaying design above is phase C, and what runs is phase A.** The
+difference matters, so it is written down in `account/routes.ts` at the route itself. Phase A
+issues no seeds: every game is played and finished on the client, and `POST /v1/games/import`
+takes the word list and the ruleset, recomputes the score from the words with
+`scoreSubmission`, and stores the number it worked out rather than the one it was handed. So a
+score cannot be inflated by a client that lies about arithmetic, and can be by a client that
+lies about having found a word.
 
-Offline play still works. The client generates its own seed when it cannot reach the API, and such games are stored flagged `unverified_seed`: they appear in personal history but are never leaderboard-eligible.
+That is the gap phase C closes by replaying an event log against a server-issued seed, and the
+rate limits and log caps belong with it. What holds the line meanwhile is narrower and honest
+about it: `canonical` records whether the ruleset was one of the four presets at the default
+board size, `paused` records whether the clock ever stopped, and `leaderboard_eligible` is
+`canonical && score > 0 && !paused`. Offline play still works, and such games still appear in a
+player's own history.
 
 ### 2.4 Schema
 
+Everything lives in a `blinkered` schema rather than in `public`, including drizzle's own
+bookkeeping table. `apps/server/src/schema.ts` is the source of truth; this is its shape.
+
 ```
-users          id, display_name, avatar_url, created_at
-accounts       user_id, provider, provider_account_id        (Auth.js)
-sessions       id, user_id, expires                          (Auth.js)
-games          id, user_id, difficulty, seed, status,
-               n, speed_multiplier, initial_flips, w_min, min_word_len,
-               word_complete_mode, flip_economy, charge_full_round,
-               ruleset_hash, leaderboard_eligible,
-               letters, score, words_count, flips_used, rounds_played,
-               engine_version, dictionary_version, verified,
-               started_at, finished_at
-game_words     game_id, word, length, points, round_index, tick
+users             id, username, username_normalized, country, ui_language,
+                  game_language, bio, avatar_seed, is_admin, created_at, banned_at
+auth_identities   id, user_id, provider, provider_account_id, email,
+                  email_verified_at, created_at
+sessions          id, user_id, kind, created_at, expires_at, revoked_at
+native_handshakes id, kind, user_id, created_at, expires_at, consumed_at
+login_codes       id, email, code_hash, attempts, created_at, expires_at, consumed_at
+games             id, user_id, seed, status, source, imported, client_key,
+                  difficulty, language, canonical,
+                  n, speed_multiplier, hold_ticks, initial_flips, w_min,
+                  min_word_length, word_complete_mode, flip_economy,
+                  charge_full_round, wild_chance, replace_chance,
+                  score, words_count, rounds_played,
+                  engine_version, dictionary_version,
+                  paused, leaderboard_eligible, hidden, started_at, finished_at
+game_detail       game_id, version, detail                  (jsonb: the words, one row per game)
+reports           id, reporter_user_id, subject_user_id, subject_game_id,
+                  field, reason, created_at, resolved_at
 ```
 
-`engine_version` and `dictionary_version` are stored per game so an old result stays explainable and re-verifiable after the rules or the word list change. `ruleset_hash` is a digest of the full settings tuple, which is what leaderboards group by; `difficulty` alone is only a label. Indexes on `(user_id, finished_at desc)` for history and `(ruleset_hash, score desc)` for the eventual leaderboard.
+`engine_version` and `dictionary_version` are stored per game so an old result stays explainable
+after the rules or the word list change, and the leaderboard groups on `engine_version` so a
+retune does not rank new games against old ones. **`ruleset_hash` was never built**: the whole
+tuple is stored column by column instead, and `canonical` is the boolean that says it matches a
+preset, which is the question a leaderboard actually asks. `verified` was never built either,
+since nothing is verified by replay yet; `flips_used` is absent because flips left is derivable
+and flips spent was not wanted; and the words are one jsonb row rather than a `game_words` table,
+because nothing queries inside them.
 
 This covers everything the brief asked to record: initial flips, speed multiplier, N, minimum word length, words made, score, tile letters, and timestamp.
 
@@ -410,25 +608,46 @@ The bar is complete coverage of the engine and the UI, so the architecture is bu
 - score always equals the sum of `score(L)` over found words
 - every submitted word's tiles were revealed, unspent and unselected at submit time
 - reveal order is always reading order
-- every round is exactly `N + 1` ticks
+- every round is exactly `N + holdTicks` ticks
 - replaying `(seed, events)` twice yields identical state, byte for byte
 - the same replay in Node and in a browser yields identical state
 
 **Words.** Solver checked against a brute-force implementation on small alphabets. The generator yields at least W over 10,000 seeds per difficulty and always terminates inside the attempt cap.
 
-**Balance simulator (`tools/simulate`).** A bot with a tunable skill model (reaction time, vocabulary depth, willingness to hold out for a longer word) plays thousands of games across the full cross-product of four difficulties, three word-complete modes and four flip economies. It reports, per cell: median and spread of game length, score distribution, words per round, and above all **the fraction of runs that never terminate**, which is how a broken economy announces itself. Section 1.9's table and section 1.10's defaults both get replaced by whatever this says. Guessing at these numbers is not tuning.
+**Balance simulator (`tools/simulate`), still unbuilt.** It is item 3 in STATUS.md's list and the
+only thing in this document's testing section that has not been written. A bot with a tunable
+skill model (reaction time, vocabulary depth, willingness to hold out for a longer word) plays thousands of games across the full cross-product of four difficulties, three word-complete modes and four flip economies. It reports, per cell: median and spread of game length, score distribution, words per round, and above all **the fraction of runs that never terminate**, which is how a broken economy announces itself. Section 1.9's table and section 1.10's defaults both get replaced by whatever this says. Guessing at these numbers is not tuning.
 
 The bot also has to respect the reveal-order constraint from 1.3, since a bot that can tap letters in any order at any time would make every economy look generous.
 
-**UI (Playwright).** The clock is injectable, so every test drives ticks explicitly and runs at full speed. There is no `waitForTimeout` anywhere in the suite; that rule is enforced by lint. Coverage includes tap and undo, reset, submit, all four submission outcomes and their feedback, spent tiles, the timer display, the shuffle animation landing tiles in the engine's permutation, game over, and full keyboard operation.
+**UI (Playwright), not built.** This is the plan and remains the plan; there is no Playwright in
+the repo, and it is item 1 in STATUS.md's list. What `apps/web/test` holds instead is ten files of
+pure-module tests -- routes, api, autofill, identity, themes and the rest -- which test the things
+that can be decided without a DOM. The report dialog's states, the board's geometry per viewport
+and a game played by touch alone have all been walked in a browser and are pinned by nothing.
 
-**Accessibility, tested not assumed.** Tiles are reachable by keyboard and labelled for screen readers, reveals are announced politely, Enter submits and Escape resets, and `prefers-reduced-motion` shortens travel without hiding the position change. `axe` runs in CI.
+The plan, when it is written: the clock is injectable, so every test drives ticks explicitly and
+runs at full speed, with no `waitForTimeout` anywhere in the suite and lint enforcing that.
+Coverage includes tap and undo, reset, submit, all four submission outcomes and their feedback,
+spent tiles, the timer display, the shuffle animation landing tiles in the engine's permutation,
+game over, and full keyboard operation.
+
+**Accessibility.** Tiles are reachable by keyboard and labelled for screen readers, reveals are
+announced politely, Enter submits and Escape resets, and `prefers-reduced-motion` shortens travel
+without hiding the position change. All of that is built. **`axe` does not run in CI**, and nor
+does anything else in a browser; what is pinned instead is contrast, in `apps/web/test/themes.test.ts`,
+which holds all three palettes to 4.5:1 for text and 3:1 for the parts that are not text.
 
 **Server.** Integration tests against a real Postgres in Docker. Authorisation tests assert that user A cannot read user B's games under any route. Forged and truncated logs are rejected. A cross-check test asserts the client engine and the server engine agree on a corpus of recorded games.
 
-**Visual regression.** Playwright screenshots of each tile state in light and dark.
+**Visual regression.** Playwright screenshots of each tile state in each palette. Not built, with the rest of the Playwright work.
 
-CI on GitHub Actions: typecheck, lint, unit, integration, e2e, coverage gate. iOS and Android builds are a separate manually triggered workflow.
+CI on GitHub Actions, and what runs today is two workflows. `CI` runs `pnpm check` -- typecheck,
+lint, lint:sources, format:check and the coverage gate -- on ubuntu and macos, plus a `database`
+job on ubuntu alone that runs the Postgres suites against a service container, because GitHub's
+macOS runners have no Docker. `Release` builds and pushes the two images. There is no e2e job,
+because there is no e2e suite, and no iOS workflow: the app is built and archived from Xcode on a
+Mac.
 
 ## 4. Look and feel
 
@@ -504,19 +723,48 @@ Because language is part of the recorded ruleset, ranked play groups by it, exac
 
 Each phase ends with green tests and something you can actually play or click.
 
+**Where this stands:** 0, 1, 3, 4 and 5 are done and deployed, 6 is partly done, and 2 is the one
+that was skipped. The game is live at playblinkered.com with accounts, history and leaderboards,
+and installed on a phone. [STATUS.md](STATUS.md) is the current state of play; what follows is the
+plan as written, kept because the order it chose is still the argument for the order.
+
 **Phase 0. Scaffold.** pnpm workspace, TypeScript strict, lint, format, CI skeleton, empty packages wired together.
 
 **Phase 1. Engine.** The full reducer and its test suite, all three word-complete modes and all four flip economies behind the config, plus a text-mode CLI harness so the game is playable in a terminal before any pixels exist. This is where the rules get argued with.
 
 **Phase 2. Words and generation.** Dictionary build pipeline, solver, generator, balance simulator. Ends with a difficulty table backed by data, and with any runaway mode-and-economy pairings identified and either fixed or removed.
 
+_Half done. The pipeline, solver and generator shipped for fifty-one languages; the simulator never
+got written, so the difficulty table is still bids revised by playing rather than a table backed by
+data, and `fibonacci` is still unbounded for a strong player by design rather than by measurement._
+
 **Phase 3. Web game.** React UI, flip and shuffle animation, HUD, accessibility, Playwright suite, PWA manifest. Local-only, no accounts. **This is the first milestone worth showing anyone.**
+
+_Done except the Playwright suite, which is item 1 in STATUS.md. There is no PWA manifest beyond
+`manifest.webmanifest`; an installable web app stopped being the plan when the iOS shell became
+the way onto a phone._
 
 **Phase 4. Accounts and history.** Server, Postgres, Auth.js web flow, verified submission, history screen.
 
+_Done, with two substitutions. Auth.js became a hand-written email code flow plus Google and Apple
+OIDC clients (2.3), and "verified submission" became scoring from the submitted words rather than
+replaying an event log against a server-issued seed -- phase A of the three in 2.3, and the line
+`leaderboard_eligible` holds meanwhile._
+
 **Phase 5. Native.** Capacitor iOS and Android shells, native OAuth spike, secure token storage, icons and splash, TestFlight and Play internal testing.
 
+_iOS only, and no Android shell exists: `capacitor.config.ts` has an `ios` block and nothing else,
+and `apps/mobile` has no `android` directory. The OAuth spike is done and runs on a device. Secure
+token storage is not: the bearer token is in `localStorage`, which STATUS.md records as accepted
+rather than finished. Icons and the splash are done. TestFlight is not -- `PrivacyInfo.xcprivacy`
+is the blocker._
+
 **Phase 6. Depth.** Leaderboards, a daily challenge where everyone gets the same seed, and replay playback. All three are nearly free given the deterministic engine.
+
+_Leaderboards are live, grouped by language, difficulty and engine version, with no periods in the
+path yet -- "today" and "all-time" are still to come. The daily challenge and replay playback are
+not built, and replay playback is the same machinery phase C of 2.3 needs, so they are one piece of
+work rather than two._
 
 ## 7. Risks and open items
 
@@ -526,11 +774,11 @@ Each phase ends with green tests and something you can actually play or click.
 | Word-complete mode                                      | Resolved: `spend`. The other two remain settings                                                                                                               |
 | Flip economy                                            | Runtime setting, four options, decided by playtest. `shuffle` with `perLetter` is likely unbounded, and `fibonacci` is unbounded for a strong player by design |
 | Minimum word length                                     | Runtime setting, default 3, higher on hard levels pending the simulator                                                                                        |
-| Difficulty numbers                                      | Guesses until the phase 2 simulator runs                                                                                                                       |
-| N as a difficulty dial                                  | Resolved: it is not one. Board size is a player's choice, default 9; the flip budget and word floor derive from it                                             |
+| Difficulty numbers                                      | Still bids, revised twice by playing (0.2.0 and 0.4.0), and the only unmeasured numbers left in the repo. The phase 2 simulator is unbuilt                     |
+| N as a difficulty dial                                  | Resolved: it is not one. Board size is a player's choice, default 12; the flip budget and word floor derive from it                                            |
 | Board acceptance                                        | Resolved: word count, a six-letter ceiling, and no duplicate rare consonant. Enforced in the harness today                                                     |
 | Reveal-order constraint (1.3) is load-bearing           | Confirm it plays as well as it reads; it is the main source of skill expression                                                                                |
-| SCOWL license and attribution                           | Verify before shipping                                                                                                                                         |
-| Native OAuth via custom scheme                          | Needs a spike in phase 5, most likely place to lose a day                                                                                                      |
+| SCOWL license and attribution                           | Done, and generalised: every language carries its own LICENSE and PROVENANCE.md, twenty-one of them CC BY-SA, nothing GPL                                      |
+| Native OAuth via custom scheme                          | Done. `blinkered://auth`, a Swift plugin with two methods, and three `/v1/auth/native/*` routes. It did cost the day                                           |
 | Apple Developer Program, $99/yr, and Sign in with Apple | Required before any iOS build reaches a device other than yours                                                                                                |
 | Whether the economy is too lossy to feel fair           | Answered by the simulator plus real playtesting, not by argument                                                                                               |

@@ -48,6 +48,24 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in every language.
+- **Three palettes, chosen for contrast rather than for taste.** Traditional, light and
+  high-contrast, picked from the title bar and stored in settings; `applyTheme` sets
+  `data-theme` on the root and keeps the browser's own bar colour in step. Every pairing in all
+  three clears WCAG AA for text and 1.4.11 for the parts that are not text, which is what the
+  high-contrast one exists to make possible rather than to approximate. `apps/web/test/themes.test.ts`
+  pins the ratios, so a colour cannot be nudged into failing one without a test saying so.
+- **An About page**, linked from the rules page and from the signed-in menu, carrying the
+  animated wordmark, what the game is, and the two marks. It is a route rather than a dialog
+  (`/about`), so it can be linked to and nginx answers for it directly.
+- **A one-row title bar that stays one row**, measured rather than guessed: `fitRow.ts` reads
+  `scrollWidth` against `clientWidth` and drops one thing at a time — the language name, then
+  help, then nerd mode, then the wordmark down to its first tile — until the row fits. It exists
+  because the controls used to wrap onto a second line and hop about, and because a media query
+  cannot know how wide a German language name is.
+- **The opening animation and an iOS splash.** The wordmark unscrambles in the title bar on a
+  wide viewport and starts already assembled on a narrow one, where the animation looked silly;
+  the shell plays a slower version of the same thing over a 3x3 grid as its opening screen, with
+  the Tight Line mark, skippable by a press.
 - **Moderation**, which is `is_admin` on `users`, a panel behind it, and a report button in
   front of it. The panel finds an account by username or sign-in address, renames it, clears a
   bio, grants or removes the flag, marks it deleted and brings it back; it lists games in the
@@ -58,11 +76,15 @@ next.
   anybody's account. The panel is in English and the report button is in all fifty-one languages,
   and that asymmetry is the point: a report button that only worked in English would be the
   blocklist ACCOUNTS.md refuses. See [ACCOUNTS.md](ACCOUNTS.md), "Moderation".
-- **`apps/server`** — started, and honest about how far. A Hono app answering `/healthz`, and
-  `scoreSubmission`, which is the rule that a submitted game is scored from its words rather than
-  believed. No database yet, so no other route exists: one that answered from nothing would be a
-  fixture pretending to be an endpoint. See [ACCOUNTS.md](ACCOUNTS.md).
-- 1,621 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
+- **`apps/server`** — a Hono app on Postgres, deployed to both clusters. Everything under `/v1`:
+  the email one-time-code flow and both OIDC providers under `/v1/auth`, then `/v1/me`,
+  `/v1/me/games`, `/v1/games/import`, `/v1/games/:id`, `/v1/users/:username`,
+  `/v1/leaderboard/:language/:difficulty`, `/v1/reports`, account deletion, and a `/v1/admin`
+  router behind the admin flag. Drizzle for the schema and ten committed migrations; `pgStore.ts`
+  holds the SQL. `scoreSubmission` is still the rule underneath all of it — a submitted game is
+  scored from its words rather than believed. See [ACCOUNTS.md](ACCOUNTS.md) and
+  [AUTH.md](AUTH.md).
+- 1,850 tests, 100% line/branch/function/statement coverage on engine, words, i18n and server.
   CI on ubuntu and macos. Three of them are per-language sweeps rather than samples: every
   alphabet deals an accepted board over three seeds, every letter in every `weights` table
   appears in some shipped word, and every written form in every shipped list folds back onto the
@@ -78,9 +100,11 @@ next.
    board geometry per viewport, a 44pt audit of every target, and a game played by touch alone.
    They exist and were run; they live in a scratchpad rather than the repo, which is the gap.
 
-   **`apps/web` now has exactly one test**, `test/reportDraft.test.ts`, and it is not a dent in
-   this item. It is there because that module parses a shape out of session storage and so has
-   to refuse one that is not the shape it wrote, which is branch logic rather than rendering.
+   **`apps/web` has ten test files** — `api`, `autofill`, `boardPreview`, `identity`,
+   `nativeAuth`, `pendingGames`, `reportDraft`, `route`, `sso` and `themes` — and they are not a
+   dent in this item. Every one of them tests a module that parses, derives or decides something
+   away from the DOM: a shape out of session storage, a route out of a path, which sign-in
+   buttons a platform can offer. None of them render a component or drive the game.
    `vitest.config.ts` runs `apps/web/test` and deliberately leaves it out of the coverage gate:
    a percentage over a directory with one tested file in it would read as a claim about the
    directory. The report dialog's own states — asked up front, asked again after a 401, restored
@@ -88,15 +112,16 @@ next.
 
 2. **In-progress game surviving reload**, via localStorage. Nearly free: state is
    serializable and the reducer is pure.
-3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty numbers are
-   still guesses — the only numbers in the repo that are. Everything else is now measured.
-4. Then accounts, history and leaderboards: PLAN.md phase 4 onward, designed in
-   [ACCOUNTS.md](ACCOUNTS.md). That is when the deployment stops being a static site and grows
-   a backend and a Postgres.
+3. **The balance simulator** (PLAN.md phase 2). Never built, and the difficulty profiles are
+   still bids — the only numbers in the repo that are. What was measured for the 0.4.0 retune was
+   measured by a throwaway script, which is the argument for building this one properly: the
+   floors and the rate the round-cutting rule fires at came out of code that no longer exists.
 
 The balance simulator stays at 3 for a sharper reason than before: `ENGINE_VERSION` is cheap to
 bump while the only table it wipes is the player's own, and it stops being cheap the day the
-boards are public.
+boards are public. Item 4 used to be "then accounts, history and leaderboards, and that is when
+the deployment grows a backend and a Postgres" — all of which happened, on both clusters, and it
+is the top of this document now rather than the bottom of this list.
 
 ## Wanted, not built
 
@@ -135,13 +160,24 @@ once, and that the native shell can authenticate at all. See
   inside the app sandbox and goes on uninstall -- and not right: any script in the WebView can
   read it. Moving it needs a Capacitor plugin and a bridge, and `apps/web` deliberately has no
   Capacitor dependency. It is behind three functions in `api.ts` so the move is one file.
-- **Google and Apple sign-in are not wired for the shell**, because they are navigations
-  off-origin ending at a cookie the shell cannot receive. `ASWebAuthenticationSession` and a
-  token-returning callback is the shape. Not a store blocker: an app offering no third-party SSO
-  is not subject to guideline 4.8, so the email code flow is enough to submit with.
-- **None of the native work has run on a device.** Unit suites, the server's bearer and CORS
-  routes, and a simulator build are the limit of what a Mac can check. `WKAppBoundDomains` fails
-  in a way that looks like a network outage, and it is the first thing to suspect if the shell
+- **Google and Apple sign-in are wired for the shell**, which the two bullets above used to say
+  was still to do. `NativeAuth.swift` offers two methods and no networking: `signInWithApple` runs
+  `ASAuthorizationAppleIDProvider` against a nonce the server issued, and `signInWithBrowser`
+  runs `ASWebAuthenticationSession` for Google and hands back the code. The server takes both at
+  `/v1/auth/native/*` and answers with a bearer token, so nothing depends on a cookie the shell
+  cannot receive. `nativeAuth.ts` is the web half.
+
+  Two things worth keeping in mind about it. The shell reaches the plugin through
+  `Capacitor.nativePromise` rather than `Capacitor.Plugins`, because `apps/web` has no
+  `@capacitor/core` dependency and so nothing builds that registry — there is no way to ask
+  whether the method is there, so a stale app gives a failed sign-in rather than a hidden button.
+  And Apple offers only the Apple ID the phone is signed in to, which is what the native provider
+  does; the browser flow was the only way to get an account picker.
+
+- **The native work has run on a device**, and signing in with both providers works there. What a
+  Mac could check by itself — unit suites, the server's bearer and CORS routes, a simulator build
+  — was the limit for a while, and it is not the limit now. `WKAppBoundDomains` still fails in a
+  way that looks like a network outage, and it is still the first thing to suspect if the shell
   signs in and then reaches nothing.
 
 **Accounts, history and leaderboards** is largely built rather than queued; what is left of it is
@@ -258,11 +294,14 @@ settle them. They are both nerd-mode numbers, so nothing is blocked on it.
   is only what made it visible. Moving the table to its own schema would settle it and is a
   separate change against two live databases.
 
-- **Twenty languages ship under CC BY-SA**, because Wiktionary is the only clean validator for
-  them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German, Hebrew, Icelandic,
-  Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian, Tagalog, Ukrainian,
-  Vietnamese. That was five before the batch of twenty-five, and the store-build question grew
-  with it — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
+- **Twenty-one languages ship under CC BY-SA.** Twenty of them because Wiktionary is the only
+  clean validator for them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German,
+  Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian,
+  Tagalog, Ukrainian, Vietnamese. **Naijá is the twenty-first and gets there another way**: it has
+  no validator at all, as the next bullet says, and its ordering corpus is the Naijá Wikipedia, so
+  the licence follows the corpus rather than the validator. Counting it was worth the sentence
+  because the store-build question is about the licence and not about how a list was checked.
+  That was five before the batch of twenty-five — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
   whole obligation and we do it. Nothing anywhere is GPL.
 - **Naijá is built from corpus frequency with no validator at all**, which is the one place the
   pipeline knowingly breaks its own rule, and it shows: twelve of fourteen unambiguous English

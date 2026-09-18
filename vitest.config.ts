@@ -17,15 +17,18 @@ export default defineConfig({
     /*
      * `apps/web/test` is here and is **not** in `coverage.include` below.
      *
-     * The web app has no test suite -- ACCOUNTS.md item 5 and STATUS.md both say so, and a
-     * Playwright suite is the thing that would fix it. What is here is the odd pure module that
-     * has branches worth pinning: `reportDraft.ts` parses a shape out of session storage, so it
-     * has to refuse one that is not the shape it wrote.
+     * The web app has no test suite in the sense that matters -- nothing renders a component or
+     * plays a game -- and a Playwright suite is the thing that would fix it. STATUS.md item 1.
      *
-     * Left out of the coverage gate deliberately. A percentage over a directory with one tested
-     * file in it would read as a claim about the directory, which is the same reason the locale
-     * files and the barrels are excluded: a number that measures the wrong thing is worse than
-     * no number.
+     * What is here is ten files of pure modules with branches worth pinning: `reportDraft.ts`
+     * parses a shape out of session storage and has to refuse one that is not the shape it wrote,
+     * `route.ts` turns a path into a route and back, `themes.ts` holds every palette to a contrast
+     * ratio, `sso.ts` decides which buttons a platform can offer.
+     *
+     * Left out of the coverage gate deliberately. A percentage over a directory whose components
+     * are all untested would read as a claim about the directory, which is the same reason the
+     * locale files and the barrels are excluded: a number that measures the wrong thing is worse
+     * than no number.
      */
     include: [
       'packages/*/test/**/*.test.ts',
