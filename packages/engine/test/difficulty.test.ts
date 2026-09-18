@@ -51,15 +51,28 @@ describe('difficulty profiles', () => {
   })
 
   it('keeps the whole board up for longer on an easier level', () => {
-    // The perception budget, which is the axis the previous retune set and this one only
-    // shortened as a side effect of the faster clock. Still halving, near enough, all the way
-    // down: 7.5s, 5.2s, 3.6s, 1.8s.
+    /*
+     * The perception budget, which is the axis the previous retune set and this one only
+     * shortened as a side effect of the faster clock: 9.0s, 6.5s, 4.8s, 2.7s.
+     *
+     * `holdTicks + 1`, and the first version of this test used `holdTicks` and was wrong by a
+     * tick at every level. The last tile lands when the timer reads `holdTicks + 1`, and the
+     * round then runs down to zero, so that many tick-lengths pass with every letter showing.
+     * PLAN.md 1.2 says so and `NerdPanel` shows `holdTicks + 1` to the player, which is what
+     * makes the old number not merely a different convention but a disagreement with the game.
+     */
     const windows = levels.map((level) => {
       const config = configFor(level)
-      return config.holdTicks * config.speedMultiplier
+      return (config.holdTicks + 1) * config.speedMultiplier
     })
     expect(windows).toEqual([...windows].sort((a, b) => b - a))
-    expect(windows.map((seconds) => Math.round(seconds * 10) / 10)).toEqual([7.5, 5.2, 3.6, 1.8])
+    expect(windows.map((seconds) => Math.round(seconds * 10) / 10)).toEqual([9, 6.5, 4.8, 2.7])
+  })
+
+  it('agrees with the tick count the interface shows for it', () => {
+    // The two numbers that drifted apart, pinned together. `NerdPanel` renders
+    // `ticks(config.holdTicks + 1)` under "whole board up for", so this is that expression.
+    expect(levels.map((level) => configFor(level).holdTicks + 1)).toEqual([6, 5, 4, 3])
   })
 
   it('never makes a harder level swap letters less often than an easier one', () => {

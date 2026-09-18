@@ -157,17 +157,22 @@ and the reasoning for each column lives beside the code.
 
 | Level  | Seconds per tick | Hold | Rounds of life | Min word | Swap rate | Round (at N=12) | Full board | Floor    |
 | ------ | ---------------- | ---- | -------------- | -------- | --------- | --------------- | ---------- | -------- |
-| Easy   | 1.5              | 5    | 7              | 3        | 0         | 25.5s           | 7.5s       | 2.98 min |
-| Medium | 1.3              | 4    | 8              | 3        | 0.25      | 20.8s           | 5.2s       | 2.77 min |
-| Hard   | 1.2              | 3    | 9              | 4        | 0.5       | 18.0s           | 3.6s       | 2.70 min |
-| Insane | 0.9              | 2    | 10             | 4        | 0.5       | 12.6s           | 1.8s       | 2.10 min |
+| Easy   | 1.5              | 5    | 7              | 3        | 0         | 25.5s           | 6 tk, 9.0s | 2.98 min |
+| Medium | 1.3              | 4    | 8              | 3        | 0.25      | 20.8s           | 5 tk, 6.5s | 2.77 min |
+| Hard   | 1.2              | 3    | 9              | 4        | 0.5       | 18.0s           | 4 tk, 4.8s | 2.70 min |
+| Insane | 0.9              | 2    | 10             | 4        | 0.5       | 12.6s           | 3 tk, 2.7s | 2.10 min |
+
+**Full board is `holdTicks + 1` ticks**, per 1.2: the last tile lands when the timer reads
+`holdTicks + 1` and the round then runs down to zero. It is written as ticks as well as seconds
+because the tick count is what a mechanic gets to happen in, and because the engine's own comment
+and a test both used `holdTicks` for a while and so understated every level by a tick.
 
 Two columns decide how a level feels, and they are not the same thing.
 
 **Full board** is the perception budget: how long you hold the whole thing in front of you. The
-first retune (0.2.0) existed because this column used to read 8.0s, 3.6s, 1.8s, 0.7s and then 0s
-at the bottom -- insane gave no thinking time at all and hard gave a glance, so the top of the
-ladder had nothing between its rungs. It halves now instead of vanishing.
+first retune (0.2.0) existed because this column used to read 8.0s, 3.6s, 1.8s, 0.7s -- insane
+gave under a second of thinking time and hard gave a glance, so the top of the ladder had nothing
+between its rungs. It halves now instead of very nearly vanishing.
 
 **Floor** is the endurance budget: how long a game lasts if you score nothing, which is every
 round the flip budget pays for at that level's own pace. The second retune (0.4.0) existed

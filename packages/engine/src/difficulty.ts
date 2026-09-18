@@ -69,17 +69,26 @@ export interface DifficultyProfile {
  * Retuned after playing, which said every level was about one notch harder than its name:
  * medium played as hard, hard as barely short of insane, and insane as unplayable.
  *
- * The number that did it is not `speedMultiplier` by itself but what it multiplies. The window
- * with the whole board face up is `holdTicks * speedMultiplier`, and on the old table that window
- * did not shrink from level to level so much as go out: 6.4s, 2.4s, 0.9s, then nothing at all.
- * Insane gave the player zero seconds with twelve letters in front of them, so the only word
- * available was one spotted while the board was still dealing; hard's 0.9s is a glance, which is
- * why the two felt adjacent. A setting cannot be hard in an interesting way if the thing it takes
- * away is the part of the round you think in.
+ * The number that did it is not `speedMultiplier` by itself but what it multiplies: the window
+ * with the whole board face up.
  *
- * The window now halves rather than vanishing -- 9.0s, 6.0s, 3.6s, 1.8s -- and the tick slows
- * across the board, each level landing roughly where the level below it used to be. Insane is
- * still comfortably the hardest: 0.9s a tile is the old hard, with barely two seconds to look.
+ * **That window is `(holdTicks + 1) * speedMultiplier`, not `holdTicks * speedMultiplier`**, and
+ * this comment had it wrong by one tick until 2026-09-18. The last tile lands when the timer
+ * reads `holdTicks + 1` and the round then runs down to zero, so `holdTicks + 1` tick-lengths
+ * elapse with every letter showing. PLAN.md 1.2 always said so and nerd mode always displayed it,
+ * which is the argument for reading the number off the thing the player sees rather than deriving
+ * it twice.
+ *
+ * On the old table that window did not shrink from level to level so much as go out: 8.0s, 3.6s,
+ * 1.8s, 0.7s. Insane gave the player under a second with twelve letters in front of them, so the
+ * only word available was one spotted while the board was still dealing; hard's 1.8s is a glance,
+ * which is why the two felt adjacent. A setting cannot be hard in an interesting way if the thing
+ * it takes away is the part of the round you think in.
+ *
+ * The window now halves rather than vanishing -- 10.8s, 7.5s, 4.8s, 2.7s after that retune, and
+ * 9.0s, 6.5s, 4.8s, 2.7s after the one below -- and the tick slows across the board, each level
+ * landing roughly where the level below it used to be. Insane is still comfortably the hardest:
+ * 0.9s a tile is the old hard, with under three seconds to look.
  *
  * Then playtested, which said the opposite thing about the other axis: the first game goes on far
  * too long. Easy guaranteed 14 rounds of 30.6s -- seven minutes before the game could end, and
@@ -95,10 +104,10 @@ export interface DifficultyProfile {
  * writing the floor down here:
  *
  *              per tile   hold   full board up   rounds   floor
- *   easy          1.5s      5        7.5s           7     2.98 min
- *   medium        1.3s      4        5.2s           8     2.77 min
- *   hard          1.2s      3        3.6s           9     2.70 min
- *   insane        0.9s      2        1.8s          10     2.10 min
+ *   easy          1.5s      5      6 ticks, 9.0s      7     2.98 min
+ *   medium        1.3s      4      5 ticks, 6.5s      8     2.77 min
+ *   hard          1.2s      3      4 ticks, 4.8s      9     2.70 min
+ *   insane        0.9s      2      3 ticks, 2.7s     10     2.10 min
  *
  * The cuts are a gradient rather than a flat trim, because the complaint was not "games are
  * long", it was "easy and medium are long": easy loses half its flips (168 to 84 at twelve
@@ -106,11 +115,11 @@ export interface DifficultyProfile {
  * own, since two minutes was never the problem and insane is supposed to have flips to play with.
  *
  * The clock also stepped up on the two levels that were called slow, 1.8s to 1.5s and 1.5s to
- * 1.3s. That shortens the think window as a side effect -- easy's full board was up for 9.0s and
- * is now up for 7.5s -- which is a real cost and is accepted rather than compensated with a
+ * 1.3s. That shortens the think window as a side effect -- easy's full board was up for 10.8s and
+ * is now up for 9.0s -- which is a real cost and is accepted rather than compensated with a
  * larger `holdTicks`: adding hold ticks lengthens the round, and the round being long is what
- * started this. 7.5s with twelve letters that never change is still the most generous window in
- * the game by a factor of four.
+ * started this. 9.0s with twelve letters that never change is still the most generous window in
+ * the game, by more than three times.
  */
 export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
   easy: {

@@ -345,9 +345,14 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   interface now, because the shipped lists start there.
 - **the difficulty ladder**: retuned once from play, which said every level was a notch harder
   than its name. The number that did it was the window with the whole board face up,
-  `holdTicks * speedMultiplier`, which used to run 6.4s, 2.4s, 0.9s, 0s: insane gave no thinking
-  time at all and hard gave a glance, so the top of the ladder had nothing between its rungs. It
-  now halves rather than vanishing, 9.0s to 1.8s, with the tick slowed across the board. Still a
+  `(holdTicks + 1) * speedMultiplier`, which used to run 8.0s, 3.6s, 1.8s, 0.7s: insane gave under
+  a second of thinking time and hard gave a glance, so the top of the ladder had nothing between
+  its rungs. It now halves instead, 9.0s to 2.7s, with the tick slowed across the board.
+
+  That expression is `holdTicks + 1` and was written here, in the engine and in a test as
+  `holdTicks`, understating every level by one tick; PLAN.md 1.2 and the nerd panel always had it
+  right. Corrected on 2026-09-18, and a test now pins the tick count against the one the interface
+  renders. Still a
   bid; `initialRounds` was deliberately left alone so the next play has one variable to speak to.
   `ENGINE_VERSION` went to 0.2.0 with it, and the leaderboard now groups on that, so scores set
   under the old presets are kept but no longer ranked against new ones.
