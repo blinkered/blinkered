@@ -1,6 +1,13 @@
 require_relative '../../../../node_modules/.pnpm/@capacitor+ios@7.6.8_@capacitor+core@7.6.8/node_modules/@capacitor/ios/scripts/pods_helpers'
 
-platform :ios, '14.0'
+# 16.2, which is what the stylesheet has needed for a while rather than a number chosen for
+# tidiness: `color-mix()` draws the paused veil and arrived in Safari 16.2, container query units
+# size the too-few-letters notice and arrived in 16.0, and `overscroll-behavior: none` is what
+# stops the board bouncing under a thumb now that the WebView scrolls, also 16.0. On anything
+# older all three are silently ignored, which is a veil with no background and a game that
+# bounces. Apple's own floor is lower -- uploads need 15.0 from spring 2027 -- and would not have
+# been enough. See apps/web/src/styles.css.
+platform :ios, '16.2'
 use_frameworks!
 
 # workaround to avoid Xcode caching of Pods that requires
