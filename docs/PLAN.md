@@ -20,19 +20,20 @@ This section is the spec the engine implements. Where the prose in the original 
 
 - **tile**: one of N letter tiles on the board, each holding exactly one letter
 - **tick**: one time step, lasting `speedMultiplier` real seconds. The on-screen timer counts ticks, not seconds
-- **round**: one reveal-and-hide cycle, `N + holdTicks` ticks long
+- **round**: one reveal-and-hide cycle, `N + holdTicks` ticks long, and longer on the levels where letters hide (1.13)
 - **hold**: ticks at the end of a round where the board sits fully exposed and nothing new appears
 - **flips remaining**: the game's life meter. Revealing a tile costs 1. Completing a word of length L awards L
 - **spent**: a tile whose letter was used in a completed word. Whether it goes face down, and whether the round survives at all, depends on the word-complete mode in 1.10
 
 ### 1.2 Round lifecycle
 
-A round is `N + holdTicks` ticks long.
+A round is `N + holdTicks` ticks long, and longer on the levels where letters hide.
 
-1. Round begins. The timer reads `N + holdTicks` and tile 1 (top-left) is revealed immediately.
-2. On each tick the timer decrements and the next tile in reading order (left to right, top to bottom) is revealed. Tile k appears when the timer reads `N + holdTicks + 1 - k`, so the last tile lands with `holdTicks + 1` ticks remaining.
-3. The board then sits fully exposed for the rest of the round, `holdTicks + 1` ticks in total.
-4. At timer 0 every tile flips face down, the tiles visibly shuffle to new positions, and a new round begins.
+1. Round begins. The timer reads `N + holdTicks` and one tile, drawn at random, is revealed immediately.
+2. On each tick the timer decrements and one more tile is revealed, drawn uniformly from the tiles still face down. The k-th reveal happens when the timer reads `N + holdTicks + 1 - k`, so with nothing hiding the last tile lands with `holdTicks + 1` ticks remaining.
+3. On the harder levels a tick can take a letter back instead of dealing one (1.13). That tick adds to the timer rather than spending from it, by exactly what fetching the letter back will cost, so the round gets longer and the flip ledger does not move.
+4. The board then sits fully exposed for the rest of the round, `holdTicks + 1` ticks in total.
+5. At timer 0 every tile flips face down, the tiles visibly shuffle to new positions, and a new round begins.
 
 **The hold is the main difficulty dial.** With `holdTicks` at zero the last tile lands with one tick left, and that is every second you get with the whole board in front of you, which is punishing at any speed. Raising the hold buys thinking and typing time without making the letters easier and without changing what a round costs, since reveals are what cost flips. That makes it a cleaner lever than the clock: speed decides how fast letters arrive, the hold decides how long you have to use them.
 
@@ -64,12 +65,14 @@ Either way the clear modifier clears every copy of a letter at once: Shift in a 
 
 Each tile contributes at most one letter to a word. A word needing a double letter needs two tiles carrying it.
 
-**The reveal order gates which words are spellable, and this is the deepest mechanic in the game.** Letters are appended in tap order, and a tile can only be tapped once revealed. So to spell STONE while the board is still revealing, the tiles carrying S, T, O, N and E must occupy positions whose reading order matches that spelling. Any word whose letters sit in a different order can only be assembled after every tile it needs is face up, and a word needing the last tile can only be completed in the final tick.
+**The reveal order gates which words are spellable, and this is the deepest mechanic in the game.** Letters are appended in tap order and a tile can only be tapped once revealed, so a word can be started only once the deal has turned over the tiles it begins with, and finished only once it has turned over the rest. A word needing the last tile can only be completed in the final tick.
+
+The deal is a uniformly random draw from whatever is still face down. It was reading order until letters began to hide (1.13), which needs a returning letter to be indistinguishable from one the deal had simply not reached yet. The change costs the player the one thing reading order gave them, which is knowing what comes next: a word can no longer be planned from the positions on the board, only from the letters already up.
 
 Two consequences worth stating plainly:
 
-- The shuffle permutation is not just a memory test. It decides which words are reachable at all this round, which is why the shuffle has to be watchable
-- Long words are constrained by dexterity as much as by vocabulary. Assembling eight letters inside the one-tick full-exposure window is not physically possible at hard speeds, so a long word has to be built incrementally as its letters appear in order. That difficulty is the main argument for a reward curve that pays disproportionately for length
+- The deal decides which words are reachable at all this round; the shuffle permutation decides only what the board looks like while that happens. That is the other way round from how it read while reveals were positional, and it is why the first-run tour deals its own screens in a scattered order: a tour that fills the board from the left teaches the one thing the game does not do
+- Long words are constrained by dexterity as much as by vocabulary. Assembling eight letters inside the one-tick full-exposure window is not physically possible at hard speeds, so a long word has to be built as its letters arrive. That difficulty is the main argument for a reward curve that pays disproportionately for length
 
 ### 1.4 Submission outcomes
 
@@ -155,12 +158,14 @@ Still bids rather than simulator output, but twice revised by playing. `DIFFICUL
 `packages/engine/src/difficulty.ts` is the source of truth; this table is the current state of it
 and the reasoning for each column lives beside the code.
 
-| Level  | Seconds per tick | Hold | Rounds of life | Min word | Swap rate | Round (at N=12) | Full board | Floor    |
-| ------ | ---------------- | ---- | -------------- | -------- | --------- | --------------- | ---------- | -------- |
-| Easy   | 1.5              | 5    | 7              | 3        | 0         | 25.5s           | 6 tk, 9.0s | 2.98 min |
-| Medium | 1.3              | 4    | 8              | 3        | 0.25      | 20.8s           | 5 tk, 6.5s | 2.77 min |
-| Hard   | 1.2              | 3    | 9              | 4        | 0.5       | 18.0s           | 4 tk, 4.8s | 2.70 min |
-| Insane | 0.9              | 2    | 10             | 4        | 0.5       | 12.6s           | 3 tk, 2.7s | 2.10 min |
+| Level  | Seconds per tick | Hold | Rounds of life | Min word | Swap rate | Hide rate | Round (at N=12) | Full board | Floor    |
+| ------ | ---------------- | ---- | -------------- | -------- | --------- | --------- | --------------- | ---------- | -------- |
+| Easy   | 1.5              | 5    | 7              | 3        | 0         | 0         | 25.5s           | 6 tk, 9.0s | 2.98 min |
+| Medium | 1.3              | 4    | 8              | 3        | 0.25      | 0.05      | 23.1s           | 5 tk, 6.5s | 3.06 min |
+| Hard   | 1.2              | 3    | 9              | 4        | 0.5       | 0.1       | 22.5s           | 4 tk, 4.8s | 3.31 min |
+| Insane | 0.9              | 2    | 10             | 4        | 0.5       | 0.15      | 18.0s           | 3 tk, 2.7s | 2.93 min |
+
+**The round and floor columns include hiding, which is why three of them moved.** A round is a random walk once letters hide (1.13): a reveal spends a tick, a hide hands one back, so a round runs `(N + holdTicks) / (1 - hideChance * 2)` ticks rather than `N + holdTicks`. With nothing hiding the four rounds are 25.5s, 20.8s, 18.0s and 12.6s, which is what the columns read before. Flips are untouched, since the hide refunds one and the returning reveal spends it again, so rounds of life do not move.
 
 **Full board is `holdTicks + 1` ticks**, per 1.2: the last tile lands when the timer reads
 `holdTicks + 1` and the round then runs down to zero. It is written as ticks as well as seconds
@@ -178,6 +183,8 @@ between its rungs. It halves now instead of very nearly vanishing.
 round the flip budget pays for at that level's own pace. The second retune (0.4.0) existed
 because this column read 7.1 minutes on easy, and a first game nobody can lose for seven minutes
 is a first game people put down. Playtesting: "too many flips for so slow a game."
+
+**Hiding flattened the ladder, and that is unresolved.** The floor column is measured, 300 watched games a level against the shipped English list: 2.98, 3.06, 3.31 and 2.93 minutes. Without hiding it read 2.98, 2.77, 2.70 and 2.10, which is the descending ladder the 0.4.0 retune was for -- a first game nobody can lose for seven minutes is a first game people put down, and the same argument says insane should be the short one. It is not any more, and hard is now the longest game on the board. Both fixes are cheap (less hiding, or fewer rounds of life on the harder levels) and neither should be picked by arithmetic alone, so it is in section 7 rather than applied here.
 
 **Rounds of life read backwards on purpose.** They climb, 7 to 10, while the floor falls. A round
 is 25.5s on easy and 12.6s on insane, so equal round counts would be unequal sittings; what a
@@ -328,7 +335,56 @@ than the letter it hides.
 you can learn a board and carry a word list between rounds; once they drift you cannot, and that
 is a different game rather than a harder one. So easy has none at all, and the rate stops
 climbing at hard, because what a swap costs is a stale memorised list and insane shows the whole
-board for 1.8 seconds.
+board for 2.7 seconds.
+
+### 1.13 Letters that hide
+
+`hideChance` per tick, 0, 0.05, 0.1 and 0.15 by level. On a tick that hides, one face-up tile
+turns back over, and **the timer gains a tick instead of losing one**; flips remaining gains one
+too. The letter goes back into the pool the deal draws from, so it returns at some later tick like
+any other tile, and the reveal that brings it back spends exactly the tick and the flip the hide
+handed over. It is announced by `TILE_HIDDEN`, the view flips the tile with a motion distinct from
+the deal's, and the tick the timer gained is drawn in red, so the player can see that the extra
+one was not theirs to begin with.
+
+**The arithmetic is the rule**, in Nick's words: "If I am at 10 ticks, and flip-back is selected,
+then after that cycle I am at _11_ ticks, not 10. So the flip-over of the hidden tile later nets
+me out to 10 ticks, and I'm exactly where I started." A hide costs the player nothing but the
+waiting, and the game keeps its promise to show every letter.
+
+**The conservation law.** `ticksRemaining - faceDown` starts a round at `holdTicks + 1`, and
+neither event changes it: a reveal takes one from each side, a hide adds one to each. Only a tick
+that does neither lowers it. So a board can never run out of time to fetch its letters back, and a
+round can never end with a letter still away -- which is why the rule needs no cap, no reserve and
+no special case in the last ticks of a round. `packages/engine/test/hide.test.ts` states it as a
+test rather than leaving it as an argument.
+
+**A selected letter is pinned.** Nick: "any selected letter can't be flipped back. It is pinned.
+Which is an incentive to start making words as soon as possible, but a penalty because unselecting
+letters to make a different word now requires more strokes." A tick that finds nothing eligible --
+every letter selected, or fewer than two candidates -- deals as usual: "No cheat code there."
+
+**The random deal exists for this rule.** Hiding was proposed while the deal was still reading
+order, which makes a returned letter obvious: it is the one out of sequence. Nick: "Don't reveal
+letters in reading order. Reveal them randomly, all over the board. That way a flip-back is
+indistinguishable from returning to an earlier (possible) state in the deal." The principle
+behind it, stated after two attempts of mine that each invented a return order: "the state machine
+of the board should be as independent as possible from the path used to arrive at a given state."
+So there is no queue, no held-aside tile and no record of what hid. `revealNext` draws uniformly
+from everything face down, and a letter that has just gone can come straight back or sit out ten
+ticks.
+
+**The rate is bounded by the maths, not by a rule.** The walk drifts by `1 - 2p` a tick: below
+0.5 a round ends with probability one, at 0.5 its expected length is infinite, and above it a
+watched round may never end at all. Nerd mode's dial stops at 0.4 for that reason and nothing else
+caps it. An earlier version allowed one hide per round, which distorted the dial enough to be
+visible in play -- "I am typically seeing one flip-back per round. I would expect every other tick
+to yield a flip-back, roughly" -- and was removed: "you probably overengineered that because of a
+vanishingly unlikely corner case."
+
+**It hides during the hold phase too**, which is deliberate. Confining it to the reveal phase
+would have left the hold untouched, and the hold is long only on the easy levels: "that actually
+works backwards, making easier levels harder than they currently are."
 
 ## 2. Architecture
 
@@ -612,8 +668,8 @@ The bar is complete coverage of the engine and the UI, so the architecture is bu
 - flips remaining is never negative, in any event sequence
 - score always equals the sum of `score(L)` over found words
 - every submitted word's tiles were revealed, unspent and unselected at submit time
-- reveal order is always reading order
-- every round is exactly `N + holdTicks` ticks
+- every reveal turns over a tile that was face down, and `ticksRemaining - faceDown` holds at `holdTicks + 1` until an idle tick, so no round ends with a letter still hidden (1.13)
+- a round with nothing hiding is exactly `N + holdTicks` ticks, and hiding only ever lengthens one
 - replaying `(seed, events)` twice yields identical state, byte for byte
 - the same replay in Node and in a browser yields identical state
 
@@ -773,17 +829,18 @@ work rather than two._
 
 ## 7. Risks and open items
 
-| Item                                                    | Status                                                                                                                                                         |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Reveal-offset ambiguity in section 1.2                  | Resolved. Round is N ticks, last reveal at 1 remaining, full board exposed for one tick                                                                        |
-| Word-complete mode                                      | Resolved: `spend`. The other two remain settings                                                                                                               |
-| Flip economy                                            | Runtime setting, four options, decided by playtest. `shuffle` with `perLetter` is likely unbounded, and `fibonacci` is unbounded for a strong player by design |
-| Minimum word length                                     | Runtime setting, default 3, higher on hard levels pending the simulator                                                                                        |
-| Difficulty numbers                                      | Still bids, revised twice by playing (0.2.0 and 0.4.0), and the only unmeasured numbers left in the repo. The phase 2 simulator is unbuilt                     |
-| N as a difficulty dial                                  | Resolved: it is not one. Board size is a player's choice, default 12; the flip budget and word floor derive from it                                            |
-| Board acceptance                                        | Resolved: word count, a six-letter ceiling, and no duplicate rare consonant. Enforced in the harness today                                                     |
-| Reveal-order constraint (1.3) is load-bearing           | Confirm it plays as well as it reads; it is the main source of skill expression                                                                                |
-| SCOWL license and attribution                           | Done, and generalised: every language carries its own LICENSE and PROVENANCE.md, twenty-one of them CC BY-SA, nothing GPL                                      |
-| Native OAuth via custom scheme                          | Done. `blinkered://auth`, a Swift plugin with two methods, and three `/v1/auth/native/*` routes. It did cost the day                                           |
-| Apple Developer Program, $99/yr, and Sign in with Apple | Required before any iOS build reaches a device other than yours                                                                                                |
-| Whether the economy is too lossy to feel fair           | Answered by the simulator plus real playtesting, not by argument                                                                                               |
+| Item                                                    | Status                                                                                                                                                                                  |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reveal-offset ambiguity in section 1.2                  | Resolved. Round is N ticks, last reveal at 1 remaining, full board exposed for one tick                                                                                                 |
+| Word-complete mode                                      | Resolved: `spend`. The other two remain settings                                                                                                                                        |
+| Flip economy                                            | Runtime setting, four options, decided by playtest. `shuffle` with `perLetter` is likely unbounded, and `fibonacci` is unbounded for a strong player by design                          |
+| Minimum word length                                     | Runtime setting, default 3, higher on hard levels pending the simulator                                                                                                                 |
+| Difficulty numbers                                      | Still bids, revised twice by playing (0.2.0 and 0.4.0), and the only unmeasured numbers left in the repo. The phase 2 simulator is unbuilt                                              |
+| N as a difficulty dial                                  | Resolved: it is not one. Board size is a player's choice, default 12; the flip budget and word floor derive from it                                                                     |
+| Board acceptance                                        | Resolved: word count, a six-letter ceiling, and no duplicate rare consonant. Enforced in the harness today                                                                              |
+| Reveal-order constraint (1.3) is load-bearing           | Still open, and it changed shape: the deal is random now that letters hide, so the skill is reading the letters that are up rather than reading the positions they will arrive in       |
+| SCOWL license and attribution                           | Done, and generalised: every language carries its own LICENSE and PROVENANCE.md, twenty-one of them CC BY-SA, nothing GPL                                                               |
+| Native OAuth via custom scheme                          | Done. `blinkered://auth`, a Swift plugin with two methods, and three `/v1/auth/native/*` routes. It did cost the day                                                                    |
+| Apple Developer Program, $99/yr, and Sign in with Apple | Required before any iOS build reaches a device other than yours                                                                                                                         |
+| Hiding flattened the endurance ladder (1.9)             | Open. Floors measured at 2.98, 3.06, 3.31 and 2.93 minutes, so hard is now the longest game. Fix by trimming hide rates or rounds of life, decided by playing rather than by arithmetic |
+| Whether the economy is too lossy to feel fair           | Answered by the simulator plus real playtesting, not by argument                                                                                                                        |

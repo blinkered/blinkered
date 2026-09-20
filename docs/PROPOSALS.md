@@ -295,7 +295,7 @@ which leaves the phone layout, where the ask was made, untouched.
   mechanic changes the _kind_ of game rather than its difficulty -- with the letters fixed you can
   learn a board and carry a word list between rounds, and once they drift you cannot -- so easy has
   none at all. The rate stops climbing at hard, because a stale memorised list costs nothing on a
-  level that shows the whole board for 1.8 seconds. See PLAN.md 1.12.
+  level that shows the whole board for 2.7 seconds. See PLAN.md 1.12.
 - **The balance simulator** would still settle the numbers, along with `wildChance` and the
   difficulty tables. Two retunes have happened without it, both from playing.
 

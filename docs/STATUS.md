@@ -48,6 +48,15 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in every language.
+- **Letters that hide**, on dev and not yet in prod. A face-up tile can turn back over on its own;
+  the timer and the flip counter each gain one, the letter returns later in the round, and the
+  reveal that brings it back spends exactly what the hide handed over, so it costs the player
+  nothing but the waiting. A selected letter is pinned and cannot go. The deal became a uniform
+  random draw from whatever is face down, which is what makes a returning letter
+  indistinguishable from one the deal had not reached yet; the whole rule, the conservation law it
+  rests on and the quotes it was designed in are PLAN.md 1.13. **It wants `ENGINE_VERSION` at
+  0.5.0 before it reaches prod**, which empties the boards, including the five scores re-stamped
+  by hand for 0.4.0.
 - **Three palettes, chosen for contrast rather than for taste.** Traditional, light and
   high-contrast, picked from the title bar and stored in settings; `applyTheme` sets
   `data-theme` on the root and keeps the browser's own bar colour in step. Every pairing in all
@@ -210,6 +219,14 @@ and the two places where the first answer was wrong.
 The two frequencies those features introduced, `wildChance` and `replaceChance`, are still guesses
 in the same way the difficulty tables are, and the balance simulator is still the thing that would
 settle them. They are both nerd-mode numbers, so nothing is blocked on it.
+
+`hideChance` is the third number of that shape and the one exception: it is a difficulty column
+rather than a nerd-mode dial, and what it does to a game is measured rather than guessed. That is
+how the one open balance question got found. Hiding lengthens a round without touching the flip
+ledger, so the endurance floors now read 2.98, 3.06, 3.31 and 2.93 minutes by level, where they
+were 2.98, 2.77, 2.70 and 2.10 -- **hard is currently the longest game on the board**, which is
+the opposite of what the 0.4.0 retune was for. Trimming hide rates or rounds of life both fix it;
+which one is a question for playing it, and it is in PLAN.md section 7.
 
 ## Settled
 
@@ -388,7 +405,7 @@ Settled by playing, not by argument. All are runtime settings; see PLAN.md 1.10.
   reason than balance: with the letters fixed you can learn the board and carry a word list
   between rounds, and once they drift you cannot. That is a different game rather than a harder
   one, so `easy` has no letter swaps at all and the rate climbs to `hard` and stops. It stops
-  because what a swap costs is a stale memorized list, and `insane` shows the full board for 1.8
+  because what a swap costs is a stale memorized list, and `insane` shows the full board for 2.7
   seconds, so there was never a list to go stale. Wild cards stay flat deliberately: moving two
   mechanics at once would leave the next play unable to say which one did what.
 - **difficulty numbers**: still guesses. The balance simulator replaces them.
