@@ -57,6 +57,7 @@ import {
   loadSettings,
   saveSettings,
   withOverride,
+  withNerdMode,
   withRuleset,
 } from './settings.js'
 import type { Ruleset, Settings } from './settings.js'
@@ -1003,7 +1004,7 @@ function Session({
               onChange={(e) => {
                 // Give the keyboard back, or the board stops hearing anything typed at it.
                 nerdFocus.release(e.currentTarget)
-                onChange({ ...settings, nerdMode: e.target.checked })
+                onChange(withNerdMode(settings, e.target.checked))
               }}
             />
             {/*

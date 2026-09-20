@@ -135,6 +135,40 @@ export function rulesetOf(settings: Settings): Ruleset {
 }
 
 /**
+ * Which rulesets the setup screen offers: the four presets, and the fork while it is in reach.
+ *
+ * **In reach means the panel is open.** The fifth chip used to appear whenever a fork was
+ * *stored*, which is how somebody who had finished with nerd mode was still offered it with the
+ * checkbox unticked; and pressing it put them back on rules they could no longer see. Nerd mode is
+ * where the fork lives, so the fork is offered where nerd mode is.
+ *
+ * Here rather than in `GameSetup`, so that this and `rulesetOf` cannot disagree about whether the
+ * lit chip is one of the ones on offer.
+ */
+export function offeredRulesets(settings: Settings): readonly Ruleset[] {
+  if (!settings.nerdMode || !hasCustomRules(settings)) return DIFFICULTY_NAMES
+  return [...DIFFICULTY_NAMES, CUSTOM_RULES]
+}
+
+/**
+ * Opens or closes the nerd panel, and closing it puts the presets back in charge.
+ *
+ * The three facts here were tangled, and the tangle cost a leaderboard place. `nerdMode` shows the
+ * panel; `custom` says the forked rules are the ones in play; `overrides` is the fork. Closing the
+ * panel used to touch only the first, so the checkbox read as off while the game carried on being
+ * played on the fork -- not canonical, refused a place on a board, and nothing on screen saying
+ * so.
+ *
+ * `overrides` still outlives all of it, which is the point of keeping them apart: turning the
+ * panel back on and pressing the fork's own chip restores the numbers rather than asking for them
+ * again.
+ */
+export function withNerdMode(settings: Settings, nerdMode: boolean): Settings {
+  if (nerdMode) return { ...settings, nerdMode }
+  return { ...settings, nerdMode, custom: false }
+}
+
+/**
  * Chooses a ruleset. A preset does not discard the custom one, it just stops applying it,
  * so the player can go back to their own numbers without retyping them.
  */
@@ -197,8 +231,17 @@ export function loadSettings(): Settings {
     const overrides = typeof parsed.overrides === 'object' ? { ...parsed.overrides } : {}
     return {
       difficulty: difficulty ?? fallback.difficulty,
-      // A stored `custom` flag means nothing without the rules it refers to.
-      custom: parsed.custom === true && Object.keys(overrides).length > 0,
+      /*
+       * A stored `custom` flag means nothing without the rules it refers to, and nothing without
+       * the panel those rules are edited in.
+       *
+       * The second half repairs a state this app could previously get into and then save: closing
+       * the panel left `custom` set, so the fork stayed in play with nothing on screen admitting
+       * it, and games came out not canonical. Fixed at the toggle, and enforced again here,
+       * because a browser that stored the bad state would otherwise restore it on the next load.
+       */
+      custom:
+        parsed.custom === true && parsed.nerdMode === true && Object.keys(overrides).length > 0,
       overrides,
       keyScheme: keyScheme ?? fallback.keyScheme,
       nerdMode: parsed.nerdMode === true,

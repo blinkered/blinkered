@@ -1,6 +1,6 @@
 import type { Messages } from '@blinkered/i18n'
 import { withoutStealingFocus } from './focus.js'
-import { CUSTOM_RULES, DIFFICULTY_NAMES, hasCustomRules, rulesetOf } from './settings.js'
+import { CUSTOM_RULES, offeredRulesets, rulesetOf } from './settings.js'
 import type { Ruleset, Settings } from './settings.js'
 
 interface GameSetupProps {
@@ -73,9 +73,7 @@ export function RulesetPicker({
    * identical to `medium`. Two copies of a rule is how one of them ends up being the wrong one.
    */
   const current = rulesetOf(settings)
-  const offered: Ruleset[] = hasCustomRules(settings)
-    ? [...DIFFICULTY_NAMES, CUSTOM_RULES]
-    : DIFFICULTY_NAMES
+  const offered = offeredRulesets(settings)
 
   return (
     <div className="ruleset" role="group" aria-label={messages.difficulty}>
