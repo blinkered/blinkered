@@ -188,11 +188,19 @@ describe('the admin surface', () => {
     })
 
     it('searches a username and a sign-in address with the one box', async () => {
-      // Whoever is asking has whichever handle they were given: a name from a report, an address
-      // from an email.
-      const byName = (await (
-        await get(`/v1/admin/users?q=${them.username.slice(0, 6)}`)
-      ).json()) as { users: AdminUser[] }
+      /*
+       * Whoever is asking has whichever handle they were given: a name from a report, an address
+       * from an email.
+       *
+       * Renamed first, and that is the fix for a flake rather than a flourish: signup generates
+       * both usernames, the search is a prefix match, and one run in a while generated two names
+       * sharing their first six characters -- so the admin's own row came back alongside the row
+       * being looked for and the assertion failed on a passing feature.
+       */
+      await send('PATCH', `/v1/admin/users/${them.userId}`, { username: 'grayling' })
+      const byName = (await (await get('/v1/admin/users?q=grayli')).json()) as {
+        users: AdminUser[]
+      }
       expect(byName.users.map((user) => user.userId)).toEqual([them.userId])
 
       const byEmail = (await (await get('/v1/admin/users?q=player@example')).json()) as {
