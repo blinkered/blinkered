@@ -596,8 +596,26 @@ h2 {
  */
 .word-line {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  /*
+   * One starting point for everything this line says, which takes two declarations and the
+   * absence of a third.
+   *
+   * **Centred rather than baseline-aligned.** `.feedback` has `overflow: hidden` so it can
+   * ellipsise, which makes it a scroll container, and a flex item that scrolls has no baseline of
+   * its own -- one is synthesised from the bottom of its box. So baseline alignment put each
+   * string at a different height depending on what was beside it: measured in this 40px box, a
+   * message with an empty word beside it sat flush with the top and a message arriving mid-word
+   * sat 11px lower.
+   *
+   * **And no `gap`.** The word is a zero-width item whenever a message is up, and a zero-width
+   * flex item still gets its gap, so every message began 0.75rem to the right of where the prompt
+   * begins in the same box. Nothing here needs the space: the card key pins itself to the far end
+   * of the line, and the word and the message are never both shown.
+   *
+   * Nick, having watched all three strings start in three different places: "I EXPECT EVERY HUD
+   * MESSAGE TO START IN THE SAME PLACE. SAME LEFT EDGE; SAME BASELINE."
+   */
+  align-items: center;
   height: 2.5rem;
   flex-wrap: nowrap;
   overflow: hidden;
@@ -634,26 +652,6 @@ h2 {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  /*
-   * Centred in the line, rather than left to `align-items: baseline` above.
-   *
-   * This box has no baseline to align: `overflow: hidden` makes it a scroll container, and a flex
-   * item that scrolls has its baseline synthesised from the bottom of its border box. So where it
-   * sat depended on what else was in the line. Measured in a 40px bar: a message with an empty
-   * word beside it sat flush with the top of the bar, and a message arriving while a word was
-   * being built sat 11px lower.
-   *
-   * Nothing showed that until letters could hide, because the hiding message is the only one that
-   * can arrive mid-word -- every other message follows a submission, and that clears the
-   * selection. Nick: "the 'a letter hid' text does not seem to go in the standard one-line
-   * message bar. It's written a few pixels above the normal location for messages."
-   *
-   * One declaration rather than a change to the line, which is fixed-height on purpose and holds
-   * the board still. Centred is what the narrow layout has always done -- `align-items: center`
-   * there, which is why the phone never showed this -- so it is now the answer at every width,
-   * and where a message lands no longer depends on what is beside it.
-   */
-  align-self: center;
 }
 .feedback.is-accepted {
   color: var(--good);
@@ -2213,8 +2211,6 @@ kbd {
      * sliced off. Tightening `.word`'s line height is what makes 3.4rem enough.
      */
     height: 3.4rem;
-    gap: 0.5rem;
-    align-items: center;
     /* Wrapping is allowed here and only here, because the prompt needs two lines at this width.
        The box is fixed, so wrapping inside it costs nothing. */
     flex-wrap: wrap;
@@ -2533,7 +2529,7 @@ kbd {
  */
 .wild-key {
   flex: none;
-  margin: 0 0 0 auto;
+  margin-inline-start: auto;
   color: var(--dim);
   font-size: 0.8rem;
   white-space: nowrap;
