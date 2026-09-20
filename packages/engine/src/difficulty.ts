@@ -33,7 +33,7 @@ export const DEFAULT_BOARD_SIZE = 12
  * **Below 0.5 a round ends with probability one. At 0.5 it still does, with an infinite expected
  * length. Above 0.5 it may never end at all.** That is a real cliff rather than a corner case, and
  * it is guarded where the number is set instead of in here: the nerd-mode dial stops at 0.4, and
- * the levels ship 0, 0.03, 0.06 and 0.1. A player spending letters on words shortens the round
+ * the levels ship 0, 0.05, 0.1 and 0.15. A player spending letters on words shortens the round
  * whatever the chance, so the cliff is a watcher's problem, which is exactly who the property
  * tests are.
  */
@@ -165,7 +165,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 8,
     minWordLength: 3,
     replaceChance: 0.25,
-    hideChance: 0.03,
+    hideChance: 0.05,
   },
   hard: {
     speedMultiplier: 1.2,
@@ -173,7 +173,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 9,
     minWordLength: 4,
     replaceChance: 0.5,
-    hideChance: 0.06,
+    hideChance: 0.1,
   },
   insane: {
     speedMultiplier: 0.9,
@@ -181,7 +181,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
     initialRounds: 10,
     minWordLength: 4,
     replaceChance: 0.5,
-    hideChance: 0.1,
+    hideChance: 0.15,
   },
 }
 

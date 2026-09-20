@@ -84,6 +84,15 @@ describe('difficulty profiles', () => {
     expect(swaps).toEqual([...swaps].sort((a, b) => a - b))
   })
 
+  it('hides letters more often as levels rise, and never on easy', () => {
+    // The other axis that is a named pressure rather than a number: easy is the board you can
+    // learn, so nothing on it ever takes itself away. Above that it climbs with the ladder.
+    const hiding = levels.map((level) => DIFFICULTIES[level].hideChance)
+    expect(hiding).toEqual([...hiding].sort((a, b) => a - b))
+    expect(hiding).toEqual([0, 0.05, 0.1, 0.15])
+    expect(configFor('easy').hideChance).toBe(0)
+  })
+
   it('leaves the letters alone on easy, so a board can be learned', () => {
     // The one level where the whole twelve are the same from first deal to last. That is a
     // different game rather than an easier one, which is why it is a level and not a slider.
