@@ -639,7 +639,7 @@ It sits here rather than at the end for one reason: **`ENGINE_VERSION` gets expe
 
 Today a bump costs a player their own local table, which is a shame. With global boards it wipes
 every board in the game, in every language, at every difficulty, and there is no way to explain
-that to somebody who was first. The engine is at 0.4.0, and STATUS.md still lists the difficulty
+that to somebody who was first. The engine is at 0.5.0, and STATUS.md still lists the difficulty
 ladder, `wildChance` and `replaceChance` as bids awaiting exactly this simulator.
 
 **This is no longer hypothetical: the boards were public when 0.4.0 shipped**, and it emptied them.
@@ -647,6 +647,13 @@ What made that survivable is the only thing that was ever going to -- there were
 production and their owner was the person who bumped it, and he re-stamped them to 0.4.0 by hand
 rather than lose them. That is the last time that trick is available. The paragraph below was
 written as advice and is now a description of a debt.
+
+**And it happened again at 0.5.0**, which is the letters that hide: a rule that takes letters off
+the board cannot share a table with scores set on boards that never did, and the random deal
+changes even the levels that never hide. Twice in a fortnight, on numbers PLAN.md 1.9 still lists
+as unresolved -- hiding flattened the endurance ladder and nothing has been decided about it yet,
+so a 0.6.0 is likely rather than hypothetical. The advice below is unchanged and is now owed
+twice.
 
 Opening public boards on numbers you already intend to replace is choosing to wipe them. Do the
 measuring first, take the version bump while nobody is watching, and open the boards on numbers

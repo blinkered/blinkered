@@ -31,9 +31,10 @@ describe('the schema', () => {
   })
 
   it('holds the whole ruleset on a game, not just its difficulty', () => {
-    // A difficulty is a label whose meaning changes: medium has been retuned once already and
-    // ENGINE_VERSION is at 0.3.0 because of it. A row carrying its own numbers stays
-    // explainable afterwards; a row carrying only the word does not.
+    // A difficulty is a label whose meaning changes: medium has been retuned twice and had a
+    // rule added under it, which is what every bump of ENGINE_VERSION so far has been. A row
+    // carrying its own numbers stays explainable afterwards; a row carrying only the word does
+    // not.
     const columns = getTableConfig(games).columns.map((column) => column.name)
     for (const rule of [
       'n',

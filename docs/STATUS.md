@@ -48,15 +48,15 @@ next.
 - **Sharing a finished game**, **wild cards** and **letter replacement** — the three features
   written up in [PROPOSALS.md](PROPOSALS.md), now built. The last two both change what the board
   is, so each ships with its own section in the rules page in every language.
-- **Letters that hide**, on dev and not yet in prod. A face-up tile can turn back over on its own;
+- **Letters that hide** (`ENGINE_VERSION` 0.5.0). A face-up tile can turn back over on its own;
   the timer and the flip counter each gain one, the letter returns later in the round, and the
   reveal that brings it back spends exactly what the hide handed over, so it costs the player
   nothing but the waiting. A selected letter is pinned and cannot go. The deal became a uniform
   random draw from whatever is face down, which is what makes a returning letter
   indistinguishable from one the deal had not reached yet; the whole rule, the conservation law it
-  rests on and the quotes it was designed in are PLAN.md 1.13. **It wants `ENGINE_VERSION` at
-  0.5.0 before it reaches prod**, which empties the boards, including the five scores re-stamped
-  by hand for 0.4.0.
+  rests on and the quotes it was designed in are PLAN.md 1.13. **Shipping it took the version to
+  0.5.0**, which emptied the production boards for the second time -- see ACCOUNTS.md, where that
+  cost is written up as a debt rather than a surprise.
 - **Three palettes, chosen for contrast rather than for taste.** Traditional, light and
   high-contrast, picked from the title bar and stored in settings; `applyTheme` sets
   `data-theme` on the root and keeps the browser's own bar colour in step. Every pairing in all

@@ -6,13 +6,17 @@ import type { Difficulty, GameConfig } from './types.js'
  * Bumped when a rule changes what a game is, because results carry it and the leaderboard groups
  * on it. 0.2.0 was the difficulty retune; 0.3.0 makes the swap rate a difficulty column, which
  * among other things means `easy` no longer changes its letters at all. 0.4.0 cuts the flip
- * budgets after playtesting and ends a round that can no longer produce a word.
+ * budgets after playtesting and ends a round that can no longer produce a word. 0.5.0 is the
+ * letters that hide: a tile can turn back over on its own and return later in the round, and the
+ * deal became a uniformly random draw so that it could (see PLAN.md 1.13).
  *
  * A bump empties the boards, since they group on this, and that is the point rather than a cost:
  * an easy score set over seven minutes and 168 flips is not the same achievement as one set over
- * three minutes and 84. The old games keep their scores and stay in their players' history.
+ * three minutes and 84. 0.5.0 is the clearest case of that yet -- a hard board now takes letters
+ * away from you -- and it is also the widest, since the random deal changes every level including
+ * the two that never hide. The old games keep their scores and stay in their players' history.
  */
-export const ENGINE_VERSION = '0.4.0'
+export const ENGINE_VERSION = '0.5.0'
 
 /** Twelve tiles, 4x3 in landscape and 3x4 in portrait. A player may pick another size. */
 export const DEFAULT_BOARD_SIZE = 12
