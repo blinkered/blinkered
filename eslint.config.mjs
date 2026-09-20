@@ -19,9 +19,12 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        // Root config files live outside the package tsconfigs.
+        // Root config files live outside the package tsconfigs, and so do the shell's two small
+        // build tools. `bump-build.mjs` belongs to nobody's tsconfig and is still worth linting:
+        // it edits the Xcode project, which is the last file in the repo that should be edited
+        // carelessly.
         projectService: {
-          allowDefaultProject: ['*.mjs', '*.ts'],
+          allowDefaultProject: ['*.mjs', '*.ts', 'apps/mobile/tools/*.mjs'],
           defaultProject: 'tsconfig.tools.json',
         },
         tsconfigRootDir: import.meta.dirname,

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  What the app collects, declared where Apple reads it.
+
+  This has to agree with the App Privacy answers in App Store Connect, because the two are
+  compared at upload and a disagreement is an email rather than a rejection. The four entries
+  below are the whole of it, and they are read off `apps/server/src/schema.ts` rather than
+  guessed: an email address to sign you in, the account id everything else hangs off, the games
+  you chose to keep, and the optional bio and country on a profile.
+
+  Every one of them is marked as linked to the user, which is not caution: none of it exists
+  without an account, and an account is a thing you have to ask for. A signed-out player sends
+  nothing at all -- the word lists are in the app and the game runs without the network -- and
+  that is worth knowing when reading this file, because "collected" here means "collected from
+  the people who signed in".
+
+  `NSPrivacyTracking` is false and the domain list is empty. There is no advertising identifier,
+  no analytics, no third-party SDK but Capacitor, and nothing is joined with data from anybody
+  else's app.
+
+  `NSPrivacyAccessedAPITypes` is empty on purpose. The required-reason APIs are declared by
+  whoever calls them, and our own Swift calls none of them: `AppDelegate.swift` and
+  `NativeAuth.swift` touch no `UserDefaults`, no file timestamps, no disk space and no uptime.
+  Capacitor does use `UserDefaults`, and its own manifests ship with its pods, which is where
+  that belongs. If this app ever reads one directly, the reason code goes here.
+
+  See docs/IOS.md for the rest of what a submission needs, and apps/web/public/privacy/index.html
+  for the policy this file is the machine-readable half of.
+-->
+<plist version="1.0">
+  <dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+      <dict>
+        <key>NSPrivacyCollectedDataType</key>
+        <string>NSPrivacyCollectedDataTypeEmailAddress</string>
+        <key>NSPrivacyCollectedDataTypeLinked</key>
+        <true/>
+        <key>NSPrivacyCollectedDataTypeTracking</key>
+        <false/>
+        <key>NSPrivacyCollectedDataTypePurposes</key>
+        <array>
+          <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+        </array>
+      </dict>
+      <dict>
+        <key>NSPrivacyCollectedDataType</key>
+        <string>NSPrivacyCollectedDataTypeUserID</string>
+        <key>NSPrivacyCollectedDataTypeLinked</key>
+        <true/>
+        <key>NSPrivacyCollectedDataTypeTracking</key>
+        <false/>
+        <key>NSPrivacyCollectedDataTypePurposes</key>
+        <array>
+          <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+        </array>
+      </dict>
+      <dict>
+        <key>NSPrivacyCollectedDataType</key>
+        <string>NSPrivacyCollectedDataTypeGameplayContent</string>
+        <key>NSPrivacyCollectedDataTypeLinked</key>
+        <true/>
+        <key>NSPrivacyCollectedDataTypeTracking</key>
+        <false/>
+        <key>NSPrivacyCollectedDataTypePurposes</key>
+        <array>
+          <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+        </array>
+      </dict>
+      <dict>
+        <key>NSPrivacyCollectedDataType</key>
+        <string>NSPrivacyCollectedDataTypeOtherUserContent</string>
+        <key>NSPrivacyCollectedDataTypeLinked</key>
+        <true/>
+        <key>NSPrivacyCollectedDataTypeTracking</key>
+        <false/>
+        <key>NSPrivacyCollectedDataTypePurposes</key>
+        <array>
+          <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+        </array>
+      </dict>
+    </array>
+  </dict>
+</plist>

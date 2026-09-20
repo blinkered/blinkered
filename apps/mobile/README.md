@@ -42,6 +42,37 @@ General > VPN & Device Management. Three devices at a time, no TestFlight.
 which is how the app gets to a phone without a cable. That account should be the Tight Line
 organization account rather than an individual one, per docs/STATUS.md.
 
+## Getting it to TestFlight
+
+```
+pnpm mobile               # web build, then cap sync
+pnpm mobile:build-number  # App Store Connect refuses a build number it has seen
+pnpm mobile:open          # then Product > Archive > Distribute App > TestFlight & App Store
+```
+
+The archive is what gets uploaded, so it has to be a Release build for a device rather than a
+simulator: pick **Any iOS Device (arm64)** as the destination before archiving, or Product >
+Archive is greyed out.
+
+Three things live in App Store Connect rather than here, and the first is the only blocker:
+
+1. **An app record** for `com.tightlinesoftware.blinkered`. A build cannot be uploaded to an app
+   that does not exist yet.
+2. **App Privacy answers**, which produce the nutrition label. What to answer is not a judgement
+   call: an email address, a user id, the games somebody kept and the optional bio and country,
+   all linked to the account, all for app functionality, and no tracking. The same four are
+   declared in `ios/App/App/PrivacyInfo.xcprivacy`, which is the machine-readable half and is
+   compared against the answers at upload.
+3. **A privacy policy URL** for external testing: <https://playblinkered.com/privacy>. Internal
+   testing (your own App Store Connect users, up to 100) needs no review and is live minutes after
+   processing; external testing (up to 10,000, by link or email) goes through Beta App Review.
+   Builds expire after 90 days either way.
+
+**Before external testing, the licensing question is real.** Twenty-one of the bundled word lists
+are CC BY-SA and a TestFlight build is a binary with DRM around them. docs/IOS.md calls this the
+one thing that actually blocks a store listing, and external testing is the same act at a smaller
+scale. Internal testing among people who already know what they are looking at is not.
+
 Worth stating because it is a natural thing to assume: **Apple Business Manager is a different
 program and does not include TestFlight.** ABM is free and deploys apps and devices to people;
 the Developer Program is $99/yr and is what lets you build and beta-test one. Having ABM does

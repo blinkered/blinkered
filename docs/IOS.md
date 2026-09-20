@@ -402,9 +402,13 @@ The rest, none of which is code:
   `ITSAppUsesNonExemptEncryption: false` is already in `Info.plist`, which is the correct answer
   for an app that uses nothing but system TLS, and it is what stops that question being asked on
   every upload.
-- **A privacy manifest.** There is no `PrivacyInfo.xcprivacy` anywhere in the project, app or
-  Pods. Capacitor touches `UserDefaults`, which is a required-reason API, so this is a condition
-  of upload rather than a nicety.
+- ~~**A privacy manifest.**~~ Done. `ios/App/App/PrivacyInfo.xcprivacy`, in the App group and the
+  Resources build phase, declaring the four data types the App Privacy answers declare and no
+  tracking. `NSPrivacyAccessedAPITypes` is empty and that is the accurate answer rather than a
+  gap: our own Swift calls none of the required-reason APIs, and Capacitor's use of `UserDefaults`
+  is declared by Capacitor, whose pods ship their own manifests now. The earlier note here said
+  there was none anywhere "in the project, app or Pods", which was true of the app and had stopped
+  being true of the Pods.
 - **The CC BY-SA decision**, and this is still the one that actually blocks a store. It is
   **twenty-one languages now, not five**: the batch of twenty-five moved it, and German, Italian,
   Japanese and Korean are among them. The app bundles every word list, so a store build wraps

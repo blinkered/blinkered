@@ -23,7 +23,8 @@
     "lint:sources": "sh tools/lint-sources.sh",
     "dictionary": "tsc --build && node tools/dictionary/dist/main.js",
     "mobile": "pnpm build && pnpm --filter @blinkered/mobile sync",
-    "mobile:open": "pnpm --filter @blinkered/mobile open"
+    "mobile:open": "pnpm --filter @blinkered/mobile open",
+    "mobile:build-number": "pnpm --filter @blinkered/mobile build-number"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
