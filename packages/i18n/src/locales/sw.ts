@@ -188,7 +188,9 @@ export const sw: Messages = {
     'Wakati mwingine joker huonekana badala ya herufi. Joker huhesabiwa kama herufi yoyote inayounda neno sahihi. Neno ulilokwisha kamilisha halihesabiwi.',
   htHideTitle: 'Herufi zinazojificha',
   htHideBody:
-    'Katika viwango vigumu zaidi, herufi iliyofunuka inaweza kujigeuza na kurudi baadaye katika raundi hiyo. Kipima muda hupata alama moja ya ziada kwa hilo, kwa rangi nyekundu. Herufi iliyo tayari katika neno lako iko salama.',
+    'Katika viwango vigumu zaidi, herufi iliyofunuka inaweza kujigeuza na kurudi baadaye katika raundi hiyo. Kipima muda hupata alama moja ya ziada kwa hilo, kwa rangi nyekundu. Herufi zilizochaguliwa hazijigeuzi.',
+  tutHideBody:
+    'Katika viwango vigumu zaidi, herufi iliyofunuka inaweza kujigeuza na kurudi baadaye katika raundi hiyo. Herufi zilizochaguliwa hazijigeuzi.',
   htSwapTitle: 'Herufi zinazobadilika',
   htSwapBody:
     'Wakati mwingine, kati ya raundi, herufi moja hubadilishwa na nyingine. Utaona ni herufi ipi imeondolewa na ipi imeongezwa.',

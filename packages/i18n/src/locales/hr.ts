@@ -183,7 +183,9 @@ export const hr: Messages = {
     'Ponekad se umjesto slova pojavi džoker. Džoker vrijedi kao bilo koje slovo koje tvori valjanu riječ. Već dovršena riječ ne vrijedi.',
   htHideTitle: 'Slova koja se skrivaju',
   htHideBody:
-    'Na težim razinama otkriveno slovo može se samo okrenuti i vratiti se kasnije u krugu. Mjerač vremena za to dobiva dodatni takt, u crvenom. Slovo koje je već u vašoj riječi je sigurno.',
+    'Na težim razinama otkriveno slovo može se samo okrenuti i vratiti se kasnije u krugu. Mjerač vremena za to dobiva dodatni takt, u crvenom. Već uzeta slova ne okreću se.',
+  tutHideBody:
+    'Na težim razinama otkriveno slovo može se samo okrenuti i vratiti se kasnije u krugu. Već uzeta slova ne okreću se.',
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
     'Ponekad se između rundi jedno slovo zamijeni drugim. Vidjet ćete koje je slovo maknuto i koje je dodano.',

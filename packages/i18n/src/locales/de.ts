@@ -187,7 +187,9 @@ export const de: Messages = {
     'Manchmal erscheint ein Joker statt eines Buchstabens. Ein Joker gilt als jeder Buchstabe, der ein gültiges Wort ergibt. Ein bereits gefundenes Wort zählt nicht.',
   htHideTitle: 'Buchstaben, die sich verstecken',
   htHideBody:
-    'In den schwereren Stufen kann ein offener Buchstabe sich von selbst wieder umdrehen und später in der Runde zurückkommen. Die Anzeige bekommt dafür einen zusätzlichen Takt, in Rot. Ein Buchstabe, der schon in deinem Wort steht, ist sicher.',
+    'In den schwereren Stufen kann ein offener Buchstabe sich von selbst wieder umdrehen und später in der Runde zurückkommen. Die Anzeige bekommt dafür einen zusätzlichen Takt, in Rot. Schon genommene Buchstaben drehen sich nicht um.',
+  tutHideBody:
+    'In den schwereren Stufen kann ein offener Buchstabe sich von selbst wieder umdrehen und später in der Runde zurückkommen. Schon genommene Buchstaben drehen sich nicht um.',
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
     'Manchmal wird zwischen den Runden ein Buchstabe durch einen anderen ersetzt. Du siehst, welcher Buchstabe weg ist und welcher dazugekommen ist.',

@@ -188,7 +188,9 @@ export const id: Messages = {
     'Kadang muncul kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf apa pun yang membentuk kata yang sah. Kata yang sudah selesai tidak dihitung.',
   htHideTitle: 'Huruf yang bersembunyi',
   htHideBody:
-    'Pada level yang lebih sulit, huruf yang terbuka dapat menutup sendiri dan kembali nanti dalam ronde itu. Pengatur waktu mendapat satu tik tambahan untuk itu, berwarna merah. Huruf yang sudah ada di katamu aman.',
+    'Pada level yang lebih sulit, huruf yang terbuka dapat menutup sendiri dan kembali nanti dalam ronde itu. Pengatur waktu mendapat satu tik tambahan untuk itu, berwarna merah. Huruf yang sudah dipilih tidak menutup.',
+  tutHideBody:
+    'Pada level yang lebih sulit, huruf yang terbuka dapat menutup sendiri dan kembali nanti dalam ronde itu. Huruf yang sudah dipilih tidak menutup.',
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
     'Kadang, di antara putaran, satu huruf diganti dengan huruf lain. Anda akan melihat huruf mana yang dihapus dan mana yang ditambahkan.',

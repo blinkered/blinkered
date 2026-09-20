@@ -185,7 +185,9 @@ export const es: Messages = {
     'A veces aparece un comodín en lugar de una letra. Un comodín vale cualquier letra que forme una palabra válida. Una palabra ya completada no cuenta.',
   htHideTitle: 'Letras que se ocultan',
   htHideBody:
-    'En los niveles más difíciles una letra descubierta puede volver a girarse sola y regresar más tarde en la ronda. El temporizador gana un tic por ello, en rojo. Una letra que ya está en tu palabra está a salvo.',
+    'En los niveles más difíciles una letra descubierta puede volver a girarse sola y regresar más tarde en la ronda. El temporizador gana un tic por ello, en rojo. Las letras que ya has elegido no se giran.',
+  tutHideBody:
+    'En los niveles más difíciles una letra descubierta puede volver a girarse sola y regresar más tarde en la ronda. Las letras que ya has elegido no se giran.',
   htSwapTitle: 'Las letras cambian',
   htSwapBody:
     'A veces, entre rondas, una letra se sustituye por otra. Verás qué letra se ha quitado y cuál se ha añadido.',

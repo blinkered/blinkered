@@ -190,7 +190,9 @@ export const ro: Messages = {
     'Uneori apare un joker în loc de literă. Jokerul contează ca orice literă care formează un cuvânt valid. Un cuvânt deja găsit nu contează.',
   htHideTitle: 'Litere care se ascund',
   htHideBody:
-    'La nivelurile mai grele o literă descoperită se poate întoarce singură și revine mai târziu în rundă. Cronometrul primește o diviziune în plus pentru asta, în roșu. O literă aflată deja în cuvântul tău este în siguranță.',
+    'La nivelurile mai grele o literă descoperită se poate întoarce singură și revine mai târziu în rundă. Cronometrul primește o diviziune în plus pentru asta, în roșu. Literele deja alese nu se întorc.',
+  tutHideBody:
+    'La nivelurile mai grele o literă descoperită se poate întoarce singură și revine mai târziu în rundă. Literele deja alese nu se întorc.',
   htSwapTitle: 'Litere care se schimbă',
   htSwapBody:
     'Uneori, între runde, o literă este înlocuită cu alta. Veți vedea care a plecat și care a venit.',

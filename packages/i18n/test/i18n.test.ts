@@ -167,6 +167,25 @@ describe('every locale', () => {
     expect(blanks).toEqual([])
   })
 
+  it('says less about hiding in the tour than in the rules', () => {
+    /*
+     * Two keys for one rule, and they differ by one sentence on purpose: the rules page mentions
+     * the tick the timer gains and the red mark that says where it came from, and the tour caption
+     * does not. Nick, reading the caption over the animation: "Not worth pointing out; explain
+     * this in How to Play."
+     *
+     * Worth a test because the risk of two keys for one rule is that a later copy pass makes them
+     * the same string again, in one locale, and nothing on either screen looks wrong.
+     */
+    for (const { tag, messages } of LOCALES) {
+      expect(messages.tutHideBody, tag).not.toBe(messages.htHideBody)
+      expect(messages.htHideBody.length, tag).toBeGreaterThan(messages.tutHideBody.length)
+      // Both open on the same sentence, so the tour is the rules with a clause taken out rather
+      // than a second explanation that could drift from the first.
+      expect(messages.htHideBody.startsWith(messages.tutHideBody.slice(0, 20)), tag).toBe(true)
+    }
+  })
+
   it('is actually translated, not a copy of English with the tag changed', () => {
     // Some overlap is legitimate: "fibonacci" is a name, and "ord" is Swedish for "words".
     // A locale that matches English on most of its keys has not been translated at all.

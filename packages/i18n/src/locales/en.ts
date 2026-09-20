@@ -190,7 +190,9 @@ export const en: Messages = {
     'Sometimes a wild card will appear instead of a letter. A wild card counts as any letter that makes a valid word. A previously-completed word does not count.',
   htHideTitle: 'Hiding letters',
   htHideBody:
-    'On the harder levels a letter that is showing can turn back over by itself, and comes back later in the round. The timer gains a tick for it, shown in red. A letter already in your word is safe.',
+    'On the harder levels a letter that is showing can turn back over by itself, and will come back later in the round. The timer gains a tick for it, shown in red. Already-selected letters will not do this.',
+  tutHideBody:
+    'On the harder levels a letter that is showing can turn back over by itself, and will come back later in the round. Already-selected letters will not do this.',
   htSwapTitle: 'Changing letters',
   htSwapBody:
     'Sometimes, between rounds, one letter gets replaced with a different one. You will see which letter was removed and which was added.',

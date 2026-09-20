@@ -193,7 +193,9 @@ export const cy: Messages = {
     'Weithiau daw cerdyn gwyllt yn lle llythyren. Mae cerdyn gwyllt yn cyfrif fel unrhyw lythyren sy’n gwneud gair dilys. Nid yw gair a gwblhawyd eisoes yn cyfrif.',
   htHideTitle: 'Llythrennau’n cuddio',
   htHideBody:
-    'Ar y lefelau anoddach gall llythyren sydd yn y golwg droi’n ôl ohoni ei hun a dod yn ôl yn nes ymlaen yn y rownd. Mae’r amserydd yn cael tic ychwanegol am hynny, mewn coch. Mae llythyren sydd yn eich gair yn ddiogel.',
+    'Ar y lefelau anoddach gall llythyren sydd yn y golwg droi’n ôl ohoni ei hun a dod yn ôl yn nes ymlaen yn y rownd. Mae’r amserydd yn cael tic ychwanegol am hynny, mewn coch. Nid yw llythrennau sydd wedi’u dewis yn troi’n ôl.',
+  tutHideBody:
+    'Ar y lefelau anoddach gall llythyren sydd yn y golwg droi’n ôl ohoni ei hun a dod yn ôl yn nes ymlaen yn y rownd. Nid yw llythrennau sydd wedi’u dewis yn troi’n ôl.',
   htSwapTitle: 'Llythrennau’n newid',
   htSwapBody:
     'Weithiau, rhwng rowndiau, caiff un llythyren ei disodli gan un arall. Cewch weld pa un a aeth a pha un a ddaeth.',

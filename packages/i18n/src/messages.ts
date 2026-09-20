@@ -129,6 +129,16 @@ export interface Messages {
   /** The tour screen and rules section about a letter turning back over of its own accord. */
   readonly htHideTitle: string
   readonly htHideBody: string
+  /**
+   * The same rule as a tour caption, which is the one rule the two say differently.
+   *
+   * The rules page mentions the extra tick the timer gains and the red mark that says where it
+   * came from; the tour does not. Nick, on reading the caption over the animation: "Not worth
+   * pointing out; explain this in How to Play." The tour has four seconds and a moving board to
+   * teach that a letter leaves and comes back, and a clause about the timer spends them on the
+   * bookkeeping instead of the surprise.
+   */
+  readonly tutHideBody: string
   readonly htSwapTitle: string
   readonly htSwapBody: string
   /**

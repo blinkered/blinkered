@@ -183,7 +183,9 @@ export const sv: Messages = {
     'Ibland dyker det upp en joker i stället för en bokstav. En joker gäller som vilken bokstav som helst som bildar ett giltigt ord. Ett ord du redan gjort räknas inte.',
   htHideTitle: 'Bokstäver som gömmer sig',
   htHideBody:
-    'På de svårare nivåerna kan en uppvänd bokstav vända sig tillbaka av sig själv och komma tillbaka senare i rundan. Tidslinjen får ett extra streck för det, i rött. En bokstav som redan är i ditt ord är trygg.',
+    'På de svårare nivåerna kan en uppvänd bokstav vända sig tillbaka av sig själv och komma tillbaka senare i rundan. Tidslinjen får ett extra streck för det, i rött. Bokstäver du redan har tagit vänder sig inte tillbaka.',
+  tutHideBody:
+    'På de svårare nivåerna kan en uppvänd bokstav vända sig tillbaka av sig själv och komma tillbaka senare i rundan. Bokstäver du redan har tagit vänder sig inte tillbaka.',
   htSwapTitle: 'Bokstäver som byts',
   htSwapBody:
     'Ibland byts en bokstav ut mot en annan mellan omgångarna. Du ser vilken bokstav som togs bort och vilken som lades till.',

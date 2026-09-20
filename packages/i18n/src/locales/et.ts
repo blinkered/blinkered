@@ -188,7 +188,9 @@ export const et: Messages = {
     'Vahel ilmub tähe asemel joker. Joker läheb arvesse iga tähena, mis moodustab kehtiva sõna. Juba leitud sõna ei lähe arvesse.',
   htHideTitle: 'Peituvad tähed',
   htHideBody:
-    'Raskematel tasemetel võib avatud täht ise tagasi pöörduda ja tulla vooru jooksul hiljem uuesti. Taimer saab selle eest lisatakti, punasega. Täht, mis on juba sinu sõnas, on kaitstud.',
+    'Raskematel tasemetel võib avatud täht ise tagasi pöörduda ja tulla vooru jooksul hiljem uuesti. Taimer saab selle eest lisatakti, punasega. Juba valitud tähed tagasi ei pöördu.',
+  tutHideBody:
+    'Raskematel tasemetel võib avatud täht ise tagasi pöörduda ja tulla vooru jooksul hiljem uuesti. Juba valitud tähed tagasi ei pöördu.',
   htSwapTitle: 'Muutuvad tähed',
   htSwapBody:
     'Vahel vahetatakse voorude vahel üks täht teise vastu. Näete, milline kadus ja milline lisandus.',

@@ -190,7 +190,9 @@ export const tr: Messages = {
     'Bazen harf yerine bir joker çıkar. Joker, geçerli bir kelime kuran herhangi bir harf sayılır. Daha önce tamamladığınız bir kelime sayılmaz.',
   htHideTitle: 'Saklanan harfler',
   htHideBody:
-    'Daha zor seviyelerde açık bir harf kendiliğinden geri kapanabilir ve turun ilerisinde yeniden açılır. Sayaç bunun için kırmızı bir çentik kazanır. Kelimenize almış olduğunuz harf güvendedir.',
+    'Daha zor seviyelerde açık bir harf kendiliğinden geri kapanabilir ve turun ilerisinde yeniden açılır. Sayaç bunun için kırmızı bir çentik kazanır. Seçtiğiniz harfler geri kapanmaz.',
+  tutHideBody:
+    'Daha zor seviyelerde açık bir harf kendiliğinden geri kapanabilir ve turun ilerisinde yeniden açılır. Seçtiğiniz harfler geri kapanmaz.',
   htSwapTitle: 'Değişen harfler',
   htSwapBody:
     'Bazen turlar arasında bir harfin yerine başka bir harf gelir. Hangi harfin kaldırıldığını ve hangisinin eklendiğini görürsünüz.',

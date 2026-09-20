@@ -185,7 +185,9 @@ export const it: Messages = {
     'A volte compare un jolly al posto di una lettera. Un jolly vale qualsiasi lettera che formi una parola valida. Una parola già completata non conta.',
   htHideTitle: 'Lettere che si nascondono',
   htHideBody:
-    'Ai livelli più difficili una lettera scoperta può girarsi da sola e tornare più tardi nel turno. Il timer guadagna un segno in più per questo, in rosso. Una lettera già nella tua parola è al sicuro.',
+    'Ai livelli più difficili una lettera scoperta può girarsi da sola e tornare più tardi nel turno. Il timer guadagna un segno in più per questo, in rosso. Le lettere già prese non si girano.',
+  tutHideBody:
+    'Ai livelli più difficili una lettera scoperta può girarsi da sola e tornare più tardi nel turno. Le lettere già prese non si girano.',
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
     'A volte, tra un turno e l’altro, una lettera viene sostituita da un’altra. Vedrai quale lettera è stata tolta e quale è stata aggiunta.',

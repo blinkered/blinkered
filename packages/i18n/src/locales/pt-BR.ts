@@ -187,7 +187,9 @@ export const ptBR: Messages = {
     'Às vezes aparece um curinga no lugar de uma letra. Um curinga vale qualquer letra que forme uma palavra válida. Uma palavra já completada não conta.',
   htHideTitle: 'Letras que se escondem',
   htHideBody:
-    'Nos níveis mais difíceis uma letra visível pode se virar sozinha e voltar mais tarde na rodada. O cronômetro ganha um traço por isso, em vermelho. Uma letra que já está na sua palavra está a salvo.',
+    'Nos níveis mais difíceis uma letra visível pode se virar sozinha e voltar mais tarde na rodada. O cronômetro ganha um traço por isso, em vermelho. As letras que você já pegou não se viram.',
+  tutHideBody:
+    'Nos níveis mais difíceis uma letra visível pode se virar sozinha e voltar mais tarde na rodada. As letras que você já pegou não se viram.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
     'Às vezes, entre rodadas, uma letra é substituída por outra. Você vai ver qual letra saiu e qual entrou.',

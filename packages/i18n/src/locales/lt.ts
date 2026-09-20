@@ -187,7 +187,9 @@ export const lt: Messages = {
     'Kartais vietoj raidės pasirodo jokeris. Jokeris skaitomas kaip bet kuri raidė, sudaranti taisyklingą žodį. Jau rastas žodis neskaitomas.',
   htHideTitle: 'Pasislepiančios raidės',
   htHideBody:
-    'Sunkesniuose lygiuose atversta raidė gali pati apsiversti ir vėliau tame pačiame rate sugrįžti. Laikmatis už tai gauna papildomą žymę, raudoną. Raidė, jau esanti tavo žodyje, saugi.',
+    'Sunkesniuose lygiuose atversta raidė gali pati apsiversti ir vėliau tame pačiame rate sugrįžti. Laikmatis už tai gauna papildomą žymę, raudoną. Jau pasirinktos raidės neapsiverčia.',
+  tutHideBody:
+    'Sunkesniuose lygiuose atversta raidė gali pati apsiversti ir vėliau tame pačiame rate sugrįžti. Jau pasirinktos raidės neapsiverčia.',
   htSwapTitle: 'Besikeičiančios raidės',
   htSwapBody:
     'Kartais tarp raundų viena raidė pakeičiama kita. Pamatysite, kuri dingo ir kuri atsirado.',

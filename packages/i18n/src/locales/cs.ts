@@ -186,7 +186,9 @@ export const cs: Messages = {
     'Občas se místo písmene objeví žolík. Žolík platí za kterékoli písmeno, které tvoří platné slovo. Už dokončené slovo se nepočítá.',
   htHideTitle: 'Skrývající se písmena',
   htHideBody:
-    'Na vyšších úrovních se odkryté písmeno může samo zakrýt a vrátit se později v kole. Časomíra za to dostane takt navíc, červeně. Písmeno, které už máte ve slově, je v bezpečí.',
+    'Na vyšších úrovních se odkryté písmeno může samo zakrýt a vrátit se později v kole. Časomíra za to dostane takt navíc, červeně. Již vybraná písmena se nezakryjí.',
+  tutHideBody:
+    'Na vyšších úrovních se odkryté písmeno může samo zakrýt a vrátit se později v kole. Již vybraná písmena se nezakryjí.',
   htSwapTitle: 'Měnící se písmena',
   htSwapBody:
     'Občas se mezi koly jedno písmeno vymění za jiné. Uvidíte, které zmizelo a které přibylo.',

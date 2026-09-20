@@ -187,7 +187,9 @@ export const sl: Messages = {
     'Včasih se namesto črke pojavi joker. Joker velja za katero koli črko, ki tvori veljavno besedo. Že dokončana beseda ne šteje.',
   htHideTitle: 'Črke, ki se skrijejo',
   htHideBody:
-    'Na težjih stopnjah se odkrita črka lahko sama obrne nazaj in se vrne pozneje v krogu. Časovnik za to dobi dodatno črtico, rdečo. Črka, ki je že v tvoji besedi, je na varnem.',
+    'Na težjih stopnjah se odkrita črka lahko sama obrne nazaj in se vrne pozneje v krogu. Časovnik za to dobi dodatno črtico, rdečo. Že izbrane črke se ne obrnejo nazaj.',
+  tutHideBody:
+    'Na težjih stopnjah se odkrita črka lahko sama obrne nazaj in se vrne pozneje v krogu. Že izbrane črke se ne obrnejo nazaj.',
   htSwapTitle: 'Menjava črk',
   htSwapBody:
     'Včasih se med krogi ena črka zamenja z drugo. Videli boste, katera je odšla in katera je prišla.',

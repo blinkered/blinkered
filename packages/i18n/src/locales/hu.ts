@@ -190,7 +190,9 @@ export const hu: Messages = {
     'Néha betű helyett joker jelenik meg. A joker bármelyik betűnek számít, amivel érvényes szó lesz. A már meglévő szó nem számít.',
   htHideTitle: 'Elbújó betűk',
   htHideBody:
-    'A nehezebb szinteken egy felfordított betű magától visszafordulhat, és a kör későbbi részében visszatér. Az időmérő ezért kap egy plusz osztást, pirossal. A szavadban lévő betűt nem lehet elvenni.',
+    'A nehezebb szinteken egy felfordított betű magától visszafordulhat, és a kör későbbi részében visszatér. Az időmérő ezért kap egy plusz osztást, pirossal. A már kiválasztott betűk nem fordulnak vissza.',
+  tutHideBody:
+    'A nehezebb szinteken egy felfordított betű magától visszafordulhat, és a kör későbbi részében visszatér. A már kiválasztott betűk nem fordulnak vissza.',
   htSwapTitle: 'Változó betűk',
   htSwapBody:
     'Néha két kör között egy betű helyére másik kerül. Látni fogja, melyik tűnt el és melyik jött.',

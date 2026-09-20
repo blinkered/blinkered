@@ -190,7 +190,9 @@ export const af: Messages = {
     'Soms verskyn ’n joker in plaas van ’n letter. ’n Joker geld as enige letter wat ’n geldige woord maak. ’n Woord wat jy reeds voltooi het, tel nie.',
   htHideTitle: 'Letters wat wegkruip',
   htHideBody:
-    'Op die moeiliker vlakke kan ’n oop letter self weer omdraai en later in die rondte terugkom. Die tydbalk kry ’n ekstra tik daarvoor, in rooi. ’n Letter wat al in jou woord is, is veilig.',
+    'Op die moeiliker vlakke kan ’n oop letter self weer omdraai en later in die rondte terugkom. Die tydbalk kry ’n ekstra tik daarvoor, in rooi. Reeds gekose letters draai nie om nie.',
+  tutHideBody:
+    'Op die moeiliker vlakke kan ’n oop letter self weer omdraai en later in die rondte terugkom. Reeds gekose letters draai nie om nie.',
   htSwapTitle: 'Letters wat verander',
   htSwapBody:
     'Soms word tussen die rondtes een letter deur ’n ander vervang. Jy sien watter letter weg is en watter bygekom het.',

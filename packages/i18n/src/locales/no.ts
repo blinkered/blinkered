@@ -183,7 +183,9 @@ export const no: Messages = {
     'Av og til dukker det opp en joker i stedet for en bokstav. En joker teller som hvilken som helst bokstav som lager et gyldig ord. Et ord du allerede har laget teller ikke.',
   htHideTitle: 'Bokstaver som skjuler seg',
   htHideBody:
-    'På de vanskeligere nivåene kan en åpen bokstav snu seg tilbake av seg selv og komme tilbake senere i runden. Tidslinjen får et ekstra hakk for det, i rødt. En bokstav som alt er i ordet ditt, er trygg.',
+    'På de vanskeligere nivåene kan en åpen bokstav snu seg tilbake av seg selv og komme tilbake senere i runden. Tidslinjen får et ekstra hakk for det, i rødt. Bokstaver du alt har tatt, snur seg ikke.',
+  tutHideBody:
+    'På de vanskeligere nivåene kan en åpen bokstav snu seg tilbake av seg selv og komme tilbake senere i runden. Bokstaver du alt har tatt, snur seg ikke.',
   htSwapTitle: 'Bokstaver som byttes',
   htSwapBody:
     'Av og til blir én bokstav byttet ut med en annen mellom rundene. Du ser hvilken bokstav som ble fjernet og hvilken som kom til.',

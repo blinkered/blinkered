@@ -76,9 +76,36 @@ export function boardFor(language: string): TutorialBoard {
   return TUTORIAL_BOARDS[language] ?? (TUTORIAL_BOARDS.en as TutorialBoard)
 }
 
-/** A mask with the first `n` tiles face up. */
-function upTo(n: number, total: number): string {
-  return UP.repeat(n) + DOWN.repeat(total - n)
+/** A mask with the given tiles face up and the rest face down. */
+function facesUp(total: number, up: readonly number[]): string {
+  const lit = new Set(up)
+  return Array.from({ length: total }, (_, at) => (lit.has(at) ? UP : DOWN)).join('')
+}
+
+/**
+ * The order the tour turns tiles over in, which is deliberately not reading order.
+ *
+ * The game picks its next tile at random from whatever is still face down, so a tour that filled
+ * the board from the left taught the one thing it does not do -- and the board screen's own
+ * caption says "in no fixed order" while the animation underneath showed a fixed one. Nick:
+ * "The animations show everything revealing in reading order. Fix this so that people aren't
+ * surprised when the game starts playing."
+ *
+ * A fixed scatter rather than a random one. The deck is documentation: two people describing the
+ * same screen to each other should be describing the same screen, and a tour that deals
+ * differently on every open cannot be screenshotted twice. Bit-reversal is the scatter -- read
+ * each index backwards in binary and sort by that -- which on the six-tile boards gives
+ * 0, 4, 2, 1, 5, 3: it crosses the board instead of sweeping it, and it wants no table per
+ * board size.
+ */
+function dealOrder(total: number): number[] {
+  const width = Math.max(1, Math.ceil(Math.log2(Math.max(total, 2))))
+  const reversed = (at: number): number => {
+    let out = 0
+    for (let bit = 0; bit < width; bit += 1) out = out * 2 + ((at >> bit) & 1)
+    return out
+  }
+  return Array.from({ length: total }, (_, at) => at).sort((a, b) => reversed(a) - reversed(b))
 }
 
 /**
@@ -109,7 +136,8 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   const alphabet = alphabetFor(language)
   const tiles = board.tiles
   const n = tiles.length
-  const all = upTo(n, n)
+  const all = UP.repeat(n)
+  const dealt = dealOrder(n)
 
   const longWord = alphabet.segment(board.six)
   const longOrder = tapOrder(longWord, tiles)
@@ -130,17 +158,27 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   const say = (caption: string, sel: readonly number[], mask: string, extra: Partial<Frame> = {}) =>
     void words.push({ up: mask, sel: [...sel], caption, ...extra })
 
-  // The first three tiles are already up: the previous screen turned them over.
-  say(messages.tutPickLetters, [], upTo(3, n))
+  /*
+   * This screen opens part way into a round, with three tiles up and the rest to come.
+   *
+   * The three are the first three tiles whatever the deal would have done, because those are the
+   * ones that spell the short word -- `tutorialBoard.test.ts` holds every board to that. So the
+   * remaining tiles are the ones the scatter applies to, which is what the loop below turns over.
+   */
+  const opening = [0, 1, 2]
+  const later = dealt.filter((at) => !opening.includes(at))
+  say(messages.tutPickLetters, [], facesUp(n, opening))
   for (let taken = 1; taken <= 3; taken += 1) {
-    say(messages.tutPickLetters, [0, 1, 2].slice(0, taken), upTo(3, n), {
+    say(messages.tutPickLetters, opening.slice(0, taken), facesUp(n, opening), {
       ...(taken === 3 ? { word: board.three } : {}),
     })
   }
   // The rest of the board turns over while the short word is still selected, which is the point
   // of the caption: a better letter can still be coming.
-  for (let shown = 4; shown <= n; shown += 1) {
-    say(messages.tutMoreTurn, [0, 1, 2], upTo(shown, n), { word: board.three })
+  for (let more = 1; more <= later.length; more += 1) {
+    say(messages.tutMoreTurn, opening, facesUp(n, [...opening, ...later.slice(0, more)]), {
+      word: board.three,
+    })
   }
   // Giving letters back, one tap at a time, down to whatever the long word can reuse.
   for (let held = 2; held >= keep; held -= 1) {
@@ -203,11 +241,11 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   const firstAway = 1
   const secondAway = Math.max(2, n - 2)
   const hideFrames: Frame[] = [
-    { up: all, sel: [], caption: messages.htHideBody },
-    { up: away(firstAway), sel: [], caption: messages.htHideBody },
-    { up: away(firstAway, secondAway), sel: [], caption: messages.htHideBody },
-    { up: away(firstAway), sel: [], caption: messages.htHideBody },
-    { up: all, sel: [], caption: messages.htHideBody },
+    { up: all, sel: [], caption: messages.tutHideBody },
+    { up: away(firstAway), sel: [], caption: messages.tutHideBody },
+    { up: away(firstAway, secondAway), sel: [], caption: messages.tutHideBody },
+    { up: away(firstAway), sel: [], caption: messages.tutHideBody },
+    { up: all, sel: [], caption: messages.tutHideBody },
   ]
 
   // The board after the swap, which is what the last screen shows: one letter is not what it was.
@@ -218,9 +256,9 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     {
       title: messages.htBoardTitle,
       tiles,
-      // One tile at a time, in reading order, which is the one rule the whole game rests on.
+      // One tile at a time, and not from the left, which is the one rule the whole game rests on.
       frames: Array.from({ length: n + 1 }, (_, shown) => ({
-        up: upTo(shown, n),
+        up: facesUp(n, dealt.slice(0, shown)),
         sel: [],
         caption: messages.htBoardBody,
       })),

@@ -184,7 +184,9 @@ export const nl: Messages = {
     'Soms verschijnt er een joker in plaats van een letter. Een joker geldt als elke letter die een geldig woord maakt. Een woord dat je al af hebt telt niet.',
   htHideTitle: 'Letters die zich verstoppen',
   htHideBody:
-    'Op de moeilijkere niveaus kan een open letter zichzelf weer omdraaien en later in de ronde terugkomen. De tijdbalk krijgt daarvoor een extra streepje, in rood. Een letter die al in je woord zit, is veilig.',
+    'Op de moeilijkere niveaus kan een open letter zichzelf weer omdraaien en later in de ronde terugkomen. De tijdbalk krijgt daarvoor een extra streepje, in rood. Al genomen letters draaien zich niet om.',
+  tutHideBody:
+    'Op de moeilijkere niveaus kan een open letter zichzelf weer omdraaien en later in de ronde terugkomen. Al genomen letters draaien zich niet om.',
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
     'Soms wordt tussen de rondes één letter door een andere vervangen. Je ziet welke letter weg is en welke erbij is gekomen.',

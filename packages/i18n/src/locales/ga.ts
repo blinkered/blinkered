@@ -194,7 +194,9 @@ export const ga: Messages = {
     'Uaireanta tagann cárta fiáin in ionad litreach. Comhaireamh cárta fiáin mar litir ar bith a dhéanann focal bailí. Ní chomhairtear focal atá críochnaithe cheana.',
   htHideTitle: 'Litreacha a théann i bhfolach',
   htHideBody:
-    'Ar na leibhéil is deacra féadann litir atá le feiceáil casadh ar ais uaithi féin agus teacht ar ais níos déanaí sa bhabhta. Faigheann an t-amadóir tic breise dá bharr, i ndearg. Tá litir atá i bhfocal agat slán.',
+    'Ar na leibhéil is deacra féadann litir atá le feiceáil casadh ar ais uaithi féin agus teacht ar ais níos déanaí sa bhabhta. Faigheann an t-amadóir tic breise dá bharr, i ndearg. Ní chasann litreacha atá roghnaithe agat ar ais.',
+  tutHideBody:
+    'Ar na leibhéil is deacra féadann litir atá le feiceáil casadh ar ais uaithi féin agus teacht ar ais níos déanaí sa bhabhta. Ní chasann litreacha atá roghnaithe agat ar ais.',
   htSwapTitle: 'Litreacha a athraíonn',
   htSwapBody:
     'Uaireanta, idir babhtaí, cuirtear litir eile in ionad litreach. Feicfidh tú cé acu a d’imigh agus cé acu a tháinig.',

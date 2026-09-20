@@ -192,7 +192,9 @@ export const la: Messages = {
     'Interdum pro littera tessera vaga apparet. Tessera vaga pro qualibet littera valet quae verbum iustum facit. Verbum iam perfectum non valet.',
   htHideTitle: 'Litterae se occultantes',
   htHideBody:
-    'In gradibus difficilioribus littera aperta sua sponte reverti potest et postea in eodem circuitu redit. Horologium punctum additum accipit, rubrum. Littera iam in verbo tuo tuta est.',
+    'In gradibus difficilioribus littera aperta sua sponte reverti potest et postea in eodem circuitu redit. Horologium punctum additum accipit, rubrum. Litterae iam sumptae non revertuntur.',
+  tutHideBody:
+    'In gradibus difficilioribus littera aperta sua sponte reverti potest et postea in eodem circuitu redit. Litterae iam sumptae non revertuntur.',
   htSwapTitle: 'Litterae mutatae',
   htSwapBody:
     'Interdum, inter ambitus, una littera alia substituitur. Videbis quae littera sublata sit et quae addita.',

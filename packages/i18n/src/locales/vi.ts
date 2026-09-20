@@ -191,7 +191,9 @@ export const vi: Messages = {
     'Đôi khi một quân trắng hiện ra thay cho một chữ. Quân trắng tính là bất kỳ chữ nào tạo thành từ đúng. Từ đã ghép rồi thì không tính.',
   htHideTitle: 'Chữ ẩn đi',
   htHideBody:
-    'Ở các mức khó, một chữ đang mở có thể tự úp lại và mở ra muộn hơn trong cùng vòng. Đồng hồ được thêm một vạch cho việc đó, màu đỏ. Chữ đã nằm trong từ của bạn thì an toàn.',
+    'Ở các mức khó, một chữ đang mở có thể tự úp lại và mở ra muộn hơn trong cùng vòng. Đồng hồ được thêm một vạch cho việc đó, màu đỏ. Những chữ đã chọn thì không úp lại.',
+  tutHideBody:
+    'Ở các mức khó, một chữ đang mở có thể tự úp lại và mở ra muộn hơn trong cùng vòng. Những chữ đã chọn thì không úp lại.',
   htSwapTitle: 'Chữ đổi',
   htSwapBody:
     'Đôi khi giữa hai vòng, một chữ được thay bằng chữ khác. Bạn sẽ thấy chữ nào đi và chữ nào đến.',

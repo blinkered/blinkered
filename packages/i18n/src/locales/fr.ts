@@ -189,7 +189,9 @@ export const fr: Messages = {
     'Parfois un joker apparaît à la place d’une lettre. Un joker vaut n’importe quelle lettre qui forme un mot valide. Un mot déjà terminé ne compte pas.',
   htHideTitle: 'Lettres qui se cachent',
   htHideBody:
-    'Aux niveaux les plus difficiles, une lettre visible peut se retourner d’elle-même et revenir plus tard dans la manche. Le minuteur gagne un cran pour cela, en rouge. Une lettre déjà dans votre mot est à l’abri.',
+    'Aux niveaux les plus difficiles, une lettre visible peut se retourner d’elle-même et revenir plus tard dans la manche. Le minuteur gagne un cran pour cela, en rouge. Les lettres déjà prises ne se retournent pas.',
+  tutHideBody:
+    'Aux niveaux les plus difficiles, une lettre visible peut se retourner d’elle-même et revenir plus tard dans la manche. Les lettres déjà prises ne se retournent pas.',
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
     'Parfois, entre deux manches, une lettre est remplacée par une autre. Vous verrez quelle lettre est partie et laquelle est arrivée.',

@@ -193,7 +193,9 @@ export const pcm: Messages = {
     'Sometimes wild card go show instead of letter. Wild card dey count as any letter wey go make correct word. Word wey you don complete before no dey count.',
   htHideTitle: 'Letters wey dey hide',
   htHideBody:
-    'For di harder levels, letter wey open fit turn back by itself, and e go come back later inside di same round. Di timer go gain one extra tick for am, wey dey red. Letter wey dey inside your word already, nobody fit take am.',
+    'For di harder levels, letter wey open fit turn back by itself, and e go come back later inside di same round. Di timer go gain one extra tick for am, wey dey red. Letter wey you don pick no go turn back.',
+  tutHideBody:
+    'For di harder levels, letter wey open fit turn back by itself, and e go come back later inside di same round. Letter wey you don pick no go turn back.',
   htSwapTitle: 'Letters wey dey change',
   htSwapBody:
     'Sometimes, between rounds, dem go replace one letter with another one. You go see which one comot and which one enter.',

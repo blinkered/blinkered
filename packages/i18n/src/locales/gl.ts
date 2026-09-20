@@ -190,7 +190,9 @@ export const gl: Messages = {
     'Ás veces aparece un comodín no canto dunha letra. O comodín conta como calquera letra que faga unha palabra válida. Unha palabra xa completada non conta.',
   htHideTitle: 'Letras que se agochan',
   htHideBody:
-    'Nos niveis máis difíciles unha letra descuberta pode virar soa e volver máis tarde na rolda. O temporizador gaña un tic por iso, en vermello. Unha letra que xa está na túa palabra está a salvo.',
+    'Nos niveis máis difíciles unha letra descuberta pode virar soa e volver máis tarde na rolda. O temporizador gaña un tic por iso, en vermello. As letras xa escollidas non viran.',
+  tutHideBody:
+    'Nos niveis máis difíciles unha letra descuberta pode virar soa e volver máis tarde na rolda. As letras xa escollidas non viran.',
   htSwapTitle: 'Letras que cambian',
   htSwapBody:
     'Ás veces, entre roldas, unha letra é substituída por outra. Verá cal marchou e cal chegou.',

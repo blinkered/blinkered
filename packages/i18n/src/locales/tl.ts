@@ -200,7 +200,9 @@ export const tl: Messages = {
     'Minsan may lalabas na komodin sa halip na titik. Ang komodin ay katumbas ng kahit anong titik na bumubuo ng tamang salita. Hindi bilang ang salitang natapos mo na dati.',
   htHideTitle: 'Mga titik na nagtatago',
   htHideBody:
-    'Sa mga mahirap na antas, maaaring bumaligtad mag-isa ang titik na nakabukas at bumalik mamaya sa loob ng ronda. May dagdag na guhit ang timer para doon, kulay pula. Ligtas ang titik na nasa salita mo na.',
+    'Sa mga mahirap na antas, maaaring bumaligtad mag-isa ang titik na nakabukas at bumalik mamaya sa loob ng ronda. May dagdag na guhit ang timer para doon, kulay pula. Ang mga titik na napili mo na ay hindi bumabaligtad.',
+  tutHideBody:
+    'Sa mga mahirap na antas, maaaring bumaligtad mag-isa ang titik na nakabukas at bumalik mamaya sa loob ng ronda. Ang mga titik na napili mo na ay hindi bumabaligtad.',
   htSwapTitle: 'Pagpapalit ng titik',
   htSwapBody:
     'Minsan, sa pagitan ng mga ikot, may isang titik na napapalitan ng iba. Makikita mo kung aling titik ang inalis at kung alin ang idinagdag.',

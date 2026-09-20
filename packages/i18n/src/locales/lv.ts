@@ -189,7 +189,9 @@ export const lv: Messages = {
     'Reizēm burta vietā parādās džokers. Džokers skaitās par jebkuru burtu, kas veido derīgu vārdu. Jau atrasts vārds neskaitās.',
   htHideTitle: 'Burti, kas paslēpjas',
   htHideBody:
-    'Grūtākajos līmeņos atklāts burts var pats apgriezties un vēlāk tajā pašā kārtā atgriezties. Taimeris par to saņem papildu atzīmi, sarkanā krāsā. Burts, kas jau ir tavā vārdā, ir drošībā.',
+    'Grūtākajos līmeņos atklāts burts var pats apgriezties un vēlāk tajā pašā kārtā atgriezties. Taimeris par to saņem papildu atzīmi, sarkanā krāsā. Jau izvēlētie burti neapgriežas.',
+  tutHideBody:
+    'Grūtākajos līmeņos atklāts burts var pats apgriezties un vēlāk tajā pašā kārtā atgriezties. Jau izvēlētie burti neapgriežas.',
   htSwapTitle: 'Mainīgie burti',
   htSwapBody:
     'Reizēm starp raundiem viens burts tiek nomainīts pret citu. Redzēsiet, kurš pazuda un kurš pienāca.',

@@ -189,7 +189,9 @@ export const is: Messages = {
     'Stundum birtist jóker í stað stafs. Jóker gildir sem hvaða stafur sem myndar gilt orð. Orð sem þegar er fundið gildir ekki.',
   htHideTitle: 'Stafir sem fela sig',
   htHideBody:
-    'Á erfiðari stigum getur stafur sem er uppi snúist við af sjálfu sér og komið aftur síðar í umferðinni. Tímamælirinn fær auka tikk fyrir það, í rauðu. Stafur sem er þegar í orðinu þínu er óhultur.',
+    'Á erfiðari stigum getur stafur sem er uppi snúist við af sjálfu sér og komið aftur síðar í umferðinni. Tímamælirinn fær auka tikk fyrir það, í rauðu. Stafir sem þú hefur þegar valið snúast ekki við.',
+  tutHideBody:
+    'Á erfiðari stigum getur stafur sem er uppi snúist við af sjálfu sér og komið aftur síðar í umferðinni. Stafir sem þú hefur þegar valið snúast ekki við.',
   htSwapTitle: 'Stafir sem breytast',
   htSwapBody:
     'Stundum er einum staf skipt út fyrir annan milli umferða. Þú sérð hvor hvarf og hvor kom.',

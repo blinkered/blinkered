@@ -192,7 +192,9 @@ export const eu: Messages = {
     'Batzuetan komodin bat agertzen da letra baten ordez. Komodinak hitz zuzena osatzen duen edozein letra balio du. Jada osatutako hitz batek ez du balio.',
   htHideTitle: 'Ezkutatzen diren letrak',
   htHideBody:
-    'Maila zailenetan agerian dagoen letra bat bere kabuz itzul daiteke eta geroago itzuliko da txandan. Kronometroak tic bat gehiago jasotzen du horretarako, gorriz. Zure hitzean dagoen letra babestuta dago.',
+    'Maila zailenetan agerian dagoen letra bat bere kabuz itzul daiteke eta geroago itzuliko da txandan. Kronometroak tic bat gehiago jasotzen du horretarako, gorriz. Jada hautatutako letrak ez dira itzultzen.',
+  tutHideBody:
+    'Maila zailenetan agerian dagoen letra bat bere kabuz itzul daiteke eta geroago itzuliko da txandan. Jada hautatutako letrak ez dira itzultzen.',
   htSwapTitle: 'Aldatzen diren letrak',
   htSwapBody:
     'Batzuetan, txanden artean, letra bat beste batekin ordezkatzen da. Zein joan den eta zein etorri den ikusiko duzu.',

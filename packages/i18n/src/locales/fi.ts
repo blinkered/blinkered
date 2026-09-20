@@ -187,7 +187,9 @@ export const fi: Messages = {
     'Joskus kirjaimen tilalle ilmestyy jokeri. Jokeri käy mistä tahansa kirjaimesta, joka muodostaa kelvollisen sanan. Jo tehty sana ei kelpaa.',
   htHideTitle: 'Piiloutuvat kirjaimet',
   htHideBody:
-    'Vaikeammilla tasoilla esillä oleva kirjain voi kääntyä itsestään takaisin ja palata kierroksen aikana myöhemmin. Ajastin saa siitä yhden lisäpykälän, punaisella. Sanassasi jo oleva kirjain on turvassa.',
+    'Vaikeammilla tasoilla esillä oleva kirjain voi kääntyä itsestään takaisin ja palata kierroksen aikana myöhemmin. Ajastin saa siitä yhden lisäpykälän, punaisella. Jo valitut kirjaimet eivät käänny takaisin.',
+  tutHideBody:
+    'Vaikeammilla tasoilla esillä oleva kirjain voi kääntyä itsestään takaisin ja palata kierroksen aikana myöhemmin. Jo valitut kirjaimet eivät käänny takaisin.',
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
     'Joskus kierrosten välissä yksi kirjain korvataan toisella. Näet, mikä kirjain poistui ja mikä tuli tilalle.',

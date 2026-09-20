@@ -184,7 +184,9 @@ export const ms: Messages = {
     'Kadangkala kad liar muncul menggantikan huruf. Kad liar berfungsi sebagai apa-apa huruf yang membentuk perkataan yang sah. Perkataan yang sudah siap tidak dikira.',
   htHideTitle: 'Huruf yang bersembunyi',
   htHideBody:
-    'Pada tahap yang lebih sukar, huruf yang terbuka boleh menutup sendiri dan kembali kemudian dalam pusingan itu. Pemasa mendapat satu tik tambahan untuknya, berwarna merah. Huruf yang sudah ada dalam perkataan anda selamat.',
+    'Pada tahap yang lebih sukar, huruf yang terbuka boleh menutup sendiri dan kembali kemudian dalam pusingan itu. Pemasa mendapat satu tik tambahan untuknya, berwarna merah. Huruf yang sudah dipilih tidak menutup.',
+  tutHideBody:
+    'Pada tahap yang lebih sukar, huruf yang terbuka boleh menutup sendiri dan kembali kemudian dalam pusingan itu. Huruf yang sudah dipilih tidak menutup.',
   htSwapTitle: 'Huruf yang bertukar',
   htSwapBody:
     'Kadangkala, antara pusingan, satu huruf diganti dengan huruf lain. Anda akan nampak huruf mana yang dibuang dan mana yang ditambah.',

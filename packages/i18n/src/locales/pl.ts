@@ -189,7 +189,9 @@ export const pl: Messages = {
     'Czasem zamiast litery pojawia się joker. Joker liczy się jako każda litera, która tworzy poprawne słowo. Słowo już ułożone się nie liczy.',
   htHideTitle: 'Ukrywające się litery',
   htHideBody:
-    'Na trudniejszych poziomach odkryta litera może sama się odwrócić i wrócić później w tej samej rundzie. Zegar dostaje za to dodatkową kreskę, na czerwono. Litera, która już jest w twoim słowie, jest bezpieczna.',
+    'Na trudniejszych poziomach odkryta litera może sama się odwrócić i wrócić później w tej samej rundzie. Zegar dostaje za to dodatkową kreskę, na czerwono. Już wybrane litery nie odwracają się.',
+  tutHideBody:
+    'Na trudniejszych poziomach odkryta litera może sama się odwrócić i wrócić później w tej samej rundzie. Już wybrane litery nie odwracają się.',
   htSwapTitle: 'Zmiana liter',
   htSwapBody:
     'Czasem między rundami jedna litera zostaje zastąpiona inną. Zobaczysz, która zniknęła i która się pojawiła.',
