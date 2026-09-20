@@ -23,6 +23,14 @@ export function rowsFor(n: number, columns: number): number {
   return Math.ceil(n / columns)
 }
 
+/**
+ * How long the flip-back is announced for.
+ *
+ * Long enough to catch out of the corner of an eye and short enough to be over before the letter
+ * could be back: the deal takes it at a mean of three ticks, which is 2.7s on insane.
+ */
+export const HIDE_MS = 520
+
 interface BoardProps {
   readonly state: GameState
   readonly portrait: boolean
@@ -32,6 +40,15 @@ interface BoardProps {
    * would be the cheapest cheat available.
    */
   readonly concealed: boolean
+  /**
+   * The tile that has just turned back over of its own accord, for as long as the animation runs.
+   *
+   * Transient on purpose. It gives the *moment* a voice, because a letter leaving used to look
+   * exactly like every other flip and one tile doing it mid-round read as nothing at all. It
+   * must not outlive the animation: a mark that stayed would label that slot "a letter you have
+   * already seen", which is the one inference this mechanic exists to deny.
+   */
+  readonly hiding: number | null
   readonly onTapTile: (tileId: number) => void
   readonly messages: Messages
 }
@@ -48,6 +65,7 @@ export function Board({
   state,
   portrait,
   concealed,
+  hiding,
   onTapTile,
   messages,
 }: BoardProps): React.JSX.Element {
@@ -102,6 +120,9 @@ export function Board({
       style={{
         ['--cols' as string]: String(columns),
         ['--rows' as string]: String(rowsFor(state.config.n, columns)),
+        // The stylesheet times the flip-back off this, so the latch in `App` and the animation
+        // cannot drift apart.
+        ['--hide-ms' as string]: `${String(HIDE_MS)}ms`,
       }}
       aria-label={format(messages.boardOfTiles, { n: state.config.n })}
     >
@@ -110,6 +131,7 @@ export function Board({
           key={tile.id}
           tile={tile}
           concealed={concealed}
+          hiding={tile.id === hiding}
           messages={messages}
           order={state.selection.indexOf(tile.id)}
           onTap={onTapTile}
@@ -126,6 +148,8 @@ export function Board({
 interface TileProps {
   readonly tile: Tile
   readonly concealed: boolean
+  /** This tile is the one that just turned back over. */
+  readonly hiding: boolean
   /** Index in the current word, or -1 when unselected. */
   readonly order: number
   readonly onTap: (tileId: number) => void
@@ -136,6 +160,7 @@ interface TileProps {
 function TileButton({
   tile,
   concealed,
+  hiding,
   order,
   onTap,
   register,
@@ -149,6 +174,7 @@ function TileButton({
   if (showing && tile.wild) classes.push('is-wild')
   if (tile.spent) classes.push('is-spent')
   if (selected) classes.push('is-selected')
+  if (hiding) classes.push('is-hiding')
 
   const label = concealed
     ? messages.hiddenWhilePaused

@@ -4,7 +4,7 @@ import type { Effect, GameEvent, GameResult, GameState } from '@blinkered/engine
 import { format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import type { TieredIndex } from '@blinkered/words'
-import { Board } from './Board.js'
+import { Board, HIDE_MS } from './Board.js'
 import { LetterSwap, SWAP_MS } from './LetterSwap.js'
 import type { Swap } from './LetterSwap.js'
 import { TooFewLetters } from './TooFewLetters.js'
@@ -1246,6 +1246,7 @@ function Playing({
   const feedback = useFeedback(game.effects, game.cause, game.epoch, messages, spec.config.language)
   const gain = useWordGain(game.effects, game.epoch)
   const swap = useSwap(game.effects, game.epoch)
+  const hiding = useHiding(game.effects)
 
   useEffect(() => {
     if (rulesOpen) game.setPaused(true)
@@ -1297,6 +1298,7 @@ function Playing({
           state={game.state}
           portrait={portrait}
           concealed={game.paused}
+          hiding={hiding}
           messages={messages}
           onTapTile={(tileId) => {
             game.dispatch({ type: 'TAP_TILE', tileId })
@@ -1613,6 +1615,42 @@ function useWordGain(effects: readonly Effect[], epoch: number): WordGain | null
  * tile is now: the board goes to some trouble to keep face-down letters out of the document at
  * all, and leaving one behind here would undo that for the tile the game just drew attention to.
  */
+/**
+ * Which tile just turned back over, for as long as its animation runs.
+ *
+ * The mechanic needed this because it was invisible without it. A letter leaving used the same
+ * 260ms flip as every other tile, and the whole board flips at the end of every round, so one
+ * tile turning over mid-round was indistinguishable from the furniture. Nick played eleven rounds
+ * of insane and saw one, against a measured six in ten.
+ *
+ * Held for the length of the animation and then dropped, which is the part that matters for the
+ * rule underneath: the board must not carry a mark saying which face-down tile is the one that
+ * was taken, because that is exactly the history the deal goes to such trouble not to record.
+ */
+function useHiding(effects: readonly Effect[]): number | null {
+  const [hiding, setHiding] = useState<number | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (timer.current !== null) clearTimeout(timer.current)
+    },
+    [],
+  )
+  useEffect(() => {
+    for (const effect of effects) {
+      if (effect.type === 'TILE_HIDDEN') {
+        setHiding(effect.tileId)
+        if (timer.current !== null) clearTimeout(timer.current)
+        timer.current = setTimeout(() => {
+          setHiding(null)
+        }, HIDE_MS)
+        return
+      }
+    }
+  }, [effects])
+  return hiding
+}
+
 function useSwap(effects: readonly Effect[], epoch: number): Swap | null {
   const [swap, setSwap] = useState<Swap | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)

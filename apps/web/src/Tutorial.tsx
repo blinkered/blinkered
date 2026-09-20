@@ -399,6 +399,8 @@ export function Tutorial({
                   state={stateOf(beat, current.tiles, language)}
                   portrait
                   concealed={false}
+                  // The tour scripts its boards, so nothing turns back over in one.
+                  hiding={null}
                   messages={messages}
                   onTapTile={() => {
                     // A picture of a board. Tapping it does nothing on purpose.
