@@ -17,9 +17,26 @@ const config: CapacitorConfig = {
     // The game is dark and draws its own background; without this the WebView flashes white
     // between the splash screen and the first paint.
     backgroundColor: '#0e1116',
-    // Nothing in the game scrolls the document on purpose. The board is fixed and the page
-    // fits, so the elastic bounce is only ever an accident of a stray drag across a tile.
-    scrollEnabled: false,
+    /*
+     * The document scrolls, the same as it does on the web.
+     *
+     * It was off, on the grounds that nothing in the game scrolls on purpose: the board is fixed
+     * and the playing screen fits. Both of those are still true, and neither is the whole app.
+     * The game-over panel is the exception it always was -- the score, where it would rank, your
+     * best games and every word you found -- and with the WebView's scroll view disabled a long
+     * game's panel was clipped at the bottom of the screen with Share, the rest of the word list
+     * and the keep-this-game button behind the cut and no way to reach any of them. Nick: "the
+     * goal was not to prevent people from seeing the entire game over modal, or interacting with
+     * its CTAs."
+     *
+     * The panel's own stylesheet already assumed this: its action bar is `position: sticky`,
+     * which is a bar that pins itself while something scrolls underneath. Nothing was scrolling.
+     *
+     * What the old setting was really defending is the elastic bounce under a thumb on the
+     * playing screen, and `body { overscroll-behavior: none }` in `styles.css` is the answer to
+     * that -- put there for exactly this reason, and the browser has the same problem without it.
+     */
+    scrollEnabled: true,
     /*
      * Still on, and now it has a list to work from.
      *
