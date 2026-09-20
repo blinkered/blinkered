@@ -171,7 +171,7 @@ export const en: Messages = {
   tutDoneBody: 'How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
-    'Tiles turn face up one at a time, in no fixed order. Exposed tiles can be used to form words.',
+    'Tiles turn face up one at a time, in random order. Exposed tiles can be used to form words.',
   htWordsTitle: 'The words',
   htWordsBody:
     'Spell a word from the tiles that are showing by typing or clicking the letters in order.',

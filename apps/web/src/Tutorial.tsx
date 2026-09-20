@@ -37,6 +37,15 @@ import { ignoredByManagers } from './autofill.js'
  * it goes, and the first version held every frame for 1.4s regardless, which on the controls
  * screen meant four different sentences in under six seconds. You could watch it or read it.
  *
+ * **Reading time belongs to a caption, not to a frame.** It used to be charged to the frame the
+ * caption changed on, and on the words screen that frame is also one that turns a tile over: the
+ * first tile of a sentence sat there for three and a half seconds and the two after it went by in
+ * nine hundred milliseconds each. Nick: "What's up with the very long, dramatic pauses on slide 2?
+ * The timing between reveals is very inconsistent." So the reading is spread over every frame that
+ * shows the sentence, and all of them hold for the same length: the slowest thing any of them is
+ * doing, or an even share of the reading, whichever is longer. The sentence still gets its time
+ * and the tiles arrive at one pace.
+ *
  * Reading time is derived from the caption's length because it has to hold in every language.
  * German runs about 40% longer than English for the same sentence, so any hand-tuned number would
  * be right in one language and wrong in the rest; a rate per character is right everywhere and
@@ -66,15 +75,39 @@ const DEAL_MS = 520
  */
 const GAIN_MS = 1800
 
-function holdFor(frame: Frame, previous: Frame): number {
+/** The run of frames around `at` that all show the same caption. */
+function sentenceAt(frames: readonly Frame[], at: number): { first: number; length: number } {
+  const said = frames[at]?.caption
+  let first = at
+  while (first > 0 && frames[first - 1]?.caption === said) first -= 1
+  let last = at
+  while (last + 1 < frames.length && frames[last + 1]?.caption === said) last += 1
+  return { first, length: last - first + 1 }
+}
+
+/** What a frame is doing, ignoring what it says: turning a tile over, or anything else. */
+function beatFor(frames: readonly Frame[], at: number): number {
+  const frame = frames[at] as Frame
+  const previous = frames[(at - 1 + frames.length) % frames.length] as Frame
+  // A frame that only turns a tile over, with nothing taken and nothing said.
+  return frame.sel.length === 0 && frame.up !== previous.up ? DEAL_MS : BEAT_MS
+}
+
+export function holdFor(frames: readonly Frame[], at: number): number {
+  const frame = frames[at] as Frame
   // A completed word, which has two badges to play out and is the point of the screen.
   if (frame.gain !== undefined) return GAIN_MS
-  if (frame.caption !== previous.caption) {
-    return Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
-  }
-  // A frame that only turns a tile over, with nothing taken and nothing said.
-  if (frame.sel.length === 0 && frame.up !== previous.up) return DEAL_MS
-  return BEAT_MS
+  const { first, length } = sentenceAt(frames, at)
+  const busiest = Math.max(...Array.from({ length }, (_, step) => beatFor(frames, first + step)))
+  /*
+   * One caption for the whole screen gets no reading time of its own, and keeps the pace of the
+   * thing it describes: there the loop is the reading time, since it comes round in a few seconds
+   * and says the same thing again. Dividing a sentence into it would only slow down the board
+   * screen, whose entire subject is how fast the game deals.
+   */
+  if (length === frames.length) return busiest
+  const read = Math.min(READ_MAX_MS, READ_BASE_MS + frame.caption.length * READ_PER_CHAR_MS)
+  return Math.max(busiest, Math.round(read / length))
 }
 
 function stateOf(frame: Frame, tiles: readonly string[], language: string): GameState {
@@ -194,14 +227,12 @@ export function Tutorial({
   useEffect(() => {
     const beats = current.frames
     if (skipping || beats.length < 2) return undefined
-    const showing = beats[frame] as Frame
-    const before = beats[(frame - 1 + beats.length) % beats.length] as Frame
     // A timeout rather than an interval, because how long a frame stays up depends on the frame.
     const timer = setTimeout(
       () => {
         setFrame((at) => (at + 1) % beats.length)
       },
-      holdFor(showing, before),
+      holdFor(beats, frame),
     )
     return () => {
       clearTimeout(timer)

@@ -87,7 +87,7 @@ function facesUp(total: number, up: readonly number[]): string {
  *
  * The game picks its next tile at random from whatever is still face down, so a tour that filled
  * the board from the left taught the one thing it does not do -- and the board screen's own
- * caption says "in no fixed order" while the animation underneath showed a fixed one. Nick:
+ * caption says "in random order" while the animation underneath showed a fixed one. Nick:
  * "The animations show everything revealing in reading order. Fix this so that people aren't
  * surprised when the game starts playing."
  *

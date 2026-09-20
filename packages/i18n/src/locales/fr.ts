@@ -170,7 +170,7 @@ export const fr: Messages = {
   tutDoneBody: 'Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
-    'Les tuiles se retournent une à une, dans un ordre imprévisible. Les tuiles visibles servent à former des mots.',
+    'Les tuiles se retournent une à une, dans un ordre aléatoire. Les tuiles visibles servent à former des mots.',
   htWordsTitle: 'Les mots',
   htWordsBody:
     'Composez un mot avec les tuiles visibles, en tapant ou en cliquant les lettres dans l’ordre.',

@@ -171,7 +171,7 @@ export const ca: Messages = {
   tutDoneBody: 'Com s’hi juga sempre és a la barra del títol.',
   htBoardTitle: 'El tauler',
   htBoardBody:
-    'Les fitxes es giren d’una en una, sense un ordre fix. Amb les destapades es formen mots.',
+    'Les fitxes es giren d’una en una, en un ordre aleatori. Amb les destapades es formen mots.',
   htWordsTitle: 'Els mots',
   htWordsBody: 'Formeu un mot amb les fitxes destapades escrivint o clicant les lletres en ordre.',
   htFlipsTitle: 'Les jugades',

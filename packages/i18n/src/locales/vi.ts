@@ -173,7 +173,7 @@ export const vi: Messages = {
   tutDoneBody: 'Cách chơi luôn nằm cạnh tên trò chơi.',
   htBoardTitle: 'Bàn chơi',
   htBoardBody:
-    'Các quân mở lần lượt, không theo thứ tự nào. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
+    'Các quân mở lần lượt, theo thứ tự ngẫu nhiên. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
   htWordsTitle: 'Các từ',
   htWordsBody: 'Ghép một từ từ những quân đang mở bằng cách gõ hoặc bấm các chữ theo thứ tự.',
   htFlipsTitle: 'Nước',

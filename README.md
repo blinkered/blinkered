@@ -3,7 +3,7 @@
 A word game where the letters hide from you. Play it at
 **[playblinkered.com](https://playblinkered.com)**.
 
-Tiles flip face up one per tick, in no fixed order. You spell words from what is exposed.
+Tiles flip face up one per tick, in random order. You spell words from what is exposed.
 Every reveal costs a flip; every word pays some back. On the harder levels a letter that is
 showing can turn back over by itself and return later in the round. When the flips run out,
 the game is over. The full rules, and the decisions behind them, are in [docs/PLAN.md](docs/PLAN.md).

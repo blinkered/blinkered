@@ -174,7 +174,7 @@ export const eu: Messages = {
   tutDoneBody: 'Nola jokatu beti dago izenburuaren ondoan.',
   htBoardTitle: 'Taula',
   htBoardBody:
-    'Fitxak banaka biratzen dira, ordena jakinik gabe. Agerian daudenekin hitzak osatzen dira.',
+    'Fitxak banaka biratzen dira, ausazko ordenan. Agerian daudenekin hitzak osatzen dira.',
   htWordsTitle: 'Hitzak',
   htWordsBody: 'Osatu hitz bat agerian dauden fitxekin, letrak ordenan idatziz edo sakatuz.',
   htFlipsTitle: 'Jokaldiak',

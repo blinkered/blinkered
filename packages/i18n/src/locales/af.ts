@@ -172,7 +172,7 @@ export const af: Messages = {
   tutDoneBody: 'Hoe om te speel is altyd in die titelbalk as jy dit weer wil hê.',
   htBoardTitle: 'Die bord',
   htBoardBody:
-    'Blokkies draai een vir een oop, in geen vaste volgorde nie. Met die oop blokkies vorm jy woorde.',
+    'Blokkies draai een vir een oop, in willekeurige volgorde. Met die oop blokkies vorm jy woorde.',
   htWordsTitle: 'Die woorde',
   htWordsBody: 'Vorm ’n woord uit die oop blokkies deur die letters in volgorde te tik of te klik.',
   htFlipsTitle: 'Die skuiwe',

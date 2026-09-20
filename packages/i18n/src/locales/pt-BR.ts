@@ -169,7 +169,7 @@ export const ptBR: Messages = {
   tutDoneBody: 'Como jogar fica sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
-    'As peças viram uma a uma, sem uma ordem fixa. As peças à vista servem para formar palavras.',
+    'As peças viram uma a uma, em uma ordem aleatória. As peças à vista servem para formar palavras.',
   htWordsTitle: 'As palavras',
   htWordsBody: 'Monte uma palavra com as peças à vista, digitando ou clicando nas letras em ordem.',
   htFlipsTitle: 'As viradas',

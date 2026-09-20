@@ -174,7 +174,7 @@ export const pcm: Messages = {
   tutDoneBody: 'How to play dey always for di title bar.',
   htBoardTitle: 'Di board',
   htBoardBody:
-    'Tiles dey turn face up one by one, but no for any set order. You fit take di ones wey open form word.',
+    'Tiles dey turn face up one by one, na random order. You fit take di ones wey open form word.',
   htWordsTitle: 'Di words',
   htWordsBody:
     'Spell word from di tiles wey dey show, by typing or clicking di letters one after di other.',

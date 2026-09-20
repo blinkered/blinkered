@@ -171,7 +171,7 @@ export const gl: Messages = {
   tutDoneBody: 'Como se xoga está sempre na barra do título.',
   htBoardTitle: 'O taboleiro',
   htBoardBody:
-    'As fichas viran unha a unha, sen unha orde fixa. Coas descubertas fórmanse palabras.',
+    'As fichas viran unha a unha, nunha orde aleatoria. Coas descubertas fórmanse palabras.',
   htWordsTitle: 'As palabras',
   htWordsBody:
     'Forme unha palabra coas fichas descubertas escribindo ou premendo as letras en orde.',

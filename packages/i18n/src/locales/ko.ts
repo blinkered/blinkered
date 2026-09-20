@@ -169,7 +169,7 @@ export const ko: Messages = {
   tutDoneTitle: '규칙은 이것뿐입니다',
   tutDoneBody: '게임 방법은 언제나 제목 줄에 있습니다.',
   htBoardTitle: '판',
-  htBoardBody: '타일은 정해진 순서 없이 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
+  htBoardBody: '타일은 무작위 순서로 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
   htWordsTitle: '단어',
   htWordsBody: '열린 타일의 글자를 순서대로 입력하거나 눌러서 단어를 만드세요.',
   htFlipsTitle: '수',

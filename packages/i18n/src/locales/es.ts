@@ -166,7 +166,7 @@ export const es: Messages = {
   tutDoneBody: 'Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
-    'Las fichas se descubren una a una, sin un orden fijo. Las fichas descubiertas sirven para formar palabras.',
+    'Las fichas se descubren una a una, en un orden aleatorio. Las fichas descubiertas sirven para formar palabras.',
   htWordsTitle: 'Las palabras',
   htWordsBody:
     'Forma una palabra con las fichas descubiertas, escribiendo o pulsando las letras en orden.',

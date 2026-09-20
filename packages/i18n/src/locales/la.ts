@@ -174,7 +174,7 @@ export const la: Messages = {
   tutDoneTitle: 'Hae sunt regulae',
   tutDoneBody: 'Quomodo ludendum sit semper in titulo est, si iterum vis.',
   htBoardTitle: 'Tabula',
-  htBoardBody: 'Tesserae singulae vertuntur, ordine incerto. Ex tesseris apertis verba facis.',
+  htBoardBody: 'Tesserae singulae vertuntur, ordine fortuito. Ex tesseris apertis verba facis.',
   htWordsTitle: 'Verba',
   htWordsBody: 'Verbum ex tesseris apertis fac litteras ordine scribendo aut pulsando.',
   htFlipsTitle: 'Versus',

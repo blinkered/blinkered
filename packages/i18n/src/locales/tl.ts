@@ -181,7 +181,7 @@ export const tl: Messages = {
   tutDoneBody: 'Nasa title bar palagi ang Paano maglaro kung kailanganin mo ulit.',
   htBoardTitle: 'Ang tablero',
   htBoardBody:
-    'Isa-isang bumubukas ang mga piyesa, sa walang takdang pagkakasunod. Mula sa mga bukas na piyesa ka bumubuo ng salita.',
+    'Isa-isang bumubukas ang mga piyesa, sa random na pagkakasunod. Mula sa mga bukas na piyesa ka bumubuo ng salita.',
   htWordsTitle: 'Ang mga salita',
   htWordsBody:
     'Bumuo ng salita mula sa mga bukas na piyesa sa pamamagitan ng pag-type o pag-click sa mga titik nang sunod-sunod.',
