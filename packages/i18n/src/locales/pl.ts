@@ -171,7 +171,7 @@ export const pl: Messages = {
   tutDoneBody: 'Jak grać jest zawsze przy tytule, gdybyś chciał wrócić.',
   htBoardTitle: 'Plansza',
   htBoardBody:
-    'Płytki odkrywają się pojedynczo, w kolejności czytania. Z odkrytych układa się słowa.',
+    'Płytki odkrywają się pojedynczo, w losowej kolejności. Z odkrytych układa się słowa.',
   htWordsTitle: 'Słowa',
   htWordsBody: 'Ułóż słowo z odkrytych płytek, wpisując lub klikając litery po kolei.',
   htFlipsTitle: 'Ruchy',
@@ -187,6 +187,9 @@ export const pl: Messages = {
   htWildTitle: 'Jokery',
   htWildBody:
     'Czasem zamiast litery pojawia się joker. Joker liczy się jako każda litera, która tworzy poprawne słowo. Słowo już ułożone się nie liczy.',
+  htHideTitle: 'Ukrywające się litery',
+  htHideBody:
+    'Na trudniejszych poziomach odkryta litera może sama się odwrócić i wrócić później w tej samej rundzie. Zegar dostaje za to dodatkową kreskę, na czerwono. Litera, która już jest w twoim słowie, jest bezpieczna.',
   htSwapTitle: 'Zmiana liter',
   htSwapBody:
     'Czasem między rundami jedna litera zostaje zastąpiona inną. Zobaczysz, która zniknęła i która się pojawiła.',

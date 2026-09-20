@@ -7,7 +7,7 @@ import { Board } from './Board.js'
 import { Icon } from './Icon.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { LetterSwap } from './LetterSwap.js'
-import { boardFor, showsGain, showsWord, stepsFor, wordOf } from './tutorialScript.js'
+import { FACE_DOWN, boardFor, showsGain, showsWord, stepsFor, wordOf } from './tutorialScript.js'
 import type { Frame, Step } from './tutorialScript.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
@@ -218,6 +218,20 @@ export function Tutorial({
   }
 
   const beat = (current.frames[frame] ?? current.frames[0]) as Frame
+  /*
+   * Which tile is turning back over on this frame, so the tour flips it the way the game does.
+   *
+   * Derived by comparing this frame's faces with the one before rather than written on the frame:
+   * a tile that was up and is now down was taken back, and that is the whole test. Without it the
+   * hiding screen would teach the rule using the ordinary deal animation, which is the one motion
+   * the rule is meant to be distinguishable from.
+   */
+  const before = frame > 0 ? current.frames[frame - 1] : undefined
+  const wentDown =
+    before === undefined
+      ? -1
+      : [...beat.up].findIndex((face, at) => face === FACE_DOWN && before.up[at] !== FACE_DOWN)
+  const hiding = wentDown < 0 ? null : wentDown
   const word = wordOf(beat, current.tiles, alphabetFor(language))
 
   if (skipping) {
@@ -352,8 +366,8 @@ export function Tutorial({
                 
                 The non-breaking space is what holds the line's height across a screen's frames,
                 so the card does not change shape as a word is spelled. What it should not do is
-                hold that height on a screen where no word is ever built: three of the seven
-                never build one, and there this was a blank line above the board.
+                hold that height on a screen where no word is ever built, and most of them
+                never build one: there it was a blank line above the board.
               */}
               {showsWord(current) ? (
                 <p className="tut-word" dir={alphabetFor(language).direction}>
@@ -398,8 +412,7 @@ export function Tutorial({
                   state={stateOf(beat, current.tiles, language)}
                   portrait
                   concealed={false}
-                  // The tour scripts its boards, so nothing turns back over in one.
-                  hiding={null}
+                  hiding={hiding}
                   messages={messages}
                   onTapTile={() => {
                     // A picture of a board. Tapping it does nothing on purpose.
@@ -424,7 +437,7 @@ export function Tutorial({
              * It used to be drawn on every board screen and made invisible elsewhere, reserved so
              * that pressing Next could not change the card's height. Within a screen that still
              * matters and still holds -- every frame of a screen that presses Complete draws it.
-             * Between screens it was 37px of nothing on three of the seven, which is the sort of
+             * Between screens it was 37px of nothing on most of them, which is the sort of
              * reserved space that adds up to a slide reading as mostly empty.
              */
             <div className="tut-controls" aria-hidden="true">

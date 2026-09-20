@@ -166,7 +166,7 @@ export const it: Messages = {
   tutDoneBody: 'Come si gioca resta sempre nella barra del titolo.',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
-    'Le tessere si girano una alla volta, in ordine di lettura. Le tessere scoperte servono a comporre parole.',
+    'Le tessere si girano una alla volta, in ordine casuale. Le tessere scoperte servono a comporre parole.',
   htWordsTitle: 'Le parole',
   htWordsBody:
     'Componi una parola con le tessere scoperte, scrivendo o cliccando le lettere in ordine.',
@@ -183,6 +183,9 @@ export const it: Messages = {
   htWildTitle: 'I jolly',
   htWildBody:
     'A volte compare un jolly al posto di una lettera. Un jolly vale qualsiasi lettera che formi una parola valida. Una parola già completata non conta.',
+  htHideTitle: 'Lettere che si nascondono',
+  htHideBody:
+    'Ai livelli più difficili una lettera scoperta può girarsi da sola e tornare più tardi nel turno. Il timer guadagna un segno in più per questo, in rosso. Una lettera già nella tua parola è al sicuro.',
   htSwapTitle: 'Le lettere cambiano',
   htSwapBody:
     'A volte, tra un turno e l’altro, una lettera viene sostituita da un’altra. Vedrai quale lettera è stata tolta e quale è stata aggiunta.',

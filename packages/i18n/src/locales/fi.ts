@@ -168,7 +168,7 @@ export const fi: Messages = {
   tutDoneBody: 'Pelin ohjeet löytyvät aina otsikkopalkista.',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
-    'Laatat kääntyvät esiin yksi kerrallaan, lukusuunnassa. Näkyvistä laatoista muodostat sanoja.',
+    'Laatat kääntyvät esiin yksi kerrallaan, satunnaisessa järjestyksessä. Näkyvistä laatoista muodostat sanoja.',
   htWordsTitle: 'Sanat',
   htWordsBody:
     'Muodosta sana näkyvistä laatoista kirjoittamalla tai napsauttamalla kirjaimet järjestyksessä.',
@@ -185,6 +185,9 @@ export const fi: Messages = {
   htWildTitle: 'Jokerit',
   htWildBody:
     'Joskus kirjaimen tilalle ilmestyy jokeri. Jokeri käy mistä tahansa kirjaimesta, joka muodostaa kelvollisen sanan. Jo tehty sana ei kelpaa.',
+  htHideTitle: 'Piiloutuvat kirjaimet',
+  htHideBody:
+    'Vaikeammilla tasoilla esillä oleva kirjain voi kääntyä itsestään takaisin ja palata kierroksen aikana myöhemmin. Ajastin saa siitä yhden lisäpykälän, punaisella. Sanassasi jo oleva kirjain on turvassa.',
   htSwapTitle: 'Vaihtuvat kirjaimet',
   htSwapBody:
     'Joskus kierrosten välissä yksi kirjain korvataan toisella. Näet, mikä kirjain poistui ja mikä tuli tilalle.',

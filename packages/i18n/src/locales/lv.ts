@@ -170,7 +170,7 @@ export const lv: Messages = {
   tutDoneTitle: 'Tādi ir noteikumi',
   tutDoneBody: 'Kā spēlēt vienmēr ir pie nosaukuma.',
   htBoardTitle: 'Galdiņš',
-  htBoardBody: 'Kauliņi atklājas pa vienam, lasīšanas secībā. No atklātajiem veido vārdus.',
+  htBoardBody: 'Kauliņi atklājas pa vienam, nejaušā secībā. No atklātajiem veido vārdus.',
   htWordsTitle: 'Vārdi',
   htWordsBody:
     'Izveidojiet vārdu no atklātajiem kauliņiem, rakstot vai klikšķinot burtus pēc kārtas.',
@@ -187,6 +187,9 @@ export const lv: Messages = {
   htWildTitle: 'Džokeri',
   htWildBody:
     'Reizēm burta vietā parādās džokers. Džokers skaitās par jebkuru burtu, kas veido derīgu vārdu. Jau atrasts vārds neskaitās.',
+  htHideTitle: 'Burti, kas paslēpjas',
+  htHideBody:
+    'Grūtākajos līmeņos atklāts burts var pats apgriezties un vēlāk tajā pašā kārtā atgriezties. Taimeris par to saņem papildu atzīmi, sarkanā krāsā. Burts, kas jau ir tavā vārdā, ir drošībā.',
   htSwapTitle: 'Mainīgie burti',
   htSwapBody:
     'Reizēm starp raundiem viens burts tiek nomainīts pret citu. Redzēsiet, kurš pazuda un kurš pienāca.',

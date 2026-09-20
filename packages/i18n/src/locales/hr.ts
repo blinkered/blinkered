@@ -165,7 +165,7 @@ export const hr: Messages = {
   tutDoneBody: 'Upute su uvijek u naslovnoj traci.',
   htBoardTitle: 'Ploča',
   htBoardBody:
-    'Pločice se otkrivaju jedna po jedna, u smjeru čitanja. Od otkrivenih pločica slažete riječi.',
+    'Pločice se otkrivaju jedna po jedna, u slučajnom redoslijedu. Od otkrivenih pločica slažete riječi.',
   htWordsTitle: 'Riječi',
   htWordsBody: 'Složite riječ od otkrivenih pločica upisivanjem ili klikanjem slova redom.',
   htFlipsTitle: 'Okreti',
@@ -181,6 +181,9 @@ export const hr: Messages = {
   htWildTitle: 'Džokeri',
   htWildBody:
     'Ponekad se umjesto slova pojavi džoker. Džoker vrijedi kao bilo koje slovo koje tvori valjanu riječ. Već dovršena riječ ne vrijedi.',
+  htHideTitle: 'Slova koja se skrivaju',
+  htHideBody:
+    'Na težim razinama otkriveno slovo može se samo okrenuti i vratiti se kasnije u krugu. Mjerač vremena za to dobiva dodatni takt, u crvenom. Slovo koje je već u vašoj riječi je sigurno.',
   htSwapTitle: 'Slova se mijenjaju',
   htSwapBody:
     'Ponekad se između rundi jedno slovo zamijeni drugim. Vidjet ćete koje je slovo maknuto i koje je dodano.',

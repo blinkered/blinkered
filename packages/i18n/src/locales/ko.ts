@@ -169,7 +169,7 @@ export const ko: Messages = {
   tutDoneTitle: '규칙은 이것뿐입니다',
   tutDoneBody: '게임 방법은 언제나 제목 줄에 있습니다.',
   htBoardTitle: '판',
-  htBoardBody: '타일은 읽는 순서대로 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
+  htBoardBody: '타일은 정해진 순서 없이 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
   htWordsTitle: '단어',
   htWordsBody: '열린 타일의 글자를 순서대로 입력하거나 눌러서 단어를 만드세요.',
   htFlipsTitle: '수',
@@ -185,6 +185,9 @@ export const ko: Messages = {
   htWildTitle: '조커',
   htWildBody:
     '가끔 글자 대신 조커가 나옵니다. 조커는 올바른 단어를 만드는 어떤 글자로도 칩니다. 이미 완성한 단어는 치지 않습니다.',
+  htHideTitle: '숨는 글자',
+  htHideBody:
+    '어려운 단계에서는 열려 있던 글자가 스스로 다시 뒤집히고, 그 라운드 안에서 나중에 돌아옵니다. 그만큼 타이머 칸이 하나 늘어나며 빨간색으로 표시됩니다. 이미 단어에 넣은 글자는 사라지지 않습니다.',
   htSwapTitle: '바뀌는 글자',
   htSwapBody:
     '가끔 라운드 사이에 글자 하나가 다른 글자로 바뀝니다. 어떤 글자가 빠지고 어떤 글자가 들어왔는지 보여줍니다.',

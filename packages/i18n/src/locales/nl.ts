@@ -165,7 +165,7 @@ export const nl: Messages = {
   tutDoneBody: 'Spelregels staan altijd in de titelbalk.',
   htBoardTitle: 'Het bord',
   htBoardBody:
-    'De stenen draaien één voor één om, in leesrichting. Met de open stenen vorm je woorden.',
+    'De stenen draaien één voor één om, in willekeurige volgorde. Met de open stenen vorm je woorden.',
   htWordsTitle: 'De woorden',
   htWordsBody:
     'Vorm een woord uit de open stenen door de letters op volgorde te typen of aan te klikken.',
@@ -182,6 +182,9 @@ export const nl: Messages = {
   htWildTitle: 'Jokers',
   htWildBody:
     'Soms verschijnt er een joker in plaats van een letter. Een joker geldt als elke letter die een geldig woord maakt. Een woord dat je al af hebt telt niet.',
+  htHideTitle: 'Letters die zich verstoppen',
+  htHideBody:
+    'Op de moeilijkere niveaus kan een open letter zichzelf weer omdraaien en later in de ronde terugkomen. De tijdbalk krijgt daarvoor een extra streepje, in rood. Een letter die al in je woord zit, is veilig.',
   htSwapTitle: 'Wisselende letters',
   htSwapBody:
     'Soms wordt tussen de rondes één letter door een andere vervangen. Je ziet welke letter weg is en welke erbij is gekomen.',

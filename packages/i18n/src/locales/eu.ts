@@ -174,7 +174,7 @@ export const eu: Messages = {
   tutDoneBody: 'Nola jokatu beti dago izenburuaren ondoan.',
   htBoardTitle: 'Taula',
   htBoardBody:
-    'Fitxak banaka biratzen dira, irakurtzeko ordenan. Agerian daudenekin hitzak osatzen dira.',
+    'Fitxak banaka biratzen dira, ordena jakinik gabe. Agerian daudenekin hitzak osatzen dira.',
   htWordsTitle: 'Hitzak',
   htWordsBody: 'Osatu hitz bat agerian dauden fitxekin, letrak ordenan idatziz edo sakatuz.',
   htFlipsTitle: 'Jokaldiak',
@@ -190,6 +190,9 @@ export const eu: Messages = {
   htWildTitle: 'Komodinak',
   htWildBody:
     'Batzuetan komodin bat agertzen da letra baten ordez. Komodinak hitz zuzena osatzen duen edozein letra balio du. Jada osatutako hitz batek ez du balio.',
+  htHideTitle: 'Ezkutatzen diren letrak',
+  htHideBody:
+    'Maila zailenetan agerian dagoen letra bat bere kabuz itzul daiteke eta geroago itzuliko da txandan. Kronometroak tic bat gehiago jasotzen du horretarako, gorriz. Zure hitzean dagoen letra babestuta dago.',
   htSwapTitle: 'Aldatzen diren letrak',
   htSwapBody:
     'Batzuetan, txanden artean, letra bat beste batekin ordezkatzen da. Zein joan den eta zein etorri den ikusiko duzu.',

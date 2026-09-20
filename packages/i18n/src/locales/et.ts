@@ -170,7 +170,7 @@ export const et: Messages = {
   tutDoneBody: 'Kuidas mängida on alati pealkirja juures.',
   htBoardTitle: 'Laud',
   htBoardBody:
-    'Nupud pöörduvad ükshaaval, lugemise järjekorras. Lahtistest nuppudest moodustatakse sõnu.',
+    'Nupud pöörduvad ükshaaval, juhuslikus järjekorras. Lahtistest nuppudest moodustatakse sõnu.',
   htWordsTitle: 'Sõnad',
   htWordsBody: 'Moodustage lahtistest nuppudest sõna, kirjutades või klõpsates tähti järjekorras.',
   htFlipsTitle: 'Käigud',
@@ -186,6 +186,9 @@ export const et: Messages = {
   htWildTitle: 'Jokerid',
   htWildBody:
     'Vahel ilmub tähe asemel joker. Joker läheb arvesse iga tähena, mis moodustab kehtiva sõna. Juba leitud sõna ei lähe arvesse.',
+  htHideTitle: 'Peituvad tähed',
+  htHideBody:
+    'Raskematel tasemetel võib avatud täht ise tagasi pöörduda ja tulla vooru jooksul hiljem uuesti. Taimer saab selle eest lisatakti, punasega. Täht, mis on juba sinu sõnas, on kaitstud.',
   htSwapTitle: 'Muutuvad tähed',
   htSwapBody:
     'Vahel vahetatakse voorude vahel üks täht teise vastu. Näete, milline kadus ja milline lisandus.',

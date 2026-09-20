@@ -170,7 +170,7 @@ export const sw: Messages = {
   tutDoneBody: 'Jinsi ya kucheza iko kwenye mwambaa wa kichwa ukiitaka tena.',
   htBoardTitle: 'Ubao',
   htBoardBody:
-    'Vigae hufunuka kimoja baada ya kingine, kwa mpangilio wa kusoma. Kutoka vigae vilivyo wazi unaunda maneno.',
+    'Vigae hufunuka kimoja baada ya kingine, kwa mpangilio wa nasibu. Kutoka vigae vilivyo wazi unaunda maneno.',
   htWordsTitle: 'Maneno',
   htWordsBody: 'Unda neno kutoka vigae vilivyo wazi kwa kuandika au kubofya herufi kwa mpangilio.',
   htFlipsTitle: 'Hatua',
@@ -186,6 +186,9 @@ export const sw: Messages = {
   htWildTitle: 'Joker',
   htWildBody:
     'Wakati mwingine joker huonekana badala ya herufi. Joker huhesabiwa kama herufi yoyote inayounda neno sahihi. Neno ulilokwisha kamilisha halihesabiwi.',
+  htHideTitle: 'Herufi zinazojificha',
+  htHideBody:
+    'Katika viwango vigumu zaidi, herufi iliyofunuka inaweza kujigeuza na kurudi baadaye katika raundi hiyo. Kipima muda hupata alama moja ya ziada kwa hilo, kwa rangi nyekundu. Herufi iliyo tayari katika neno lako iko salama.',
   htSwapTitle: 'Herufi zinazobadilika',
   htSwapBody:
     'Wakati mwingine, kati ya raundi, herufi moja hubadilishwa na nyingine. Utaona ni herufi ipi imeondolewa na ipi imeongezwa.',

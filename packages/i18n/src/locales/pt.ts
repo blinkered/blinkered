@@ -165,7 +165,7 @@ export const pt: Messages = {
   tutDoneBody: 'Como jogar está sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
-    'As peças viram-se uma a uma, na ordem de leitura. As peças à vista servem para formar palavras.',
+    'As peças viram-se uma a uma, sem uma ordem fixa. As peças à vista servem para formar palavras.',
   htWordsTitle: 'As palavras',
   htWordsBody:
     'Forme uma palavra com as peças à vista, escrevendo ou clicando nas letras pela ordem.',
@@ -182,6 +182,9 @@ export const pt: Messages = {
   htWildTitle: 'Os coringas',
   htWildBody:
     'Às vezes aparece um coringa em vez de uma letra. Um coringa vale qualquer letra que forme uma palavra válida. Uma palavra já completada não conta.',
+  htHideTitle: 'Letras que se ocultam',
+  htHideBody:
+    'Nos níveis mais difíceis uma letra visível pode voltar a virar-se sozinha e regressar mais tarde na ronda. O temporizador ganha um traço por isso, em vermelho. Uma letra que já está na tua palavra está segura.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
     'Às vezes, entre rondas, uma letra é substituída por outra. Vai ver qual foi retirada e qual foi acrescentada.',

@@ -174,7 +174,7 @@ export const pcm: Messages = {
   tutDoneBody: 'How to play dey always for di title bar.',
   htBoardTitle: 'Di board',
   htBoardBody:
-    'Tiles dey turn face up one by one, di way you dey read. You fit take di ones wey open form word.',
+    'Tiles dey turn face up one by one, but no for any set order. You fit take di ones wey open form word.',
   htWordsTitle: 'Di words',
   htWordsBody:
     'Spell word from di tiles wey dey show, by typing or clicking di letters one after di other.',
@@ -191,6 +191,9 @@ export const pcm: Messages = {
   htWildTitle: 'Wild cards',
   htWildBody:
     'Sometimes wild card go show instead of letter. Wild card dey count as any letter wey go make correct word. Word wey you don complete before no dey count.',
+  htHideTitle: 'Letters wey dey hide',
+  htHideBody:
+    'For di harder levels, letter wey open fit turn back by itself, and e go come back later inside di same round. Di timer go gain one extra tick for am, wey dey red. Letter wey dey inside your word already, nobody fit take am.',
   htSwapTitle: 'Letters wey dey change',
   htSwapBody:
     'Sometimes, between rounds, dem go replace one letter with another one. You go see which one comot and which one enter.',

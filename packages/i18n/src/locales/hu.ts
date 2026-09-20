@@ -171,7 +171,7 @@ export const hu: Messages = {
   tutDoneBody: 'A leírás mindig ott van a cím mellett.',
   htBoardTitle: 'A tábla',
   htBoardBody:
-    'A lapkák egyesével fordulnak fel, olvasási sorrendben. A felfordítottakból lehet szót alkotni.',
+    'A lapkák egyesével fordulnak fel, véletlen sorrendben. A felfordítottakból lehet szót alkotni.',
   htWordsTitle: 'A szavak',
   htWordsBody:
     'Alkosson szót a látható lapkákból: gépelje be vagy kattintson a betűkre sorrendben.',
@@ -188,6 +188,9 @@ export const hu: Messages = {
   htWildTitle: 'A jokerek',
   htWildBody:
     'Néha betű helyett joker jelenik meg. A joker bármelyik betűnek számít, amivel érvényes szó lesz. A már meglévő szó nem számít.',
+  htHideTitle: 'Elbújó betűk',
+  htHideBody:
+    'A nehezebb szinteken egy felfordított betű magától visszafordulhat, és a kör későbbi részében visszatér. Az időmérő ezért kap egy plusz osztást, pirossal. A szavadban lévő betűt nem lehet elvenni.',
   htSwapTitle: 'Változó betűk',
   htSwapBody:
     'Néha két kör között egy betű helyére másik kerül. Látni fogja, melyik tűnt el és melyik jött.',

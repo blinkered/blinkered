@@ -169,7 +169,7 @@ export const da: Messages = {
   tutDoneBody: 'Sådan spiller du står altid ved titlen.',
   htBoardTitle: 'Brættet',
   htBoardBody:
-    'Brikkerne vendes én ad gangen, i læserækkefølge. Vendte brikker kan bruges til at danne ord.',
+    'Brikkerne vendes én ad gangen, i tilfældig rækkefølge. Vendte brikker kan bruges til at danne ord.',
   htWordsTitle: 'Ordene',
   htWordsBody:
     'Dan et ord af de vendte brikker ved at skrive eller klikke bogstaverne i rækkefølge.',
@@ -186,6 +186,9 @@ export const da: Messages = {
   htWildTitle: 'Jokere',
   htWildBody:
     'Nogle gange dukker en joker op i stedet for et bogstav. En joker tæller som ethvert bogstav der danner et gyldigt ord. Et ord du allerede har fundet tæller ikke.',
+  htHideTitle: 'Bogstaver der skjuler sig',
+  htHideBody:
+    'På de sværere niveauer kan et åbent bogstav vende sig om af sig selv og komme tilbage senere i runden. Timeren får et ekstra tik for det, i rødt. Et bogstav, der allerede er i dit ord, er sikkert.',
   htSwapTitle: 'Bogstaver der skifter',
   htSwapBody:
     'Nogle gange bliver ét bogstav mellem runderne skiftet ud med et andet. Du får at se hvilket der forsvandt og hvilket der kom til.',

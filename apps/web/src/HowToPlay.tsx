@@ -78,6 +78,9 @@ export function HowToPlay({
     { title: messages.htFlipsTitle, body: messages.htFlipsBody },
     { title: messages.htRoundTitle, body: messages.htRoundBody },
     { title: messages.htWildTitle, body: messages.htWildBody },
+    // Hiding before swapping: one takes a letter away inside a round, the other changes one
+    // between rounds, and read in that order the second is the smaller surprise.
+    { title: messages.htHideTitle, body: messages.htHideBody },
     { title: messages.htSwapTitle, body: messages.htSwapBody },
   ]
 

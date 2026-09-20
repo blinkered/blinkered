@@ -168,7 +168,7 @@ export const de: Messages = {
   tutDoneBody: 'Die Anleitung bleibt oben in der Titelleiste.',
   htBoardTitle: 'Das Feld',
   htBoardBody:
-    'Die Steine werden einzeln umgedreht, in Leserichtung. Aus den offenen Steinen bildest du Wörter.',
+    'Die Steine werden einzeln umgedreht, in zufälliger Reihenfolge. Aus den offenen Steinen bildest du Wörter.',
   htWordsTitle: 'Die Wörter',
   htWordsBody:
     'Bilde ein Wort aus den offenen Steinen, indem du die Buchstaben der Reihe nach tippst oder anklickst.',
@@ -185,6 +185,9 @@ export const de: Messages = {
   htWildTitle: 'Joker',
   htWildBody:
     'Manchmal erscheint ein Joker statt eines Buchstabens. Ein Joker gilt als jeder Buchstabe, der ein gültiges Wort ergibt. Ein bereits gefundenes Wort zählt nicht.',
+  htHideTitle: 'Buchstaben, die sich verstecken',
+  htHideBody:
+    'In den schwereren Stufen kann ein offener Buchstabe sich von selbst wieder umdrehen und später in der Runde zurückkommen. Die Anzeige bekommt dafür einen zusätzlichen Takt, in Rot. Ein Buchstabe, der schon in deinem Wort steht, ist sicher.',
   htSwapTitle: 'Wechselnde Buchstaben',
   htSwapBody:
     'Manchmal wird zwischen den Runden ein Buchstabe durch einen anderen ersetzt. Du siehst, welcher Buchstabe weg ist und welcher dazugekommen ist.',

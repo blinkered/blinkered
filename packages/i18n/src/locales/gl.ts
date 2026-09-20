@@ -171,7 +171,7 @@ export const gl: Messages = {
   tutDoneBody: 'Como se xoga está sempre na barra do título.',
   htBoardTitle: 'O taboleiro',
   htBoardBody:
-    'As fichas viran unha a unha, en orde de lectura. Coas descubertas fórmanse palabras.',
+    'As fichas viran unha a unha, sen unha orde fixa. Coas descubertas fórmanse palabras.',
   htWordsTitle: 'As palabras',
   htWordsBody:
     'Forme unha palabra coas fichas descubertas escribindo ou premendo as letras en orde.',
@@ -188,6 +188,9 @@ export const gl: Messages = {
   htWildTitle: 'Os comodíns',
   htWildBody:
     'Ás veces aparece un comodín no canto dunha letra. O comodín conta como calquera letra que faga unha palabra válida. Unha palabra xa completada non conta.',
+  htHideTitle: 'Letras que se agochan',
+  htHideBody:
+    'Nos niveis máis difíciles unha letra descuberta pode virar soa e volver máis tarde na rolda. O temporizador gaña un tic por iso, en vermello. Unha letra que xa está na túa palabra está a salvo.',
   htSwapTitle: 'Letras que cambian',
   htSwapBody:
     'Ás veces, entre roldas, unha letra é substituída por outra. Verá cal marchou e cal chegou.',

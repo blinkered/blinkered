@@ -168,7 +168,7 @@ export const sk: Messages = {
   tutDoneTitle: 'To sú pravidlá',
   tutDoneBody: 'Ako hrať nájdete vždy pri názve.',
   htBoardTitle: 'Plocha',
-  htBoardBody: 'Kamene sa odkrývajú po jednom, v smere čítania. Z odkrytých sa skladajú slová.',
+  htBoardBody: 'Kamene sa odkrývajú po jednom, v náhodnom poradí. Z odkrytých sa skladajú slová.',
   htWordsTitle: 'Slová',
   htWordsBody: 'Slovo zložíte z odkrytých kameňov písaním alebo klikaním na písmená v poradí.',
   htFlipsTitle: 'Ťahy',
@@ -184,6 +184,9 @@ export const sk: Messages = {
   htWildTitle: 'Žolíci',
   htWildBody:
     'Občas sa namiesto písmena objaví žolík. Žolík platí za ktorékoľvek písmeno, ktoré tvorí platné slovo. Už dokončené slovo sa nepočíta.',
+  htHideTitle: 'Skrývajúce sa písmená',
+  htHideBody:
+    'Na ťažších úrovniach sa odkryté písmeno môže samo zakryť a vrátiť sa neskôr v kole. Časomiera za to dostane takt navyše, načerveno. Písmeno, ktoré už máte v slove, je v bezpečí.',
   htSwapTitle: 'Meniace sa písmená',
   htSwapBody:
     'Občas sa medzi kolami jedno písmeno vymení za iné. Uvidíte, ktoré zmizlo a ktoré pribudlo.',

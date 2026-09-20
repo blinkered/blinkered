@@ -169,7 +169,7 @@ export const sl: Messages = {
   tutDoneBody: 'Kako igrati je vedno ob naslovu.',
   htBoardTitle: 'Plošča',
   htBoardBody:
-    'Ploščice se odkrivajo ena za drugo, v smeri branja. Iz odkritih se sestavljajo besede.',
+    'Ploščice se odkrivajo ena za drugo, v naključnem vrstnem redu. Iz odkritih se sestavljajo besede.',
   htWordsTitle: 'Besede',
   htWordsBody: 'Besedo sestavite iz odkritih ploščic z vpisovanjem ali klikanjem črk po vrsti.',
   htFlipsTitle: 'Poteze',
@@ -185,6 +185,9 @@ export const sl: Messages = {
   htWildTitle: 'Jokerji',
   htWildBody:
     'Včasih se namesto črke pojavi joker. Joker velja za katero koli črko, ki tvori veljavno besedo. Že dokončana beseda ne šteje.',
+  htHideTitle: 'Črke, ki se skrijejo',
+  htHideBody:
+    'Na težjih stopnjah se odkrita črka lahko sama obrne nazaj in se vrne pozneje v krogu. Časovnik za to dobi dodatno črtico, rdečo. Črka, ki je že v tvoji besedi, je na varnem.',
   htSwapTitle: 'Menjava črk',
   htSwapBody:
     'Včasih se med krogi ena črka zamenja z drugo. Videli boste, katera je odšla in katera je prišla.',

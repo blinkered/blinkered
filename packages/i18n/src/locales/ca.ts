@@ -171,7 +171,7 @@ export const ca: Messages = {
   tutDoneBody: 'Com s’hi juga sempre és a la barra del títol.',
   htBoardTitle: 'El tauler',
   htBoardBody:
-    'Les fitxes es giren d’una en una, en ordre de lectura. Amb les destapades es formen mots.',
+    'Les fitxes es giren d’una en una, sense un ordre fix. Amb les destapades es formen mots.',
   htWordsTitle: 'Els mots',
   htWordsBody: 'Formeu un mot amb les fitxes destapades escrivint o clicant les lletres en ordre.',
   htFlipsTitle: 'Les jugades',
@@ -187,6 +187,9 @@ export const ca: Messages = {
   htWildTitle: 'Els escarrassos',
   htWildBody:
     'De tant en tant surt un escarràs en lloc d’una lletra. L’escarràs val per qualsevol lletra que faci un mot vàlid. Un mot ja completat no compta.',
+  htHideTitle: 'Lletres que s’oculten',
+  htHideBody:
+    'En els nivells més difícils una lletra visible es pot tornar a girar sola i tornar més tard dins la ronda. El temporitzador guanya un tic per això, en vermell. Una lletra que ja és a la teva paraula està segura.',
   htSwapTitle: 'Lletres que canvien',
   htSwapBody:
     'De tant en tant, entre rondes, una lletra és substituïda per una altra. Veureu quina ha marxat i quina ha arribat.',

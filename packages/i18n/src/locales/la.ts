@@ -174,7 +174,7 @@ export const la: Messages = {
   tutDoneTitle: 'Hae sunt regulae',
   tutDoneBody: 'Quomodo ludendum sit semper in titulo est, si iterum vis.',
   htBoardTitle: 'Tabula',
-  htBoardBody: 'Tesserae singulae vertuntur, ordine legendi. Ex tesseris apertis verba facis.',
+  htBoardBody: 'Tesserae singulae vertuntur, ordine incerto. Ex tesseris apertis verba facis.',
   htWordsTitle: 'Verba',
   htWordsBody: 'Verbum ex tesseris apertis fac litteras ordine scribendo aut pulsando.',
   htFlipsTitle: 'Versus',
@@ -190,6 +190,9 @@ export const la: Messages = {
   htWildTitle: 'Tesserae vagae',
   htWildBody:
     'Interdum pro littera tessera vaga apparet. Tessera vaga pro qualibet littera valet quae verbum iustum facit. Verbum iam perfectum non valet.',
+  htHideTitle: 'Litterae se occultantes',
+  htHideBody:
+    'In gradibus difficilioribus littera aperta sua sponte reverti potest et postea in eodem circuitu redit. Horologium punctum additum accipit, rubrum. Littera iam in verbo tuo tuta est.',
   htSwapTitle: 'Litterae mutatae',
   htSwapBody:
     'Interdum, inter ambitus, una littera alia substituitur. Videbis quae littera sublata sit et quae addita.',

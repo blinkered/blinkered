@@ -169,7 +169,7 @@ export const id: Messages = {
   tutDoneBody: 'Cara bermain selalu ada di bilah judul.',
   htBoardTitle: 'Papan',
   htBoardBody:
-    'Kartu dibuka satu per satu, mengikuti arah baca. Dari kartu yang terbuka Anda menyusun kata.',
+    'Kartu dibuka satu per satu, dalam urutan acak. Dari kartu yang terbuka Anda menyusun kata.',
   htWordsTitle: 'Kata',
   htWordsBody:
     'Susun kata dari kartu yang terbuka dengan mengetik atau mengeklik hurufnya secara berurutan.',
@@ -186,6 +186,9 @@ export const id: Messages = {
   htWildTitle: 'Kartu liar',
   htWildBody:
     'Kadang muncul kartu liar, bukan huruf. Kartu liar berlaku sebagai huruf apa pun yang membentuk kata yang sah. Kata yang sudah selesai tidak dihitung.',
+  htHideTitle: 'Huruf yang bersembunyi',
+  htHideBody:
+    'Pada level yang lebih sulit, huruf yang terbuka dapat menutup sendiri dan kembali nanti dalam ronde itu. Pengatur waktu mendapat satu tik tambahan untuk itu, berwarna merah. Huruf yang sudah ada di katamu aman.',
   htSwapTitle: 'Huruf yang berubah',
   htSwapBody:
     'Kadang, di antara putaran, satu huruf diganti dengan huruf lain. Anda akan melihat huruf mana yang dihapus dan mana yang ditambahkan.',

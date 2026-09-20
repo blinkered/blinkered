@@ -171,7 +171,7 @@ export const en: Messages = {
   tutDoneBody: 'How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
-    'Tiles turn face up one at a time, in reading order. Exposed tiles can be used to form words.',
+    'Tiles turn face up one at a time, in no fixed order. Exposed tiles can be used to form words.',
   htWordsTitle: 'The words',
   htWordsBody:
     'Spell a word from the tiles that are showing by typing or clicking the letters in order.',
@@ -188,6 +188,9 @@ export const en: Messages = {
   htWildTitle: 'Wild cards',
   htWildBody:
     'Sometimes a wild card will appear instead of a letter. A wild card counts as any letter that makes a valid word. A previously-completed word does not count.',
+  htHideTitle: 'Hiding letters',
+  htHideBody:
+    'On the harder levels a letter that is showing can turn back over by itself, and comes back later in the round. The timer gains a tick for it, shown in red. A letter already in your word is safe.',
   htSwapTitle: 'Changing letters',
   htSwapBody:
     'Sometimes, between rounds, one letter gets replaced with a different one. You will see which letter was removed and which was added.',

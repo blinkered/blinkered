@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { WILD_GLYPH, alphabetFor, selectedLetters } from '@blinkered/engine'
 import type { GameState } from '@blinkered/engine'
 import type { Messages } from '@blinkered/i18n'
@@ -50,8 +51,29 @@ function gainBadge(gain: WordGain, amount: number, late: boolean): React.ReactNo
   )
 }
 
+/**
+ * The lowest the timer has been this round, which is what makes an added tick tell-able.
+ *
+ * A tick that a hide handed back relights a pip that had already gone out, and that is exactly
+ * what a player should be able to see: this one was not here at the start of the round, it was put
+ * back. Anything lit above the low-water mark is such a tick, and it stops being marked the moment
+ * it is spent, which is the right lifetime -- roughly as long as the letter is away.
+ *
+ * Kept here rather than in the engine because it is a fact about what has been shown, not about
+ * the game. The engine deliberately keeps no record of what it took back, and this needs none: the
+ * bar knows how short it has been.
+ */
+function useLowWater(roundIndex: number, ticksRemaining: number): number {
+  const mark = useRef({ round: roundIndex, floor: ticksRemaining })
+  if (mark.current.round !== roundIndex) mark.current = { round: roundIndex, floor: ticksRemaining }
+  // Idempotent, so a double render under StrictMode reaches the same answer.
+  else if (ticksRemaining < mark.current.floor) mark.current.floor = ticksRemaining
+  return mark.current.floor
+}
+
 export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.Element {
   const total = state.config.n + state.config.holdTicks
+  const floor = useLowWater(state.roundIndex, state.ticksRemaining)
   const alphabet = alphabetFor(state.config.language)
   // Spelled the way the language writes it while it is still being built, not only when it is
   // finished. Korean is why: its tiles are letters, and ㄱㅏㄱ is not something anyone reads.
@@ -90,9 +112,15 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
         aria-valuenow={state.ticksRemaining}
         aria-label={messages.ticksLeftLabel}
       >
-        {Array.from({ length: total }, (_, i) => (
-          <span key={i} className={`pip${i < state.ticksRemaining ? ' is-lit' : ''}`} />
-        ))}
+        {Array.from({ length: total }, (_, i) => {
+          const lit = i < state.ticksRemaining
+          // Lit, and above the lowest this round has been: a tick handed back by a letter that
+          // turned over rather than one the round started with.
+          const added = lit && i >= floor
+          return (
+            <span key={i} className={`pip${lit ? ' is-lit' : ''}${added ? ' is-added' : ''}`} />
+          )
+        })}
       </div>
 
       {/*

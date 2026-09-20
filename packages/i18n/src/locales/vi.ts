@@ -173,7 +173,7 @@ export const vi: Messages = {
   tutDoneBody: 'Cách chơi luôn nằm cạnh tên trò chơi.',
   htBoardTitle: 'Bàn chơi',
   htBoardBody:
-    'Các quân mở lần lượt, theo thứ tự đọc. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
+    'Các quân mở lần lượt, không theo thứ tự nào. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
   htWordsTitle: 'Các từ',
   htWordsBody: 'Ghép một từ từ những quân đang mở bằng cách gõ hoặc bấm các chữ theo thứ tự.',
   htFlipsTitle: 'Nước',
@@ -189,6 +189,9 @@ export const vi: Messages = {
   htWildTitle: 'Quân trắng',
   htWildBody:
     'Đôi khi một quân trắng hiện ra thay cho một chữ. Quân trắng tính là bất kỳ chữ nào tạo thành từ đúng. Từ đã ghép rồi thì không tính.',
+  htHideTitle: 'Chữ ẩn đi',
+  htHideBody:
+    'Ở các mức khó, một chữ đang mở có thể tự úp lại và mở ra muộn hơn trong cùng vòng. Đồng hồ được thêm một vạch cho việc đó, màu đỏ. Chữ đã nằm trong từ của bạn thì an toàn.',
   htSwapTitle: 'Chữ đổi',
   htSwapBody:
     'Đôi khi giữa hai vòng, một chữ được thay bằng chữ khác. Bạn sẽ thấy chữ nào đi và chữ nào đến.',

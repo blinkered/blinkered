@@ -56,7 +56,7 @@ export interface Step {
  * Both lines are reserved space: the word line and the gain badges hold their height on every
  * frame so that a screen does not change shape halfway through, which is the reason they are
  * drawn with a non-breaking space when they are empty. Reserved *per screen* rather than for the
- * whole deck, though, because three of the seven never use either -- and there they were 50px of
+ * whole deck, though, because most screens never use either -- and there they were 50px of
  * blank line above the board, which is most of what made those slides read as mostly space.
  *
  * Derived from the frames rather than declared on the step. A flag somebody has to remember to
@@ -186,6 +186,30 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     gain: gainFor(cardWord.length, config),
   })
 
+  /*
+   * Two letters turning back over, and coming back in the other order.
+   *
+   * The order is the lesson. A letter that hides is not held aside to be handed straight back: it
+   * goes into the same pile as every letter the deal has not reached, and the next turn picks from
+   * that pile at random. So the second one to go is the first one back, which is a thing the tour
+   * can show in four frames and a sentence would labour.
+   *
+   * Two rather than one because a single letter going and returning reads as a stumble; two makes
+   * it a rule. The tiles are the second and the second to last, which on every board in the set is
+   * a pair far enough apart to see at a glance.
+   */
+  const away = (...hidden: readonly number[]): string =>
+    [...all].map((face, at) => (hidden.includes(at) ? DOWN : face)).join('')
+  const firstAway = 1
+  const secondAway = Math.max(2, n - 2)
+  const hideFrames: Frame[] = [
+    { up: all, sel: [], caption: messages.htHideBody },
+    { up: away(firstAway), sel: [], caption: messages.htHideBody },
+    { up: away(firstAway, secondAway), sel: [], caption: messages.htHideBody },
+    { up: away(firstAway), sel: [], caption: messages.htHideBody },
+    { up: all, sel: [], caption: messages.htHideBody },
+  ]
+
   // The board after the swap, which is what the last screen shows: one letter is not what it was.
   const swapped = [...tiles]
   swapped[tiles.indexOf(board.swap.from)] = board.swap.to
@@ -211,6 +235,9 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
       ),
     },
     { title: messages.htWildTitle, tiles, panel: 'complete', frames: cardFrames },
+    // Hiding before swapping, because the two are the same idea at different speeds: one takes a
+    // letter away and gives it back inside the round, the other changes one between rounds.
+    { title: messages.htHideTitle, tiles, frames: hideFrames },
     {
       title: messages.htSwapTitle,
       tiles,

@@ -170,7 +170,7 @@ export const fr: Messages = {
   tutDoneBody: 'Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
-    'Les tuiles se retournent une à une, dans le sens de la lecture. Les tuiles visibles servent à former des mots.',
+    'Les tuiles se retournent une à une, dans un ordre imprévisible. Les tuiles visibles servent à former des mots.',
   htWordsTitle: 'Les mots',
   htWordsBody:
     'Composez un mot avec les tuiles visibles, en tapant ou en cliquant les lettres dans l’ordre.',
@@ -187,6 +187,9 @@ export const fr: Messages = {
   htWildTitle: 'Les jokers',
   htWildBody:
     'Parfois un joker apparaît à la place d’une lettre. Un joker vaut n’importe quelle lettre qui forme un mot valide. Un mot déjà terminé ne compte pas.',
+  htHideTitle: 'Lettres qui se cachent',
+  htHideBody:
+    'Aux niveaux les plus difficiles, une lettre visible peut se retourner d’elle-même et revenir plus tard dans la manche. Le minuteur gagne un cran pour cela, en rouge. Une lettre déjà dans votre mot est à l’abri.',
   htSwapTitle: 'Les lettres changent',
   htSwapBody:
     'Parfois, entre deux manches, une lettre est remplacée par une autre. Vous verrez quelle lettre est partie et laquelle est arrivée.',

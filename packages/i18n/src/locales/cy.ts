@@ -174,7 +174,7 @@ export const cy: Messages = {
   tutDoneBody: 'Mae Sut i chwarae bob amser wrth y teitl.',
   htBoardTitle: 'Y bwrdd',
   htBoardBody:
-    'Mae’r teils yn troi fesul un, yn nhrefn darllen. Gellir defnyddio’r rhai sydd yn y golwg i ffurfio geiriau.',
+    'Mae’r teils yn troi fesul un, mewn trefn ar hap. Gellir defnyddio’r rhai sydd yn y golwg i ffurfio geiriau.',
   htWordsTitle: 'Y geiriau',
   htWordsBody:
     'Ffurfiwch air o’r teils sydd yn y golwg drwy deipio neu glicio’r llythrennau yn eu trefn.',
@@ -191,6 +191,9 @@ export const cy: Messages = {
   htWildTitle: 'Cardiau gwyllt',
   htWildBody:
     'Weithiau daw cerdyn gwyllt yn lle llythyren. Mae cerdyn gwyllt yn cyfrif fel unrhyw lythyren sy’n gwneud gair dilys. Nid yw gair a gwblhawyd eisoes yn cyfrif.',
+  htHideTitle: 'Llythrennau’n cuddio',
+  htHideBody:
+    'Ar y lefelau anoddach gall llythyren sydd yn y golwg droi’n ôl ohoni ei hun a dod yn ôl yn nes ymlaen yn y rownd. Mae’r amserydd yn cael tic ychwanegol am hynny, mewn coch. Mae llythyren sydd yn eich gair yn ddiogel.',
   htSwapTitle: 'Llythrennau’n newid',
   htSwapBody:
     'Weithiau, rhwng rowndiau, caiff un llythyren ei disodli gan un arall. Cewch weld pa un a aeth a pha un a ddaeth.',

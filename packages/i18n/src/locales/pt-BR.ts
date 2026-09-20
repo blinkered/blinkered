@@ -169,7 +169,7 @@ export const ptBR: Messages = {
   tutDoneBody: 'Como jogar fica sempre na barra de título.',
   htBoardTitle: 'O tabuleiro',
   htBoardBody:
-    'As peças viram uma a uma, na ordem de leitura. As peças à vista servem para formar palavras.',
+    'As peças viram uma a uma, sem uma ordem fixa. As peças à vista servem para formar palavras.',
   htWordsTitle: 'As palavras',
   htWordsBody: 'Monte uma palavra com as peças à vista, digitando ou clicando nas letras em ordem.',
   htFlipsTitle: 'As viradas',
@@ -185,6 +185,9 @@ export const ptBR: Messages = {
   htWildTitle: 'Os curingas',
   htWildBody:
     'Às vezes aparece um curinga no lugar de uma letra. Um curinga vale qualquer letra que forme uma palavra válida. Uma palavra já completada não conta.',
+  htHideTitle: 'Letras que se escondem',
+  htHideBody:
+    'Nos níveis mais difíceis uma letra visível pode se virar sozinha e voltar mais tarde na rodada. O cronômetro ganha um traço por isso, em vermelho. Uma letra que já está na sua palavra está a salvo.',
   htSwapTitle: 'As letras mudam',
   htSwapBody:
     'Às vezes, entre rodadas, uma letra é substituída por outra. Você vai ver qual letra saiu e qual entrou.',

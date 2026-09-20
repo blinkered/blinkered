@@ -166,7 +166,7 @@ export const es: Messages = {
   tutDoneBody: 'Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
-    'Las fichas se descubren una a una, en orden de lectura. Las fichas descubiertas sirven para formar palabras.',
+    'Las fichas se descubren una a una, sin un orden fijo. Las fichas descubiertas sirven para formar palabras.',
   htWordsTitle: 'Las palabras',
   htWordsBody:
     'Forma una palabra con las fichas descubiertas, escribiendo o pulsando las letras en orden.',
@@ -183,6 +183,9 @@ export const es: Messages = {
   htWildTitle: 'Los comodines',
   htWildBody:
     'A veces aparece un comodín en lugar de una letra. Un comodín vale cualquier letra que forme una palabra válida. Una palabra ya completada no cuenta.',
+  htHideTitle: 'Letras que se ocultan',
+  htHideBody:
+    'En los niveles más difíciles una letra descubierta puede volver a girarse sola y regresar más tarde en la ronda. El temporizador gana un tic por ello, en rojo. Una letra que ya está en tu palabra está a salvo.',
   htSwapTitle: 'Las letras cambian',
   htSwapBody:
     'A veces, entre rondas, una letra se sustituye por otra. Verás qué letra se ha quitado y cuál se ha añadido.',

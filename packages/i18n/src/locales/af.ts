@@ -172,7 +172,7 @@ export const af: Messages = {
   tutDoneBody: 'Hoe om te speel is altyd in die titelbalk as jy dit weer wil hê.',
   htBoardTitle: 'Die bord',
   htBoardBody:
-    'Blokkies draai een vir een oop, in leesrigting. Met die oop blokkies vorm jy woorde.',
+    'Blokkies draai een vir een oop, in geen vaste volgorde nie. Met die oop blokkies vorm jy woorde.',
   htWordsTitle: 'Die woorde',
   htWordsBody: 'Vorm ’n woord uit die oop blokkies deur die letters in volgorde te tik of te klik.',
   htFlipsTitle: 'Die skuiwe',
@@ -188,6 +188,9 @@ export const af: Messages = {
   htWildTitle: 'Jokers',
   htWildBody:
     'Soms verskyn ’n joker in plaas van ’n letter. ’n Joker geld as enige letter wat ’n geldige woord maak. ’n Woord wat jy reeds voltooi het, tel nie.',
+  htHideTitle: 'Letters wat wegkruip',
+  htHideBody:
+    'Op die moeiliker vlakke kan ’n oop letter self weer omdraai en later in die rondte terugkom. Die tydbalk kry ’n ekstra tik daarvoor, in rooi. ’n Letter wat al in jou woord is, is veilig.',
   htSwapTitle: 'Letters wat verander',
   htSwapBody:
     'Soms word tussen die rondtes een letter deur ’n ander vervang. Jy sien watter letter weg is en watter bygekom het.',

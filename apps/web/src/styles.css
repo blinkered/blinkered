@@ -564,6 +564,17 @@ h2 {
 .pip.is-lit {
   background: var(--sel);
 }
+/*
+ * A tick a hiding letter handed back, which is not one the round was dealt.
+ *
+ * Red because it is the only thing on the timer that did not come from the start of the round: a
+ * hide adds a tick so that the letter it took has one to come back on, and this is that tick,
+ * lit above everything the bar has already spent. It goes out when the tick is spent, so it lasts
+ * about as long as the letter is away.
+ */
+.pip.is-added {
+  background: var(--bad);
+}
 
 /*
  * The message line. Exactly one line tall, at every width, in every state, always.

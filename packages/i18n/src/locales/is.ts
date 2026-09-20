@@ -169,7 +169,8 @@ export const is: Messages = {
   tutDoneTitle: 'Þetta eru reglurnar',
   tutDoneBody: 'Hvernig á að spila er alltaf við titilinn.',
   htBoardTitle: 'Borðið',
-  htBoardBody: 'Flísarnar snúast við ein í einu, í lestrarröð. Úr þeim sem snúa upp má mynda orð.',
+  htBoardBody:
+    'Flísarnar snúast við ein í einu, í tilviljanakenndri röð. Úr þeim sem snúa upp má mynda orð.',
   htWordsTitle: 'Orðin',
   htWordsBody:
     'Myndaðu orð úr flísunum sem snúa upp með því að slá inn eða smella á stafina í röð.',
@@ -186,6 +187,9 @@ export const is: Messages = {
   htWildTitle: 'Jókerarnir',
   htWildBody:
     'Stundum birtist jóker í stað stafs. Jóker gildir sem hvaða stafur sem myndar gilt orð. Orð sem þegar er fundið gildir ekki.',
+  htHideTitle: 'Stafir sem fela sig',
+  htHideBody:
+    'Á erfiðari stigum getur stafur sem er uppi snúist við af sjálfu sér og komið aftur síðar í umferðinni. Tímamælirinn fær auka tikk fyrir það, í rauðu. Stafur sem er þegar í orðinu þínu er óhultur.',
   htSwapTitle: 'Stafir sem breytast',
   htSwapBody:
     'Stundum er einum staf skipt út fyrir annan milli umferða. Þú sérð hvor hvarf og hvor kom.',

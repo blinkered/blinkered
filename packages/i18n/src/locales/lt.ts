@@ -169,7 +169,7 @@ export const lt: Messages = {
   tutDoneTitle: 'Tokios yra taisyklės',
   tutDoneBody: 'Kaip žaisti visada rasite prie pavadinimo.',
   htBoardTitle: 'Lenta',
-  htBoardBody: 'Kauliukai verčiasi po vieną, skaitymo tvarka. Iš atverstų sudaromi žodžiai.',
+  htBoardBody: 'Kauliukai verčiasi po vieną, atsitiktine tvarka. Iš atverstų sudaromi žodžiai.',
   htWordsTitle: 'Žodžiai',
   htWordsBody: 'Sudarykite žodį iš atverstų kauliukų rašydami arba spustelėdami raides iš eilės.',
   htFlipsTitle: 'Ėjimai',
@@ -185,6 +185,9 @@ export const lt: Messages = {
   htWildTitle: 'Jokeriai',
   htWildBody:
     'Kartais vietoj raidės pasirodo jokeris. Jokeris skaitomas kaip bet kuri raidė, sudaranti taisyklingą žodį. Jau rastas žodis neskaitomas.',
+  htHideTitle: 'Pasislepiančios raidės',
+  htHideBody:
+    'Sunkesniuose lygiuose atversta raidė gali pati apsiversti ir vėliau tame pačiame rate sugrįžti. Laikmatis už tai gauna papildomą žymę, raudoną. Raidė, jau esanti tavo žodyje, saugi.',
   htSwapTitle: 'Besikeičiančios raidės',
   htSwapBody:
     'Kartais tarp raundų viena raidė pakeičiama kita. Pamatysite, kuri dingo ir kuri atsirado.',

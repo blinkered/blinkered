@@ -172,7 +172,7 @@ export const tr: Messages = {
   tutDoneTitle: 'Kurallar bu kadar',
   tutDoneBody: 'Nasıl oynanır her zaman başlık çubuğunda, tekrar isterseniz.',
   htBoardTitle: 'Tahta',
-  htBoardBody: 'Taşlar okuma yönünde, teker teker açılır. Açılan taşlardan kelime kurarsınız.',
+  htBoardBody: 'Taşlar rastgele sırayla, teker teker açılır. Açılan taşlardan kelime kurarsınız.',
   htWordsTitle: 'Kelimeler',
   htWordsBody: 'Açık taşlardan bir kelime kurmak için harfleri sırayla yazın veya tıklayın.',
   htFlipsTitle: 'Çevirmeler',
@@ -188,6 +188,9 @@ export const tr: Messages = {
   htWildTitle: 'Jokerler',
   htWildBody:
     'Bazen harf yerine bir joker çıkar. Joker, geçerli bir kelime kuran herhangi bir harf sayılır. Daha önce tamamladığınız bir kelime sayılmaz.',
+  htHideTitle: 'Saklanan harfler',
+  htHideBody:
+    'Daha zor seviyelerde açık bir harf kendiliğinden geri kapanabilir ve turun ilerisinde yeniden açılır. Sayaç bunun için kırmızı bir çentik kazanır. Kelimenize almış olduğunuz harf güvendedir.',
   htSwapTitle: 'Değişen harfler',
   htSwapBody:
     'Bazen turlar arasında bir harfin yerine başka bir harf gelir. Hangi harfin kaldırıldığını ve hangisinin eklendiğini görürsünüz.',

@@ -172,7 +172,7 @@ export const ro: Messages = {
   tutDoneBody: 'Cum se joacă este mereu lângă titlu.',
   htBoardTitle: 'Tabla',
   htBoardBody:
-    'Piesele se întorc una câte una, în ordinea citirii. Din cele întoarse se formează cuvinte.',
+    'Piesele se întorc una câte una, într-o ordine aleatorie. Din cele întoarse se formează cuvinte.',
   htWordsTitle: 'Cuvintele',
   htWordsBody: 'Formați un cuvânt din piesele întoarse scriind sau apăsând literele în ordine.',
   htFlipsTitle: 'Mutările',
@@ -188,6 +188,9 @@ export const ro: Messages = {
   htWildTitle: 'Jokerii',
   htWildBody:
     'Uneori apare un joker în loc de literă. Jokerul contează ca orice literă care formează un cuvânt valid. Un cuvânt deja găsit nu contează.',
+  htHideTitle: 'Litere care se ascund',
+  htHideBody:
+    'La nivelurile mai grele o literă descoperită se poate întoarce singură și revine mai târziu în rundă. Cronometrul primește o diviziune în plus pentru asta, în roșu. O literă aflată deja în cuvântul tău este în siguranță.',
   htSwapTitle: 'Litere care se schimbă',
   htSwapBody:
     'Uneori, între runde, o literă este înlocuită cu alta. Veți vedea care a plecat și care a venit.',

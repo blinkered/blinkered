@@ -126,6 +126,9 @@ export interface Messages {
   readonly htKeysTitle: string
   readonly htWildTitle: string
   readonly htWildBody: string
+  /** The tour screen and rules section about a letter turning back over of its own accord. */
+  readonly htHideTitle: string
+  readonly htHideBody: string
   readonly htSwapTitle: string
   readonly htSwapBody: string
   /**
