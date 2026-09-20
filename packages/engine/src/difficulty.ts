@@ -17,26 +17,26 @@ export const ENGINE_VERSION = '0.4.0'
 /** Twelve tiles, 4x3 in landscape and 3x4 in portrait. A player may pick another size. */
 export const DEFAULT_BOARD_SIZE = 12
 
-/**
- * How many letters one round may take back.
+/*
+ * There is no cap on how many letters a round may take back, and there was one for a while: first
+ * one a round, then as many as the board has tiles. Both were mine and neither was asked for, and
+ * the first was actively wrong -- it made `hideChance` decide *when* the single hide happened
+ * rather than how many there were, so the number in nerd mode did not mean what it says. Nick, at
+ * 0.5: "I am typically seeing one flip-back per round. I would expect every other tick to yield a
+ * flip-back, roughly."
  *
- * The cap is what makes `hideChance` safe to raise. A hide adds a tick and its return spends one,
- * so every hide makes the round two ticks longer; uncapped at a per-tick chance of 0.3 that runs
- * a round about 80% long, which would hand back the wall clock the 0.4.0 retune reclaimed and
- * would do it hardest at the top of the ladder, where `hideChance` is highest. At one a round the
- * cost is two ticks whatever the chance, so the chance decides how often it happens and nothing
- * else.
+ * What is true, and is worth writing down rather than rediscovering: a round is a random walk. A
+ * reveal spends a tick and a hide adds one, so the drift per tick is `2p - 1`, and the expected
+ * length of a round is `(n + holdTicks) / (1 - 2p)` ticks. At 0.1 that is 17.5 against a measured
+ * 17.3; at 0.25 it is 28 against 26.
  *
- * It also makes the rule sayable in one line, which a drifting probability is not: at most once a
- * round, a letter you have seen may turn back over, and it comes straight back.
- *
- * **At one, this is also the rule that only one letter is ever away at a time**, and that is the
- * thing to re-state if it is ever raised. Nothing breaks without it -- `revealNext` returns
- * withdrawn tiles oldest-first and `stillToCome` counts however many there are -- but a board that
- * can take three letters at once is a different mechanic from one that takes one and gives it
- * straight back, and the difference will not announce itself.
+ * **Below 0.5 a round ends with probability one. At 0.5 it still does, with an infinite expected
+ * length. Above 0.5 it may never end at all.** That is a real cliff rather than a corner case, and
+ * it is guarded where the number is set instead of in here: the nerd-mode dial stops at 0.4, and
+ * the levels ship 0, 0.03, 0.06 and 0.1. A player spending letters on words shortens the round
+ * whatever the chance, so the cliff is a watcher's problem, which is exactly who the property
+ * tests are.
  */
-export const MAX_HIDES_PER_ROUND = 1
 
 /**
  * Chance per tile per deal of a wild card, before nerd mode says otherwise.

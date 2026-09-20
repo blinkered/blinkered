@@ -100,7 +100,6 @@ function stateOf(frame: Frame, tiles: readonly string[], language: string): Game
     wildIntent: {},
     roundIndex: 0,
     ticksRemaining: config.n,
-    hidesThisRound: 0,
     revealsThisRound: 0,
     flipsRemaining: config.initialFlips,
     score: 0,

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { configFor, createGame, replay } from '../src/index.js'
-import { MAX_HIDES_PER_ROUND } from '../src/index.js'
 import { WORDS, letter, play, submit, tap, tick } from './helpers.js'
 import type { Effect, GameState } from '../src/index.js'
 
@@ -88,38 +87,80 @@ describe('a letter turning back over', () => {
     expect(positions.size).toBeGreaterThan(1)
   })
 
-  it('takes at most one letter a round, however certain the chance', () => {
-    // `hideChance` of 1 would take a letter every tick without the cap, and every hide makes the
-    // round two ticks longer, so the cap is what keeps the chance safe to raise.
+  it('takes letters back at the chance it is given, with no cap of its own', () => {
+    /*
+     * There were two caps here and both were invented rather than asked for. One a round was the
+     * worse of them: it made `hideChance` decide *when* the single hide happened rather than how
+     * many there were, so at 0.5 a player saw one flip-back a round where the number says one
+     * every other tick.
+     *
+     * A round is a random walk -- a reveal spends a tick, a hide adds one -- so below a chance of
+     * 0.5 it still ends, with an expected length of `(n + holdTicks) / (1 - 2p)`. The dial in nerd
+     * mode stops at 0.4 for that reason, and the guard lives there rather than in the rule.
+     */
     const { state, effects } = play(
-      board('ATESON').state,
-      Array.from({ length: 9 }, () => tick),
+      board('ATESON', { hideChance: 0.4 }).state,
+      Array.from({ length: 12 }, () => tick),
     )
     expect(state.roundIndex).toBe(0)
-    expect(MAX_HIDES_PER_ROUND).toBe(1)
-    expect(hides(effects)).toHaveLength(1)
-    expect(state.hidesThisRound).toBeLessThanOrEqual(MAX_HIDES_PER_ROUND)
+    expect(hides(effects).length).toBeGreaterThan(1)
   })
 
-  it('shows every letter before the round ends, and the hold opens on a full board', () => {
+  it('takes more letters back as the chance rises', () => {
+    const taken = (hideChance: number): number =>
+      hides(
+        play(
+          board('ATESON', { hideChance, initialFlips: 400 }).state,
+          Array.from({ length: 60 }, () => tick),
+        ).effects,
+      ).length
+    expect(taken(0.4)).toBeGreaterThan(taken(0.1))
+    expect(taken(0.1)).toBeGreaterThan(taken(0))
+  })
+
+  it('can never run out of time to fetch its letters back', () => {
     /*
-     * What the added tick buys. A hide adds one and the reveal that brings the letter round again
-     * spends one, so the round is two ticks longer and the window with everything showing is the
-     * window the level always had. Two retunes went into setting that window and this leaves it
-     * alone.
+     * The invariant the whole mechanic rests on, and it is provable rather than statistical.
+     *
+     * Call the slack `ticksRemaining - faceDown`. A reveal spends a tick and takes a letter off
+     * the pile, so both fall by one. A hide adds a tick and puts one back, so both rise by one.
+     * Neither rule moves the slack at all. The only thing that spends it is a tick with nothing
+     * face down to turn over, which is what the hold is.
+     *
+     * A round opens with the slack at `holdTicks + 1` -- every tile face down but the free one,
+     * `n + holdTicks` on the clock -- so it starts there, never rises, and cannot fall below zero
+     * while there are flips, because a tick with a letter away always fetches one. Which is the
+     * guarantee: **there are never more letters away than ticks left to bring them back**, so no
+     * chance of hiding can leave a board unfinished or eat into the window two retunes went into
+     * setting.
+     *
+     * A hide during the hold keeps the slack it found rather than restoring the full hold, which
+     * is why the window ends up a tick longer rather than a tick shorter when one lands there.
      */
-    for (const hideChance of [0, 1]) {
-      let state = board('ATESON', { hideChance }).state
-      let cycles = 0
-      let full = 0
-      while (state.status === 'playing' && cycles < 40) {
-        if (faceDown(state).length === 0) full += 1
-        state = replay(state, [tick], WORDS).state
-        cycles += 1
-        if (state.roundIndex > 0) break
+    for (const hideChance of [0, 0.1, 0.4]) {
+      let state = board('ATESON', { hideChance, initialFlips: 400 }).state
+      const why = `hideChance ${String(hideChance)}`
+      const slack = (of: typeof state): number => of.ticksRemaining - faceDown(of).length
+      expect(slack(state), why).toBe(state.config.holdTicks + 1)
+
+      let sawAway = false
+      let round = state.roundIndex
+      for (let cycles = 0; cycles < 80 && state.status === 'playing'; cycles++) {
+        const before = slack(state)
+        if (faceDown(state).length > 0) sawAway = true
+        const next = replay(state, [tick], WORDS).state
+        if (next.roundIndex === round) {
+          // Never rises, and never leaves a letter stranded.
+          expect(slack(next), why).toBeLessThanOrEqual(before)
+          expect(slack(next), why).toBeGreaterThanOrEqual(0)
+        } else {
+          // A fresh board starts the slack over at the hold.
+          expect(slack(next), why).toBe(next.config.holdTicks + 1)
+          round = next.roundIndex
+        }
+        state = next
       }
-      // Three, being `holdTicks` of two plus the tick the last letter lands on.
-      expect(full, `hideChance ${String(hideChance)}`).toBe(3)
+      expect(sawAway, why).toBe(true)
     }
   })
 
@@ -181,13 +222,12 @@ describe('a letter turning back over', () => {
     expect(configFor('easy').hideChance).toBe(0)
   })
 
-  it('forgets its budget when the next board is dealt', () => {
+  it('deals the next board with nothing held over', () => {
     const { state } = play(
-      board('ATESON').state,
-      Array.from({ length: 20 }, () => tick),
+      board('ATESON', { hideChance: 0.2 }).state,
+      Array.from({ length: 30 }, () => tick),
     )
     expect(state.roundIndex).toBeGreaterThan(0)
-    expect(state.hidesThisRound).toBe(0)
   })
 
   it('does not end the game over a letter that is merely away', () => {

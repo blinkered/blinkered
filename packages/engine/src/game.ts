@@ -49,7 +49,6 @@ export function createGame({ config, letters, seed }: NewGame): Reduction {
       wildIntent: {},
       roundIndex: 0,
       ticksRemaining: config.n + config.holdTicks,
-      hidesThisRound: 0,
       revealsThisRound: 0,
       flipsRemaining: config.initialFlips,
       score: 0,

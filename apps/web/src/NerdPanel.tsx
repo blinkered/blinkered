@@ -149,15 +149,20 @@ export function NerdPanel({
           }}
         />
         {/*
-         * Per tick, and bounded by one a round however high it goes, so this dial changes how
-         * often a letter is taken back rather than how much it costs. Zero turns it off, which is
-         * what easy ships with.
+         * Per tick, with no cap on how many a round may take: this is how often, and what it costs
+         * is the round's length. Zero turns it off, which is what easy ships with.
+         *
+         * It stops at 0.4 rather than 1, which is the one place a limit belongs. A round is a
+         * random walk -- a reveal spends a tick, a hide adds one -- so at 0.5 the expected round
+         * length is infinite and above it a round may never end. A player spending letters on
+         * words always ends one, but the dial should not offer a setting that can hang a board
+         * nobody touches.
          */}
         <Number
           label={messages.hideChance}
           value={config.hideChance}
           min={0}
-          max={1}
+          max={0.4}
           step={0.01}
           disabled={locked}
           onChange={(hideChance) => {

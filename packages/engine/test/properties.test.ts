@@ -45,10 +45,17 @@ const aGame = fc.record({
   mode: fc.constantFrom<WordCompleteMode>('shuffle', 'spend', 'keep'),
   chargeFullRound: fc.boolean(),
   initialFlips: fc.integer({ min: 1, max: 60 }),
-  // Letters that hide, across the whole range including certainty, because every invariant below
-  // has to hold while the board is taking letters back. Zero is in the range on purpose: it is
-  // what easy ships with, and the sample would otherwise never check a board that stays put.
-  hideChance: fc.constantFrom(0, 0.05, 0.5, 1),
+  /*
+   * Letters that hide, up to the highest chance a round is guaranteed to finish at.
+   *
+   * Not 0.5 or 1, and that is a fact about the rule rather than a convenience. A round is a random
+   * walk: a reveal spends a tick and a hide adds one, so the drift is `2p - 1` and the expected
+   * length is `(n + holdTicks) / (1 - 2p)`. Below a half it ends with probability one; at a half
+   * the expected length is infinite; above it a watched round may never end at all, and the
+   * watcher is exactly what the invariant below is. The nerd-mode dial stops at 0.4 for the same
+   * reason. Zero stays in the range because it is what easy ships.
+   */
+  hideChance: fc.constantFrom(0, 0.05, 0.2, 0.4),
   events: fc.array(anEvent, { maxLength: 250 }),
 })
 

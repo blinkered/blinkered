@@ -132,14 +132,6 @@ export interface GameState {
   readonly wildIntent: Readonly<Record<number, string>>
   readonly roundIndex: number
   readonly ticksRemaining: number
-  /**
-   * How many letters this round has taken back, against `MAX_HIDES_PER_ROUND`.
-   *
-   * A budget, not a record: it says how many more may go, and nothing anywhere says which ones
-   * went. A letter that turned back over is a face-down tile and nothing else, indistinguishable
-   * from one the deal has not reached, so the board cannot be read for the path that produced it.
-   */
-  readonly hidesThisRound: number
   /** Letters turned over this round, counting one that went back over and came round again. */
   readonly revealsThisRound: number
   readonly flipsRemaining: number

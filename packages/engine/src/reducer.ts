@@ -3,7 +3,6 @@ import { at } from './invariant.js'
 import { WILD_GLYPH, dealWilds, resolveWilds } from './wild.js'
 import { replaceLetter } from './replace.js'
 import { alphabetFor } from './languages.js'
-import { MAX_HIDES_PER_ROUND } from './difficulty.js'
 import { flipReward, wordScore } from './score.js'
 import { freeWild, isEligible, letterAvailability, tileById, wildsAskedFor } from './selection.js'
 import type {
@@ -189,14 +188,6 @@ export function revealNext(state: GameState): Reduction {
 function pickHide(state: GameState): [Tile | null, RngState] {
   const { config } = state
   if (config.hideChance <= 0) return [null, state.rng]
-  /*
-   * The only thing this round remembers about hiding, and it is a budget rather than a record of
-   * what happened: it says how many more letters may go, not which ones went. Nothing anywhere
-   * distinguishes a letter that was taken back from one the deal has not reached, which is the
-   * point -- the board's state is meant to be independent of the path that reached it.
-   */
-  if (state.hidesThisRound >= MAX_HIDES_PER_ROUND) return [null, state.rng]
-
   const exposed = state.tiles.filter(isEligible)
   // Never the last letter showing: a board with nothing on it is not a harder board, it is a
   // broken one.
@@ -241,7 +232,6 @@ function tick(state: GameState, dictionary: Dictionary): Reduction {
       ...state,
       rng,
       tiles,
-      hidesThisRound: state.hidesThisRound + 1,
       ticksRemaining: state.ticksRemaining + 1,
       flipsRemaining: state.flipsRemaining + 1,
       tick: state.tick + 1,
@@ -311,7 +301,6 @@ function endRound(state: GameState, dictionary: Dictionary, cutShort = false): R
     flipsRemaining,
     roundIndex: state.roundIndex + 1,
     ticksRemaining: config.n + config.holdTicks,
-    hidesThisRound: 0,
     revealsThisRound: 0,
     selection: [],
     wildIntent: {},
