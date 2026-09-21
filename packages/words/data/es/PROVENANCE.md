@@ -9,7 +9,7 @@ branch, and that repository is where it is made, measured and argued about.
 | commit | [`b539125c2c9e`](https://github.com/blinkered/blinkered-dictionary-es/commit/b539125c2c9ed659a0e068d9bb5477fbdf3b252b) |
 | committed | 2026-09-21T22:39:20Z |
 | blob | `622d6cb119ec825b3b0bb072781f15c4e109ab4f` |
-| borrowed | 2026-09-21T22:44:36.174Z |
+| borrowed | 2026-09-21T22:48:21.296Z |
 | common | 16,993 |
 | full | 145,334 |
 | digest | `none` |

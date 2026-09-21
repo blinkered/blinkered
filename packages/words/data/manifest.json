@@ -20,15 +20,15 @@
       "tag": "en",
       "endonym": "English",
       "common": 16575,
-      "full": 107670,
-      "bytes": 1006671,
-      "license": "undeclared",
-      "density": 167,
+      "full": 112115,
+      "bytes": 1052968,
+      "license": "CC0-1.0",
+      "density": 166,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-en",
-        "commit": "109e5e7ea10b325e6815d2b3ff32b1fbedd105fb",
-        "committed": "2026-09-21T21:33:01Z",
-        "blob": "9c3c58e8cd600ff744ba517e3bcedf837d4096a1"
+        "commit": "c3dcffe3aa1a04fdf52d838b8cdce75407509671",
+        "committed": "2026-09-21T22:44:50Z",
+        "blob": "e4d44fe1d0876be088dc8a1f2de1130e9364d6bf"
       }
     },
     {

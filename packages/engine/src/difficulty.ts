@@ -216,7 +216,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
  * these, having been measured against a 78,000-word placeholder list, and left the floor so
  * far above any real board that the generator rejected every draw it made.
  */
-const MEDIAN_WORDS = [3, 8, 15, 24, 40, 63, 86, 126, 164] as const
+const MEDIAN_WORDS = [3, 8, 15, 24, 40, 63, 86, 126, 163] as const
 const SMALLEST_MEASURED = 4
 const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 
@@ -246,10 +246,10 @@ const SHARE_BEYOND_TABLE = 0.03
  * dealt anyway, so the gap is only ever a gap while somebody is adding one.
  */
 const DENSITY_SCALE: Readonly<Record<string, number>> = {
-  de: 0.68,
+  de: 0.69,
   en: 1,
-  es: 0.73,
-  fr: 0.94,
+  es: 0.75,
+  fr: 0.95,
   ko: 0.67,
   ru: 0.43,
   tl: 0.43,

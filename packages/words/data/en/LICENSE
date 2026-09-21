@@ -1,10 +1,14 @@
 English word list
 https://github.com/blinkered/blinkered-dictionary-en
-109e5e7ea10b325e6815d2b3ff32b1fbedd105fb
+c3dcffe3aa1a04fdf52d838b8cdce75407509671
 
-The repository above has not declared terms for this list in its status.json.
-Until it does, this file cannot state them, and nothing here should be read as a
-grant. See that repository's own LICENSE and NOTICE.
+CC0-1.0. Declared by the repository above, in its status.json, and
+copied here rather than decided here: the terms of a word list belong to whoever
+assembled the evidence for it.
+
+Note that this covers the list. A dictionary repository is not all one licence; its
+build scripts are under its own LICENSE, which is a different question and does not
+travel with the words.
 
 No upstream dictionary is named, because none was relied on. This list is not a copy of
 a dictionary and is not derived from one. Every word in it ships because three
