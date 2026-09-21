@@ -6,12 +6,12 @@ branch, and that repository is where it is made, measured and argued about.
 | | |
 | --- | --- |
 | upstream | https://github.com/blinkered/blinkered-dictionary-ko |
-| commit | [`cb5b8d2e87b9`](https://github.com/blinkered/blinkered-dictionary-ko/commit/cb5b8d2e87b98603bdd7cff8bd581bfd9c0c01c4) |
-| committed | 2026-09-21T21:31:57Z |
-| blob | `e952d1dc2bb7329ee4e702a17ca1ec2ff78655e8` |
-| borrowed | 2026-09-21T22:18:34.088Z |
+| commit | [`e8e949f7e4b2`](https://github.com/blinkered/blinkered-dictionary-ko/commit/e8e949f7e4b2618119dc287d98a9bfc43cfb1c9a) |
+| committed | 2026-09-21T22:43:07Z |
+| blob | `cb95a0d382a976946242670b1889600dde736d13` |
+| borrowed | 2026-09-21T22:44:36.174Z |
 | common | 19,257 |
-| full | 24,285 |
+| full | 24,395 |
 | digest | `none` |
 
 ## Why it ships

@@ -18,17 +18,14 @@ const DENSITY_TILES = 12
 const MIN_LENGTH = 3
 
 /**
- * What an evidence-built list is distributed under.
+ * What to say when a repository has not said.
  *
- * CC0, because the list is a record of facts. A word is in it because three independent
- * collections of that language were found to contain it, and which words a language contains is
- * not anybody's to license. That is the same argument the method rests on, so declaring anything
- * narrower here would be claiming a right this repository spends a README denying it needs.
- *
- * Declared upstream in time. Each dictionary repository is getting its own LICENSE, and this
- * should then be read from the language rather than asserted here, the way `ships` already is.
+ * Not a default and not a guess at the answer: a language's terms are declared in its own
+ * `status.json`, beside `ships`, and this is what goes in the manifest until one is. A borrowed
+ * list with no stated terms is a gap worth showing rather than a blank worth filling, so the
+ * report names every language in this state and says what to add upstream.
  */
-export const TERMS = 'CC0-1.0'
+export const UNDECLARED = 'undeclared'
 
 /** The language's name in English, for English prose. `endonym` is its name for itself. */
 function englishName(tag: string): string {
@@ -88,26 +85,33 @@ export function density(tag: string, parsed: ParsedWordList): number {
   return row.median
 }
 
-function licenseFile(tag: string, upstream: Upstream): string {
+function licenseFile(tag: string, upstream: Upstream, status: Status): string {
   const language = englishName(tag)
+  const terms =
+    status.license === undefined
+      ? `The repository above has not declared terms for this list in its status.json.
+Until it does, this file cannot state them, and nothing here should be read as a
+grant. See that repository's own LICENSE and NOTICE.`
+      : `${status.license}. Declared by the repository above, in its status.json, and
+copied here rather than decided here: the terms of a word list belong to whoever
+assembled the evidence for it.
+
+Note that this covers the list. A dictionary repository is not all one licence; its
+build scripts are under its own LICENSE, which is a different question and does not
+travel with the words.`
+
   return `${language} word list
 ${repoUrl(tag)}
 ${upstream.commit}
 
-CC0 1.0 Universal. To the extent possible under law, all copyright and related
-rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
+${terms}
 
-No upstream license is named, because none was relied on. This list is not a copy of a
-dictionary and is not derived from one. Every word in it ships because three independent
-collections of ${language} text were found to contain it, and the record of which
-collections, and where in them, is public at the repository above. A dictionary did
-propose the words worth looking up, and nothing it proposed survives here except as a
-question the evidence answered.
-
-Which is why CC0 rather than anything narrower: what this file records is which words
-occur in ${language}, and that is a fact about ${language} rather than a work anybody
-owns. The method is only worth the trouble if the result is free of the terms it was
-built to escape.
+No upstream dictionary is named, because none was relied on. This list is not a copy of
+a dictionary and is not derived from one. Every word in it ships because three
+independent collections of ${language} text were found to contain it, and the record of
+which collections, and where in them, is public at the repository above. A dictionary
+did propose the words worth looking up, and nothing it proposed survives here except as
+a question the evidence answered.
 `
 }
 
@@ -183,7 +187,7 @@ export function borrow(
   const dir = join(DATA, tag)
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'words.txt'), text, 'utf8')
-  writeFileSync(join(dir, 'LICENSE'), licenseFile(tag, upstream), 'utf8')
+  writeFileSync(join(dir, 'LICENSE'), licenseFile(tag, upstream, status), 'utf8')
   writeFileSync(
     join(dir, 'PROVENANCE.md'),
     provenanceFile(tag, parsed, upstream, status, when),
@@ -196,7 +200,7 @@ export function borrow(
     common: parsed.common.length,
     full: parsed.full.length,
     bytes: Buffer.byteLength(text, 'utf8'),
-    license: TERMS,
+    license: status.license ?? UNDECLARED,
     density: density(tag, parsed),
     upstream,
   }
@@ -224,12 +228,18 @@ export function writeManifest(entries: readonly Entry[]): void {
 export function setAvailable(available: ReadonlySet<string>, tags: readonly string[]): void {
   let source = readFileSync(REGISTRY, 'utf8')
   for (const tag of tags) {
-    const line = new RegExp(
-      `^(\\s*\\{ tag: '${tag}',.*?)(available: (?:true|false), )?(messages: )`,
-      'm',
-    )
-    if (!line.test(source)) throw new Error(`registry.ts has no locale for "${tag}"`)
-    source = source.replace(line, `$1available: ${String(available.has(tag))}, $3`)
+    // Found by position rather than by line. A locale is one line until prettier decides it is
+    // too long, and then it is seven: `arz` and `pcm` both carry a `namedIn` and both wrap. A
+    // line-based edit read the file as having no locale for them at all, which is the right
+    // error for a tag nobody translated and a bad one for a tag sitting there wrapped.
+    const entry = source.indexOf(`tag: '${tag}',`)
+    if (entry === -1) throw new Error(`registry.ts has no locale for "${tag}"`)
+    // The first flag after the tag is that locale's: every entry has exactly one, and the tag
+    // line comes first in all of them.
+    const flag = /available: (?:true|false),/.exec(source.slice(entry))
+    if (flag === null) throw new Error(`registry.ts locale "${tag}" has no available flag`)
+    const at = entry + flag.index
+    source = `${source.slice(0, at)}available: ${String(available.has(tag))},${source.slice(at + flag[0].length)}`
   }
   writeFileSync(REGISTRY, source, 'utf8')
 }

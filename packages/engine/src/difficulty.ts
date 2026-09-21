@@ -216,7 +216,7 @@ export const DIFFICULTIES: Readonly<Record<Difficulty, DifficultyProfile>> = {
  * these, having been measured against a 78,000-word placeholder list, and left the floor so
  * far above any real board that the generator rejected every draw it made.
  */
-const MEDIAN_WORDS = [3, 7, 13, 22, 38, 60, 86, 127, 163] as const
+const MEDIAN_WORDS = [3, 8, 15, 24, 40, 63, 86, 126, 164] as const
 const SMALLEST_MEASURED = 4
 const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 
@@ -224,9 +224,9 @@ const LARGEST_MEASURED = SMALLEST_MEASURED + MEDIAN_WORDS.length - 1
 const SHARE_BY_MINIMUM: Readonly<Record<number, number>> = {
   2: 1,
   3: 1,
-  4: 0.58,
-  5: 0.18,
-  6: 0.05,
+  4: 0.52,
+  5: 0.16,
+  6: 0.03,
 }
 const SHARE_BEYOND_TABLE = 0.03
 
@@ -234,62 +234,25 @@ const SHARE_BEYOND_TABLE = 0.03
  * How rich each language's board is next to English, at the same size and the same cut.
  *
  * The curve above is one language's, and languages are not interchangeable here: a Russian
- * board admits under half what an Italian one does, because a 32-letter alphabet combines
- * differently from a 21-letter one. A single floor would be unreachable in Russian and free
- * in Italian, so it is scaled. Regenerate with `pnpm dictionary floor`.
+ * board admits under half what an English one does, because a 32-letter alphabet combines
+ * differently from a 26-letter one. A single floor would be unreachable in Russian and free
+ * in English, so it is scaled. Regenerate with `pnpm dictionary floor`.
+ *
+ * Seven entries, where there were fifty-one. A number here describes a particular dictionary,
+ * and the other forty-four have no dictionary here to describe: their lists left when Blinkered
+ * started borrowing attested ones. Keeping their old numbers would have been worse than having
+ * none, because those were measured against lists that are not the lists those languages will
+ * come back with. A language with no entry falls through to `UNMEASURED_SCALE` and cannot be
+ * dealt anyway, so the gap is only ever a gap while somebody is adding one.
  */
 const DENSITY_SCALE: Readonly<Record<string, number>> = {
-  en: 1,
-  fr: 0.92,
-  es: 0.72,
-  it: 0.83,
   de: 0.68,
-  nl: 0.85,
-  pt: 0.84,
-  'pt-BR': 0.86,
-  hr: 0.59,
-  ms: 0.56,
-  id: 0.89,
-  ru: 0.42,
-  sv: 0.73,
-  no: 1.29,
-  fi: 0.66,
-  el: 0.58,
-  af: 0.64,
-  tr: 0.47,
-  sw: 0.52,
-  la: 0.54,
-  he: 2.06,
-  ar: 1.6,
-  ko: 0.57,
-  ja: 0.89,
-  arz: 1.17,
-  tl: 0.41,
-  pl: 0.32,
-  cs: 0.31,
-  sk: 0.26,
-  sl: 0.83,
-  da: 0.74,
-  ca: 0.92,
-  et: 0.71,
-  lt: 0.34,
-  lv: 0.35,
-  sr: 0.79,
-  hu: 0.32,
-  ro: 0.71,
-  bg: 0.47,
-  is: 0.53,
-  fa: 1.49,
-  vi: 0.16,
-  uk: 0.31,
-  mk: 0.62,
-  eu: 0.51,
-  gl: 0.75,
-  cy: 0.76,
-  ga: 0.65,
-  hy: 0.35,
-  ka: 0.56,
-  pcm: 0.81,
+  en: 1,
+  es: 0.73,
+  fr: 0.94,
+  ko: 0.67,
+  ru: 0.43,
+  tl: 0.43,
 }
 
 /** A language with no measurement yet is assumed to behave like the one that was measured. */

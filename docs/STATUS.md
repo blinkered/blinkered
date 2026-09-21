@@ -14,7 +14,7 @@ next.
   `@blinkered/words/node` so the browser bundle cannot pull in `node:fs`.
 - **`packages/i18n`** — every string the game says, in fifty-one languages. Plurals go through
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three. Two languages CLDR
-  cannot reliably name carry their own table of exonyms; see LANGUAGES.md.
+  cannot reliably name carry their own table of exonyms; see `packages/i18n/src/exonyms.ts`.
 - **`packages/words/data`** — seven playable languages, borrowed from their own repositories
   and committed, each with a `LICENSE` and a `PROVENANCE.md` naming the commit its bytes came
   from. CC0. 19MB, with Russian 7.2MB of it.
@@ -328,9 +328,9 @@ which one is a question for playing it, and it is in PLAN.md section 7.
   attestation is a better answer to it than a validator would have been: an English-lexifier
   creole cannot be bounded by a blocklist, but `for` and `go` occurring in three independent
   collections of Naijá text is the evidence that they are Naijá words.
-- **Yoruba, Hausa and Igbo are parked**, not blocked. The evidence for the diacritic decision is
-  gathered and written up in LANGUAGES.md; the decision itself is deliberately not being taken
-  yet. Naijá's own diacritic question rides along with it.
+- **Yoruba, Hausa and Igbo are parked**, not blocked, and the question moved with the survey they
+  were written up in: which languages to build next is `blinkered-attestation`'s to answer now.
+  The diacritic decision is still not taken, and Naijá's own version of it still rides along.
 - **Six locales were written by someone who does not speak them** — Basque, Georgian, Armenian,
   Welsh, Irish, Naijá. Fluent and idiomatic as far as that goes. A native reader would be worth
   more than another pass by the author, and none is queued.

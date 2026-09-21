@@ -524,10 +524,9 @@ Effects exist so the UI knows what to animate and what sound to play without ins
 ### 2.2 The words package
 
 Built by `pnpm dictionary build --language=<tag>` and committed, one directory per language under
-`packages/words/data`. SCOWL was the sketch and is now one source among many: each language names
-its own sources in `tools/dictionary/src/manifest.ts`, because SCOWL is English and fifty of these
-are not. See [DICTIONARIES.md](DICTIONARIES.md) for the pipeline and
-[LANGUAGES.md](LANGUAGES.md) for what each language draws on.
+`packages/words/data`. SCOWL was the sketch, and both it and the pipeline it fed are gone: a list
+is attested in its own `blinkered-dictionary-*` repository now and borrowed from there. See
+[DICTIONARIES.md](DICTIONARIES.md).
 
 1. Order a corpus by frequency, then filter it through every validator that language has. The
    **common** tier is what survives above the candidate cut and is counted toward W; the **full**

@@ -125,7 +125,6 @@ docs/PROPOSALS.md   sharing, wild cards and letter replacement: the reasoning, n
 docs/ACCOUNTS.md    accounts, history and leaderboards: the design, and what shipped
 docs/AUTH.md        the two OAuth consoles, and what the phone does differently
 docs/DEPLOY.md      the Helm chart, the two images, and the deploy script
-docs/LANGUAGES.md   which languages are next, and what each one costs
 ```
 
 ## Adding a language

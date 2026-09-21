@@ -205,15 +205,17 @@ describe('defaultWMin', () => {
 
 describe('defaultWMin and the language', () => {
   it('scales the floor by how rich the language is', () => {
-    // A Russian board admits well under half what a Norwegian one does at the same size, so
-    // one floor for every language would be unreachable in Russian and free in Norwegian.
+    // A Russian board admits well under half what a French one does at the same size, so one
+    // floor for every language would be unreachable in Russian and nearly free in French.
     //
-    // Italian used to be the rich end of this comparison and is now 0.83 rather than 1.10.
-    // Nothing about Italian changed: its validator did. It was measured against a list that
-    // had English in it, and a board scores English words as readily as Italian ones, so the
-    // density it reported was partly English density. That is worth remembering the next time
-    // a derived number moves — the measurement was always right about the list it was given.
-    expect(defaultWMin(12, 3, 'no')).toBeGreaterThan(defaultWMin(12, 3, 'en'))
+    // Two languages have been the rich end of this comparison and neither ships now: Italian at
+    // 1.10, and Norwegian at 1.29. Italian is the one worth remembering. It dropped to 0.83 when
+    // nothing about Italian changed — its validator did, having been measured against a list
+    // with English in it, and a board scores English words as readily as Italian ones. The
+    // measurement was always right about the list it was given, which is the thing to hold on to
+    // the next time a derived number moves.
+    expect(defaultWMin(12, 3, 'ru')).toBeLessThan(defaultWMin(12, 3, 'fr'))
+    expect(defaultWMin(12, 3, 'fr')).toBeLessThan(defaultWMin(12, 3, 'en'))
     expect(defaultWMin(12, 3, 'ru')).toBeLessThan(defaultWMin(12, 3, 'en'))
   })
 

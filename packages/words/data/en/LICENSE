@@ -2,17 +2,13 @@ English word list
 https://github.com/blinkered/blinkered-dictionary-en
 109e5e7ea10b325e6815d2b3ff32b1fbedd105fb
 
-CC0 1.0 Universal. To the extent possible under law, all copyright and related
-rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
+The repository above has not declared terms for this list in its status.json.
+Until it does, this file cannot state them, and nothing here should be read as a
+grant. See that repository's own LICENSE and NOTICE.
 
-No upstream license is named, because none was relied on. This list is not a copy of a
-dictionary and is not derived from one. Every word in it ships because three independent
-collections of English text were found to contain it, and the record of which
-collections, and where in them, is public at the repository above. A dictionary did
-propose the words worth looking up, and nothing it proposed survives here except as a
-question the evidence answered.
-
-Which is why CC0 rather than anything narrower: what this file records is which words
-occur in English, and that is a fact about English rather than a work anybody
-owns. The method is only worth the trouble if the result is free of the terms it was
-built to escape.
+No upstream dictionary is named, because none was relied on. This list is not a copy of
+a dictionary and is not derived from one. Every word in it ships because three
+independent collections of English text were found to contain it, and the record of
+which collections, and where in them, is public at the repository above. A dictionary
+did propose the words worth looking up, and nothing it proposed survives here except as
+a question the evidence answered.

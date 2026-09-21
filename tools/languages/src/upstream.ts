@@ -42,6 +42,19 @@ export interface Status {
   readonly decided?: string
   /** Why, in the operator's words. Carried into the report, because the reason is the point. */
   readonly why?: string
+  /**
+   * The SPDX id the list itself is under, declared by the repository that made it.
+   *
+   * Read rather than assumed. A language's terms are that language's to state, and this used to
+   * be a constant here, which meant two places knew the answer and only one of them was right.
+   * If a list ever ships under something else, or these ever change, the change arrives on its
+   * own.
+   *
+   * Not the repository's `LICENSE` file, which covers its code. These repositories are
+   * Apache-2.0 for `build.mjs` and CC0 for `words.txt`, and it is the second that travels with
+   * the words. Reading the file would confidently borrow the wrong one.
+   */
+  readonly license?: string
 }
 
 export interface Fetched {
@@ -175,15 +188,23 @@ async function fetchStatus(repo: string, auth: string): Promise<Status | null> {
   if (answer.status === 404) return null
   if (!answer.ok) throw new Error(`${repo}: reading ${STATUS} failed (${String(answer.status)})`)
 
-  const body = (await answer.json()) as Partial<Status>
+  const body = (await answer.json()) as Record<string, unknown>
   // A status file that does not say is not a status file. Same reasoning as the 404 above, in the
   // other direction: this is a malformed answer rather than a missing one, and it stops the run.
   if (typeof body.ships !== 'boolean') {
     throw new Error(`${repo}: ${STATUS} has no boolean "ships"`)
   }
+  // `null` and absent mean the same thing here, and the writer upstream uses both: the template
+  // carries a blessing forward with `?? null`, so a field nobody has filled in arrives as an
+  // explicit null rather than as a missing key. Reading one and not the other would put the
+  // string "null" in a LICENSE file.
+  const text = (key: string): string | undefined =>
+    typeof body[key] === 'string' && body[key] !== '' ? body[key] : undefined
+
   return {
     ships: body.ships,
-    ...(body.decided !== undefined && { decided: body.decided }),
-    ...(body.why !== undefined && { why: body.why }),
+    ...(text('decided') !== undefined && { decided: text('decided') as string }),
+    ...(text('why') !== undefined && { why: text('why') as string }),
+    ...(text('license') !== undefined && { license: text('license') as string }),
   }
 }

@@ -70,6 +70,22 @@ then withdraw it, which reads as a mechanical failure when it is nothing of the 
 **Never infer a blessing.** A missing or unreadable `status.json` means not shipping. If that is
 wrong, the fix is a commit in the language's own repository, never a flag here.
 
+## Terms come from the language too
+
+`status.json` also carries `license`, the SPDX id the list is under, and the import copies it
+into `manifest.json` and each language's `LICENSE` rather than deciding it. Same reason as
+`ships`: the terms of a word list belong to whoever assembled the evidence for it, and a constant
+in this repository would be a second place that knows the answer and can be wrong about it. A
+change upstream arrives on the next run.
+
+**Not the repository's `LICENSE` file.** A dictionary repository is not all one licence: its
+build scripts are Apache-2.0 and its `words.txt` is CC0, and reading the file would confidently
+borrow the wrong one.
+
+**A language that declares nothing gets nothing written.** The report names it and prints the one
+line to add upstream. Do not fill the gap from here, however obvious the answer looks; an invented
+licence is the one kind of wrong answer this project exists to avoid.
+
 ## The usability floor
 
 A board the generator accepts, holding a word of six tiles, which is the first length that turns

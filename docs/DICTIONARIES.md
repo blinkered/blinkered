@@ -454,7 +454,8 @@ shipped files, with the invariant that folding a spelling gives back the key it 
 Naijá is the row worth stopping on. Its fold strips ọ and ụ, which are letters of the language
 rather than decoration, so those words are tiled wrong as well as written wrong. That is the
 decision Yoruba and Igbo are waiting on, and it turns out to have been taken for Naijá already —
-by default, and the wrong way. See LANGUAGES.md.
+by default, and the wrong way. None of the three ships today, so the decision is still open and
+is `blinkered-attestation`'s to take when it reaches them.
 
 ## Per-language data layout
 

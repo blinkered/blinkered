@@ -137,6 +137,40 @@ function reasons(plan: Plan): string[] {
   return out
 }
 
+/**
+ * Languages whose repository has not said what terms its list is under.
+ *
+ * Reported rather than defaulted. Guessing would put a licence in `manifest.json` and a LICENSE
+ * file on disk that nobody upstream had agreed to, which is the one kind of wrong answer this
+ * whole project exists to avoid making.
+ */
+function undeclared(plan: Plan): Outcome[] {
+  return plan.outcomes.filter(
+    (outcome) =>
+      (outcome.verdict === 'added' ||
+        outcome.verdict === 'updated' ||
+        outcome.verdict === 'unchanged') &&
+      outcome.status != null &&
+      outcome.status.license === undefined,
+  )
+}
+
+function terms(plan: Plan): string[] {
+  const missing = undeclared(plan)
+  if (missing.length === 0) return []
+  return [
+    '',
+    `No declared terms for ${String(missing.length)} of these, so none are written here:`,
+    '',
+    `  ${missing.map((outcome) => outcome.tag).join(' ')}`,
+    '',
+    'A list says what it is under in its own status.json, beside `ships`. One line in each',
+    'repository, and it arrives here on the next run:',
+    '',
+    '  "license": "CC0-1.0"',
+  ]
+}
+
 /** The whole run, for the operator who has to decide whether to let it write. */
 export function report(plan: Plan): string {
   const out: string[] = []
@@ -146,6 +180,7 @@ export function report(plan: Plan): string {
     out.push('', `${HEADING[verdict]} (${String(group.length)})`)
     for (const outcome of group) out.push(line(outcome))
   }
+  out.push(...terms(plan))
   out.push(...reasons(plan))
   out.push(...tours(plan))
 

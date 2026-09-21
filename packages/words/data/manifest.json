@@ -5,15 +5,15 @@
       "tag": "de",
       "endonym": "Deutsch",
       "common": 16918,
-      "full": 36329,
-      "bytes": 352328,
+      "full": 36346,
+      "bytes": 352508,
       "license": "CC0-1.0",
       "density": 114,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-de",
-        "commit": "7211f846e886e5408c2fb546202fa310cfb6f0e9",
-        "committed": "2026-09-21T21:26:58Z",
-        "blob": "c0850b1f41e1b9093fcd615371e0bbc98abd56ba"
+        "commit": "a0a937b719f68f4a06f12d0bf09d45aa92fbfdf6",
+        "committed": "2026-09-21T22:36:55Z",
+        "blob": "e94786e4f14802253b88bbead51213df0fef73db"
       }
     },
     {
@@ -22,7 +22,7 @@
       "common": 16575,
       "full": 107670,
       "bytes": 1006671,
-      "license": "CC0-1.0",
+      "license": "undeclared",
       "density": 167,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-en",
@@ -35,75 +35,75 @@
       "tag": "es",
       "endonym": "Español",
       "common": 16993,
-      "full": 143024,
-      "bytes": 1439157,
+      "full": 145334,
+      "bytes": 1464603,
       "license": "CC0-1.0",
-      "density": 122,
+      "density": 124,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-es",
-        "commit": "5259faf84f9e024d865ef64ee386ec09f9be7e8a",
-        "committed": "2026-09-21T21:28:55Z",
-        "blob": "1c1a76e4a56d88d390a542bcef7f19483b3a7d49"
+        "commit": "b539125c2c9ed659a0e068d9bb5477fbdf3b252b",
+        "committed": "2026-09-21T22:39:20Z",
+        "blob": "622d6cb119ec825b3b0bb072781f15c4e109ab4f"
       }
     },
     {
       "tag": "fr",
       "endonym": "Français",
       "common": 16593,
-      "full": 98540,
-      "bytes": 966582,
+      "full": 103417,
+      "bytes": 1019143,
       "license": "CC0-1.0",
-      "density": 157,
+      "density": 158,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-fr",
-        "commit": "40e78d3513595e8ff4b74594f7e2f22cf12c1afb",
-        "committed": "2026-09-21T21:23:23Z",
-        "blob": "c9e97f927c87837e4b74630c29d3316ad734756d"
+        "commit": "91be05362bd7966a78cd99956acf1c5813541d66",
+        "committed": "2026-09-21T22:32:04Z",
+        "blob": "ba45f969bd039252c8aebbd6921de2527ba08838"
       }
     },
     {
       "tag": "ko",
       "endonym": "한국어",
       "common": 19257,
-      "full": 24285,
-      "bytes": 483562,
+      "full": 24395,
+      "bytes": 486069,
       "license": "CC0-1.0",
       "density": 112,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-ko",
-        "commit": "cb5b8d2e87b98603bdd7cff8bd581bfd9c0c01c4",
-        "committed": "2026-09-21T21:31:57Z",
-        "blob": "e952d1dc2bb7329ee4e702a17ca1ec2ff78655e8"
+        "commit": "e8e949f7e4b2618119dc287d98a9bfc43cfb1c9a",
+        "committed": "2026-09-21T22:43:07Z",
+        "blob": "cb95a0d382a976946242670b1889600dde736d13"
       }
     },
     {
       "tag": "ru",
       "endonym": "Русский",
       "common": 18095,
-      "full": 362488,
-      "bytes": 7155507,
+      "full": 371579,
+      "bytes": 7350734,
       "license": "CC0-1.0",
       "density": 72,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-ru",
-        "commit": "4361db0a1ef7ec91756688839f3006c42402bbcc",
-        "committed": "2026-09-21T21:31:00Z",
-        "blob": "61b4497398436bdc671273f8614ab48cc19644e3"
+        "commit": "6c7466b922b94b77ea7abb7f67430cf39147bb89",
+        "committed": "2026-09-21T22:41:58Z",
+        "blob": "1ed3a5965c31f1e1a48523d50d3c6b9c78476ee9"
       }
     },
     {
       "tag": "tl",
       "endonym": "Tagalog",
       "common": 3540,
-      "full": 12573,
-      "bytes": 99716,
+      "full": 12575,
+      "bytes": 99734,
       "license": "CC0-1.0",
       "density": 72,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-tl",
-        "commit": "a0db2fba98683268188c565cd04311389dd54ff0",
-        "committed": "2026-09-21T21:23:43Z",
-        "blob": "3b9a5dede9676d46373c748bcaa99e5325298b8f"
+        "commit": "bd06fddca997c90dba10353226047289f19e1480",
+        "committed": "2026-09-21T22:32:20Z",
+        "blob": "25534dbe15bb4496dc2ca96a79f41dcdad1f339a"
       }
     }
   ]

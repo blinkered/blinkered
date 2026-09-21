@@ -2585,7 +2585,7 @@ export const NAIJA: Alphabet = {
  * rule can find them; a syllable boundary cannot be found by rule, only looked up, and `display`
  * is deliberately a function of the word alone. So a found word is shown ÁCHÂU rather than Á
  * CHÂU. That is a spacing error a Vietnamese reader can read, where Hebrew's would have been a
- * spelling error, and it is the open item on this language. See docs/LANGUAGES.md.
+ * spelling error, and it is the open item on this language.
  */
 export const VIETNAMESE: Alphabet = {
   id: 'vi',

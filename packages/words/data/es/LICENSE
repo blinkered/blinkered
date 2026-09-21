@@ -1,18 +1,18 @@
 Spanish word list
 https://github.com/blinkered/blinkered-dictionary-es
-5259faf84f9e024d865ef64ee386ec09f9be7e8a
+b539125c2c9ed659a0e068d9bb5477fbdf3b252b
 
-CC0 1.0 Universal. To the extent possible under law, all copyright and related
-rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
+CC0-1.0. Declared by the repository above, in its status.json, and
+copied here rather than decided here: the terms of a word list belong to whoever
+assembled the evidence for it.
 
-No upstream license is named, because none was relied on. This list is not a copy of a
-dictionary and is not derived from one. Every word in it ships because three independent
-collections of Spanish text were found to contain it, and the record of which
-collections, and where in them, is public at the repository above. A dictionary did
-propose the words worth looking up, and nothing it proposed survives here except as a
-question the evidence answered.
+Note that this covers the list. A dictionary repository is not all one licence; its
+build scripts are under its own LICENSE, which is a different question and does not
+travel with the words.
 
-Which is why CC0 rather than anything narrower: what this file records is which words
-occur in Spanish, and that is a fact about Spanish rather than a work anybody
-owns. The method is only worth the trouble if the result is free of the terms it was
-built to escape.
+No upstream dictionary is named, because none was relied on. This list is not a copy of
+a dictionary and is not derived from one. Every word in it ships because three
+independent collections of Spanish text were found to contain it, and the record of
+which collections, and where in them, is public at the repository above. A dictionary
+did propose the words worth looking up, and nothing it proposed survives here except as
+a question the evidence answered.
