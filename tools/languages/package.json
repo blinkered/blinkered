@@ -1,0 +1,11 @@
+{
+  "name": "@blinkered/languages",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@blinkered/engine": "workspace:*",
+    "@blinkered/i18n": "workspace:*",
+    "@blinkered/words": "workspace:*"
+  }
+}

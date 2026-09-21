@@ -5,6 +5,8 @@ export type { Messages, Plurals, PluralForms, Replacements } from './messages.js
 export {
   DEFAULT_LOCALE,
   LOCALES,
+  PLAYABLE,
+  isPlayable,
   localeFor,
   messagesFor,
   preferredLocale,

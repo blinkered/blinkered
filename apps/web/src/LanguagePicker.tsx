@@ -87,9 +87,16 @@ interface LanguagePickerProps {
 /**
  * Picks the language the board is dealt in.
  *
- * Offers what the deployment has rather than what the engine knows: more alphabets exist,
- * and a language is only playable once a word list has been built for it. The language's own
- * name for itself, because a Greek speaker looking for Greek is looking for Ελληνικά.
+ * Offers what the deployment can play rather than what the engine knows, which is a shorter
+ * list twice over: more alphabets exist than word lists, and more word lists exist than lists
+ * anybody has attested and put through the usability floor. `loadCatalogue` has already taken
+ * both cuts, so what arrives here is exactly the set of languages a board can be dealt in.
+ *
+ * This is also the picker on the main screen, where choosing a language sets the interface as
+ * well. That is why the narrower list belongs here and not in `InterfacePicker`: picking a
+ * language to play is picking a dictionary, and one that does not exist deals an empty board.
+ * The language's own name for itself, because a Greek speaker looking for Greek is looking for
+ * Ελληνικά.
  */
 export function LanguagePicker({
   catalogue,
@@ -145,9 +152,15 @@ interface InterfacePickerProps {
 /**
  * Picks the language the interface is written in, which is a separate question.
  *
- * Every locale is offered here whether or not its word list exists, because reading the
- * interface in a language needs no dictionary. Lives in nerd mode: choosing a language sets
- * both, and only somebody who wants them to differ needs to find this.
+ * Every locale is offered here whether or not it is `available`, because reading the interface
+ * in a language needs no dictionary. A Polish speaker with no Polish word list yet can still
+ * play German with Polish buttons, and the translation that makes that possible is finished
+ * work that should not be hidden because the attestation queue has not reached Polish.
+ *
+ * Lives in nerd mode and on How to Play: choosing a language on the main screen sets both, and
+ * only somebody who wants them to differ needs to find this. That split is what keeps the wider
+ * list from being confusing -- nothing here claims a board can be dealt in these languages, and
+ * the picker that does claim it offers only the ones where it is true.
  */
 export function InterfacePicker({
   value,

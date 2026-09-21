@@ -91,76 +91,91 @@ export interface Locale {
    * language needs filing beside a neighbour any more. See exonyms.ts.
    */
   readonly namedIn?: Readonly<Record<string, string>>
+  /**
+   * Whether this language can be played, which is a fact about a word list rather than about a
+   * translation.
+   *
+   * True only when an attested list for it has been borrowed into `packages/words/data` and
+   * proven to deal a board somebody could play: three seeds on the board the game opens on,
+   * each needing an accepted board holding a word of six tiles. `pnpm languages update` is what
+   * sets this, and it refuses to turn one off without an operator saying so by name.
+   *
+   * A localization keeps its place here whether or not this is true. Translating the interface
+   * into a language is finished work, and a language with no dictionary yet is waiting for
+   * evidence, not for a translator. So the flag hides it from the board, never from the repo.
+   */
+  readonly available: boolean
   readonly messages: Messages
 }
 
 /**
  * Every language the interface is translated into, in the order a picker shows them.
  *
- * Not the same as the languages that can be *played*: that also needs a word list, and the
- * app offers only the intersection. Keeping the two lists separate is deliberate, because the
- * game language and the interface language are separate settings.
+ * Not the same as the languages that can be *played*: that also needs a word list, which is
+ * what `available` records. Keeping the two apart is deliberate, because the game language and
+ * the interface language are separate settings, and a translation does not stop being finished
+ * work because nobody has attested a dictionary for it yet.
  */
 export const LOCALES: readonly Locale[] = [
   // English takes the Union flag for the language's origin rather than for a dialect: the
   // English word list is the union of en-US and en-GB, so COLOR and COLOR both play.
-  { tag: 'en', endonym: 'English', flag: '🇬🇧', messages: en },
-  { tag: 'fr', endonym: 'Français', flag: '🇫🇷', messages: fr },
-  { tag: 'es', endonym: 'Español', flag: '🇪🇸', messages: es },
-  { tag: 'it', endonym: 'Italiano', flag: '🇮🇹', messages: it },
-  { tag: 'de', endonym: 'Deutsch', flag: '🇩🇪', messages: de },
-  { tag: 'nl', endonym: 'Nederlands', flag: '🇳🇱', messages: nl },
-  { tag: 'af', endonym: 'Afrikaans', flag: '🇿🇦', messages: af },
-  { tag: 'sw', endonym: 'Kiswahili', flag: '🇹🇿', messages: sw },
+  { tag: 'en', endonym: 'English', flag: '🇬🇧', available: true, messages: en },
+  { tag: 'fr', endonym: 'Français', flag: '🇫🇷', available: true, messages: fr },
+  { tag: 'es', endonym: 'Español', flag: '🇪🇸', available: true, messages: es },
+  { tag: 'it', endonym: 'Italiano', flag: '🇮🇹', available: true, messages: it },
+  { tag: 'de', endonym: 'Deutsch', flag: '🇩🇪', available: true, messages: de },
+  { tag: 'nl', endonym: 'Nederlands', flag: '🇳🇱', available: true, messages: nl },
+  { tag: 'af', endonym: 'Afrikaans', flag: '🇿🇦', available: true, messages: af },
+  { tag: 'sw', endonym: 'Kiswahili', flag: '🇹🇿', available: true, messages: sw },
   // The two that read the other way. Israel for Hebrew; Saudi Arabia for Arabic, which is a
   // flag for a language spoken across twenty-odd countries and the usual compromise.
-  { tag: 'he', endonym: 'עברית', flag: '🇮🇱', messages: he },
-  { tag: 'ar', endonym: 'العربية', flag: '🇸🇦', messages: ar },
-  { tag: 'arz', endonym: 'مصرى', flag: '🇪🇬', namedIn: EGYPTIAN_ARABIC, messages: arz },
-  { tag: 'pt', endonym: 'Português', flag: '🇵🇹', messages: pt },
-  { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', messages: ptBR },
-  { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', messages: hr },
-  { tag: 'ms', endonym: 'Bahasa Melayu', flag: '🇲🇾', messages: ms },
-  { tag: 'id', endonym: 'Bahasa Indonesia', flag: '🇮🇩', messages: id },
-  { tag: 'ja', endonym: '日本語', flag: '🇯🇵', messages: ja },
-  { tag: 'ko', endonym: '한국어', flag: '🇰🇷', messages: ko },
+  { tag: 'he', endonym: 'עברית', flag: '🇮🇱', available: true, messages: he },
+  { tag: 'ar', endonym: 'العربية', flag: '🇸🇦', available: true, messages: ar },
+  { tag: 'arz', endonym: 'مصرى', flag: '🇪🇬', namedIn: EGYPTIAN_ARABIC, available: true, messages: arz },
+  { tag: 'pt', endonym: 'Português', flag: '🇵🇹', available: true, messages: pt },
+  { tag: 'pt-BR', endonym: 'Português (Brasil)', flag: '🇧🇷', available: true, messages: ptBR },
+  { tag: 'hr', endonym: 'Hrvatski', flag: '🇭🇷', available: true, messages: hr },
+  { tag: 'ms', endonym: 'Bahasa Melayu', flag: '🇲🇾', available: true, messages: ms },
+  { tag: 'id', endonym: 'Bahasa Indonesia', flag: '🇮🇩', available: true, messages: id },
+  { tag: 'ja', endonym: '日本語', flag: '🇯🇵', available: true, messages: ja },
+  { tag: 'ko', endonym: '한국어', flag: '🇰🇷', available: true, messages: ko },
   // Filipino by law and Tagalog by name: the flag is the country, the endonym the language.
-  { tag: 'tl', endonym: 'Tagalog', flag: '🇵🇭', messages: tl },
-  { tag: 'ru', endonym: 'Русский', flag: '🇷🇺', messages: ru },
-  { tag: 'sv', endonym: 'Svenska', flag: '🇸🇪', messages: sv },
-  { tag: 'no', endonym: 'Norsk', flag: '🇳🇴', messages: no },
-  { tag: 'fi', endonym: 'Suomi', flag: '🇫🇮', messages: fi },
-  { tag: 'el', endonym: 'Ελληνικά', flag: '🇬🇷', messages: el },
-  { tag: 'tr', endonym: 'Türkçe', flag: '🇹🇷', messages: tr },
-  { tag: 'pl', endonym: 'Polski', flag: '🇵🇱', messages: pl },
-  { tag: 'cs', endonym: 'Čeština', flag: '🇨🇿', messages: cs },
-  { tag: 'sk', endonym: 'Slovenčina', flag: '🇸🇰', messages: sk },
-  { tag: 'sl', endonym: 'Slovenščina', flag: '🇸🇮', messages: sl },
-  { tag: 'da', endonym: 'Dansk', flag: '🇩🇰', messages: da },
-  { tag: 'et', endonym: 'Eesti', flag: '🇪🇪', messages: et },
-  { tag: 'lt', endonym: 'Lietuvių', flag: '🇱🇹', messages: lt },
-  { tag: 'lv', endonym: 'Latviešu', flag: '🇱🇻', messages: lv },
-  { tag: 'mk', endonym: 'Македонски', flag: '🇲🇰', messages: mk },
-  { tag: 'sr', endonym: 'Српски', flag: '🇷🇸', messages: sr },
-  { tag: 'uk', endonym: 'Українська', flag: '🇺🇦', messages: uk },
-  { tag: 'bg', endonym: 'Български', flag: '🇧🇬', messages: bg },
-  { tag: 'hy', endonym: 'Հայերեն', flag: '🇦🇲', messages: hy },
-  { tag: 'ka', endonym: 'ქართული', flag: '🇬🇪', messages: ka },
-  { tag: 'is', endonym: 'Íslenska', flag: '🇮🇸', messages: is },
-  { tag: 'ga', endonym: 'Gaeilge', flag: '🇮🇪', messages: ga },
-  { tag: 'hu', endonym: 'Magyar', flag: '🇭🇺', messages: hu },
-  { tag: 'ro', endonym: 'Română', flag: '🇷🇴', messages: ro },
-  { tag: 'fa', endonym: 'فارسی', flag: '🇮🇷', messages: fa },
-  { tag: 'vi', endonym: 'Tiếng Việt', flag: '🇻🇳', messages: vi },
+  { tag: 'tl', endonym: 'Tagalog', flag: '🇵🇭', available: true, messages: tl },
+  { tag: 'ru', endonym: 'Русский', flag: '🇷🇺', available: true, messages: ru },
+  { tag: 'sv', endonym: 'Svenska', flag: '🇸🇪', available: true, messages: sv },
+  { tag: 'no', endonym: 'Norsk', flag: '🇳🇴', available: true, messages: no },
+  { tag: 'fi', endonym: 'Suomi', flag: '🇫🇮', available: true, messages: fi },
+  { tag: 'el', endonym: 'Ελληνικά', flag: '🇬🇷', available: true, messages: el },
+  { tag: 'tr', endonym: 'Türkçe', flag: '🇹🇷', available: true, messages: tr },
+  { tag: 'pl', endonym: 'Polski', flag: '🇵🇱', available: true, messages: pl },
+  { tag: 'cs', endonym: 'Čeština', flag: '🇨🇿', available: true, messages: cs },
+  { tag: 'sk', endonym: 'Slovenčina', flag: '🇸🇰', available: true, messages: sk },
+  { tag: 'sl', endonym: 'Slovenščina', flag: '🇸🇮', available: true, messages: sl },
+  { tag: 'da', endonym: 'Dansk', flag: '🇩🇰', available: true, messages: da },
+  { tag: 'et', endonym: 'Eesti', flag: '🇪🇪', available: true, messages: et },
+  { tag: 'lt', endonym: 'Lietuvių', flag: '🇱🇹', available: true, messages: lt },
+  { tag: 'lv', endonym: 'Latviešu', flag: '🇱🇻', available: true, messages: lv },
+  { tag: 'mk', endonym: 'Македонски', flag: '🇲🇰', available: true, messages: mk },
+  { tag: 'sr', endonym: 'Српски', flag: '🇷🇸', available: true, messages: sr },
+  { tag: 'uk', endonym: 'Українська', flag: '🇺🇦', available: true, messages: uk },
+  { tag: 'bg', endonym: 'Български', flag: '🇧🇬', available: true, messages: bg },
+  { tag: 'hy', endonym: 'Հայերեն', flag: '🇦🇲', available: true, messages: hy },
+  { tag: 'ka', endonym: 'ქართული', flag: '🇬🇪', available: true, messages: ka },
+  { tag: 'is', endonym: 'Íslenska', flag: '🇮🇸', available: true, messages: is },
+  { tag: 'ga', endonym: 'Gaeilge', flag: '🇮🇪', available: true, messages: ga },
+  { tag: 'hu', endonym: 'Magyar', flag: '🇭🇺', available: true, messages: hu },
+  { tag: 'ro', endonym: 'Română', flag: '🇷🇴', available: true, messages: ro },
+  { tag: 'fa', endonym: 'فارسی', flag: '🇮🇷', available: true, messages: fa },
+  { tag: 'vi', endonym: 'Tiếng Việt', flag: '🇻🇳', available: true, messages: vi },
   // Welsh gets a real emoji: Unicode has flags for England, Scotland and Wales and no other
   // subdivision anywhere, which is why the next three are drawn instead. See flags.ts.
-  { tag: 'cy', endonym: 'Cymraeg', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', messages: cy },
-  { tag: 'ca', endonym: 'Català', flag: CATALONIA, messages: ca },
-  { tag: 'eu', endonym: 'Euskara', flag: BASQUE_COUNTRY, messages: eu },
-  { tag: 'gl', endonym: 'Galego', flag: GALICIA, messages: gl },
-  { tag: 'pcm', endonym: 'Naijá', flag: '🇳🇬', namedIn: NAIJA, messages: pcm },
+  { tag: 'cy', endonym: 'Cymraeg', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', available: true, messages: cy },
+  { tag: 'ca', endonym: 'Català', flag: CATALONIA, available: true, messages: ca },
+  { tag: 'eu', endonym: 'Euskara', flag: BASQUE_COUNTRY, available: true, messages: eu },
+  { tag: 'gl', endonym: 'Galego', flag: GALICIA, available: true, messages: gl },
+  { tag: 'pcm', endonym: 'Naijá', flag: '🇳🇬', namedIn: NAIJA, available: true, messages: pcm },
   // Last, and the one flag here that is a country nobody lives in.
-  { tag: 'la', endonym: 'Latina', flag: '🇻🇦', messages: la },
+  { tag: 'la', endonym: 'Latina', flag: '🇻🇦', available: true, messages: la },
 ]
 
 export const DEFAULT_LOCALE = 'en'
@@ -171,6 +186,21 @@ const BY_TAG: ReadonlyMap<string, Locale> = new Map(
 
 export function localeFor(tag: string): Locale | undefined {
   return BY_TAG.get(tag)
+}
+
+/**
+ * The languages a board can be dealt in, in the order a picker shows them.
+ *
+ * This and `LOCALES` answer two different questions and the pickers must not confuse them. A
+ * player choosing the language of the *game* is choosing a dictionary, and offering one that
+ * does not exist deals a board with nothing on it. A player choosing the language of the
+ * *interface* is choosing what the buttons say, which needs no dictionary at all.
+ */
+export const PLAYABLE: readonly Locale[] = LOCALES.filter((locale) => locale.available)
+
+/** Whether a board can be dealt in this language. An unknown tag cannot. */
+export function isPlayable(tag: string): boolean {
+  return BY_TAG.get(tag)?.available ?? false
 }
 
 /**

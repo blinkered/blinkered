@@ -20,6 +20,9 @@
       "path": "./tools/dictionary"
     },
     {
+      "path": "./tools/languages"
+    },
+    {
       "path": "./apps/web"
     },
     {

@@ -22,6 +22,7 @@
     "build": "tsc --build && pnpm --filter @blinkered/web build",
     "lint:sources": "sh tools/lint-sources.sh",
     "dictionary": "tsc --build && node tools/dictionary/dist/main.js",
+    "languages": "tsc --build && node tools/languages/dist/main.js",
     "mobile": "pnpm build && pnpm --filter @blinkered/mobile sync",
     "mobile:open": "pnpm --filter @blinkered/mobile open",
     "mobile:build-number": "pnpm --filter @blinkered/mobile build-number"

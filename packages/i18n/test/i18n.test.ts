@@ -1,8 +1,12 @@
+import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { ALPHABET_IDS } from '@blinkered/engine'
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  PLAYABLE,
+  isPlayable,
   localeFor,
   messagesFor,
   preferredLocale,
@@ -109,6 +113,46 @@ describe('every locale', () => {
   it('has fifty-one of them, and the engine has an alphabet for each', () => {
     expect(LOCALES).toHaveLength(51)
     for (const locale of LOCALES) expect(ALPHABET_IDS).toContain(locale.tag)
+  })
+
+  /*
+   * `available` is a claim about a file, so it is checked against the file.
+   *
+   * The flag says a board can be dealt in this language. What makes that true is a word list in
+   * `packages/words/data`, put there by `pnpm languages update` after it dealt three boards from
+   * it. A flag set by hand, or left behind by a language that went away, would take the picker
+   * at its word and deal a board with nothing on it.
+   *
+   * The other half of the claim -- that the list on disk deals a board worth playing -- is
+   * `everyLanguagePlays`, which measures every list that is there. The two together are the
+   * whole of what `available` promises.
+   */
+  const DATA = fileURLToPath(new URL('../../words/data/', import.meta.url))
+
+  it('is available exactly when a word list for it is here', () => {
+    for (const locale of LOCALES) {
+      expect({ tag: locale.tag, available: locale.available }).toEqual({
+        tag: locale.tag,
+        available: existsSync(`${DATA}${locale.tag}/words.txt`),
+      })
+    }
+  })
+
+  it('offers at least one language to play, or there is no game', () => {
+    expect(PLAYABLE.length).toBeGreaterThan(0)
+    expect(PLAYABLE.every((locale) => locale.available)).toBe(true)
+    expect(PLAYABLE).toEqual(LOCALES.filter((locale) => locale.available))
+  })
+
+  it('can be played in is a question about a tag, and an unknown tag is a no', () => {
+    for (const locale of LOCALES) expect(isPlayable(locale.tag)).toBe(locale.available)
+    // Not a locale at all. The picker reads a tag out of a stored setting, and a setting saved
+    // before a language was withdrawn has to answer false rather than throw.
+    expect(isPlayable('kl')).toBe(false)
+  })
+
+  it('can be played in the default language, or the app opens on nothing', () => {
+    expect(isPlayable(DEFAULT_LOCALE)).toBe(true)
   })
 
   it('agrees with itself about its own tag', () => {

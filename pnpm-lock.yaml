@@ -149,11 +149,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/words
 
-  tools/wordlist:
+  tools/languages:
     dependencies:
       '@blinkered/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@blinkered/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@blinkered/words':
         specifier: workspace:*
         version: link:../../packages/words

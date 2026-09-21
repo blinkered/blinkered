@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { ALPHABET_IDS, alphabetFor, configFor } from '@blinkered/engine'
@@ -45,7 +45,36 @@ describe('every language deals a board worth playing', () => {
     }
   })
 
-  it('has a word list for every alphabet the app can offer', () => {
-    expect(playable).toHaveLength(ALPHABET_IDS.length)
+  /*
+   * The engine knows more alphabets than this repository has lists, and that is now the normal
+   * state rather than a gap to close.
+   *
+   * It used to be the other way round: fifty-one alphabets, fifty-one lists, and this test
+   * pinned the two together. The lists here are borrowed from the language repositories now, one
+   * per attested language, so the count is whatever the attestation queue has reached. Holding
+   * the old equality would mean either deleting an alphabet the moment a language is withdrawn
+   * or never withdrawing one.
+   *
+   * What is still worth pinning is the direction that can actually break. A list whose tag the
+   * engine has no alphabet for is silently skipped by the filter above -- never dealt, never
+   * checked, and reported by nothing -- so it is caught here by walking the directory rather
+   * than the alphabets.
+   */
+  it('has an alphabet for every word list here, and deals every one of them', () => {
+    const shipped = readdirSync(DATA, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name !== 'licences')
+      .map((entry) => entry.name)
+      .sort()
+    expect(shipped.filter((tag) => !ALPHABET_IDS.includes(tag))).toEqual([])
+    expect([...playable].sort()).toEqual(shipped)
+  })
+
+  it('offers exactly the languages the manifest does', () => {
+    // The app reads the manifest and the tests read the directory. A language in one and not the
+    // other is a list that ships without being checked, or a list checked and never shipped.
+    const manifest = JSON.parse(readFileSync(`${DATA}manifest.json`, 'utf8')) as {
+      languages: { tag: string }[]
+    }
+    expect(manifest.languages.map((entry) => entry.tag).sort()).toEqual([...playable].sort())
   })
 })

@@ -1,4 +1,5 @@
 import { alphabetFor } from '@blinkered/engine'
+import { isPlayable } from '@blinkered/i18n'
 import { buildTieredIndex, parseWordList } from '@blinkered/words'
 import type { TieredIndex } from '@blinkered/words'
 import { format } from '@blinkered/i18n'
@@ -27,12 +28,19 @@ function base(): string {
  *
  * Read at runtime rather than compiled in, so the answer describes the deployment rather than
  * the moment it was built, and a language whose list failed to ship is simply not offered.
+ *
+ * Then narrowed to the localizations marked `available`, which is the record of which lists have
+ * been attested and proven to deal a playable board. The two agree in any build made by
+ * `pnpm languages update`, and they are both checked here because they fail differently: a
+ * manifest can list a language whose file did not ship, and a directory can hold a list nobody
+ * has put through the floor. Offering a language either of them doubts would deal a board with
+ * nothing on it, which is the one outcome a picker must never produce.
  */
 export async function loadCatalogue(signal: AbortSignal): Promise<CatalogueEntry[]> {
   const response = await fetch(`${base()}words/manifest.json`, { signal })
   if (!response.ok) throw new Error('No word lists. Build them with:  pnpm dictionary build')
   const parsed = (await response.json()) as { languages?: CatalogueEntry[] }
-  const languages = parsed.languages ?? []
+  const languages = (parsed.languages ?? []).filter((entry) => isPlayable(entry.tag))
   if (languages.length === 0) {
     throw new Error('No word lists. Build them with:  pnpm dictionary build')
   }
