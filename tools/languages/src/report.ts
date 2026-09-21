@@ -206,7 +206,9 @@ export function commitMessage(plan: Plan, when: Date): string {
   if (moved.length > 0) {
     body.push('')
     for (const outcome of moved) {
-      body.push(`  ${pad(outcome.tag, 6)}${outcome.verdict === 'added' ? 'added  ' : 'updated'}  ${cite(outcome)}`)
+      body.push(
+        `  ${pad(outcome.tag, 6)}${outcome.verdict === 'added' ? 'added  ' : 'updated'}  ${cite(outcome)}`,
+      )
     }
   }
 

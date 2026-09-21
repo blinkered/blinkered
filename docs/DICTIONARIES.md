@@ -2,8 +2,35 @@
 
 How Blinkered gets a word list for each language, and the evidence behind the choices.
 Numbers here were measured, not estimated; re-measure rather than trust them after any source
-changes. The pipeline is `tools/dictionary`, the license audit is
-`tools/dictionary/src/manifest.ts`, and the pure logic is `packages/words/src/pipeline.ts`.
+changes. The pure logic is `packages/words/src/pipeline.ts`.
+
+## Blinkered does not build word lists any more
+
+**It borrows them.** One repository per language, `blinkered-dictionary-<tag>`, where a word
+ships because three independent collections of that language were found to contain it rather
+than because a dictionary listed it. `pnpm languages update` fetches each one, checks it deals a
+board somebody could play, and records the commit it came from. The method and the argument for
+it live in `blinkered-attestation`; the operational side is
+[.claude/skills/update-languages](../.claude/skills/update-languages/SKILL.md).
+
+**So the licensing problem this document used to spend two sections on is gone.** Every shipped
+list is CC0: what it records is which words occur in a language, which is a fact about the
+language rather than a work anybody owns. Two sections went with it, because they described
+lists that are no longer here: the audit of which upstream dictionary was clean and which was
+GPL-only, and the rule that a list is distributed under the most restrictive of its inputs.
+
+**What survives is everything that is still true**, and most of it is. Dictionaries did not stop
+having a job; theirs is smaller and comes first. They propose the candidates worth looking up,
+those candidate lists now live in `blinkered-attestation/candidates`, and they are still
+licensed, still mostly share-alike, and still never GPL, for the reason below. Everything after
+this section describes either how a candidate list was made or how a shipped list is measured,
+and both still happen.
+
+**The one rule worth repeating out of the deleted sections**, because it constrains what a
+candidate list may be built from: no GPL, anywhere. A GPL-licensed word list bundled into a
+mobile binary argues the binary is a GPL work, and the FSF's position is that the GPL conflicts
+with the App Store's terms. Where an upstream dictionary is offered under several licenses,
+record which branch is relied on, or a later reader will assume the worst one.
 
 ## The decision
 
@@ -199,80 +226,6 @@ hunspell accepted neither everything nor nothing, which catches an aff file that
 frequency list, and hunspell is case-aware: it accepts `hiss` and rejects `james`, because the
 dictionary lists the latter only as `James`. The spell check and the name filter are one pass.
 
-## Licenses: eleven clean, three GPL-only, five gaps
-
-Per [wooorm/dictionaries](https://github.com/wooorm/dictionaries), verified by reading each
-license file rather than trusting the summary:
-
-| Clean, and the branch relied on  |              | GPL-only, so unusable      |
-| -------------------------------- | ------------ | -------------------------- |
-| English (`en` ∪ `en-GB`)         | MIT          | Italian: GPL-3.0           |
-| French                           | MPL-2.0      | German: GPL-2.0 or GPL-3.0 |
-| Spanish                          | MPL-1.1      | Norwegian Bokmål: GPL-2.0  |
-| Portuguese (`pt-PT`)             | MPL-1.1      |                            |
-| Brazilian Portuguese (`pt`)      | MPL-2.0      | Absent entirely:           |
-| Dutch                            | BSD-3-Clause | Finnish, Malay, Tagalog    |
-| Russian                          | BSD-3-Clause |                            |
-| Croatian                         | SISSL        |                            |
-| Swedish                          | LGPL-3.0     |                            |
-| Greek                            | MPL-1.1      |                            |
-| Indonesian (LibreOffice `id_ID`) | LGPL-3.0     |                            |
-| Turkish                          | MIT          |                            |
-| Afrikaans (LibreOffice `af_ZA`)  | LGPL-2.1+    | Hebrew: Hspell is AGPL-3.0 |
-| Arabic (LibreOffice `ar`)        | MPL-1.1      | Korean: GPL-3.0            |
-
-Checked and rejected: `de_DE_frami` and LibreOffice `it_IT` are GPL too, so there is no
-non-GPL morphological dictionary for German or Italian anywhere obvious. Nor for **Korean**,
-where hunspell-dict-ko says it outright — "the built files (ko.aff and ko.dic) are licensed
-under the GPL version 3" — and LibreOffice's `ko_KR` is GPL-3.0 as well; nor for **Hebrew**,
-whose only one is Hspell, under the AGPL, which is further out of reach than the GPL is. GPL is the hard
-blocker, because a GPL word list bundled into a mobile binary argues the binary is a GPL work,
-and the FSF's position is that the GPL conflicts with the App Store's terms.
-
-**English unions three sources rather than intersecting them.** `en` alone rejects COLOR;
-`en-GB` alone rejects COLOR; both reject SWALE. All three sit in one validator group and any one
-suffices, which is why the pipeline has two levels: groups are intersected, members of a group
-are unioned. The third member is ENABLE, and the reason it is needed is that a spell checker and
-a word-game lexicon are built for different jobs — one aims to catch typos, the other to settle
-arguments, and the second is what a word game needs.
-
-### The languages without a clean hunspell use Wiktionary
-
-`https://dumps.wikimedia.org/<wiki>wiktionary/latest/<wiki>wiktionary-latest-all-titles-in-ns0.gz`
-is small (150KB to 5MB gzipped), CC BY-SA, one headword per line with case preserved, and
-exists for every language here. Used for Italian, German, Norwegian, Finnish and Malay.
-
-Weaker than hunspell on two counts, both visible in the yield column. Titles are mostly lemmas,
-so an inflected form is refused; and a Wiktionary documents foreign words too, so a little
-cross-language noise gets through, bounded by the frequency list being that language's own
-corpus.
-
-**German needed a rule of its own.** Every German noun is capitalized, so the filter that drops
-proper nouns everywhere else would have deleted the nouns and left the verbs. German therefore
-ignores case on both sides, which is why its yield is the highest in the table (92%) and why it
-is the one language that admits some proper nouns. Recorded in its PROVENANCE.
-
-### Tagalog needed the English Wiktionary rather than its own
-
-Two things go wrong for a language whose own wiki is small. tl.wiktionary has 17,092 pages of
-which 1,175 survive as Tagalog words, and a deeper cut recovers nothing at all: the validator is
-exhausted long before the cut is. Meanwhile en.wiktionary holds **33,079 Tagalog lemmas**, filed
-under `Category:Tagalog lemmas`, every one of them tagged with the language it belongs to.
-
-So there is a third `SourceKind`, `category`, which reads the members of a category through the
-MediaWiki API rather than a titles dump. There is no dump for this: the `all-titles` dump is per
-wiki, and what is wanted is per language on somebody else's wiki. Thirty thousand lemmas is
-sixty-seven paged requests, once, and then it is a file in the cache like everything else.
-
-**A category is a lexicon as well as a validator, and that is the real difference.** A titles
-list is every language at once, so it cannot say which words are Tagalog and cannot stand in for
-its lexicon; a category says exactly that. So the category's members join the candidate pool the
-way ENABLE does for English, with a count of zero, ranking below every cut the common tier
-applies. They earn credit and are never words a board is required to be solvable from — which is
-right, because the thing keeping Tagalog's common tier small is not the validator at all. **The
-Tagalog subtitle corpus is 10,665 words long**, a tenth of Malay's. That is the ceiling, and only
-a different corpus moves it.
-
 ## Sizing the cut
 
 Calibrated on English by board density, then checked against every other language. The cut is
@@ -433,50 +386,6 @@ proves the seam works; the remaining nineteen could move to it, at the cost of r
 re-calibrating every one. [wordfreq](https://github.com/rspeer/wordfreq) remains worth
 evaluating: MIT code, CC BY-SA data, aggregated across corpora rather than subtitles alone.
 
-## What we distribute it under
-
-Conservatively, the most restrictive of a language's inputs, recorded per language in its
-`LICENSE` with the verbatim text in `data/licenses/`. The argument that a filtered list
-inherits nothing from its filter is a good one; making it is not the same as being right about
-it, and assuming otherwise costs nothing.
-
-Thirty come out permissive or weak-copyleft: LGPL-2.1-or-later (12), MPL-1.1 (4), MIT (3),
-MPL-2.0 (3), BSD-3-Clause (3), LGPL-3.0 (2), LGPL-3.0-or-later, Apache-2.0, SISSL.
-
-**Twenty-one come out CC BY-SA**: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician,
-German, Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Naijá,
-Norwegian, Tagalog, Ukrainian and Vietnamese. That was five before the batch of twenty-five, and
-it is the number in this file a store build actually turns on.
-
-**Two of those twenty-one used to be counted wrong, from one line.** `SHARE_ALIKE` was a literal
-set holding only `CC-BY-SA-4.0`, and it did two jobs: setting the `shareAlike` flag, and picking
-which license dominates when a language has several validators.
-
-- **Icelandic is CC-BY-SA-3.0**, which was not in that set, so the manifest said
-  `shareAlike: false` while its own `LICENSE` said otherwise. The flag is what a store build
-  filters on. It is a prefix test now, so the next version of the license does not repeat it.
-- **Naijá came out with no terms at all**, and shipped a `LICENSE` reading
-  `SPDX-License-Identifier:` with nothing after it. `distributionTerms` reduces over a
-  language's validators, on the argument that the corpus contributes ordering and no content —
-  which PROVENANCE.md states outright, and which is true for fifty languages. Naijá is the one
-  with no validator, so the corpus chooses every word in the file and that sentence is false.
-  The corpus license now joins the reduction exactly where `unvalidated` is set, and Naijá comes
-  out CC BY-SA 4.0 from pcm.wikipedia.
-
-An empty set of conditions reads as `MIT` rather than as a blank, since a list derived from
-unconditioned inputs carries no copyleft and saying so beats leaving an SPDX identifier empty.
-Nothing reaches that path today.
-
-**That needs a decision before a store build, and only then.** Share-alike is satisfied for the
-web build by attribution, which we do. The question is whether a store binary's DRM around a
-BY-SA data file is the same objection the FSF raises about the GPL. It is less settled than the
-GPL case and the same shape. The four options, in the order I would try them: find permissively
-licensed validators for those twenty; get the frequency source onto `wordfreq` and argue the
-list is not a derivative at all; ship the twenty as a download rather than a bundle; or drop
-them from the mobile build. At five languages the last option was tolerable. At twenty — German,
-Italian, Japanese and Korean among them — it is not, which reorders the list: the first two are
-now worth real effort. Nothing else in the repo is blocked by this, and nothing is GPL.
-
 ## The written form, and why a word list has two columns
 
 A word list stores what the fold produced, because that is what the game deals in tiles. What
@@ -550,5 +459,5 @@ by default, and the wrong way. See LANGUAGES.md.
 ## Per-language data layout
 
 Governed by [packages/words/data/README.md](../packages/words/data/README.md). One directory per
-language tag, each carrying its own `LICENSE` and a `PROVENANCE.md` naming every source, the
-license branch relied on, the exact command, and the measurements above.
+language tag, each carrying a `LICENSE` and a `PROVENANCE.md` naming the repository the list was
+borrowed from, the commit its bytes came from, and why that repository says it is fit to ship.

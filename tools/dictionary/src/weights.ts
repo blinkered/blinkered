@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { alphabetFor } from '@blinkered/engine'
 import { buildIndex, calibrate, deriveWeights, parseWordList } from '@blinkered/words'
 import type { LanguageSpec } from './manifest.js'
-import { DATA_DIR } from './write.js'
+import { DATA_DIR } from './manifest.js'
 
 /**
  * Re-derives a language's draw weights from the list that was just built for it.

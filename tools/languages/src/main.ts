@@ -12,6 +12,7 @@ pnpm languages update [options]
   --only <tags>      comma separated, for checking one language rather than all of them
   --approve <tags>   comma separated; the languages you agree to stop offering
   --dry-run          read and report, write nothing
+  --rewrite          re-write every language, even where upstream has not moved
   --message <path>   write the commit message for this run to a file
 `
 
@@ -47,6 +48,7 @@ async function main(): Promise<void> {
     only: list(args, '--only'),
     approved: new Set(list(args, '--approve')),
     dryRun: args.includes('--dry-run'),
+    rewrite: args.includes('--rewrite'),
   }
 
   const when = new Date()
@@ -60,7 +62,9 @@ async function main(): Promise<void> {
 
   const wrote = plan.outcomes.filter(
     (outcome) =>
-      outcome.verdict === 'added' || outcome.verdict === 'updated' || plan.regressions.includes(outcome),
+      outcome.verdict === 'added' ||
+      outcome.verdict === 'updated' ||
+      plan.regressions.includes(outcome),
   )
   if (wrote.length === 0) {
     process.stdout.write('\nNothing to do: every language is already what its repository says.\n')

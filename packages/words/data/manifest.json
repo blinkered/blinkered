@@ -2,514 +2,109 @@
   "version": 1,
   "languages": [
     {
-      "tag": "af",
-      "endonym": "Afrikaans",
-      "common": 12354,
-      "full": 12354,
-      "bytes": 109514,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 107
-    },
-    {
-      "tag": "ar",
-      "endonym": "العربية",
-      "common": 18686,
-      "full": 656979,
-      "bytes": 9778556,
-      "license": "MPL-1.1",
-      "shareAlike": false,
-      "density": 268
-    },
-    {
-      "tag": "arz",
-      "endonym": "مصرى",
-      "common": 11570,
-      "full": 154576,
-      "bytes": 2003028,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 195
-    },
-    {
-      "tag": "bg",
-      "endonym": "Български",
-      "common": 17555,
-      "full": 279165,
-      "bytes": 5401051,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 78
-    },
-    {
-      "tag": "ca",
-      "endonym": "Català",
-      "common": 16405,
-      "full": 46841,
-      "bytes": 515879,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 154
-    },
-    {
-      "tag": "cs",
-      "endonym": "Čeština",
-      "common": 14002,
-      "full": 22001,
-      "bytes": 189284,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 52
-    },
-    {
-      "tag": "cy",
-      "endonym": "Cymraeg",
-      "common": 10038,
-      "full": 47635,
-      "bytes": 430929,
-      "license": "LGPL-3.0-or-later",
-      "shareAlike": false,
-      "density": 127
-    },
-    {
-      "tag": "da",
-      "endonym": "Dansk",
-      "common": 16419,
-      "full": 309554,
-      "bytes": 3689982,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 124
-    },
-    {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 16918,
-      "full": 36493,
-      "bytes": 354230,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 113
-    },
-    {
-      "tag": "el",
-      "endonym": "Ελληνικά",
-      "common": 17421,
-      "full": 257014,
-      "bytes": 5416760,
-      "license": "MPL-1.1",
-      "shareAlike": false,
-      "density": 97
+      "full": 36329,
+      "bytes": 352328,
+      "license": "CC0-1.0",
+      "density": 114,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-de",
+        "commit": "7211f846e886e5408c2fb546202fa310cfb6f0e9",
+        "committed": "2026-09-21T21:26:58Z",
+        "blob": "c0850b1f41e1b9093fcd615371e0bbc98abd56ba"
+      }
     },
     {
       "tag": "en",
       "endonym": "English",
       "common": 16575,
-      "full": 174456,
-      "bytes": 1738612,
-      "license": "MIT",
-      "shareAlike": false,
-      "density": 167
+      "full": 107670,
+      "bytes": 1006671,
+      "license": "CC0-1.0",
+      "density": 167,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-en",
+        "commit": "109e5e7ea10b325e6815d2b3ff32b1fbedd105fb",
+        "committed": "2026-09-21T21:33:01Z",
+        "blob": "9c3c58e8cd600ff744ba517e3bcedf837d4096a1"
+      }
     },
     {
       "tag": "es",
       "endonym": "Español",
       "common": 16993,
-      "full": 201655,
-      "bytes": 2728146,
-      "license": "MPL-1.1",
-      "shareAlike": false,
-      "density": 120
-    },
-    {
-      "tag": "et",
-      "endonym": "Eesti",
-      "common": 17552,
-      "full": 589422,
-      "bytes": 6998445,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 119
-    },
-    {
-      "tag": "eu",
-      "endonym": "Euskara",
-      "common": 5323,
-      "full": 7417,
-      "bytes": 57490,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 85
-    },
-    {
-      "tag": "fa",
-      "endonym": "فارسی",
-      "common": 13248,
-      "full": 51132,
-      "bytes": 650516,
-      "license": "Apache-2.0",
-      "shareAlike": false,
-      "density": 249
-    },
-    {
-      "tag": "fi",
-      "endonym": "Suomi",
-      "common": 22968,
-      "full": 44104,
-      "bytes": 423554,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 111
+      "full": 143024,
+      "bytes": 1439157,
+      "license": "CC0-1.0",
+      "density": 122,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-es",
+        "commit": "5259faf84f9e024d865ef64ee386ec09f9be7e8a",
+        "committed": "2026-09-21T21:28:55Z",
+        "blob": "1c1a76e4a56d88d390a542bcef7f19483b3a7d49"
+      }
     },
     {
       "tag": "fr",
       "endonym": "Français",
       "common": 16593,
-      "full": 144105,
-      "bytes": 2032228,
-      "license": "MPL-2.0",
-      "shareAlike": false,
-      "density": 153
-    },
-    {
-      "tag": "ga",
-      "endonym": "Gaeilge",
-      "common": 9886,
-      "full": 13545,
-      "bytes": 120907,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 109
-    },
-    {
-      "tag": "gl",
-      "endonym": "Galego",
-      "common": 16602,
-      "full": 34583,
-      "bytes": 398613,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 125
-    },
-    {
-      "tag": "he",
-      "endonym": "עברית",
-      "common": 12992,
-      "full": 15924,
-      "bytes": 172654,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 344
-    },
-    {
-      "tag": "hr",
-      "endonym": "Hrvatski",
-      "common": 17613,
-      "full": 341040,
-      "bytes": 3552395,
-      "license": "SISSL",
-      "shareAlike": false,
-      "density": 99
-    },
-    {
-      "tag": "hu",
-      "endonym": "Magyar",
-      "common": 17943,
-      "full": 1295061,
-      "bytes": 17224485,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 54
-    },
-    {
-      "tag": "hy",
-      "endonym": "Հայերեն",
-      "common": 11164,
-      "full": 19341,
-      "bytes": 325361,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 59
-    },
-    {
-      "tag": "id",
-      "endonym": "Bahasa Indonesia",
-      "common": 17300,
-      "full": 41132,
-      "bytes": 393716,
-      "license": "LGPL-3.0",
-      "shareAlike": false,
-      "density": 149
-    },
-    {
-      "tag": "is",
-      "endonym": "Íslenska",
-      "common": 14261,
-      "full": 68689,
-      "bytes": 682919,
-      "license": "CC-BY-SA-3.0",
-      "shareAlike": true,
-      "density": 88
-    },
-    {
-      "tag": "it",
-      "endonym": "Italiano",
-      "common": 17595,
-      "full": 40944,
-      "bytes": 395967,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 139
-    },
-    {
-      "tag": "ja",
-      "endonym": "日本語",
-      "common": 17000,
-      "full": 191188,
-      "bytes": 3859689,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 149
-    },
-    {
-      "tag": "ka",
-      "endonym": "ქართული",
-      "common": 19347,
-      "full": 163684,
-      "bytes": 4562769,
-      "license": "MIT",
-      "shareAlike": false,
-      "density": 94
+      "full": 98540,
+      "bytes": 966582,
+      "license": "CC0-1.0",
+      "density": 157,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-fr",
+        "commit": "40e78d3513595e8ff4b74594f7e2f22cf12c1afb",
+        "committed": "2026-09-21T21:23:23Z",
+        "blob": "c9e97f927c87837e4b74630c29d3316ad734756d"
+      }
     },
     {
       "tag": "ko",
       "endonym": "한국어",
       "common": 19257,
-      "full": 38467,
-      "bytes": 852422,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 95
-    },
-    {
-      "tag": "la",
-      "endonym": "Latina",
-      "common": 10745,
-      "full": 32765,
-      "bytes": 309886,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 91
-    },
-    {
-      "tag": "lt",
-      "endonym": "Lietuvių",
-      "common": 17488,
-      "full": 202690,
-      "bytes": 2184657,
-      "license": "BSD-3-Clause",
-      "shareAlike": false,
-      "density": 56
-    },
-    {
-      "tag": "lv",
-      "endonym": "Latviešu",
-      "common": 17087,
-      "full": 99801,
-      "bytes": 1051449,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 58
-    },
-    {
-      "tag": "mk",
-      "endonym": "Македонски",
-      "common": 13055,
-      "full": 21362,
-      "bytes": 334028,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 104
-    },
-    {
-      "tag": "ms",
-      "endonym": "Bahasa Melayu",
-      "common": 5228,
-      "full": 7921,
-      "bytes": 60548,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 93
-    },
-    {
-      "tag": "nl",
-      "endonym": "Nederlands",
-      "common": 16334,
-      "full": 322146,
-      "bytes": 3976276,
-      "license": "BSD-3-Clause",
-      "shareAlike": false,
-      "density": 142
-    },
-    {
-      "tag": "no",
-      "endonym": "Norsk",
-      "common": 27746,
-      "full": 41122,
-      "bytes": 387178,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 215
-    },
-    {
-      "tag": "pcm",
-      "endonym": "Naijá",
-      "common": 8000,
-      "full": 16394,
-      "bytes": 123103,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 136
-    },
-    {
-      "tag": "pl",
-      "endonym": "Polski",
-      "common": 18297,
-      "full": 544157,
-      "bytes": 6220023,
-      "license": "MPL-2.0",
-      "shareAlike": false,
-      "density": 53
-    },
-    {
-      "tag": "pt",
-      "endonym": "Português",
-      "common": 16107,
-      "full": 134775,
-      "bytes": 1638858,
-      "license": "MPL-1.1",
-      "shareAlike": false,
-      "density": 140
-    },
-    {
-      "tag": "pt-BR",
-      "endonym": "Português (Brasil)",
-      "common": 16627,
-      "full": 200241,
-      "bytes": 2478920,
-      "license": "MPL-2.0",
-      "shareAlike": false,
-      "density": 143
-    },
-    {
-      "tag": "ro",
-      "endonym": "Română",
-      "common": 16326,
-      "full": 187238,
-      "bytes": 1933004,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 118
+      "full": 24285,
+      "bytes": 483562,
+      "license": "CC0-1.0",
+      "density": 112,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-ko",
+        "commit": "cb5b8d2e87b98603bdd7cff8bd581bfd9c0c01c4",
+        "committed": "2026-09-21T21:31:57Z",
+        "blob": "e952d1dc2bb7329ee4e702a17ca1ec2ff78655e8"
+      }
     },
     {
       "tag": "ru",
       "endonym": "Русский",
       "common": 18095,
-      "full": 424352,
-      "bytes": 8495056,
-      "license": "BSD-3-Clause",
-      "shareAlike": false,
-      "density": 70
-    },
-    {
-      "tag": "sk",
-      "endonym": "Slovenčina",
-      "common": 17538,
-      "full": 287672,
-      "bytes": 3103590,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 44
-    },
-    {
-      "tag": "sl",
-      "endonym": "Slovenščina",
-      "common": 17869,
-      "full": 262639,
-      "bytes": 2663066,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 138
-    },
-    {
-      "tag": "sr",
-      "endonym": "Српски",
-      "common": 17691,
-      "full": 109513,
-      "bytes": 1776480,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 132
-    },
-    {
-      "tag": "sv",
-      "endonym": "Svenska",
-      "common": 16350,
-      "full": 371287,
-      "bytes": 4608117,
-      "license": "LGPL-3.0",
-      "shareAlike": false,
-      "density": 122
-    },
-    {
-      "tag": "sw",
-      "endonym": "Kiswahili",
-      "common": 9200,
-      "full": 29002,
-      "bytes": 258155,
-      "license": "LGPL-2.1-or-later",
-      "shareAlike": false,
-      "density": 87
+      "full": 362488,
+      "bytes": 7155507,
+      "license": "CC0-1.0",
+      "density": 72,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-ru",
+        "commit": "4361db0a1ef7ec91756688839f3006c42402bbcc",
+        "committed": "2026-09-21T21:31:00Z",
+        "blob": "61b4497398436bdc671273f8614ab48cc19644e3"
+      }
     },
     {
       "tag": "tl",
       "endonym": "Tagalog",
       "common": 3540,
-      "full": 23306,
-      "bytes": 196581,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 68
-    },
-    {
-      "tag": "tr",
-      "endonym": "Türkçe",
-      "common": 17867,
-      "full": 638282,
-      "bytes": 8459211,
-      "license": "MIT",
-      "shareAlike": false,
-      "density": 79
-    },
-    {
-      "tag": "uk",
-      "endonym": "Українська",
-      "common": 13175,
-      "full": 20903,
-      "bytes": 333645,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 52
-    },
-    {
-      "tag": "vi",
-      "endonym": "Tiếng Việt",
-      "common": 23977,
-      "full": 25622,
-      "bytes": 538246,
-      "license": "CC-BY-SA-4.0",
-      "shareAlike": true,
-      "density": 27
+      "full": 12573,
+      "bytes": 99716,
+      "license": "CC0-1.0",
+      "density": 72,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-tl",
+        "commit": "a0db2fba98683268188c565cd04311389dd54ff0",
+        "committed": "2026-09-21T21:23:43Z",
+        "blob": "3b9a5dede9676d46373c748bcaa99e5325298b8f"
+      }
     }
   ]
 }

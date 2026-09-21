@@ -20,12 +20,20 @@ const MIN_LENGTH = 3
 /**
  * What an evidence-built list is distributed under.
  *
- * Not an SPDX identifier, because there is no upstream license to name. A list here is the set
- * of words three independent collections were found to contain, and the dictionary that
- * suggested looking them up supplied a question rather than an answer. See the LICENSE written
- * into each directory, which says that at length, and `blinkered-attestation` for the argument.
+ * CC0, because the list is a record of facts. A word is in it because three independent
+ * collections of that language were found to contain it, and which words a language contains is
+ * not anybody's to license. That is the same argument the method rests on, so declaring anything
+ * narrower here would be claiming a right this repository spends a README denying it needs.
+ *
+ * Declared upstream in time. Each dictionary repository is getting its own LICENSE, and this
+ * should then be read from the language rather than asserted here, the way `ships` already is.
  */
-export const TERMS = 'attested'
+export const TERMS = 'CC0-1.0'
+
+/** The language's name in English, for English prose. `endonym` is its name for itself. */
+function englishName(tag: string): string {
+  return new Intl.DisplayNames(['en'], { type: 'language', fallback: 'none' }).of(tag) ?? tag
+}
 
 export interface Entry {
   readonly tag: string
@@ -34,7 +42,6 @@ export interface Entry {
   readonly full: number
   readonly bytes: number
   readonly license: string
-  readonly shareAlike: boolean
   readonly density: number
   /** Where these bytes came from. Absent only for a list that predates borrowing. */
   readonly upstream?: Upstream
@@ -63,7 +70,7 @@ export function hasList(tag: string): boolean {
 /** Every language directory on disk, which is not the same as every language in the manifest. */
 export function onDisk(): string[] {
   return readdirSync(DATA, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && entry.name !== 'licences')
+    .filter((entry) => entry.isDirectory() && existsSync(join(DATA, entry.name, 'words.txt')))
     .map((entry) => entry.name)
     .sort()
 }
@@ -82,25 +89,25 @@ export function density(tag: string, parsed: ParsedWordList): number {
 }
 
 function licenseFile(tag: string, upstream: Upstream): string {
-  return `${alphabetFor(tag).endonym} word list
+  const language = englishName(tag)
+  return `${language} word list
 ${repoUrl(tag)}
 ${upstream.commit}
 
-No upstream license is named here, because none was relied on.
+CC0 1.0 Universal. To the extent possible under law, all copyright and related
+rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
 
-This list is not a copy of a dictionary and is not derived from one. Every word in it
-ships because three independent collections of ${alphabetFor(tag).endonym} text were found
-to contain it, and the file recording which collections, and where in them, is public at
-the repository above. A dictionary did propose the words worth looking up. Nothing it
-proposed survived into this file except as a question the evidence answered.
+No upstream license is named, because none was relied on. This list is not a copy of a
+dictionary and is not derived from one. Every word in it ships because three independent
+collections of ${language} text were found to contain it, and the record of which
+collections, and where in them, is public at the repository above. A dictionary did
+propose the words worth looking up, and nothing it proposed survives here except as a
+question the evidence answered.
 
-That is a citation rather than a license grant, and it is the whole point of the method:
-a word list assembled this way inherits no terms from the dictionaries that suggested it,
-because it took nothing from them that a license governs.
-
-What this file is, then, is Blinkered's own compilation, distributed with the rest of
-Blinkered. See LICENSE and NOTICE at the root of this repository. The evidence, the rule,
-and the argument for both live in blinkered-attestation.
+Which is why CC0 rather than anything narrower: what this file records is which words
+occur in ${language}, and that is a fact about ${language} rather than a work anybody
+owns. The method is only worth the trouble if the result is free of the terms it was
+built to escape.
 `
 }
 
@@ -190,7 +197,6 @@ export function borrow(
     full: parsed.full.length,
     bytes: Buffer.byteLength(text, 'utf8'),
     license: TERMS,
-    shareAlike: false,
     density: density(tag, parsed),
     upstream,
   }
@@ -218,7 +224,10 @@ export function writeManifest(entries: readonly Entry[]): void {
 export function setAvailable(available: ReadonlySet<string>, tags: readonly string[]): void {
   let source = readFileSync(REGISTRY, 'utf8')
   for (const tag of tags) {
-    const line = new RegExp(`^(\\s*\\{ tag: '${tag}',.*?)(available: (?:true|false), )?(messages: )`, 'm')
+    const line = new RegExp(
+      `^(\\s*\\{ tag: '${tag}',.*?)(available: (?:true|false), )?(messages: )`,
+      'm',
+    )
     if (!line.test(source)) throw new Error(`registry.ts has no locale for "${tag}"`)
     source = source.replace(line, `$1available: ${String(available.has(tag))}, $3`)
   }

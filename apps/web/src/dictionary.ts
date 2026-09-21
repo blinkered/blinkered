@@ -5,16 +5,15 @@ import type { TieredIndex } from '@blinkered/words'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 
-/** One language as the shipped data describes it. Written by `pnpm dictionary build`. */
+/** One language as the shipped data describes it. Written by `pnpm languages update`. */
 export interface CatalogueEntry {
   readonly tag: string
   readonly endonym: string
   readonly common: number
   readonly full: number
   readonly bytes: number
+  /** SPDX id for the list's own terms, which are not the code's. See data/README.md. */
   readonly license: string
-  /** True when the data license carries a share-alike obligation. See DICTIONARIES.md. */
-  readonly shareAlike: boolean
   /** Median words a 12-tile board admits from the common tier. */
   readonly density: number
 }

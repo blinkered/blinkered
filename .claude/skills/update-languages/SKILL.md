@@ -26,24 +26,24 @@ It reads all fifty-one localizations, fetches each one's `words.txt` from its re
 branch, and deals three boards from it. It writes nothing. Expect it to take a minute or two;
 some of these lists are several megabytes.
 
-Narrow it while iterating: `--only de,ko`. That is safe — a language the run did not look at
+Narrow it while iterating: `--only de,ko`. That is safe: a language the run did not look at
 keeps whatever it had.
 
 ## What the report says
 
 Eight verdicts, and only three of them need you.
 
-| verdict | what it means | what to do |
-| --- | --- | --- |
-| `added` | new list upstream, blessed, deals a playable board | nothing; it will be borrowed |
-| `updated` | the list moved upstream | nothing; it will be borrowed |
-| `unchanged` | same bytes as the copy here | nothing; not even rewritten |
-| `absent` | no repository, or nothing built yet | nothing; this is the queue |
-| `held` | built upstream and deliberately not shipping | nothing; read the reason |
-| `unusable` | built upstream, does not deal a playable board | report it; nothing is offered |
-| **`lost`** | **a list this repo plays, gone upstream** | **stop and ask** |
-| **`withdrawn`** | **a list this repo plays, upstream stopped shipping it** | **stop and ask** |
-| **`failing`** | **a list this repo plays, now below the floor** | **stop and ask** |
+| verdict         | what it means                                            | what to do                    |
+| --------------- | -------------------------------------------------------- | ----------------------------- |
+| `added`         | new list upstream, blessed, deals a playable board       | nothing; it will be borrowed  |
+| `updated`       | the list moved upstream                                  | nothing; it will be borrowed  |
+| `unchanged`     | same bytes as the copy here                              | nothing; not even rewritten   |
+| `absent`        | no repository, or nothing built yet                      | nothing; this is the queue    |
+| `held`          | built upstream and deliberately not shipping             | nothing; read the reason      |
+| `unusable`      | built upstream, does not deal a playable board           | report it; nothing is offered |
+| **`lost`**      | **a list this repo plays, gone upstream**                | **stop and ask**              |
+| **`withdrawn`** | **a list this repo plays, upstream stopped shipping it** | **stop and ask**              |
+| **`failing`**   | **a list this repo plays, now below the floor**          | **stop and ask**              |
 
 `absent` is the ordinary state of most of this project. Forty-four of the fifty-one languages
 have a translated interface, a candidate list waiting in `blinkered-attestation/candidates`, and
@@ -63,7 +63,7 @@ each needing a board the generator accepts holding a word of six tiles.
 
 The blessing is read first, and it decides on its own. Japanese is why: it clears the floor
 comfortably and is held back anyway, because its reader cannot build compound words and Japanese
-vocabulary is largely compounds. That is a judgment about whether the list is any *good*, which no
+vocabulary is largely compounds. That is a judgment about whether the list is any _good_, which no
 board count can reach. A run that checked the floor first would report Japanese as passing and
 then withdraw it, which reads as a mechanical failure when it is nothing of the kind.
 
@@ -102,10 +102,10 @@ Bring them the list, one line each, with the reason and what it costs:
 
 > Three languages would stop being playable:
 >
-> - `it` — the repository is gone. Italian has been playable since the first build.
-> - `ja` — still built, `status.json` now says `ships: false`. Its reader cannot produce
+> - `it`: the repository is gone. Italian has been playable since the first build.
+> - `ja`: still built, `status.json` now says `ships: false`. Its reader cannot produce
 >   compound words, and Japanese vocabulary is largely compounds.
-> - `fi` — still published and blessed, now fails the floor: 2 of 3 boards fell short of 41 words.
+> - `fi`: still published and blessed, now fails the floor. 2 of 3 boards fell short of 41 words.
 >
 > Approving deletes each one's directory and removes it from the picker. Anybody mid-game keeps
 > the board they were dealt and cannot start another. The translation stays in the repo either
@@ -163,7 +163,7 @@ language that plays. Two shapes of it.
 arrives needs one added, and the report says so.
 
 **A language that stays can still lose its tour.** The opening and correcting words have to be in
-the new list's *common* tier and the card word somewhere in it, and an attested list is a
+the new list's _common_ tier and the card word somewhere in it, and an attested list is a
 different list. Regenerate with the command the report prints:
 
 ```sh

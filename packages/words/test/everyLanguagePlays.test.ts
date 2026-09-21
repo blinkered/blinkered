@@ -62,7 +62,7 @@ describe('every language deals a board worth playing', () => {
    */
   it('has an alphabet for every word list here, and deals every one of them', () => {
     const shipped = readdirSync(DATA, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && entry.name !== 'licences')
+      .filter((entry) => entry.isDirectory() && existsSync(`${DATA}${entry.name}/words.txt`))
       .map((entry) => entry.name)
       .sort()
     expect(shipped.filter((tag) => !ALPHABET_IDS.includes(tag))).toEqual([])

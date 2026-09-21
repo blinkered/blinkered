@@ -15,10 +15,13 @@ next.
 - **`packages/i18n`** — every string the game says, in fifty-one languages. Plurals go through
   `Intl.PluralRules`, so Russian gets its four forms and Croatian its three. Two languages CLDR
   cannot reliably name carry their own table of exonyms; see LANGUAGES.md.
-- **`packages/words/data`** — fifty-one playable languages, generated and committed, each with
-  its own `LICENSE` and `PROVENANCE.md`. 126MB, about 100KB gzipped per language, though
-  Hungarian is 17.2MB on its own, Arabic 9.8MB, and Russian and Turkish 8.5MB each.
-- **`tools/dictionary`** — builds them: `build`, `calibrate`, `weights`, `floor`, `list`.
+- **`packages/words/data`** — seven playable languages, borrowed from their own repositories
+  and committed, each with a `LICENSE` and a `PROVENANCE.md` naming the commit its bytes came
+  from. CC0. 19MB, with Russian 7.2MB of it.
+- **`tools/languages`** — borrows them: `pnpm languages update`, which is the only thing that
+  writes that directory or sets `available` in the locale registry.
+- **`tools/dictionary`** — measures them: `weights`, `board`, `floor`. It used to build them too,
+  and does not any more.
 - **`tools/harness`** — terminal front end on the real engine. Every rule is a flag.
 - **`tools/derive`** — draw weights and word-count calibration from an arbitrary word list.
 - **Deployed and live** at https://playblinkered.com, two replicas in `blinkered-prod` on
@@ -311,33 +314,30 @@ which one is a question for playing it, and it is in PLAN.md section 7.
   is only what made it visible. Moving the table to its own schema would settle it and is a
   separate change against two live databases.
 
-- **Twenty-one languages ship under CC BY-SA.** Twenty of them because Wiktionary is the only
-  clean validator for them: Armenian, Basque, Czech, Egyptian Arabic, Finnish, Galician, German,
-  Hebrew, Icelandic, Irish, Italian, Japanese, Korean, Latin, Macedonian, Malay, Norwegian,
-  Tagalog, Ukrainian, Vietnamese. **Naijá is the twenty-first and gets there another way**: it has
-  no validator at all, as the next bullet says, and its ordering corpus is the Naijá Wikipedia, so
-  the licence follows the corpus rather than the validator. Counting it was worth the sentence
-  because the store-build question is about the licence and not about how a list was checked.
-  That was five before the batch of twenty-five — see the end of DICTIONARIES.md. No effect on the web build, where attribution is the
-  whole obligation and we do it. Nothing anywhere is GPL.
-- **Naijá is built from corpus frequency with no validator at all**, which is the one place the
-  pipeline knowingly breaks its own rule, and it shows: twelve of fourteen unambiguous English
-  probes are playable as Naijá. **Accepted, deliberately.** It cannot be fixed the way the other
-  six were — Naijá is an English-lexifier creole, so `for`, `of`, `to`, `and` and `go` are core
-  vocabulary spelled exactly as English, and an English blocklist would delete the language. What
-  it needs is a Naijá lexicon and the largest one anywhere is en.wiktionary's 188 entries. It is
-  there so that a colleague in Lagos finds their language in the menu, which was always the
-  reason, and that reason survives a loose word list. Revisit if a lexicon turns up.
+- **Nothing ships under anybody else's licence any more.** Twenty-one of the old fifty-one lists
+  came out CC BY-SA, because a Wiktionary was the only clean validator for the language. The
+  seven that ship now are attested instead; a word is in the list because three independent
+  collections of that language were found to contain it. They are CC0, because which words occur
+  in a language is a fact about the language. The forty-four that are gone are queued in
+  `blinkered-attestation/candidates`, where their licences still apply and still matter, because
+  a candidate list is somebody's dictionary and a shipped list is not.
+- **Naijá used to be built from corpus frequency with no validator at all**, the one place the
+  old pipeline knowingly broke its own rule, and it showed: twelve of fourteen unambiguous
+  English probes were playable as Naijá. It is one of the forty-four now, so the question is
+  deferred rather than answered. It will come back the same way every other language does, and
+  attestation is a better answer to it than a validator would have been: an English-lexifier
+  creole cannot be bounded by a blocklist, but `for` and `go` occurring in three independent
+  collections of Naijá text is the evidence that they are Naijá words.
 - **Yoruba, Hausa and Igbo are parked**, not blocked. The evidence for the diacritic decision is
   gathered and written up in LANGUAGES.md; the decision itself is deliberately not being taken
   yet. Naijá's own diacritic question rides along with it.
 - **Six locales were written by someone who does not speak them** — Basque, Georgian, Armenian,
   Welsh, Irish, Naijá. Fluent and idiomatic as far as that goes. A native reader would be worth
   more than another pass by the author, and none is queued.
-- **Malay is the weak one**, at 15% validation yield, and no cut fixes it: the Wiktionary
-  validator is exhausted by rank 100,000, so a Malay player will be refused real words. Good
-  enough to ship. Nick is asking Malay speakers where a better dictionary lives; when one turns
-  up it is one entry in `tools/dictionary/src/manifest.ts` and a rebuild.
+- **Malay was the weak one**, at 15% validation yield, because its Wiktionary validator was
+  exhausted by rank 100,000 and a Malay player would be refused real words. It does not ship
+  now, and the weakness moves with it: its candidate list is as thin as it ever was, and
+  attesting it will be limited by what a thin candidate list thought to ask about.
 - **No service worker**, so no offline play. Offline is not something the game does on the web
   either, so it would be new behavior rather than parity, and the payload is every word list
   of which Russian, Turkish and Arabic are 8.5 to 9MB each. A stale service worker is also the classic way to serve last

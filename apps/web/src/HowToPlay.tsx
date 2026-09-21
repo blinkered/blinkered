@@ -1,5 +1,5 @@
 import { WILD_GLYPH, alphabetFor } from '@blinkered/engine'
-import { LOCALES, format, messagesFor } from '@blinkered/i18n'
+import { PLAYABLE, format, messagesFor } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { InterfacePicker } from './LanguagePicker.js'
 import { PageHead } from './PageHead.js'
@@ -141,8 +141,14 @@ export function HowToPlay({
       <section>
         <h2>{messages.htLanguagesTitle}</h2>
         {/* Counted rather than written out. It said "Sixteen" in sixteen files, which was a
-            number that goes stale in fifteen places the moment a language is added. */}
-        <p>{format(messages.htLanguagesBody, { n: LOCALES.length })}</p>
+            number that goes stale in fifteen places the moment a language is added.
+
+            The playable count, not the translated one. The sentence it fills is about boards
+            being solvable from words people use, which is a claim about dictionaries: saying
+            fifty-one here while seven have a word list would be counting the translations and
+            describing the boards. The interface picker still offers all fifty-one, and says so
+            where that is what it means. */}
+        <p>{format(messages.htLanguagesBody, { n: PLAYABLE.length })}</p>
       </section>
 
       {/* Both, always, in this order. The page opens in its own tab and is shareable, so it

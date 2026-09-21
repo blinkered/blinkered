@@ -71,6 +71,15 @@ export interface Options {
   /** Tags whose regression the operator has approved, in writing, on this invocation. */
   readonly approved: ReadonlySet<string>
   readonly dryRun: boolean
+  /**
+   * Re-write every borrowed language even where upstream has not moved.
+   *
+   * For when what changed is on this side: the LICENSE and PROVENANCE.md are generated from
+   * templates here, so editing one of those templates leaves seven files describing themselves
+   * the old way with nothing to notice it. Borrowing is otherwise keyed on the upstream blob,
+   * which is right for the words and blind to the prose around them.
+   */
+  readonly rewrite: boolean
 }
 
 /** Enough at once to be quick, few enough not to look like an attack on the API. */
@@ -94,7 +103,13 @@ const ABSENCE: Record<Absence, string> = {
 }
 
 /** Reads one language upstream and decides what it means, without writing anything. */
-async function inspect(tag: string, endonym: string, held: Entry | undefined, auth: string): Promise<Outcome> {
+async function inspect(
+  tag: string,
+  endonym: string,
+  held: Entry | undefined,
+  auth: string,
+  rewrite: boolean,
+): Promise<Outcome> {
   const here = hasList(tag)
   const found = await fetchList(tag, auth)
 
@@ -159,7 +174,7 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
   if (!here) {
     return { tag, endonym, verdict: 'added', floor, tour, status, upstream, ...(held && { held }) }
   }
-  const same = held?.upstream?.blob === upstream.blob
+  const same = !rewrite && held?.upstream?.blob === upstream.blob
   return {
     tag,
     endonym,
@@ -181,7 +196,7 @@ export async function survey(options: Options): Promise<Plan> {
   )
 
   const outcomes = await pooled(wanted, (locale) =>
-    inspect(locale.tag, locale.endonym, held.get(locale.tag), auth),
+    inspect(locale.tag, locale.endonym, held.get(locale.tag), auth, options.rewrite),
   )
   const regressions = outcomes.filter((outcome) => REGRESSIONS.includes(outcome.verdict))
   const blocked = regressions.filter((outcome) => !options.approved.has(outcome.tag))

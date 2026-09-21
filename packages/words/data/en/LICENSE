@@ -1,21 +1,18 @@
-Blinkered word list for English (en)
-SPDX-License-Identifier: MIT
+English word list
+https://github.com/blinkered/blinkered-dictionary-en
+109e5e7ea10b325e6815d2b3ff32b1fbedd105fb
 
-This file is generated. It is not a copy of any dictionary. It is the list of words that
-appear in a frequency-ordered corpus of en AND are accepted by every validator
-below, filtered to what the game can deal as tiles. Neither input is redistributed here.
-Rebuild it with `pnpm dictionary build --language=en`.
+CC0 1.0 Universal. To the extent possible under law, all copyright and related
+rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
 
-Distributed under MIT, which is the most restrictive of the terms below. See
-PROVENANCE.md for what was relied on and why.
+No upstream license is named, because none was relied on. This list is not a copy of a
+dictionary and is not derived from one. Every word in it ships because three independent
+collections of English text were found to contain it, and the record of which
+collections, and where in them, is public at the repository above. A dictionary did
+propose the words worth looking up, and nothing it proposed survives here except as a
+question the evidence answered.
 
-Ordering
-  hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS
-  MIT
-
-Validation
-  hunspell `en` (MIT) — SCOWL, Kevin Atkinson and contributors
-  hunspell `en-GB` (MIT) — SCOWL, Kevin Atkinson and contributors
-  word list `enable1` (LicenseRef-public-domain) — ENABLE (Enhanced North American Benchmark Lexicon), Alan Beale and M. Cooper, released into the public domain; see the YAWL package LICENSE for the statement
-
-The full text of each license is in ../licenses/.
+Which is why CC0 rather than anything narrower: what this file records is which words
+occur in English, and that is a fact about English rather than a work anybody
+owns. The method is only worth the trouble if the result is free of the terms it was
+built to escape.

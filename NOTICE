@@ -7,6 +7,12 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 remain reserved. You may build, modify and redistribute this software; you may not
 publish a game under the Blinkered name or branding.
 
-Third-party word lists carry their own licences and are not covered by the above.
-Each list ships in its own directory under packages/words/data with a LICENSE and a
-PROVENANCE file. See packages/words/data/README.md before adding one.
+Word lists ship in their own directories under packages/words/data, each with a
+LICENSE and a PROVENANCE file naming the repository and commit it was copied from.
+
+No third-party word list is distributed with Blinkered. Each shipped list is built
+from evidence rather than copied from a dictionary: a word is in it because three
+independent collections of that language were found to contain it, and the record of
+which collections, and where in them, is public. A dictionary proposed the words worth
+looking up and nothing it proposed survives except as a question the evidence answered,
+so these lists inherit no terms from one. See packages/words/data/README.md.

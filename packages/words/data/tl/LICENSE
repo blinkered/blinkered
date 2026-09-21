@@ -1,20 +1,18 @@
-Blinkered word list for Tagalog (tl)
-SPDX-License-Identifier: CC-BY-SA-4.0
+Filipino word list
+https://github.com/blinkered/blinkered-dictionary-tl
+a0db2fba98683268188c565cd04311389dd54ff0
 
-This file is generated. It is not a copy of any dictionary. It is the list of words that
-appear in a frequency-ordered corpus of tl AND are accepted by every validator
-below, filtered to what the game can deal as tiles. Neither input is redistributed here.
-Rebuild it with `pnpm dictionary build --language=tl`.
+CC0 1.0 Universal. To the extent possible under law, all copyright and related
+rights in this list are waived. https://creativecommons.org/publicdomain/zero/1.0/
 
-Distributed under CC-BY-SA-4.0, which is the most restrictive of the terms below. See
-PROVENANCE.md for what was relied on and why.
+No upstream license is named, because none was relied on. This list is not a copy of a
+dictionary and is not derived from one. Every word in it ships because three independent
+collections of Filipino text were found to contain it, and the record of which
+collections, and where in them, is public at the repository above. A dictionary did
+propose the words worth looking up, and nothing it proposed survives here except as a
+question the evidence answered.
 
-Ordering
-  hermitdave/FrequencyWords, from the OpenSubtitles 2018 corpus via OPUS
-  MIT
-
-Validation
-  tl.wiktionary.org page titles (CC-BY-SA-4.0) — tl.wiktionary.org contributors, page titles in namespace 0
-  en.wiktionary.org Category:Tagalog lemmas, Category:Tagalog non-lemma forms (CC-BY-SA-4.0) — en.wiktionary.org contributors, members of Category:Tagalog lemmas
-
-The full text of each license is in ../licenses/.
+Which is why CC0 rather than anything narrower: what this file records is which words
+occur in Filipino, and that is a fact about Filipino rather than a work anybody
+owns. The method is only worth the trouble if the result is free of the terms it was
+built to escape.

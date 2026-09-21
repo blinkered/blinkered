@@ -241,10 +241,16 @@ from a test without a timer or a browser.
 Code is Apache-2.0; see [LICENSE](LICENSE). The **Blinkered** name and any logo are
 reserved and not covered by it: fork the game freely, but ship it under your own name.
 
-Word lists are third-party data with their own licences, kept out of the code licence
-entirely. See [packages/words/data/README.md](packages/words/data/README.md), which
-explains why a GPL dictionary is a distribution problem for a mobile binary rather than
-merely an attribution one.
+Word lists are no longer third-party data. Each one is built from evidence in its own
+repository: a word ships because three independent collections of that language were
+found to contain it, so it inherits nothing from the dictionary that suggested the
+word. See [packages/words/data/README.md](packages/words/data/README.md), and
+`blinkered-attestation` for the method and the argument.
+
+That replaced a genuine problem rather than a theoretical one. Twenty-one of the old
+fifty-one lists came out CC BY-SA, and
+[docs/DICTIONARIES.md](docs/DICTIONARIES.md) records why a GPL dictionary is a
+distribution problem for a mobile binary rather than merely an attribution one.
 
 ## Status
 

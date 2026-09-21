@@ -65,19 +65,34 @@ describe('every written form', () => {
   it('leaves the words themselves alone, whatever it writes beside them', () => {
     // The format's one hard promise. Every consumer but the rail reads column one, so a
     // spelling that shifted a word would change the dictionary, the board and the scoring.
-    const { full, common, written } = read('vi')
-    expect(full.some((word) => word.includes('\t'))).toBe(false)
-    expect(common.every((word) => full.includes(word))).toBe(true)
-    // Vietnamese is the language this exists for: the fold eats the spaces, and 82% of
-    // Vietnamese words have one.
-    expect(written.get('CHÂUCHẤUĐÁXE')).toBe('CHÂU CHẤU ĐÁ XE')
-    expect(written.size / full.length).toBeGreaterThan(0.5)
+    //
+    // Asked of every shipped language rather than of one. It used to be asked of Vietnamese,
+    // because Vietnamese was the language the rail exists for -- the fold eats the spaces and
+    // 82% of its words have one -- and Vietnamese does not ship while its dictionary is being
+    // attested. Generalising was the right answer anyway: the promise was never Vietnamese's.
+    for (const tag of shipped) {
+      const { full, common } = read(tag)
+      expect(full.filter((word) => word.includes('\t')).slice(0, 3), tag).toEqual([])
+      const known = new Set(full)
+      expect(common.filter((word) => !known.has(word)).slice(0, 3), tag).toEqual([])
+    }
   })
 
-  it('writes nothing at all for English, which folds onto itself', () => {
-    // The other end of the range, and the check that sparseness is real rather than assumed.
-    // Anything here would be a loanword whose accented spelling outranks its plain one.
-    const { written, full } = read('en')
-    expect(written.size / full.length).toBeLessThan(0.02)
+  it('has nothing to write for any language shipping today', () => {
+    /*
+     * A statement of fact, and a tripwire rather than a satisfying test.
+     *
+     * The rail is exercised by two languages and neither ships right now: Vietnamese, where
+     * the fold eats the spaces out of 82% of the vocabulary, and Hebrew, which used it six
+     * times. The seven attested lists are all languages that fold onto themselves, so the
+     * spelling map is empty everywhere and the checks above run over nothing.
+     *
+     * That is a gap, and it is written down here rather than left for somebody to discover.
+     * When this fails, a language that writes its words differently from how it tiles them has
+     * come back, and the dense case is worth pinning again the way Vietnamese used to pin it:
+     * one known compound, and a spelling map covering over half the list.
+     */
+    const carrying = shipped.filter((tag) => read(tag).written.size > 0)
+    expect(carrying, 'a language with written forms is back; restore the dense case').toEqual([])
   })
 })

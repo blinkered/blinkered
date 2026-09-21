@@ -3,9 +3,26 @@
 A survey, written before building any of it, so the decisions are made once and the numbers are
 not re-gathered.
 
+**This is now a survey of candidates, and it should probably not live here.** Blinkered does not
+build word lists any more: it borrows attested ones, and seven languages ship. Everything below
+measures what a _candidate_ list for a language would cost: which dictionary could validate it,
+under what licence, and how thin the result would be. That is the question
+`blinkered-attestation` asks when it decides what to build next. The candidate lists themselves
+moved there, to `blinkered-attestation/candidates`, and this survey describes them rather than
+anything in this repository.
+
+It is left in place, unedited, because every number in it was measured rather than assumed and
+none of it stopped being true. A validator's licence still constrains what a candidate list may
+be built from; no GPL, for the reason in [DICTIONARIES.md](DICTIONARIES.md). And a language
+whose only clean validator is a Wiktionary is still a language whose candidates are CC BY-SA.
+What changed is that none of that reaches a shipped list: an attested list takes a question from
+a dictionary and answers it from collections of text, so it inherits nothing and ships CC0.
+
 **Done since it was written: Afrikaans, Turkish, Tagalog, Swahili, Latin, Hebrew, Arabic, Korean,
 Japanese and Egyptian Arabic ship; both missing pipeline capabilities are built; and the app
-reads right to left.** What that turned up is at [What building the first
+reads right to left.** Of those, only Tagalog and Korean still ship. Not because anything went
+wrong with the rest, but because a language now ships when it has been attested, and the queue
+has reached seven. What that work turned up is at [What building the first
 five changed](#what-building-the-first-five-changed), which is the part to read before doing the
 next one; the survey below is left as it was measured. [README.md](../README.md) has the checklist for adding a language and which
 parts of it are enforced rather than remembered; this is about which languages to add and what
