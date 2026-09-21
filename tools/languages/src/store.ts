@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { alphabetFor } from '@blinkered/engine'
 import { calibrate, buildIndex } from '@blinkered/words'
 import type { ParsedWordList } from '@blinkered/words'
-import type { Upstream } from './upstream.js'
+import type { Status, Upstream } from './upstream.js'
 import { repoUrl } from './upstream.js'
 
 export const DATA = fileURLToPath(new URL('../../../packages/words/data/', import.meta.url))
@@ -104,7 +104,13 @@ and the argument for both live in blinkered-attestation.
 `
 }
 
-function provenanceFile(tag: string, parsed: ParsedWordList, upstream: Upstream, when: Date): string {
+function provenanceFile(
+  tag: string,
+  parsed: ParsedWordList,
+  upstream: Upstream,
+  status: Status,
+  when: Date,
+): string {
   const endonym = alphabetFor(tag).endonym
   return `# ${endonym} (\`${tag}\`)
 
@@ -121,6 +127,18 @@ branch, and that repository is where it is made, measured and argued about.
 | common | ${parsed.common.length.toLocaleString('en-US')} |
 | full | ${parsed.full.length.toLocaleString('en-US')} |
 | digest | \`${parsed.digest === '' ? 'none' : parsed.digest}\` |
+
+## Why it ships
+
+\`${upstream.repo}\` says so, in its own \`status.json\`${
+    status.decided === undefined ? '' : `, decided ${status.decided}`
+  }:
+
+> ${(status.why ?? 'Blessed upstream, with no reason recorded.').replace(/\s+/g, ' ').trim()}
+
+That is a separate question from whether the list deals a playable board, and a higher one. This
+repository checks the board; only the repository that built the list is in a position to say
+whether the list is any good. A language can clear the floor comfortably and be held back anyway.
 
 ## Where the words come from
 
@@ -152,13 +170,18 @@ export function borrow(
   text: string,
   parsed: ParsedWordList,
   upstream: Upstream,
+  status: Status,
   when: Date,
 ): Entry {
   const dir = join(DATA, tag)
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'words.txt'), text, 'utf8')
   writeFileSync(join(dir, 'LICENSE'), licenseFile(tag, upstream), 'utf8')
-  writeFileSync(join(dir, 'PROVENANCE.md'), provenanceFile(tag, parsed, upstream, when), 'utf8')
+  writeFileSync(
+    join(dir, 'PROVENANCE.md'),
+    provenanceFile(tag, parsed, upstream, status, when),
+    'utf8',
+  )
 
   return {
     tag,

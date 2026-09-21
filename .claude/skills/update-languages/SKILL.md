@@ -31,28 +31,49 @@ keeps whatever it had.
 
 ## What the report says
 
-Seven verdicts, and only two of them need you.
+Eight verdicts, and only three of them need you.
 
 | verdict | what it means | what to do |
 | --- | --- | --- |
-| `added` | new list upstream, deals a playable board | nothing; it will be borrowed |
+| `added` | new list upstream, blessed, deals a playable board | nothing; it will be borrowed |
 | `updated` | the list moved upstream | nothing; it will be borrowed |
 | `unchanged` | same bytes as the copy here | nothing; not even rewritten |
 | `absent` | no repository, or nothing built yet | nothing; this is the queue |
+| `held` | built upstream and deliberately not shipping | nothing; read the reason |
 | `unusable` | built upstream, does not deal a playable board | report it; nothing is offered |
 | **`lost`** | **a list this repo plays, gone upstream** | **stop and ask** |
+| **`withdrawn`** | **a list this repo plays, upstream stopped shipping it** | **stop and ask** |
 | **`failing`** | **a list this repo plays, now below the floor** | **stop and ask** |
 
-`absent` is the ordinary state of most of this project. Forty-three of the fifty-one languages
+`absent` is the ordinary state of most of this project. Forty-four of the fifty-one languages
 have a translated interface, a candidate list waiting in `blinkered-attestation/candidates`, and
 nobody has registered sources for them yet. That is a queue, not a fault, and it is not news
 worth leading with.
 
+## Two gates, and the higher one is not ours
+
+Every language passes through both, and they answer different questions.
+
+**`status.json` says whether it should ship.** Each dictionary repository publishes one, and the
+field that matters here is `ships`. It carries `decided` and `why` beside it, and the report
+prints the reason in full, because that sentence was written by a person for a person to read.
+
+**The usability floor says whether it can be dealt.** Three seeds on the board the game opens on,
+each needing a board the generator accepts holding a word of six tiles.
+
+The blessing is read first, and it decides on its own. Japanese is why: it clears the floor
+comfortably and is held back anyway, because its reader cannot build compound words and Japanese
+vocabulary is largely compounds. That is a judgment about whether the list is any *good*, which no
+board count can reach. A run that checked the floor first would report Japanese as passing and
+then withdraw it, which reads as a mechanical failure when it is nothing of the kind.
+
+**Never infer a blessing.** A missing or unreadable `status.json` means not shipping. If that is
+wrong, the fix is a commit in the language's own repository, never a flag here.
+
 ## The usability floor
 
-A list is offered only if it deals a board somebody could play. Three seeds on the board the game
-opens on, each needing a board the generator **accepts** and which holds a word of six tiles,
-which is the first length that turns a profit under the fibonacci economy.
+A board the generator accepts, holding a word of six tiles, which is the first length that turns
+a profit under the fibonacci economy.
 
 That is deliberately not a coverage number. A language repository publishes when its record is
 honest, which is a different question and a lower bar: a thin list stated as thin is a fine thing
@@ -68,9 +89,10 @@ report rather than switching the languages off.
 
 ## Regressions: stop here
 
-`lost` and `failing` are the two outcomes that would take a working language away from a player.
-The tool refuses to write while either is unapproved, and prints the exact command that would
-approve them.
+`lost`, `withdrawn` and `failing` are the three outcomes that would take a working language away
+from a player. Different causes, identical effect on somebody who opened the app this morning,
+which is why all three are yours and not the tool's. It refuses to write while any of them is
+unapproved, and prints the exact command that would approve them.
 
 **Do not run that command on your own initiative.** Not to be helpful, not because the reason
 looks obvious, not because the dry run already showed it. Approving is an edit to what the app
@@ -81,8 +103,9 @@ Bring them the list, one line each, with the reason and what it costs:
 > Three languages would stop being playable:
 >
 > - `it` — the repository is gone. Italian has been playable since the first build.
-> - `pl` — repository is there, `words.txt` has been removed from main.
-> - `fi` — still published, now fails the floor: 2 of 3 boards fell short of 41 words.
+> - `ja` — still built, `status.json` now says `ships: false`. Its reader cannot produce
+>   compound words, and Japanese vocabulary is largely compounds.
+> - `fi` — still published and blessed, now fails the floor: 2 of 3 boards fell short of 41 words.
 >
 > Approving deletes each one's directory and removes it from the picker. Anybody mid-game keeps
 > the board they were dealt and cannot start another. The translation stays in the repo either
@@ -93,7 +116,7 @@ Bring them the list, one line each, with the reason and what it costs:
 Only with a clear yes, naming the languages, run:
 
 ```sh
-pnpm languages update --approve it,pl,fi
+pnpm languages update --approve it,ja,fi
 ```
 
 Approve **only** the ones they named. If they approve two of three, pass two; the third stays,

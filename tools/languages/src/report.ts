@@ -4,16 +4,20 @@ import type { Outcome, Plan, Verdict } from './update.js'
 /** How each verdict reads in the table, and the order the table groups them in. */
 const ORDER: readonly Verdict[] = [
   'lost',
+  'withdrawn',
   'failing',
   'added',
   'updated',
   'unchanged',
+  'held',
   'unusable',
   'absent',
 ]
 
 const LABEL: Record<Verdict, string> = {
   lost: 'LOST',
+  withdrawn: 'WITHDRAWN',
+  held: 'held',
   failing: 'FAILING',
   added: 'added',
   updated: 'updated',
@@ -24,7 +28,9 @@ const LABEL: Record<Verdict, string> = {
 
 const HEADING: Record<Verdict, string> = {
   lost: 'Regressions: a list this repository has, and upstream no longer does',
+  withdrawn: 'Regressions: a language this repository plays, which upstream has stopped shipping',
   failing: 'Regressions: a list that used to deal a playable board and no longer does',
+  held: 'Built upstream, and held back there on purpose',
   added: 'Newly playable',
   updated: 'Updated',
   unchanged: 'Already current',
@@ -36,13 +42,35 @@ function pad(text: string, width: number): string {
   return text.length >= width ? text : text + ' '.repeat(width - text.length)
 }
 
+/** Wraps a reason to something a terminal can read, which a held language's `why` is not. */
+function wrap(text: string, width: number, indent: string): string[] {
+  const lines: string[] = []
+  let row = ''
+  for (const word of text.split(/\s+/)) {
+    if (row === '') row = word
+    else if (`${row} ${word}`.length <= width) row = `${row} ${word}`
+    else {
+      lines.push(indent + row)
+      row = word
+    }
+  }
+  if (row !== '') lines.push(indent + row)
+  return lines
+}
+
+/** One line in a table, so a reason that runs to a paragraph does not become the table. */
+function brief(note: string, width: number): string {
+  const flat = note.replace(/\s+/g, ' ').trim()
+  return flat.length <= width ? flat : `${flat.slice(0, width - 1)}\u2026`
+}
+
 function line(outcome: Outcome): string {
   const { floor } = outcome
   const words =
     floor === undefined
       ? ''
       : `wMin ${String(floor.wMin)}, boards ${floor.draws.map((draw) => String(draw.words)).join('/')}`
-  const detail = outcome.note ?? words
+  const detail = outcome.note === undefined ? words : brief(outcome.note, 52)
   return `  ${pad(outcome.tag, 6)}${pad(outcome.endonym, 20)}${detail}`
 }
 
@@ -79,6 +107,36 @@ function tours(plan: Plan): string[] {
   return out
 }
 
+/**
+ * The full reason for every language its own repository decided against.
+ *
+ * Printed at length, unwrapped by anything but the terminal width, because this is the one place
+ * in the run where a person wrote a sentence for another person to read. Japanese is held back
+ * over what its reader can and cannot build out of compound words, which is an argument rather
+ * than a measurement, and abbreviating it in a table column would throw away the only part of
+ * the decision that could be disagreed with.
+ */
+function reasons(plan: Plan): string[] {
+  const decided = plan.outcomes.filter(
+    (outcome) =>
+      (outcome.verdict === 'held' || outcome.verdict === 'withdrawn') &&
+      outcome.status != null &&
+      outcome.status.why !== undefined,
+  )
+  if (decided.length === 0) return []
+
+  const out = ['', 'Why each of those was held, in its own repository\u2019s words:']
+  for (const outcome of decided) {
+    const decidedOn = outcome.status?.decided
+    out.push(
+      '',
+      `  ${outcome.tag}  ${outcome.endonym}${decidedOn === undefined ? '' : `  (decided ${decidedOn})`}`,
+      ...wrap(outcome.status?.why ?? '', 86, '    '),
+    )
+  }
+  return out
+}
+
 /** The whole run, for the operator who has to decide whether to let it write. */
 export function report(plan: Plan): string {
   const out: string[] = []
@@ -88,6 +146,7 @@ export function report(plan: Plan): string {
     out.push('', `${HEADING[verdict]} (${String(group.length)})`)
     for (const outcome of group) out.push(line(outcome))
   }
+  out.push(...reasons(plan))
   out.push(...tours(plan))
 
   if (plan.blocked.length > 0) {
@@ -98,8 +157,11 @@ export function report(plan: Plan): string {
       'Each of these is a language this repository can play today and could not play after',
       'this run. Disabling one is an edit only you can make, so nothing has been written.',
       '',
+      // Briefly: the full reason is printed above, under its own heading, and repeating a
+      // paragraph here would bury the list of names this block exists to show.
       ...plan.blocked.map(
-        (outcome) => `  ${pad(outcome.tag, 6)}${LABEL[outcome.verdict]}  ${outcome.note ?? ''}`,
+        (outcome) =>
+          `  ${pad(outcome.tag, 6)}${pad(LABEL[outcome.verdict], 11)}${brief(outcome.note ?? '', 56)}`,
       ),
       '',
       'If that is right, approve them by name and run it again:',
@@ -179,14 +241,19 @@ export function commitMessage(plan: Plan, when: Date): string {
   const unchanged = plan.outcomes.filter((outcome) => outcome.verdict === 'unchanged').length
   const waiting = plan.outcomes.filter((outcome) => outcome.verdict === 'absent').length
   const notYet = plan.outcomes.filter((outcome) => outcome.verdict === 'unusable').length
+  const heldBack = plan.outcomes.filter((outcome) => outcome.verdict === 'held').length
   body.push(
     '',
-    `${String(unchanged)} already current, ${String(notYet)} built but not yet playable, ` +
-      `${String(waiting)} with nothing to borrow.`,
+    `${String(unchanged)} already current, ${String(heldBack)} built and held back upstream, ` +
+      `${String(notYet)} built but not yet playable, ${String(waiting)} with nothing to borrow.`,
     '',
     `Checked against the usability floor on ${when.toISOString().slice(0, 10)}: three seeds per`,
     'language on the board the game opens on, each needing an accepted board holding a word of',
     'six tiles. A list that cannot do that is not offered, however well its attestation went.',
+    '',
+    'Every list here also says `ships: true` in its own status.json. That is a separate question',
+    'from the floor and a higher one: a language can deal a perfectly good board and still be a',
+    'poor dictionary, and only the repository that built it is in a position to say so.',
     '',
     'pnpm languages update',
   )

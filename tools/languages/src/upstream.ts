@@ -6,6 +6,8 @@ export const ORG = 'blinkered'
 export const PREFIX = 'blinkered-dictionary-'
 /** The one file this repository borrows. Everything else stays where it was built. */
 export const WORDS = 'words.txt'
+/** The language's own verdict on whether it is fit to ship, which is not ours to infer. */
+export const STATUS = 'status.json'
 
 export function repoFor(tag: string): string {
   return `${PREFIX}${tag}`
@@ -26,9 +28,34 @@ export interface Upstream {
   readonly blob: string
 }
 
+/**
+ * A language's own decision about whether Blinkered should be playing it.
+ *
+ * Deliberately not something this repository works out for itself. Japanese clears the usability
+ * floor comfortably and is held back anyway, because its reader cannot produce compound words and
+ * Japanese vocabulary is largely compounds -- a judgment about whether the list is any good,
+ * which no board count can reach. The floor is a mechanical check and this is an editorial one,
+ * and a language that passes the first and fails the second must not ship.
+ */
+export interface Status {
+  readonly ships: boolean
+  readonly decided?: string
+  /** Why, in the operator's words. Carried into the report, because the reason is the point. */
+  readonly why?: string
+}
+
 export interface Fetched {
   readonly upstream: Upstream
   readonly text: string
+  /**
+   * Null when the repository publishes no `status.json` at all, which counts as "do not ship".
+   *
+   * Failing closed is the only safe default: an unblessed language looks exactly like a language
+   * whose blessing has not been written yet, and shipping on the assumption is how a list nobody
+   * approved reaches a player. It is distinguished from a *failed read*, which throws instead --
+   * a token that has expired must not read as fifty-one languages quietly withdrawing.
+   */
+  readonly status: Status | null
 }
 
 /**
@@ -122,11 +149,41 @@ export async function fetchList(tag: string, auth: string): Promise<Fetched | Ab
 
   return {
     text,
+    status: await fetchStatus(repo, auth),
     upstream: {
       repo,
       commit: last.sha,
       committed: last.commit.committer.date,
       blob: blobSha(text),
     },
+  }
+}
+
+/**
+ * The language's own verdict, or null if it has not published one.
+ *
+ * Only a 404 is an answer. Anything else -- a rate limit, a revoked token, a gateway having a bad
+ * morning -- is a question this run cannot answer, and guessing "not blessed" would turn a
+ * network fault into a mass withdrawal that the operator would then be asked to approve.
+ */
+async function fetchStatus(repo: string, auth: string): Promise<Status | null> {
+  const answer = await api(
+    `/repos/${repo}/contents/${STATUS}?ref=main`,
+    'application/vnd.github.raw',
+    auth,
+  )
+  if (answer.status === 404) return null
+  if (!answer.ok) throw new Error(`${repo}: reading ${STATUS} failed (${String(answer.status)})`)
+
+  const body = (await answer.json()) as Partial<Status>
+  // A status file that does not say is not a status file. Same reasoning as the 404 above, in the
+  // other direction: this is a malformed answer rather than a missing one, and it stops the run.
+  if (typeof body.ships !== 'boolean') {
+    throw new Error(`${repo}: ${STATUS} has no boolean "ships"`)
+  }
+  return {
+    ships: body.ships,
+    ...(body.decided !== undefined && { decided: body.decided }),
+    ...(body.why !== undefined && { why: body.why }),
   }
 }

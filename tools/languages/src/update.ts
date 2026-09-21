@@ -3,16 +3,16 @@ import { NotAWordList, usability } from './floor.js'
 import type { Floor, Tour } from './floor.js'
 import { borrow, discard, hasList, readManifest, setAvailable, writeManifest } from './store.js'
 import type { Entry } from './store.js'
-import { fetchList, repoUrl, token } from './upstream.js'
-import type { Absence, Upstream } from './upstream.js'
+import { STATUS, fetchList, repoUrl, token } from './upstream.js'
+import type { Absence, Status, Upstream } from './upstream.js'
 
 /**
- * What happened to one language. Six of these, and only two of them are regressions.
+ * What happened to one language. Eight of these, and only three are regressions.
  *
  * The distinction that matters is between a language that has never worked and one that used
  * to. Most of these languages have no dictionary repository at all, which is the ordinary state
  * of the project rather than news; a language that worked yesterday and does not today is the
- * only thing worth stopping for.
+ * only thing worth stopping for. Each pair below is the same fact on either side of that line.
  */
 export type Verdict =
   | 'added'
@@ -20,14 +20,24 @@ export type Verdict =
   | 'unchanged'
   /** Nothing here and nothing upstream. The queue in blinkered-attestation/candidates. */
   | 'absent'
+  /** Upstream has a list and says not to ship it. Its own decision, and not ours to overrule. */
+  | 'held'
   /** Upstream has a list, it does not deal a playable board, and this repository had none. */
   | 'unusable'
   /** This repository has a list and upstream no longer does. */
   | 'lost'
+  /** This repository has a list, and upstream has decided it should stop shipping. */
+  | 'withdrawn'
   /** This repository has a list, upstream still does, and it no longer deals a playable board. */
   | 'failing'
 
-export const REGRESSIONS: readonly Verdict[] = ['lost', 'failing']
+/**
+ * The three ways a language this repository plays today would stop being playable.
+ *
+ * All three are the operator's to approve, and for one reason: whatever the cause, the effect on
+ * somebody who opened the app this morning is identical.
+ */
+export const REGRESSIONS: readonly Verdict[] = ['lost', 'withdrawn', 'failing']
 
 export interface Outcome {
   readonly tag: string
@@ -39,6 +49,8 @@ export interface Outcome {
    * language whose demonstration needs rebuilding is not a language that stopped playing.
    */
   readonly tour?: Tour
+  /** What the language says about itself. Absent when there was nothing upstream to ask. */
+  readonly status?: Status | null
   readonly upstream?: Upstream
   /** What this repository held before the run, so a report can say what changed. */
   readonly held?: Entry
@@ -92,7 +104,27 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
     return { tag, endonym, verdict: 'lost', note, ...(held && { held }) }
   }
 
-  const { text, upstream } = found
+  const { text, upstream, status } = found
+
+  /*
+   * The blessing is read before the floor, and decides on its own.
+   *
+   * Not because it is cheaper, but because the two questions are not in the same order of
+   * authority. The floor asks whether a board can be dealt; `ships` asks whether it should be.
+   * Japanese answers yes to the first and no to the second -- it clears the floor comfortably and
+   * is held back because its reader cannot build compound words, which is most of Japanese --
+   * so a run that consulted the floor first would report it as passing and then withdraw it,
+   * which reads as a mechanical failure of exactly the kind this file exists to distinguish from.
+   */
+  if (status === null || !status.ships) {
+    const note =
+      status === null
+        ? `no ${STATUS} upstream, so it is not blessed to ship`
+        : (status.why ?? 'held upstream, with no reason given')
+    const verdict: Verdict = here ? 'withdrawn' : 'held'
+    return { tag, endonym, verdict, upstream, status, note, ...(held && { held }) }
+  }
+
   let floor: Floor
   let tour: Tour
   try {
@@ -106,7 +138,7 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
     // question this repository asks is only ever "can this be dealt".
     const note = `upstream ${upstream.commit.slice(0, 12)} is not a word list: ${error.message}`
     const verdict: Verdict = here ? 'failing' : 'unusable'
-    return { tag, endonym, verdict, upstream, note, ...(held && { held }) }
+    return { tag, endonym, verdict, status, upstream, note, ...(held && { held }) }
   }
 
   if (!floor.passes) {
@@ -117,13 +149,16 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
       verdict,
       floor,
       tour,
+      status,
       upstream,
       note: floor.why ?? '',
       ...(held && { held }),
     }
   }
 
-  if (!here) return { tag, endonym, verdict: 'added', floor, tour, upstream, ...(held && { held }) }
+  if (!here) {
+    return { tag, endonym, verdict: 'added', floor, tour, status, upstream, ...(held && { held }) }
+  }
   const same = held?.upstream?.blob === upstream.blob
   return {
     tag,
@@ -131,6 +166,7 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
     verdict: same ? 'unchanged' : 'updated',
     floor,
     tour,
+    status,
     upstream,
     ...(held && { held }),
   }
@@ -176,11 +212,16 @@ export async function apply(plan: Plan, when: Date): Promise<Entry[]> {
       if (typeof found === 'string' || found.upstream.blob !== outcome.upstream?.blob) {
         throw new Error(`${tag} changed upstream while this ran; run it again`)
       }
+      // The blessing is re-read with the bytes and re-checked, so a language whose repository
+      // withdrew it between the survey and the write is refused rather than borrowed.
+      if (found.status === null || !found.status.ships) {
+        throw new Error(`${tag} stopped shipping upstream while this ran; run it again`)
+      }
       const { parsed } = usability(tag, found.text)
-      entries.set(tag, borrow(tag, found.text, parsed, found.upstream, when))
+      entries.set(tag, borrow(tag, found.text, parsed, found.upstream, found.status, when))
       continue
     }
-    if (verdict === 'lost' || verdict === 'failing') {
+    if (verdict === 'lost' || verdict === 'withdrawn' || verdict === 'failing') {
       discard(tag)
       entries.delete(tag)
       continue
@@ -190,7 +231,7 @@ export async function apply(plan: Plan, when: Date): Promise<Entry[]> {
     // borrowed nothing, and the point of recording the upstream commit is that it tells you when
     // something moved.
     if (verdict === 'unchanged') continue
-    // 'absent' and 'unusable': nothing here to offer, and nothing worth writing.
+    // 'absent', 'held' and 'unusable': nothing here to offer, and nothing worth writing.
     entries.delete(tag)
   }
 
