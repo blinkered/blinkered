@@ -131,25 +131,34 @@ Three of these will tell you something real:
 - `tutorialBoard.test.ts` checks each language's tour board against the list it is dealt from,
   and holds `TUTORIAL_BOARDS` to exactly the set of languages in the manifest.
 
-That last one is where a borrow usually first hurts, and in two ways.
+The dry run already told you about that last one, under **the first-run tour needs attention**.
+It is advisory and never blocks: a language whose demonstration needs rebuilding is still a
+language that plays. Two shapes of it.
 
 **A language that leaves needs its tour board removed** from
 `packages/words/src/tutorialBoards.ts`, because the test pins the two sets equal. A language that
-arrives needs one added.
+arrives needs one added, and the report says so.
 
-**A language that stays can still lose its tour.** The tour's three-letter and six-letter words
-have to be in the new list's *common* tier and the card word somewhere in it, and an attested
-list is a different list. Japanese is the live example: its tour is built on たいへいよう and
-たいせいよう, and neither survived attestation. Regenerate with:
+**A language that stays can still lose its tour.** The opening and correcting words have to be in
+the new list's *common* tier and the card word somewhere in it, and an attested list is a
+different list. Regenerate with the command the report prints:
 
 ```sh
-pnpm dictionary board --language=ja --top=4
+pnpm dictionary board --language=<tag> --top=4
 ```
 
-and paste the entry it prints. Note that this reads the language's frequency corpus, so it is the
-one step here that still needs the old pipeline's downloads. Never fix this by loosening the
-test: a tour that opens on a word the player cannot find in the dictionary teaches them to
-distrust the dictionary, which is the whole thing the attestation work is buying.
+and paste the entry it prints. This reads the language's frequency corpus, so it is the one step
+here that still reaches into the old pipeline's downloads.
+
+**Look at what the old board was doing before you replace it.** Japanese opened on いたい
+correcting to たいへいよう, with the card turning へ into せ, so the Pacific became the Atlantic.
+That came out of teaching the search to prefer words Japanese spells the way the tiles do, and
+`pnpm dictionary board` ranks by corpus frequency, so it will not reliably find such a pair again.
+Where the missing words are ordinary ones, the better repair is upstream: the attestation harvest
+exists for exactly this, and getting the word attested keeps the tour instead of replacing it.
+
+Never fix this by loosening the test. A tour that opens on a word the player cannot find in the
+dictionary teaches them to distrust the dictionary, which is the whole thing this work buys.
 
 Commit with the message the tool wrote, unedited apart from anything you learned:
 

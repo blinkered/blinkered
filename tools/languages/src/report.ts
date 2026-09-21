@@ -46,6 +46,39 @@ function line(outcome: Outcome): string {
   return `  ${pad(outcome.tag, 6)}${pad(outcome.endonym, 20)}${detail}`
 }
 
+/** Languages whose first-run tour would not survive being dealt from the borrowed list. */
+function tourTrouble(plan: Plan): Outcome[] {
+  return plan.outcomes.filter(
+    (outcome) =>
+      (outcome.verdict === 'added' || outcome.verdict === 'updated') &&
+      outcome.tour !== undefined &&
+      (!outcome.tour.known || outcome.tour.missing.length > 0),
+  )
+}
+
+/**
+ * The tour notes, which are advice rather than a gate.
+ *
+ * Kept out of the verdict table on purpose: a language here still plays, and reporting it beside
+ * the regressions would read as a fourth way to lose a language when it is a demonstration that
+ * needs rebuilding.
+ */
+function tours(plan: Plan): string[] {
+  const trouble = tourTrouble(plan)
+  if (trouble.length === 0) return []
+  const out = ['', 'The first-run tour needs attention (these languages still play):']
+  for (const outcome of trouble) {
+    const tour = outcome.tour
+    const why =
+      tour?.known === false
+        ? 'no tour board yet; add one to packages/words/src/tutorialBoards.ts'
+        : `the list no longer holds ${tour?.missing.join(', ') ?? ''}`
+    out.push(`  ${pad(outcome.tag, 6)}${why}`)
+    out.push(`        pnpm dictionary board --language=${outcome.tag} --top=4`)
+  }
+  return out
+}
+
 /** The whole run, for the operator who has to decide whether to let it write. */
 export function report(plan: Plan): string {
   const out: string[] = []
@@ -55,6 +88,7 @@ export function report(plan: Plan): string {
     out.push('', `${HEADING[verdict]} (${String(group.length)})`)
     for (const outcome of group) out.push(line(outcome))
   }
+  out.push(...tours(plan))
 
   if (plan.blocked.length > 0) {
     out.push(
@@ -122,6 +156,23 @@ export function commitMessage(plan: Plan, when: Date): string {
       ...gone.map((outcome) => `  ${pad(outcome.tag, 6)}${outcome.note ?? LABEL[outcome.verdict]}`),
       '',
       'A language leaves the offered list only this way. Nothing automatic disables one.',
+    )
+  }
+
+  const trouble = tourTrouble(plan)
+  if (trouble.length > 0) {
+    body.push(
+      '',
+      'Still playing, and the first-run tour wants rebuilding:',
+      '',
+      ...trouble.map(
+        (outcome) =>
+          `  ${pad(outcome.tag, 6)}${
+            outcome.tour?.known === false
+              ? 'has no tour board'
+              : `lost ${outcome.tour?.missing.join(', ') ?? ''}`
+          }`,
+      ),
     )
   }
 

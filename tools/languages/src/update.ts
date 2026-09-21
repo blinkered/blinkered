@@ -1,6 +1,6 @@
 import { LOCALES } from '@blinkered/i18n'
 import { NotAWordList, usability } from './floor.js'
-import type { Floor } from './floor.js'
+import type { Floor, Tour } from './floor.js'
 import { borrow, discard, hasList, readManifest, setAvailable, writeManifest } from './store.js'
 import type { Entry } from './store.js'
 import { fetchList, repoUrl, token } from './upstream.js'
@@ -34,6 +34,11 @@ export interface Outcome {
   readonly endonym: string
   readonly verdict: Verdict
   readonly floor?: Floor
+  /**
+   * Whether the first-run tour still works. Advisory: it never changes a verdict, because a
+   * language whose demonstration needs rebuilding is not a language that stopped playing.
+   */
+  readonly tour?: Tour
   readonly upstream?: Upstream
   /** What this repository held before the run, so a report can say what changed. */
   readonly held?: Entry
@@ -89,8 +94,11 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
 
   const { text, upstream } = found
   let floor: Floor
+  let tour: Tour
   try {
-    floor = usability(tag, text).floor
+    const judged = usability(tag, text)
+    floor = judged.floor
+    tour = judged.tour
   } catch (error) {
     if (!(error instanceof NotAWordList)) throw error
     // A repository that publishes something other than a word list is not a language that got
@@ -103,16 +111,26 @@ async function inspect(tag: string, endonym: string, held: Entry | undefined, au
 
   if (!floor.passes) {
     const verdict: Verdict = here ? 'failing' : 'unusable'
-    return { tag, endonym, verdict, floor, upstream, note: floor.why ?? '', ...(held && { held }) }
+    return {
+      tag,
+      endonym,
+      verdict,
+      floor,
+      tour,
+      upstream,
+      note: floor.why ?? '',
+      ...(held && { held }),
+    }
   }
 
-  if (!here) return { tag, endonym, verdict: 'added', floor, upstream, ...(held && { held }) }
+  if (!here) return { tag, endonym, verdict: 'added', floor, tour, upstream, ...(held && { held }) }
   const same = held?.upstream?.blob === upstream.blob
   return {
     tag,
     endonym,
     verdict: same ? 'unchanged' : 'updated',
     floor,
+    tour,
     upstream,
     ...(held && { held }),
   }
