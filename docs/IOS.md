@@ -397,11 +397,26 @@ The rest, none of which is code:
   signing on both configurations. The earlier note here said `security find-identity` reported
   **0 valid identities**, which was true of the machine and not of the account: it meant no Apple
   ID had been signed into Xcode yet, not that there was nothing to sign with.
-- **An App Store Connect record** for `com.tightlinesoftware.blinkered`, which is where the
-  TestFlight build goes and where export compliance is answered.
-  `ITSAppUsesNonExemptEncryption: false` is already in `Info.plist`, which is the correct answer
-  for an app that uses nothing but system TLS, and it is what stops that question being asked on
-  every upload.
+- ~~**An App Store Connect record**~~ Done, 20 September 2026, along with the App Privacy label:
+  four data types (email address, user id, gameplay content, other user content), each linked to
+  the account, each for app functionality, no tracking, matching `PrivacyInfo.xcprivacy` because
+  the two are compared at upload. `ITSAppUsesNonExemptEncryption: false` in `Info.plist` is the
+  correct answer for an app that uses nothing but system TLS, and it is what stops that question
+  being asked on every upload.
+
+  **Version 1.0 (3) is with Beta App Review** as of that evening, which external testing needs and
+  internal testing does not. The testers are family, which is why external was the choice; the
+  price is a review and a wait. Two things went in the review notes, both pre-empting a reflex: no
+  account is needed to play, and the app is not a web wrapper -- every word list is in the binary,
+  a game runs in airplane mode, and sign-in is a native `ASAuthorization` plugin.
+
+  Build 2 was rejected by nobody and expired: it carried `MinimumOSVersion` 14.0 and drew a warning
+  about the spring 2027 floor of 15.0. The app is on **16.2** now, which is the stylesheet's own
+  floor rather than Apple's: `color-mix()` draws the paused veil and arrived in Safari 16.2,
+  container query units size the too-few-letters notice at 16.0, and `overscroll-behavior: none`
+  is what keeps the board still under a thumb, also 16.0. An older iOS ignores all three in
+  silence.
+
 - ~~**A privacy manifest.**~~ Done. `ios/App/App/PrivacyInfo.xcprivacy`, in the App group and the
   Resources build phase, declaring the four data types the App Privacy answers declare and no
   tracking. `NSPrivacyAccessedAPITypes` is empty and that is the accurate answer rather than a
@@ -409,6 +424,18 @@ The rest, none of which is code:
   is declared by Capacitor, whose pods ship their own manifests now. The earlier note here said
   there was none anywhere "in the project, app or Pods", which was true of the app and had stopped
   being true of the Pods.
+- **Guideline 1.2, and it is the likeliest rejection.** Usernames, bios and profiles are public
+  and so is a leaderboard, which makes this an app with user-generated content, and 1.2 asks for
+  four things: a way to filter objectionable material, a report mechanism with timely responses,
+  **the ability to block abusive users**, and published contact information. Three of the four
+  exist -- the report button feeds the admin queue, an account can be renamed or banned, and the
+  address is in the policy. There is no per-user block and no proactive filtering.
+
+  The argument against needing one is that there is nobody to block: no messaging, no follows, no
+  comments, no feed, and the only shared surface is a username and a score. A reviewer may take
+  that, and if they do not, the answer is either a block feature or profiles that are not public.
+  Worth having decided before the reply is due rather than after.
+
 - **The CC BY-SA decision**, and this is still the one that actually blocks a store. It is
   **twenty-one languages now, not five**: the batch of twenty-five moved it, and German, Italian,
   Japanese and Korean are among them. The app bundles every word list, so a store build wraps

@@ -326,6 +326,13 @@ board is always the current engine's and an old score stops being ranked rather 
 wrongly. A URL that could name a version would be a URL that could ask for a board nobody can
 still play into.
 
+**A board lists games, not players, and the first real evening showed what that costs.** Nick's
+sister played six games of English hard on the day 0.5.0 shipped and held all six places on it,
+which is the query behaving exactly as written and reading, to anybody else, as though nobody else
+plays. Open, and the usual answer is best-per-player with the rest of somebody's games on their
+own page, where they already are. Worth settling before the boards are somewhere people arrive
+rather than somewhere they are sent.
+
 Two strings, because everything else already existed in fifty-one languages and is reused:
 `gameLanguage` and `difficulty` label the selectors, `difficultyNames` fills one, `score` and
 `columnRounds` head the columns, `gamesLoading` covers the wait, `backToGame` is the way out.
