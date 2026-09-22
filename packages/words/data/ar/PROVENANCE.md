@@ -1,24 +1,24 @@
-# Tagalog (`tl`)
+# العربية (`ar`)
 
-Borrowed, not built. This list is a copy of what `blinkered/blinkered-dictionary-tl` publishes on its main
+Borrowed, not built. This list is a copy of what `blinkered/blinkered-dictionary-ar` publishes on its main
 branch, and that repository is where it is made, measured and argued about.
 
 | | |
 | --- | --- |
-| upstream | https://github.com/blinkered/blinkered-dictionary-tl |
-| commit | [`bff91bd38b3d`](https://github.com/blinkered/blinkered-dictionary-tl/commit/bff91bd38b3d0ab42cbf125f27b78afa89310fe2) |
-| committed | 2026-09-21T23:02:14Z |
-| blob | `09dec9a6a80cf06770fd0ea8cedb3cde457fd170` |
+| upstream | https://github.com/blinkered/blinkered-dictionary-ar |
+| commit | [`787dcc3b9567`](https://github.com/blinkered/blinkered-dictionary-ar/commit/787dcc3b9567fecdfbc28323b38184c290d4f746) |
+| committed | 2026-09-22T01:52:59Z |
+| blob | `0be7c4056b6f6b49493c43a80970409af21d497c` |
 | borrowed | 2026-09-22T02:18:07.956Z |
-| common | 3,540 |
-| full | 12,579 |
+| common | 17,000 |
+| full | 313,501 |
 | digest | `none` |
 
 ## Why it ships
 
-`blinkered/blinkered-dictionary-tl` says so, in its own `status.json`, decided 2026-09-21:
+`blinkered/blinkered-dictionary-ar` says so, in its own `status.json`, decided 2026-09-21:
 
-> Blessed by the operator on 2026-09-21, in the first cut of seven.
+> Blessed by the operator on 2026-09-21, after verifying the usability floor, the minimum-W tests and the boards it deals.
 
 That is a separate question from whether the list deals a playable board, and a higher one. This
 repository checks the board; only the repository that built the list is in a position to say
@@ -26,7 +26,7 @@ whether the list is any good. A language can clear the floor comfortably and be 
 
 ## Where the words come from
 
-Every word here is attested: three independent collections of Tagalog text were found to
+Every word here is attested: three independent collections of العربية text were found to
 contain it, and the evidence recording which, and where, is committed upstream next to the
 list. Independence is counted over families rather than collections, because three pages of
 one web crawl can easily be three mirrors of one dictionary.

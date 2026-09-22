@@ -24,6 +24,13 @@ import type { TutorialBoard } from './tutorialBoard.js'
  * year. Regenerate with tools/dictionary; see docs/DICTIONARIES.md.
  */
 export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
+  ar: {
+    tiles: ['ي', 'ك', 'ن', 'ي', 'م', 'ن'],
+    three: 'يكن',
+    six: 'يمكنني',
+    card: { at: 0, becomes: 'ا', word: 'يمكننا' },
+    swap: { from: 'ك', to: 'ا' },
+  },
   de: {
     tiles: ['D', 'E', 'R', 'W', 'E', 'N'],
     three: 'DER',
@@ -45,6 +52,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 3, becomes: 'I', word: 'QUIERO' },
     swap: { from: 'Q', to: 'A' },
   },
+  fi: {
+    tiles: ['I', 'S', 'Ä', 'E', 'L', 'L'],
+    three: 'ISÄ',
+    six: 'SIELLÄ',
+    card: { at: 1, becomes: 'M', word: 'MEILLÄ' },
+    swap: { from: 'Ä', to: 'A' },
+  },
   fr: {
     tiles: ['M', 'O', 'N', 'A', 'I', 'S'],
     three: 'MON',
@@ -52,12 +66,40 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 0, becomes: 'R', word: 'RAISON' },
     swap: { from: 'M', to: 'E' },
   },
+  id: {
+    tiles: ['A', 'P', 'A', 'K', 'E', 'N'],
+    three: 'APA',
+    six: 'KENAPA',
+    card: { at: 1, becomes: 'R', word: 'KARENA' },
+    swap: { from: 'P', to: 'I' },
+  },
+  it: {
+    tiles: ['S', 'T', 'A', 'Q', 'U', 'E'],
+    three: 'STA',
+    six: 'QUESTA',
+    card: { at: 2, becomes: 'O', word: 'QUESTO' },
+    swap: { from: 'Q', to: 'I' },
+  },
   ko: {
     tiles: ['ㅇ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㄱ', 'ㅡ'],
     three: 'ㅇㅏㄴ',
     six: 'ㅈㅏㄱㅇㅡㄴ',
     card: { at: 3, becomes: 'ㅌ', word: 'ㄱㅏㅌㅇㅡㄴ' },
     swap: { from: 'ㅡ', to: 'ㄹ' },
+  },
+  nl: {
+    tiles: ['E', 'E', 'N', 'Z', 'G', 'G'],
+    three: 'EEN',
+    six: 'ZEGGEN',
+    card: { at: 4, becomes: 'I', word: 'GEZIEN' },
+    swap: { from: 'Z', to: 'A' },
+  },
+  'pt-BR': {
+    tiles: ['U', 'M', 'A', 'A', 'L', 'G'],
+    three: 'UMA',
+    six: 'ALGUMA',
+    card: { at: 2, becomes: 'E', word: 'ALGUEM' },
+    swap: { from: 'G', to: 'E' },
   },
   ru: {
     tiles: ['О', 'Н', 'А', 'Д', 'Л', 'Ж'],
@@ -72,5 +114,12 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     six: 'GALING',
     card: { at: 4, becomes: 'M', word: 'MAGING' },
     swap: { from: 'G', to: 'O' },
+  },
+  uk: {
+    tiles: ['Т', 'Р', 'И', 'П', 'О', 'С'],
+    three: 'ТРИ',
+    six: 'ПРОСТИ',
+    card: { at: 2, becomes: 'О', word: 'ПРОСТО' },
+    swap: { from: 'П', to: 'А' },
   },
 }
