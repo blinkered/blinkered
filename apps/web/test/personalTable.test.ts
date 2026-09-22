@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { ENGINE_VERSION } from '@blinkered/engine'
 import type { GameResult } from '@blinkered/engine'
 import { ROWS, rowsOfPlayed, rowsOfResults } from '../src/personalTable.js'
+import { toppedIt } from '../src/usePersonalTable.js'
 import type { PlayedGame } from '../src/account.js'
 import { standingOf } from '../src/scores.js'
 
@@ -145,5 +146,33 @@ describe('the table of your own games', () => {
       )
       expect(table.rows.map((row) => row.gameId)).toEqual(['game-200', null])
     })
+  })
+})
+
+/**
+ * The crown, and the same claim in the share text.
+ *
+ * Asked of the table on screen rather than of a second history, which is the fault it was
+ * written for: the table came from the account while this came from `localStorage`, so a
+ * signed-in player whose browser held three games could be congratulated on a personal best
+ * directly above a table showing them fourth of ten.
+ */
+describe('whether this game topped your table', () => {
+  const table = (rank: number, total: number) => ({ rows: [], rank, total, jumped: false })
+
+  it('is true at the top of a table with something to have topped', () => {
+    expect(toppedIt(table(1, 10))).toBe(true)
+  })
+
+  it('is false anywhere else in it', () => {
+    expect(toppedIt(table(4, 10))).toBe(false)
+  })
+
+  it('is false for a first game, which has beaten nothing', () => {
+    expect(toppedIt(table(1, 1))).toBe(false)
+  })
+
+  it('is false when there is no table at all', () => {
+    expect(toppedIt(null)).toBe(false)
   })
 })

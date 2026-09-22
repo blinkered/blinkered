@@ -19,6 +19,7 @@ import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { BoardStanding } from './BoardStanding.js'
 import { PersonalBest } from './PersonalBest.js'
+import { toppedIt, usePersonalTable } from './usePersonalTable.js'
 import { LeaderboardPage } from './LeaderboardPage.js'
 import { NerdPanel } from './NerdPanel.js'
 import { Splash } from './Splash.js'
@@ -46,7 +47,7 @@ import { isNativeApp } from './platform.js'
 import { PlayedGamePage, PlayerPage } from './PlayerPage.js'
 import { goTo, routeOf, urlOf } from './route.js'
 import type { Route } from './route.js'
-import { isPersonalBest, recordScore, standingOf } from './scores.js'
+import { recordScore, standingOf } from './scores.js'
 import { spellingFor } from './spelling.js'
 import type { Standing } from './scores.js'
 import {
@@ -559,6 +560,15 @@ function Session({
    * button beside it is the offer to change that.
    */
   const [keptId, setKeptId] = useState<string | null>(null)
+  /*
+   * Your own games, from your account when you have one and from this browser when you do not.
+   *
+   * Here rather than inside the section that draws it, because the crown over that table and the
+   * line in the share text are the same claim about the same history. While the table came from
+   * the account and those two came from `localStorage`, a signed-in player could be congratulated
+   * on a personal best directly above a table showing them fourth.
+   */
+  const personalTable = usePersonalTable(finished, account !== null)
   /*
    * Queue the finished game, then try to empty the queue.
    *
@@ -1108,9 +1118,8 @@ function Session({
                   section a wider frame than the one above it, in the same place every time.
                 */}
                 <PersonalBest
-                  standing={finished.standing}
-                  current={finished.result}
-                  signedIn={account !== null}
+                  table={personalTable}
+                  best={toppedIt(personalTable)}
                   messages={messages}
                 />
                 <BoardStanding
@@ -1150,7 +1159,7 @@ function Session({
                 />
                 <Share
                   result={finished.result}
-                  personalBest={isPersonalBest(finished.standing)}
+                  personalBest={toppedIt(personalTable)}
                   messages={messages}
                   permalink={keptId === null ? undefined : urlOf({ at: 'played-game', id: keptId })}
                 />
