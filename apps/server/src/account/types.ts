@@ -255,6 +255,11 @@ export interface AccountStore extends ReportWriter {
    * that is sometimes off by one is worse than either answer consistently. The client adds it
    * back, once, so the panel reads the same whichever way the race goes.
    *
+   * It is named by its finish time rather than by its id, because the panel asking has no id for
+   * it yet -- that is the very request it is racing. The cost is that two of one person's games
+   * finishing in the same millisecond would both drop out, which ordinary play cannot produce and
+   * a localStorage history imported with colliding timestamps could.
+   *
    * And it is what `ahead` counts against. Without that the client could only rank it among the
    * rows it was sent, which is a table's worth rather than a history's: a game that came tenth of
    * ten, asked for with a limit of five, would call itself sixth. Counted here because the count

@@ -568,7 +568,18 @@ function Session({
    * the account and those two came from `localStorage`, a signed-in player could be congratulated
    * on a personal best directly above a table showing them fourth.
    */
-  const personalTable = usePersonalTable(finished, account !== null)
+  /*
+   * How many times a drain has actually stored something.
+   *
+   * A number nobody displays, and the only thing that can tell the table of your own games to ask
+   * again. Signing in *on* this panel is the flow the panel exists for, and it changes the
+   * account's history from outside: the games this browser has been keeping are claimed and
+   * uploaded, one request each, while the table is already on screen. Without this the table
+   * asked once, at the moment the account appeared and before a single game had reached it, and a
+   * guest with forty games watched "#3 of 40" become "#1 of 1" and stay there.
+   */
+  const [drained, setDrained] = useState(0)
+  const personalTable = usePersonalTable(finished, account !== null, drained)
   /*
    * Queue the finished game, then try to empty the queue.
    *
@@ -605,11 +616,14 @@ function Session({
      */
     const mine = enqueue(account?.userId ?? null, keepable)
     if (account === null) return
-    void drainGames(account.userId).then((drained) => {
+    void drainGames(account.userId).then((sent) => {
       // Only this game's id reaches the screen. The others were queued on earlier visits and
       // have nothing on screen to point at.
-      const id = drained.stored.get(mine.key)
+      const id = sent.stored.get(mine.key)
       if (id !== undefined) setKeptId(id)
+      // Counted rather than announced, and only when something moved: a drain with an empty
+      // queue changes no history and is not worth a second question.
+      if (sent.stored.size > 0) setDrained((count) => count + 1)
     })
   }, [account, finished])
 
@@ -638,7 +652,11 @@ function Session({
        * this effect needs none.
        */
       claim(userId)
-      void drainGames(userId)
+      void drainGames(userId).then((sent) => {
+        // The other end of the same thread as the counter above. This is the drain that runs when
+        // an account appears, which is the one that empties a guest's queue into it.
+        if (sent.stored.size > 0) setDrained((count) => count + 1)
+      })
     }
     flush()
     globalThis.addEventListener('online', flush)
@@ -646,6 +664,9 @@ function Session({
       globalThis.removeEventListener('online', flush)
     }
   }, [account])
+
+  /** Asked once, read twice: the crown over the table and the line in the share text. */
+  const topped = toppedIt(personalTable)
 
   const setup = (startLabel: string): React.JSX.Element => (
     <GameSetup
@@ -1117,11 +1138,7 @@ function Session({
                   that compares with your own games, how it compares with everybody's. Each
                   section a wider frame than the one above it, in the same place every time.
                 */}
-                <PersonalBest
-                  table={personalTable}
-                  best={toppedIt(personalTable)}
-                  messages={messages}
-                />
+                <PersonalBest table={personalTable} best={topped} messages={messages} />
                 <BoardStanding
                   result={finished.result}
                   paused={finished.keepable?.paused === true}
@@ -1159,7 +1176,7 @@ function Session({
                 />
                 <Share
                   result={finished.result}
-                  personalBest={toppedIt(personalTable)}
+                  personalBest={topped}
                   messages={messages}
                   permalink={keptId === null ? undefined : urlOf({ at: 'played-game', id: keptId })}
                 />

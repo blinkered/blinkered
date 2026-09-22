@@ -577,15 +577,47 @@ function bestLimitFrom(asked: string | undefined): number {
  * ranked against, and a half-given game would be counted twice. Null rather than a 400 for a
  * malformed one -- the worst it costs is a table with one extra row and a rank of one, which is
  * a results screen that is slightly wrong rather than a results screen that is an error page.
+ *
+ * **Bounded, not merely typed, and the bounds are the point.** `Number.isInteger` says yes to
+ * 1e308 and to 1e16, and both of those reach the database: a score that large is handed to an
+ * `integer` column, which Postgres rejects on the parameter, and a moment that large is an
+ * Invalid Date, which drizzle's timestamp mapper turns into `RangeError: Invalid time value` on
+ * its way to `toISOString`. Nothing catches either, so both were a 500 from a query string. The
+ * fake store could not have caught them -- it compares JavaScript numbers, where a huge score is
+ * simply a big number and `new Date(1e16).getTime()` is NaN, which compares unequal to every row
+ * and so excludes nothing. Tested here against the route rather than against the store for
+ * exactly that reason.
+ *
+ * An empty parameter is absent rather than zero: `Number('')` is 0, so `?score=&rounds=&at=`
+ * described a scoreless game finished at the epoch, and got a straight-faced answer about it.
  */
-function placingFrom(
+const INT4_MAX = 2 ** 31 - 1
+/** The end of the range a `Date` can hold. Past it, every date operation throws. */
+const TIME_MAX = 8.64e15
+
+export function placingFrom(
   query: Record<string, string>,
 ): { score: number; rounds: number; at: Date } | null {
-  const score = Number(query.score)
-  const rounds = Number(query.rounds)
-  const at = Number(query.at)
-  if (!Number.isInteger(score) || !Number.isInteger(rounds) || !Number.isFinite(at)) return null
+  const score = countFrom(query.score)
+  const rounds = countFrom(query.rounds)
+  const at = numberFrom(query.at)
+  if (score === null || rounds === null || at === null) return null
+  if (!Number.isSafeInteger(at) || Math.abs(at) > TIME_MAX) return null
   return { score, rounds, at: new Date(at) }
+}
+
+/** A count the database can hold, or null. Whole, not negative, and inside an `integer`. */
+function countFrom(asked: string | undefined): number | null {
+  const value = numberFrom(asked)
+  if (value === null || !Number.isInteger(value)) return null
+  return value >= 0 && value <= INT4_MAX ? value : null
+}
+
+/** A number that was actually given. Absent and empty are both absent; `Number('')` is 0. */
+function numberFrom(asked: string | undefined): number | null {
+  if (asked === undefined || asked === '') return null
+  const value = Number(asked)
+  return Number.isFinite(value) ? value : null
 }
 
 function limitFrom(asked: string | undefined): number {

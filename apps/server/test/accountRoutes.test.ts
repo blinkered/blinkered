@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ENGINE_VERSION, configFor } from '@blinkered/engine'
 import { createApp } from '../src/app.js'
+import { placingFrom } from '../src/account/routes.js'
 import type { ApiDeps } from '../src/app.js'
 import { BIO_MAX } from '../src/account/profile.js'
 import type { Profile } from '../src/auth/types.js'
@@ -568,6 +569,29 @@ describe('the account surface', () => {
       expect((await best(`${BEST}${placing(10, 7, first - 1000)}`)).ahead).toBe(1)
     })
 
+    it('places nothing for a number the database cannot hold', async () => {
+      await importOne(clock.getTime() - 1000, 1, 1)
+      /*
+       * Every one of these was a 500 from a query string, and the fake store cannot catch any of
+       * them: it compares JavaScript numbers, where 1e308 is a big number rather than something
+       * an `integer` column refuses, and `new Date(1e16).getTime()` is NaN, which compares
+       * unequal to every row and quietly excludes nothing.
+       */
+      for (const query of [
+        '&score=1&rounds=1&at=1e16',
+        `&score=99999999999&rounds=1&at=${String(clock.getTime())}`,
+        `&score=1e308&rounds=1&at=${String(clock.getTime())}`,
+        `&score=1&rounds=-5&at=${String(clock.getTime())}`,
+        `&score=1.5&rounds=1&at=${String(clock.getTime())}`,
+      ]) {
+        const response = await get(`${BEST}${query}`)
+        expect(response.status).toBe(200)
+        // Answered as though no game had been named, which is a table with one extra row in it
+        // rather than an error page over somebody's final score.
+        expect(((await response.json()) as { total: number }).total).toBe(1)
+      }
+    })
+
     it('places nothing for a game given by halves', async () => {
       await importOne(clock.getTime() - 1000, 1, 1)
       // A score with no finish time cannot be taken out of the rows it is being ranked against,
@@ -578,6 +602,9 @@ describe('the account surface', () => {
       expect(
         (await best(`${BEST}&score=nonsense&rounds=6&at=${String(clock.getTime())}`)).ahead,
       ).toBe(0)
+      // Empty is absent, not zero. `Number('')` is 0, so this described a scoreless game
+      // finished at the epoch and got a straight-faced answer about it.
+      expect((await best(`${BEST}&score=&rounds=&at=`)).total).toBe(1)
     })
 
     it('answers only about the group it was asked about', async () => {
@@ -818,5 +845,55 @@ describe('the public routes under a rate limit', () => {
     for (let n = 0; n < 5; n += 1) {
       expect((await app.request('/v1/users/nobody', caller)).status).toBe(404)
     }
+  })
+})
+
+/**
+ * The game a best-games table is placing, read off a query string.
+ *
+ * Tested here rather than through the route, because **the route cannot show the difference**.
+ * The fake store compares JavaScript numbers: a score of 1e308 is just a big number to it, and
+ * `new Date(1e16).getTime()` is NaN, which compares unequal to every row and so excludes nothing.
+ * It answers 200 whether or not this function is guarding anything. Against a real Postgres the
+ * same two inputs are a rejected `integer` parameter and a `RangeError` out of drizzle's
+ * timestamp mapper, and both were a 500 from a query string.
+ */
+describe('the game being placed', () => {
+  const AT = 1_700_000_000_000
+
+  it('reads a game that was actually given', () => {
+    expect(placingFrom({ score: '120', rounds: '20', at: String(AT) })).toEqual({
+      score: 120,
+      rounds: 20,
+      at: new Date(AT),
+    })
+  })
+
+  it('refuses a moment no Date can hold', () => {
+    // 8.64e15 is the end of the range. Past it every date operation throws, and the one that
+    // threw was `toISOString` inside the query builder.
+    expect(placingFrom({ score: '1', rounds: '1', at: '1e16' })).toBeNull()
+    expect(placingFrom({ score: '1', rounds: '1', at: '-1e16' })).toBeNull()
+    expect(placingFrom({ score: '1', rounds: '1', at: '8640000000000000' })).not.toBeNull()
+  })
+
+  it('refuses a number no integer column can hold', () => {
+    expect(placingFrom({ score: '1e308', rounds: '1', at: String(AT) })).toBeNull()
+    expect(placingFrom({ score: '99999999999', rounds: '1', at: String(AT) })).toBeNull()
+    expect(placingFrom({ score: '1', rounds: '2147483648', at: String(AT) })).toBeNull()
+    expect(placingFrom({ score: '2147483647', rounds: '1', at: String(AT) })).not.toBeNull()
+  })
+
+  it('refuses what is not a whole count', () => {
+    expect(placingFrom({ score: '1.5', rounds: '1', at: String(AT) })).toBeNull()
+    expect(placingFrom({ score: '-1', rounds: '1', at: String(AT) })).toBeNull()
+    expect(placingFrom({ score: 'nonsense', rounds: '1', at: String(AT) })).toBeNull()
+  })
+
+  it('treats empty and absent alike, rather than as zero', () => {
+    // `Number('')` is 0, so this described a scoreless game finished at the epoch.
+    expect(placingFrom({ score: '', rounds: '', at: '' })).toBeNull()
+    expect(placingFrom({})).toBeNull()
+    expect(placingFrom({ score: '10' })).toBeNull()
   })
 })

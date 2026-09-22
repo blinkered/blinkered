@@ -174,16 +174,41 @@ describe('the address a board lives at', () => {
  */
 describe('the game that just ended, on a board that already has it', () => {
   const finished = { at: 1_700_000_000_000 } as GameResult
+  const ME = { username: 'quick-otter-1234' }
 
-  it('recognises it by the finish time the client sent', () => {
-    const same = row({ score: 120, finishedAt: new Date(finished.at).toISOString() })
-    expect(isThisGame(same, finished)).toBe(true)
+  it('recognises it by the name and the finish time the client sent', () => {
+    const same = row({
+      score: 120,
+      username: ME.username,
+      finishedAt: new Date(finished.at).toISOString(),
+    })
+    expect(isThisGame(same, finished, ME)).toBe(true)
   })
 
   it('leaves every other row alone, however alike', () => {
     // The same score, the same rounds, one second apart: two games, and only one of them is this
     // one. Matching on the numbers instead would have hidden somebody else's row.
-    const other = row({ score: 120, finishedAt: new Date(finished.at + 1000).toISOString() })
-    expect(isThisGame(other, finished)).toBe(false)
+    const other = row({
+      score: 120,
+      username: ME.username,
+      finishedAt: new Date(finished.at + 1000).toISOString(),
+    })
+    expect(isThisGame(other, finished, ME)).toBe(false)
+  })
+
+  it('leaves a stranger who finished in the same millisecond alone', () => {
+    // Two players can share a millisecond; one player cannot repeat one. On the time alone this
+    // took a stranger off the board and moved everybody below them up a place.
+    const theirs = row({
+      score: 120,
+      username: 'brave-heron-5678',
+      finishedAt: new Date(finished.at).toISOString(),
+    })
+    expect(isThisGame(theirs, finished, ME)).toBe(false)
+  })
+
+  it('removes nothing at all for a guest, who has nothing on the board', () => {
+    const same = row({ score: 120, finishedAt: new Date(finished.at).toISOString() })
+    expect(isThisGame(same, finished, null)).toBe(false)
   })
 })

@@ -118,7 +118,7 @@ export function BoardStanding({
    * screen should be able to show. The finish time identifies it: one person cannot finish two
    * games in the same millisecond, and it is the same number the client sent.
    */
-  const others = board.rows.filter((row) => !isThisGame(row, result))
+  const others = board.rows.filter((row) => !isThisGame(row, result, me))
   const rows = placeInto(others, result, {
     username: me?.username ?? messages.leaderboardThisGame,
     // A picture either way. The seed is the reader's own when they have one, and the game's seed
@@ -181,12 +181,22 @@ export type ProjectedRow = Omit<Row, 'gameId'> & { readonly gameId: string | nul
 /**
  * Whether a board row is the game that just ended, arrived there ahead of this request.
  *
- * On the finish time, which is the client's own number round-tripped through the server, and
- * which one player cannot repeat: `GameToKeep.finishedAt` is `result.at`, stored as a timestamp
- * and handed back as ISO.
+ * On the finish time and the name together. The time is the client's own number round-tripped
+ * through the server -- `GameToKeep.finishedAt` is `result.at`, stored as a timestamp and handed
+ * back as ISO -- and one player cannot repeat it, but two players can share a millisecond. On the
+ * time alone this removed a stranger's row and moved everybody below it up a place, which is a
+ * board that quietly disagrees with the one behind the link under it.
+ *
+ * A guest has nothing on the board by definition, so nothing is ever removed for one: their game
+ * has not been uploaded, and any match at all would be somebody else's row.
  */
-export function isThisGame(row: Row, result: GameResult): boolean {
-  return Date.parse(row.finishedAt) === result.at
+export function isThisGame(
+  row: Row,
+  result: GameResult,
+  me: { readonly username: string } | null,
+): boolean {
+  if (me === null) return false
+  return row.username === me.username && Date.parse(row.finishedAt) === result.at
 }
 
 /**
