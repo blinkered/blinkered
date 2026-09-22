@@ -1,9 +1,9 @@
 import { LOCALES } from '@blinkered/i18n'
 import { NotAWordList, usability } from './floor.js'
-import type { Floor, Tour } from './floor.js'
+import type { Floor, Tour, Usable } from './floor.js'
 import { borrow, discard, hasList, readManifest, setAvailable, writeManifest } from './store.js'
 import type { Entry } from './store.js'
-import { STATUS, fetchList, repoUrl, token } from './upstream.js'
+import { STATUS, blessed, fetchList, pending, repoUrl, token } from './upstream.js'
 import type { Absence, Status, Upstream } from './upstream.js'
 
 /**
@@ -20,8 +20,15 @@ export type Verdict =
   | 'unchanged'
   /** Nothing here and nothing upstream. The queue in blinkered-attestation/candidates. */
   | 'absent'
-  /** Upstream has a list and says not to ship it. Its own decision, and not ours to overrule. */
+  /** Upstream has a list and has refused it, in writing. Its own decision, not ours to overrule. */
   | 'held'
+  /**
+   * Upstream has a list and nobody has ruled on it either way.
+   *
+   * Split out of `held`, which used to mean both this and a refusal, because they ask different
+   * things of the operator: a refusal asks to be read, and this asks to be decided.
+   */
+  | 'pending'
   /** Upstream has a list, it does not deal a playable board, and this repository had none. */
   | 'unusable'
   /** This repository has a list and upstream no longer does. */
@@ -49,6 +56,14 @@ export interface Outcome {
    * language whose demonstration needs rebuilding is not a language that stopped playing.
    */
   readonly tour?: Tour
+  /**
+   * Why the floor could not be measured, when something else had already decided the verdict.
+   *
+   * Only ever set on a language the blessing spoke for. For one upstream wants shipped, a list
+   * that does not parse *is* the verdict, and arrives as `unusable` or `failing` with the same
+   * sentence in `note`.
+   */
+  readonly unmeasured?: string
   /** What the language says about itself. Absent when there was nothing upstream to ask. */
   readonly status?: Status | null
   readonly upstream?: Upstream
@@ -102,6 +117,50 @@ const ABSENCE: Record<Absence, string> = {
   'no-list': 'repository exists, nothing built yet',
 }
 
+/** The floor, or the one sentence saying why there is no floor to report. */
+type Measured = { readonly judged: Usable } | { readonly unmeasured: string }
+
+/**
+ * Deals the three boards, and catches the one failure that is a fact about the list rather than
+ * a fault in the run.
+ *
+ * Split out of `inspect` because it now happens on both sides of the blessing, and what an
+ * unparseable list *means* depends on which side: for a language upstream wants shipped it is
+ * the verdict, and for one nobody has ruled on it is a footnote under the row.
+ */
+function measure(tag: string, text: string, upstream: Upstream): Measured {
+  try {
+    return { judged: usability(tag, text) }
+  } catch (error) {
+    if (!(error instanceof NotAWordList)) throw error
+    return {
+      unmeasured: `upstream ${upstream.commit.slice(0, 12)} is not a word list: ${error.message}`,
+    }
+  }
+}
+
+/** The floor fields an outcome carries, from a measurement that may not have been taken. */
+function measured(seen: Measured | undefined): Partial<Outcome> {
+  if (seen === undefined) return {}
+  if ('judged' in seen) return { floor: seen.judged.floor, tour: seen.judged.tour }
+  return { unmeasured: seen.unmeasured }
+}
+
+/** What the report prints beside a language whose repository has not blessed it. */
+function blessingNote(status: Status | null, here: boolean): string {
+  if (status === null) {
+    return here
+      ? `${STATUS} is gone upstream, so nothing blesses it any more`
+      : `no ${STATUS} upstream, so nobody has ruled on it yet`
+  }
+  if (status.ships === 'pending') {
+    return here
+      ? 'upstream has gone back to pending, so nothing blesses it any more'
+      : 'built upstream, and nobody has ruled on it yet'
+  }
+  return status.why ?? 'refused upstream, with no reason given'
+}
+
 /** Reads one language upstream and decides what it means, without writing anything. */
 async function inspect(
   tag: string,
@@ -122,39 +181,49 @@ async function inspect(
   const { text, upstream, status } = found
 
   /*
-   * The blessing is read before the floor, and decides on its own.
+   * The blessing decides the verdict, and the floor is measured for everything it has not refused.
    *
-   * Not because it is cheaper, but because the two questions are not in the same order of
-   * authority. The floor asks whether a board can be dealt; `ships` asks whether it should be.
-   * Japanese answers yes to the first and no to the second -- it clears the floor comfortably and
-   * is held back because its reader cannot build compound words, which is most of Japanese --
-   * so a run that consulted the floor first would report it as passing and then withdraw it,
-   * which reads as a mechanical failure of exactly the kind this file exists to distinguish from.
+   * The two questions are not in the same order of authority. The floor asks whether a board can
+   * be dealt; `ships` asks whether it should be. Japanese answers yes to the first and no to the
+   * second -- it clears the floor comfortably and is refused because its reader cannot build
+   * compound words, which is most of Japanese -- so a run whose verdict followed the floor would
+   * report it as passing and then withdraw it, which reads as a mechanical failure of exactly the
+   * kind this file exists to distinguish from.
+   *
+   * What that ordering must not do is decline to look. Returning here before measuring drew a
+   * closed circle around every unblessed language: it is not offered until somebody blesses it,
+   * nobody can bless it without knowing whether it plays, and the only run that could say so
+   * skipped it on the grounds that it was not blessed. So a `pending` language is measured like
+   * any other and its floor is printed under its row.
+   *
+   * A refusal is still not measured, and that is not the same omission. There the argument is
+   * editorial and already written down; dealing Japanese three more boards it would pass would
+   * put a line in every run that nothing turns on and nobody acts upon.
    */
-  if (status === null || !status.ships) {
-    const note =
-      status === null
-        ? `no ${STATUS} upstream, so it is not blessed to ship`
-        : (status.why ?? 'held upstream, with no reason given')
-    const verdict: Verdict = here ? 'withdrawn' : 'held'
-    return { tag, endonym, verdict, upstream, status, note, ...(held && { held }) }
+  if (!blessed(status)) {
+    const refused = !pending(status)
+    const verdict: Verdict = here ? 'withdrawn' : refused ? 'held' : 'pending'
+    return {
+      tag,
+      endonym,
+      verdict,
+      upstream,
+      status,
+      note: blessingNote(status, here),
+      ...measured(refused ? undefined : measure(tag, text, upstream)),
+      ...(held && { held }),
+    }
   }
 
-  let floor: Floor
-  let tour: Tour
-  try {
-    const judged = usability(tag, text)
-    floor = judged.floor
-    tour = judged.tour
-  } catch (error) {
-    if (!(error instanceof NotAWordList)) throw error
+  const seen = measure(tag, text, upstream)
+  if (!('judged' in seen)) {
     // A repository that publishes something other than a word list is not a language that got
     // worse, it is a language that is broken upstream. Same two verdicts either way, because the
     // question this repository asks is only ever "can this be dealt".
-    const note = `upstream ${upstream.commit.slice(0, 12)} is not a word list: ${error.message}`
     const verdict: Verdict = here ? 'failing' : 'unusable'
-    return { tag, endonym, verdict, status, upstream, note, ...(held && { held }) }
+    return { tag, endonym, verdict, status, upstream, note: seen.unmeasured, ...(held && { held }) }
   }
+  const { floor, tour } = seen.judged
 
   if (!floor.passes) {
     const verdict: Verdict = here ? 'failing' : 'unusable'
@@ -228,12 +297,19 @@ export async function apply(plan: Plan, when: Date): Promise<Entry[]> {
         throw new Error(`${tag} changed upstream while this ran; run it again`)
       }
       // The blessing is re-read with the bytes and re-checked, so a language whose repository
-      // withdrew it between the survey and the write is refused rather than borrowed.
-      if (found.status === null || !found.status.ships) {
+      // withdrew it between the survey and the write is refused rather than borrowed. Through
+      // `blessed`, because `!found.status.ships` is false for the string `'pending'`: written
+      // the obvious way, this guard would wave through every language nobody had ruled on.
+      //
+      // The null is tested separately rather than folded into `blessed`, which would have to
+      // claim to be a type guard to narrow here. It would be a false one: everything it rejects
+      // is not null, it is a language that was refused.
+      const { status } = found
+      if (status === null || !blessed(status)) {
         throw new Error(`${tag} stopped shipping upstream while this ran; run it again`)
       }
       const { parsed } = usability(tag, found.text)
-      entries.set(tag, borrow(tag, found.text, parsed, found.upstream, found.status, when))
+      entries.set(tag, borrow(tag, found.text, parsed, found.upstream, status, when))
       continue
     }
     if (verdict === 'lost' || verdict === 'withdrawn' || verdict === 'failing') {
@@ -246,7 +322,7 @@ export async function apply(plan: Plan, when: Date): Promise<Entry[]> {
     // borrowed nothing, and the point of recording the upstream commit is that it tells you when
     // something moved.
     if (verdict === 'unchanged') continue
-    // 'absent', 'held' and 'unusable': nothing here to offer, and nothing worth writing.
+    // 'absent', 'held', 'pending' and 'unusable': nothing to offer, and nothing worth writing.
     entries.delete(tag)
   }
 

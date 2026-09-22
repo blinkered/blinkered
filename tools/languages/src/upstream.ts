@@ -29,6 +29,20 @@ export interface Upstream {
 }
 
 /**
+ * What a language's repository says about shipping, and there are three answers rather than two.
+ *
+ * `false` used to carry both "we looked and said no" and "nobody has looked yet". Those are
+ * different facts and they want different handling: the first is a decision with an argument
+ * behind it, the second is work not done. Japanese is `false` and will stay that way until its
+ * reader can build compound words; a language built this morning is `'pending'`.
+ *
+ * Only `true` ships. The other two are alike in that one respect and in no other, and the code
+ * here says `blessed(status)` rather than testing the field, because `!status.ships` is false
+ * for the string `'pending'` and would offer every language nobody had ruled on.
+ */
+export type Ships = boolean | 'pending'
+
+/**
  * A language's own decision about whether Blinkered should be playing it.
  *
  * Deliberately not something this repository works out for itself. Japanese clears the usability
@@ -38,7 +52,7 @@ export interface Upstream {
  * and a language that passes the first and fails the second must not ship.
  */
 export interface Status {
-  readonly ships: boolean
+  readonly ships: Ships
   readonly decided?: string
   /** Why, in the operator's words. Carried into the report, because the reason is the point. */
   readonly why?: string
@@ -63,12 +77,35 @@ export interface Fetched {
   /**
    * Null when the repository publishes no `status.json` at all, which counts as "do not ship".
    *
-   * Failing closed is the only safe default: an unblessed language looks exactly like a language
-   * whose blessing has not been written yet, and shipping on the assumption is how a list nobody
+   * Failing closed is the only safe default: shipping on the assumption is how a list nobody
    * approved reaches a player. It is distinguished from a *failed read*, which throws instead --
    * a token that has expired must not read as fifty-one languages quietly withdrawing.
+   *
+   * It reads as `'pending'` rather than as a refusal. A repository with no `status.json` is one
+   * nobody has ruled on yet, which is the same state a fresh language is in, and calling it a
+   * decision would hide it among the languages that were actually argued over.
    */
   readonly status: Status | null
+}
+
+/**
+ * Whether this language's repository has blessed it. Only `true` does.
+ *
+ * A function rather than a field test, and every caller uses it, because the field is no longer
+ * a boolean and the obvious `!status.ships` reads `'pending'` as blessed.
+ */
+export function blessed(status: Status | null): boolean {
+  return status !== null && status.ships === true
+}
+
+/**
+ * Whether nobody has ruled on this language yet, which is not the same as having refused it.
+ *
+ * The distinction is the whole reason for the third state. A refusal is an argument somebody
+ * made and can be read; this is a question nobody has answered.
+ */
+export function pending(status: Status | null): boolean {
+  return status === null || status.ships === 'pending'
 }
 
 /**
@@ -191,8 +228,16 @@ async function fetchStatus(repo: string, auth: string): Promise<Status | null> {
   const body = (await answer.json()) as Record<string, unknown>
   // A status file that does not say is not a status file. Same reasoning as the 404 above, in the
   // other direction: this is a malformed answer rather than a missing one, and it stops the run.
-  if (typeof body.ships !== 'boolean') {
-    throw new Error(`${repo}: ${STATUS} has no boolean "ships"`)
+  //
+  // A fourth state would arrive here as this error rather than as a guess, and that is the right
+  // way round. The writer upstream normalises anything it does not recognise to `'pending'`,
+  // which is correct for a writer with a blessing to protect; a reader doing the same would turn
+  // the day the vocabulary grew into fifty-one silent withdrawals for the operator to approve.
+  const said = body.ships
+  if (typeof said !== 'boolean' && said !== 'pending') {
+    throw new Error(
+      `${repo}: ${STATUS} needs true, false or "pending" for "ships", and has ${JSON.stringify(said)}`,
+    )
   }
   // `null` and absent mean the same thing here, and the writer upstream uses both: the template
   // carries a blessing forward with `?? null`, so a field nobody has filled in arrives as an
@@ -202,7 +247,7 @@ async function fetchStatus(repo: string, auth: string): Promise<Status | null> {
     typeof body[key] === 'string' && body[key] !== '' ? body[key] : undefined
 
   return {
-    ships: body.ships,
+    ships: said,
     ...(text('decided') !== undefined && { decided: text('decided') as string }),
     ...(text('why') !== undefined && { why: text('why') as string }),
     ...(text('license') !== undefined && { license: text('license') as string }),

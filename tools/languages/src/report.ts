@@ -1,3 +1,4 @@
+import type { Tour } from './floor.js'
 import { cite } from './update.js'
 import type { Outcome, Plan, Verdict } from './update.js'
 
@@ -9,6 +10,7 @@ const ORDER: readonly Verdict[] = [
   'added',
   'updated',
   'unchanged',
+  'pending',
   'held',
   'unusable',
   'absent',
@@ -18,6 +20,7 @@ const LABEL: Record<Verdict, string> = {
   lost: 'LOST',
   withdrawn: 'WITHDRAWN',
   held: 'held',
+  pending: 'pending',
   failing: 'FAILING',
   added: 'added',
   updated: 'updated',
@@ -30,13 +33,23 @@ const HEADING: Record<Verdict, string> = {
   lost: 'Regressions: a list this repository has, and upstream no longer does',
   withdrawn: 'Regressions: a language this repository plays, which upstream has stopped shipping',
   failing: 'Regressions: a list that used to deal a playable board and no longer does',
-  held: 'Built upstream, and held back there on purpose',
+  held: 'Built upstream, and refused there on purpose',
+  pending: 'Built upstream, and waiting on somebody to decide',
   added: 'Newly playable',
   updated: 'Updated',
   unchanged: 'Already current',
   unusable: 'Built upstream, not playable yet',
   absent: 'Nothing to borrow yet',
 }
+
+/**
+ * The verdicts the blessing decided, where the floor is a second line rather than the story.
+ *
+ * `held` is in the list and will never print a measurement: a refused language is not measured
+ * at all. It is here because `withdrawn` covers both a refusal and a blessing that went back to
+ * pending, and only the second of those has a floor to show.
+ */
+const DECIDED: readonly Verdict[] = ['pending', 'held', 'withdrawn']
 
 function pad(text: string, width: number): string {
   return text.length >= width ? text : text + ' '.repeat(width - text.length)
@@ -72,6 +85,68 @@ function line(outcome: Outcome): string {
       : `wMin ${String(floor.wMin)}, boards ${floor.draws.map((draw) => String(draw.words)).join('/')}`
   const detail = outcome.note === undefined ? words : brief(outcome.note, 52)
   return `  ${pad(outcome.tag, 6)}${pad(outcome.endonym, 20)}${detail}`
+}
+
+/**
+ * The tour, as an aside on the measurement line.
+ *
+ * It decides nothing, here as everywhere else, and it is the next thing that will be missing:
+ * a language blessed today with no tour board is a language whose first run has nothing to
+ * demonstrate, and that is better known before the blessing than after it.
+ */
+function tourAside(tour: Tour | undefined): string {
+  if (tour === undefined) return ''
+  if (!tour.known) return '; no tour board yet'
+  if (tour.missing.length === 0) return ''
+  return `; the tour has lost ${tour.missing.join(', ')}`
+}
+
+/**
+ * What the floor found, printed under the row, for a language the blessing spoke for.
+ *
+ * A line of its own rather than another column, because the row already carries the repository's
+ * own sentence and that is the one thing in the run a person wrote for a person to read. This is
+ * the only question that sentence leaves open: whether the thing plays. Without it, blessing a
+ * language means blessing it on faith, which is the circle this whole arrangement was stuck in.
+ */
+function measurement(outcome: Outcome): string | undefined {
+  if (!DECIDED.includes(outcome.verdict)) return undefined
+  if (outcome.unmeasured !== undefined) return `floor unmeasured: ${brief(outcome.unmeasured, 58)}`
+  const { floor } = outcome
+  if (floor === undefined) return undefined
+  const boards = floor.draws.map((draw) => String(draw.words)).join('/')
+  const head = floor.passes
+    ? `floor: clears it, wMin ${String(floor.wMin)}, boards ${boards}`
+    : `floor: ${brief(floor.why ?? '', 58)}`
+  return head + tourAside(outcome.tour)
+}
+
+/** One language's rows: what happened, and underneath it what the floor made of the list. */
+function rows(outcome: Outcome): string[] {
+  const found = measurement(outcome)
+  return found === undefined ? [line(outcome)] : [line(outcome), `        ${found}`]
+}
+
+/**
+ * What to do about a language that is only waiting to be asked about.
+ *
+ * The point of measuring a pending language is that somebody can then decide, and the deciding
+ * is not done here. It is a commit in the language's own repository, and this names the ones
+ * that are ready for it.
+ */
+function readyToBless(plan: Plan): string[] {
+  const ready = plan.outcomes.filter(
+    (outcome) => outcome.verdict === 'pending' && outcome.floor?.passes === true,
+  )
+  if (ready.length === 0) return []
+  return [
+    '',
+    `Waiting, and clearing the floor as they stand: ${ready.map((outcome) => outcome.tag).join(' ')}`,
+    '',
+    'Whether one of those is offered is still its own repository\u2019s call, and the floor does not',
+    'make it. Set `"ships": true` in that repository\u2019s status.json, with the date and the reason',
+    'beside it, and the language arrives here on the next run.',
+  ]
 }
 
 /** Languages whose first-run tour would not survive being dealt from the borrowed list. */
@@ -125,7 +200,7 @@ function reasons(plan: Plan): string[] {
   )
   if (decided.length === 0) return []
 
-  const out = ['', 'Why each of those was held, in its own repository\u2019s words:']
+  const out = ['', 'Why each of those was refused, in its own repository\u2019s words:']
   for (const outcome of decided) {
     const decidedOn = outcome.status?.decided
     out.push(
@@ -178,10 +253,11 @@ export function report(plan: Plan): string {
     const group = plan.outcomes.filter((outcome) => outcome.verdict === verdict)
     if (group.length === 0) continue
     out.push('', `${HEADING[verdict]} (${String(group.length)})`)
-    for (const outcome of group) out.push(line(outcome))
+    for (const outcome of group) out.push(...rows(outcome))
   }
   out.push(...terms(plan))
   out.push(...reasons(plan))
+  out.push(...readyToBless(plan))
   out.push(...tours(plan))
 
   if (plan.blocked.length > 0) {
@@ -279,9 +355,11 @@ export function commitMessage(plan: Plan, when: Date): string {
   const waiting = plan.outcomes.filter((outcome) => outcome.verdict === 'absent').length
   const notYet = plan.outcomes.filter((outcome) => outcome.verdict === 'unusable').length
   const heldBack = plan.outcomes.filter((outcome) => outcome.verdict === 'held').length
+  const undecided = plan.outcomes.filter((outcome) => outcome.verdict === 'pending').length
   body.push(
     '',
-    `${String(unchanged)} already current, ${String(heldBack)} built and held back upstream, ` +
+    `${String(unchanged)} already current, ${String(heldBack)} refused upstream, ` +
+      `${String(undecided)} built and waiting on a decision, ` +
       `${String(notYet)} built but not yet playable, ${String(waiting)} with nothing to borrow.`,
     '',
     `Checked against the usability floor on ${when.toISOString().slice(0, 10)}: three seeds per`,
@@ -290,7 +368,10 @@ export function commitMessage(plan: Plan, when: Date): string {
     '',
     'Every list here also says `ships: true` in its own status.json. That is a separate question',
     'from the floor and a higher one: a language can deal a perfectly good board and still be a',
-    'poor dictionary, and only the repository that built it is in a position to say so.',
+    'poor dictionary, and only the repository that built it is in a position to say so. The other',
+    'two answers are `false`, which is that repository refusing its own list, and `pending`, which',
+    'is nobody having ruled yet. Only `true` is borrowed, and the floor is reported for the',
+    'pending ones so that the ruling can be made on a measurement rather than on faith.',
     '',
     'pnpm languages update',
   )
