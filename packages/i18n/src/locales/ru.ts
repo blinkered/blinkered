@@ -137,10 +137,10 @@ export const ru: Messages = {
   quitConfirm: 'Выйти',
   keepPlaying: 'Продолжить',
   personalBest: 'Ваши лучшие игры',
-  thisGame: 'эта игра',
   newPersonalBest: 'Новый личный рекорд.',
   columnRank: '№',
   notRanked: 'Свои правила, поэтому игра не ранжируется.',
+  notRankedPaused: 'Часы остановились, поэтому игра не ранжируется.',
   rankOfTotal: '{rank} из {total}',
 
   howToPlay: 'Как играть',
@@ -236,6 +236,8 @@ export const ru: Messages = {
   leaderboardEmpty: 'В этой таблице пока нет игр. Стань первым.',
   leaderboardWouldBe: 'Где была бы эта игра',
   leaderboardThisGame: 'Эта игра',
+  leaderboardRanksHere: 'Где стоит эта игра',
+  leaderboardOutside: 'Вне первой пятёрки.',
   tutAccountTitle: 'Сохрани свои результаты',
   tutAccountBody:
     'Аккаунт сохраняет твои игры, помещает результаты в таблицу лидеров и хранит твой профиль.',

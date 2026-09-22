@@ -138,10 +138,10 @@ export const bg: Messages = {
   quitConfirm: 'Излез',
   keepPlaying: 'Продължи да играеш',
   personalBest: 'Вашите най-добри игри',
-  thisGame: 'тази игра',
   newPersonalBest: 'Нов личен рекорд.',
   columnRank: '#',
   notRanked: 'Собствени правила, затова тази игра не влиза в класация.',
+  notRankedPaused: 'Часовникът спря, затова тази игра не влиза в класация.',
   rankOfTotal: '{rank} от {total}',
 
   howToPlay: 'Как се играе',
@@ -235,6 +235,8 @@ export const bg: Messages = {
   leaderboardEmpty: 'Още няма игри в тази класация. Бъди първият.',
   leaderboardWouldBe: 'Къде би се наредила тази игра',
   leaderboardThisGame: 'Тази игра',
+  leaderboardRanksHere: 'Къде се нарежда тази игра',
+  leaderboardOutside: 'Извън първите пет.',
   tutAccountTitle: 'Запази резултатите си',
   tutAccountBody:
     'Профилът запазва игрите ти, поставя резултатите ти в класирането и пази профила ти.',

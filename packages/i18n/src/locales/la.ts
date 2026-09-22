@@ -143,10 +143,10 @@ export const la: Messages = {
   quitConfirm: 'Desiste',
   keepPlaying: 'Perge ludere',
   personalBest: 'Ludi tui optimi',
-  thisGame: 'hic ludus',
   newPersonalBest: 'Novum tuum optimum.',
   columnRank: '#',
   notRanked: 'Regulae tuae, itaque hic ludus in ordinem non redigitur.',
+  notRankedPaused: 'Tempus stetit, itaque hic ludus in ordinem non redigitur.',
   rankOfTotal: '{rank} ex {total}',
 
   howToPlay: 'Quomodo ludendum sit',
@@ -240,6 +240,8 @@ export const la: Messages = {
   leaderboardEmpty: 'Nulli ludi in hac tabula adhuc. Esto primus.',
   leaderboardWouldBe: 'Ubi hic ludus staret',
   leaderboardThisGame: 'Hic ludus',
+  leaderboardRanksHere: 'Ubi hic ludus stat',
+  leaderboardOutside: 'Extra primos quinque.',
   tutAccountTitle: 'Serva numeros tuos',
   tutAccountBody:
     'Ratio ludos tuos servat, numeros tuos in tabulam ponit, et personam tuam custodit.',

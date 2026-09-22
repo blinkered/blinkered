@@ -350,6 +350,42 @@ export async function myGames(): Promise<readonly PlayedGame[] | null> {
   return answered === null ? null : answered.games
 }
 
+/** Your best games in one group, with how many you have in it and how many beat one of them. */
+export interface BestGames {
+  readonly games: readonly PlayedGame[]
+  readonly total: number
+  /** How many of your games beat the one being placed, which is its rank less one. */
+  readonly ahead: number
+}
+
+/**
+ * Your own best games for one language, difficulty and engine version.
+ *
+ * Not `myGames` filtered. That returns the newest fifty across everything, so filtering it gives
+ * your best *recent* games under a heading that says otherwise, and the game somebody is
+ * proudest of is exactly the one that ages out of it.
+ *
+ * `placing` is the game being put into the table, and the server does two things with it. It
+ * leaves that game out of the rows and the total, because the panel asks this while that game is
+ * being uploaded and would otherwise see it or not depending on which request finished first.
+ * And it counts how many games beat it, which is the only place that count can be made: ranking
+ * a game among the five rows that came back would call a game that came tenth sixth.
+ */
+export async function myBest(
+  group: { language: string; difficulty: string; engineVersion: string },
+  placing: { score: number; rounds: number; at: number },
+): Promise<BestGames | null> {
+  const query = new URLSearchParams({
+    engineVersion: group.engineVersion,
+    score: String(placing.score),
+    rounds: String(placing.rounds),
+    at: String(placing.at),
+  })
+  return getting(
+    `me/best/${encodeURIComponent(group.language)}/${encodeURIComponent(group.difficulty)}?${query.toString()}`,
+  )
+}
+
 /**
  * What the client sends to keep a game it played before signing up.
  *

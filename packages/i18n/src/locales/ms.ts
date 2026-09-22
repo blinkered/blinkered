@@ -132,10 +132,10 @@ export const ms: Messages = {
   quitConfirm: 'Keluar',
   keepPlaying: 'Terus bermain',
   personalBest: 'Permainan terbaik anda',
-  thisGame: 'permainan ini',
   newPersonalBest: 'Rekod peribadi baharu.',
   columnRank: '#',
   notRanked: 'Peraturan sendiri, jadi permainan ini tidak diberi kedudukan.',
+  notRankedPaused: 'Jam berhenti, jadi permainan ini tidak diberi kedudukan.',
   rankOfTotal: '{rank} daripada {total}',
 
   howToPlay: 'Cara bermain',
@@ -232,6 +232,8 @@ export const ms: Messages = {
   leaderboardEmpty: 'Belum ada permainan di papan ini. Jadilah yang pertama.',
   leaderboardWouldBe: 'Di mana permainan ini akan berada',
   leaderboardThisGame: 'Permainan ini',
+  leaderboardRanksHere: 'Di mana permainan ini berada',
+  leaderboardOutside: 'Di luar lima teratas.',
   tutAccountTitle: 'Simpan skor anda',
   tutAccountBody:
     'Akaun menyimpan permainan anda, meletakkan skor anda di papan pendahulu, dan menjaga profil anda.',

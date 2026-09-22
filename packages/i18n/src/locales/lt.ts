@@ -139,10 +139,10 @@ export const lt: Messages = {
   quitConfirm: 'Baigti',
   keepPlaying: 'Žaisti toliau',
   personalBest: 'Jūsų geriausi žaidimai',
-  thisGame: 'šis žaidimas',
   newPersonalBest: 'Naujas asmeninis rekordas.',
   columnRank: '#',
   notRanked: 'Savos taisyklės, tad šis žaidimas į lentelę nepatenka.',
+  notRankedPaused: 'Laikas sustojo, tad šis žaidimas į lentelę nepatenka.',
   rankOfTotal: '{rank} iš {total}',
 
   howToPlay: 'Kaip žaisti',
@@ -235,6 +235,8 @@ export const lt: Messages = {
   leaderboardEmpty: 'Šioje lentelėje dar nėra žaidimų. Būk pirmas.',
   leaderboardWouldBe: 'Kur būtų šis žaidimas',
   leaderboardThisGame: 'Šis žaidimas',
+  leaderboardRanksHere: 'Kur yra šis žaidimas',
+  leaderboardOutside: 'Ne tarp geriausių penkių.',
   tutAccountTitle: 'Išsaugok savo rezultatus',
   tutAccountBody:
     'Paskyra išsaugo tavo žaidimus, įrašo rezultatus į lentelę ir saugo tavo profilį.',

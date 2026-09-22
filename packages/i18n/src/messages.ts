@@ -168,13 +168,26 @@ export interface Messages {
   readonly quitConfirm: string
   readonly keepPlaying: string
 
-  // The personal leaderboard, shown when a game finishes.
+  // The table of your own games, shown when a game finishes.
   readonly personalBest: string
-  readonly thisGame: string
   readonly newPersonalBest: string
   readonly columnRank: string
   readonly notRanked: string
-  /** `{rank}` `{total}` */
+  /**
+   * Why a game whose clock stopped is not on the board.
+   *
+   * A separate sentence from `notRanked`, which blames custom rules, because a paused game was
+   * played on the published ones and telling somebody their rules were custom when they were not
+   * is a confusing way to explain a rule they did not know about.
+   */
+  readonly notRankedPaused: string
+  /**
+   * `{rank}` `{total}`. Rendered after `columnRank`, so it reads "#2 of 3".
+   *
+   * The sign comes from that key rather than from this one because it is already the rank sign
+   * this locale writes, at the head of the table directly below. Without it the line read "2 of
+   * 3", which is page two of three.
+   */
   readonly rankOfTotal: string
 
   // The buttons.
@@ -440,6 +453,26 @@ export interface Messages {
    * instead, because they have one.
    */
   readonly leaderboardThisGame: string
+  /**
+   * The same heading for a reader who is signed in, in the tense that is true for them.
+   *
+   * Their game is on its way to the server as they read it, so `leaderboardWouldBe` was making a
+   * conditional promise about something that had already happened. Nick, on a signed-in game
+   * sitting first on the board it was projecting: "that's exactly where the game would rank. And
+   * does rank. Confusing."
+   */
+  readonly leaderboardRanksHere: string
+  /**
+   * What the board section says when the score did not reach it.
+   *
+   * The section stays either way, because a panel that grows a block after a good game and loses
+   * it after an ordinary one has no order somebody can learn. One line, no inducement: an offer
+   * that appears whatever you scored is an advertisement.
+   *
+   * **It names the number**, which is `SHOWN` in BoardStanding.tsx. Five rows, "the top five".
+   * They move together or this line starts lying.
+   */
+  readonly leaderboardOutside: string
 
   /**
    * The last screen of the tour, which exists because of a number rather than a design.

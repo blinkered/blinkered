@@ -135,10 +135,10 @@ export const hr: Messages = {
   quitConfirm: 'Izađi',
   keepPlaying: 'Nastavi igrati',
   personalBest: 'Tvoje najbolje igre',
-  thisGame: 'ova igra',
   newPersonalBest: 'Novi osobni rekord.',
   columnRank: '#',
   notRanked: 'Vlastita pravila, pa se ova igra ne rangira.',
+  notRankedPaused: 'Sat je stao, pa se ova igra ne rangira.',
   rankOfTotal: '{rank} od {total}',
 
   howToPlay: 'Kako se igra',
@@ -231,6 +231,8 @@ export const hr: Messages = {
   leaderboardEmpty: 'Na ovom poretku još nema igara. Budi prvi.',
   leaderboardWouldBe: 'Gdje bi ova igra stajala',
   leaderboardThisGame: 'Ova igra',
+  leaderboardRanksHere: 'Gdje ova igra stoji',
+  leaderboardOutside: 'Izvan prvih pet.',
   tutAccountTitle: 'Sačuvaj svoje rezultate',
   tutAccountBody:
     'Račun čuva tvoje igre, stavlja tvoje rezultate na poredak i održava tvoj profil.',

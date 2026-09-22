@@ -138,10 +138,10 @@ export const af: Messages = {
   quitConfirm: 'Stop',
   keepPlaying: 'Speel verder',
   personalBest: 'Jou beste spele',
-  thisGame: 'hierdie spel',
   newPersonalBest: '’n Nuwe persoonlike beste.',
   columnRank: '#',
   notRanked: 'Eie reëls, so hierdie spel word nie gerangskik nie.',
+  notRankedPaused: 'Die klok het gestop, so hierdie spel word nie gerangskik nie.',
   rankOfTotal: '{rank} van {total}',
 
   howToPlay: 'Hoe om te speel',
@@ -238,6 +238,8 @@ export const af: Messages = {
   leaderboardEmpty: 'Nog geen speletjies op hierdie bord nie. Wees die eerste.',
   leaderboardWouldBe: 'Waar hierdie speletjie sou staan',
   leaderboardThisGame: 'Hierdie speletjie',
+  leaderboardRanksHere: 'Waar hierdie speletjie staan',
+  leaderboardOutside: 'Buite die beste vyf.',
   tutAccountTitle: 'Hou jou tellings',
   tutAccountBody:
     '’n Rekening stoor jou speletjies, plaas jou tellings op die ranglys, en hou jou profiel.',

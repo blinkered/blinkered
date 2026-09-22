@@ -139,10 +139,10 @@ export const ko: Messages = {
   quitConfirm: '나가기',
   keepPlaying: '계속 하기',
   personalBest: '최고 기록',
-  thisGame: '이 게임',
   newPersonalBest: '새로운 개인 최고 기록입니다.',
   columnRank: '#',
   notRanked: '직접 정한 규칙이라 이 게임은 순위에 오르지 않습니다.',
+  notRankedPaused: '시간이 멈춰서 이 게임은 순위에 오르지 않습니다.',
   rankOfTotal: '{total} 중 {rank}',
 
   howToPlay: '게임 방법',
@@ -234,6 +234,8 @@ export const ko: Messages = {
   leaderboardEmpty: '이 순위표에는 아직 기록이 없습니다. 첫 번째가 되어 보세요.',
   leaderboardWouldBe: '이 기록이 들어갈 자리',
   leaderboardThisGame: '이 기록',
+  leaderboardRanksHere: '이 기록이 들어간 자리',
+  leaderboardOutside: '상위 5위 밖입니다.',
   tutAccountTitle: '점수를 남기세요',
   tutAccountBody:
     '계정이 있으면 게임이 저장되고, 점수가 순위표에 오르며, 프로필을 관리할 수 있습니다.',

@@ -17,8 +17,8 @@ import { Icon } from './Icon.js'
 import type { Feedback, WordGain } from './Hud.js'
 import { Dropdown } from './Dropdown.js'
 import { LanguagePicker } from './LanguagePicker.js'
-import { BoardPreview } from './BoardPreview.js'
-import { Leaderboard } from './Leaderboard.js'
+import { BoardStanding } from './BoardStanding.js'
+import { PersonalBest } from './PersonalBest.js'
 import { LeaderboardPage } from './LeaderboardPage.js'
 import { NerdPanel } from './NerdPanel.js'
 import { Splash } from './Splash.js'
@@ -1097,11 +1097,23 @@ function Session({
                   })}
                 </p>
                 {/*
-                  Near the top, above the personal table, because it is the thing worth reading
-                  first and the reason somebody might act. It draws nothing at all unless the
-                  score actually places, so the panel is unchanged for most games.
+                  Your own games, then everybody's, and that order is the answer to a complaint.
+
+                  It used to be the other way, on the argument that the projected board is the
+                  reason somebody might sign up and so belongs at the top. What that produced,
+                  game after game, was a panel whose first line under the score was about not
+                  having made the top five -- most scores do not -- and whose shape changed
+                  depending on whether this one had. Widening scope instead: what you scored, how
+                  that compares with your own games, how it compares with everybody's. Each
+                  section a wider frame than the one above it, in the same place every time.
                 */}
-                <BoardPreview
+                <PersonalBest
+                  standing={finished.standing}
+                  current={finished.result}
+                  signedIn={account !== null}
+                  messages={messages}
+                />
+                <BoardStanding
                   result={finished.result}
                   paused={finished.keepable?.paused === true}
                   messages={messages}
@@ -1113,11 +1125,6 @@ function Session({
                   onSignIn={() => {
                     setSigningIn({ reason: messages.signInKeepGame })
                   }}
-                />
-                <Leaderboard
-                  standing={finished.standing}
-                  current={finished.result}
-                  messages={messages}
                   onGlobalBoard={() => {
                     /*
                      * The board for the game just played, not a menu of boards.

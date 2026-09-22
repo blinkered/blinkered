@@ -139,10 +139,10 @@ export const sw: Messages = {
   quitConfirm: 'Toka',
   keepPlaying: 'Endelea kucheza',
   personalBest: 'Michezo yako bora',
-  thisGame: 'mchezo huu',
   newPersonalBest: 'Rekodi mpya yako binafsi.',
   columnRank: '#',
   notRanked: 'Kanuni zako mwenyewe, kwa hivyo mchezo huu haupangwi.',
+  notRankedPaused: 'Saa ilisimama, kwa hivyo mchezo huu haupangwi.',
   rankOfTotal: '{rank} kati ya {total}',
 
   howToPlay: 'Jinsi ya kucheza',
@@ -236,6 +236,8 @@ export const sw: Messages = {
   leaderboardEmpty: 'Hakuna michezo kwenye jedwali hili bado. Kuwa wa kwanza.',
   leaderboardWouldBe: 'Mchezo huu ungekuwa wapi',
   leaderboardThisGame: 'Mchezo huu',
+  leaderboardRanksHere: 'Mchezo huu uko wapi',
+  leaderboardOutside: 'Nje ya tano bora.',
   tutAccountTitle: 'Hifadhi alama zako',
   tutAccountBody:
     'Akaunti huhifadhi michezo yako, huweka alama zako kwenye jedwali, na hutunza wasifu wako.',

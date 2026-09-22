@@ -139,10 +139,10 @@ export const mk: Messages = {
   quitConfirm: 'Излези',
   keepPlaying: 'Продолжи да играш',
   personalBest: 'Вашите најдобри игри',
-  thisGame: 'оваа игра',
   newPersonalBest: 'Нов личен рекорд.',
   columnRank: '#',
   notRanked: 'Сопствени правила, па оваа игра не влегува во ранг-листа.',
+  notRankedPaused: 'Часовникот запре, па оваа игра не влегува во ранг-листа.',
   rankOfTotal: '{rank} од {total}',
 
   howToPlay: 'Како се игра',
@@ -236,6 +236,8 @@ export const mk: Messages = {
   leaderboardEmpty: 'Сè уште нема игри на оваа листа. Биди првиот.',
   leaderboardWouldBe: 'Каде би стоела оваа игра',
   leaderboardThisGame: 'Оваа игра',
+  leaderboardRanksHere: 'Каде стои оваа игра',
+  leaderboardOutside: 'Надвор од првите пет.',
   tutAccountTitle: 'Зачувај ги своите резултати',
   tutAccountBody:
     'Сметката ги чува твоите игри, ги става резултатите на ранг-листата и го одржува твојот профил.',

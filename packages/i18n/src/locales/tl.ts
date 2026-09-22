@@ -146,10 +146,10 @@ export const tl: Messages = {
   quitConfirm: 'Umalis',
   keepPlaying: 'Magpatuloy sa paglalaro',
   personalBest: 'Ang pinakamagaling mong laro',
-  thisGame: 'ang larong ito',
   newPersonalBest: 'Bagong personal na rekord.',
   columnRank: '#',
   notRanked: 'Sariling tuntunin, kaya hindi nararanggo ang larong ito.',
+  notRankedPaused: 'Tumigil ang orasan, kaya hindi nararanggo ang larong ito.',
   rankOfTotal: '{rank} sa {total}',
 
   howToPlay: 'Paano maglaro',
@@ -249,6 +249,8 @@ export const tl: Messages = {
   leaderboardEmpty: 'Wala pang laro sa talaang ito. Maging una ka.',
   leaderboardWouldBe: 'Saan mapupunta ang larong ito',
   leaderboardThisGame: 'Ang larong ito',
+  leaderboardRanksHere: 'Saan napupunta ang larong ito',
+  leaderboardOutside: 'Labas sa unang lima.',
   tutAccountTitle: 'Itago ang iyong mga puntos',
   tutAccountBody:
     'Ang account ay nag-iingat ng mga laro mo, naglalagay ng puntos mo sa talaan, at nag-iingat ng profile mo.',

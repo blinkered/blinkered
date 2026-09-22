@@ -135,10 +135,10 @@ export const de: Messages = {
   quitConfirm: 'Beenden',
   keepPlaying: 'Weiterspielen',
   personalBest: 'Deine besten Spiele',
-  thisGame: 'dieses Spiel',
   newPersonalBest: 'Neue persönliche Bestleistung.',
   columnRank: '#',
   notRanked: 'Eigene Regeln, daher wird dieses Spiel nicht gewertet.',
+  notRankedPaused: 'Die Uhr ist stehengeblieben, daher wird dieses Spiel nicht gewertet.',
   rankOfTotal: '{rank} von {total}',
 
   howToPlay: 'Spielanleitung',
@@ -236,6 +236,8 @@ export const de: Messages = {
   leaderboardEmpty: 'Noch keine Spiele auf dieser Rangliste. Sei der Erste.',
   leaderboardWouldBe: 'Wo dieses Spiel stehen würde',
   leaderboardThisGame: 'Dieses Spiel',
+  leaderboardRanksHere: 'Wo dieses Spiel steht',
+  leaderboardOutside: 'Außerhalb der besten fünf.',
   tutAccountTitle: 'Punkte behalten',
   tutAccountBody:
     'Ein Konto speichert deine Spiele, setzt deine Punkte auf die Rangliste und verwaltet dein Profil.',

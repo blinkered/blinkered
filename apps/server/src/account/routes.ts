@@ -159,6 +159,36 @@ export function accountRoutes(deps: AccountDeps): Hono {
   })
 
   /*
+   * Somebody's best games in one group, and how many they have in it.
+   *
+   * Separate from `/me/games` because it answers a different question, and the difference is not
+   * cosmetic: `/me/games` is the newest fifty across everything somebody has played, so ranking
+   * its answer would title a table "your best games" over your best *recent* games. See `bestOf`
+   * in ./types.ts.
+   *
+   * The engine version is the client's, not a default. A score means nothing across a change to
+   * what a difficulty is, so a client that has not reloaded must be told about the games it can
+   * actually compare itself with rather than the ones a newer server would rank.
+   */
+  routes.get('/me/best/:language/:difficulty', async (context) => {
+    const user = await currentUser(deps, context)
+    if (user === null) return context.json({ error: 'signed-out' }, 401)
+    const engineVersion = context.req.query('engineVersion')
+    if (engineVersion === undefined || engineVersion === '') {
+      return context.json({ error: 'no-engine-version' }, 400)
+    }
+    const best = await deps.store.bestOf({
+      userId: user.userId,
+      language: context.req.param('language'),
+      difficulty: context.req.param('difficulty'),
+      engineVersion,
+      placing: placingFrom(context.req.query()),
+      limit: bestLimitFrom(context.req.query('limit')),
+    })
+    return context.json(best)
+  })
+
+  /*
    * Keep a finished game.
    *
    * Both kinds arrive here, because phase A issues no seeds and so every game is finished on the
@@ -526,6 +556,38 @@ export function accountRoutes(deps: AccountDeps): Hono {
 }
 
 /** How many games a listing hands back. Shared, so the two listings cannot disagree. */
+/**
+ * How many rows a best-games table may ask for.
+ *
+ * Its own ceiling rather than `GAMES_MAX`, because this one is read to fill a five-row table on
+ * a panel and there is no page two. Two hundred rows would be a different feature.
+ */
+const BEST_LIMIT = 5
+const BEST_MAX = 20
+
+function bestLimitFrom(asked: string | undefined): number {
+  const wanted = Number(asked ?? BEST_LIMIT)
+  return Number.isInteger(wanted) && wanted > 0 ? Math.min(wanted, BEST_MAX) : BEST_LIMIT
+}
+
+/**
+ * The game being placed in the table, from the query string, or null when none was named.
+ *
+ * All three or nothing: a score with no finish time cannot be excluded from the rows it is being
+ * ranked against, and a half-given game would be counted twice. Null rather than a 400 for a
+ * malformed one -- the worst it costs is a table with one extra row and a rank of one, which is
+ * a results screen that is slightly wrong rather than a results screen that is an error page.
+ */
+function placingFrom(
+  query: Record<string, string>,
+): { score: number; rounds: number; at: Date } | null {
+  const score = Number(query.score)
+  const rounds = Number(query.rounds)
+  const at = Number(query.at)
+  if (!Number.isInteger(score) || !Number.isInteger(rounds) || !Number.isFinite(at)) return null
+  return { score, rounds, at: new Date(at) }
+}
+
 function limitFrom(asked: string | undefined): number {
   const wanted = Number(asked ?? GAMES_LIMIT)
   return Number.isInteger(wanted) && wanted > 0 ? Math.min(wanted, GAMES_MAX) : GAMES_LIMIT

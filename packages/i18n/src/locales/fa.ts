@@ -143,10 +143,10 @@ export const fa: Messages = {
   quitConfirm: 'پایان',
   keepPlaying: 'ادامهٔ بازی',
   personalBest: 'بهترین بازی‌های شما',
-  thisGame: 'این بازی',
   newPersonalBest: 'رکورد تازهٔ شخصی.',
   columnRank: '#',
   notRanked: 'قواعد دلخواه، پس این بازی رتبه‌بندی نمی‌شود.',
+  notRankedPaused: 'ساعت متوقف شد، پس این بازی رتبه‌بندی نمی‌شود.',
   rankOfTotal: '{rank} از {total}',
 
   howToPlay: 'چگونه بازی کنیم',
@@ -236,6 +236,8 @@ export const fa: Messages = {
   leaderboardEmpty: 'هنوز بازی‌ای در این جدول نیست. اولین نفر باش.',
   leaderboardWouldBe: 'این بازی کجا قرار می‌گیرد',
   leaderboardThisGame: 'این بازی',
+  leaderboardRanksHere: 'این بازی کجا رتبه دارد',
+  leaderboardOutside: 'خارج از پنج رتبهٔ برتر.',
   tutAccountTitle: 'امتیازهایت را نگه دار',
   tutAccountBody:
     'یک حساب بازی‌هایت را ذخیره می‌کند، امتیازهایت را در جدول می‌گذارد و نمایه‌ات را نگه می‌دارد.',

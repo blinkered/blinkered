@@ -13,6 +13,7 @@ import {
   isNotNull,
   isNull,
   lt,
+  ne,
   or,
   sql,
 } from 'drizzle-orm'
@@ -761,6 +762,88 @@ export function pgStore(db: Database): Store {
         .where(and(eq(users.usernameNormalized, normalized), isNull(users.bannedAt)))
         .limit(1)
       return row ?? null
+    },
+
+    bestOf: async (query) => {
+      /*
+       * One group, ranked, plus its size. Two queries rather than one windowed query carrying a
+       * count: the row count here is single digits for a person, and the second is an aggregate
+       * over the same index.
+       */
+      const group = and(
+        eq(games.userId, query.userId),
+        isNotNull(games.finishedAt),
+        eq(games.hidden, false),
+        // Grouped on `canonical`, not `leaderboardEligible`. See `bestOf` in account/types.ts:
+        // a paused game is off the public board and is still one of yours.
+        eq(games.canonical, true),
+        eq(games.language, query.language),
+        eq(games.difficulty, query.difficulty),
+        eq(games.engineVersion, query.engineVersion),
+        // The game being placed, taken out of both answers so the client adds it back once and
+        // shows the same panel whichever request finishes first.
+        ...(query.placing === null ? [] : [ne(games.finishedAt, query.placing.at)]),
+      )
+
+      const rows = await db
+        .select({
+          id: games.id,
+          language: games.language,
+          difficulty: games.difficulty,
+          canonical: games.canonical,
+          speedMultiplier: games.speedMultiplier,
+          score: games.score,
+          words: games.wordsCount,
+          rounds: games.roundsPlayed,
+          engineVersion: games.engineVersion,
+          finishedAt: games.finishedAt,
+        })
+        .from(games)
+        .where(group)
+        // `compareResults`, in SQL: the best score, then the fewest rounds it took, then whoever
+        // got there first.
+        .orderBy(desc(games.score), asc(games.roundsPlayed), asc(games.finishedAt))
+        .limit(query.limit)
+
+      const [counted] = await db.select({ total: count() }).from(games).where(group)
+
+      /*
+       * How many of this person's games beat the one being placed.
+       *
+       * `compareResults` again, as a predicate rather than an order: a better score, or the same
+       * score in fewer rounds, or the same score in the same rounds but finished earlier. It is
+       * counted here because it is a count over rows the client was not sent -- ranking a game
+       * among the five rows it has would call a game that came tenth sixth.
+       */
+      const [ahead] =
+        query.placing === null
+          ? []
+          : await db
+              .select({ ahead: count() })
+              .from(games)
+              .where(
+                and(
+                  group,
+                  or(
+                    gt(games.score, query.placing.score),
+                    and(
+                      eq(games.score, query.placing.score),
+                      lt(games.roundsPlayed, query.placing.rounds),
+                    ),
+                    and(
+                      eq(games.score, query.placing.score),
+                      eq(games.roundsPlayed, query.placing.rounds),
+                      lt(games.finishedAt, query.placing.at),
+                    ),
+                  ),
+                ),
+              )
+
+      return {
+        games: rows.map((row) => ({ ...row, finishedAt: row.finishedAt as Date })),
+        total: counted?.total ?? 0,
+        ahead: ahead?.ahead ?? 0,
+      }
     },
 
     gameById: async (gameId) => {

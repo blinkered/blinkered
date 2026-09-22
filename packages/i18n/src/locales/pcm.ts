@@ -143,10 +143,10 @@ export const pcm: Messages = {
   quitConfirm: 'Quit',
   keepPlaying: 'Continue to play',
   personalBest: 'Your best games',
-  thisGame: 'dis game',
   newPersonalBest: 'New personal best.',
   columnRank: '#',
   notRanked: 'Your own rules, so dis game no go rank.',
+  notRankedPaused: 'Di clock don stop, so dis game no go rank.',
   rankOfTotal: '{rank} out of {total}',
 
   howToPlay: 'How to play',
@@ -241,6 +241,8 @@ export const pcm: Messages = {
   leaderboardEmpty: 'No game dey dis board yet. Be di first one.',
   leaderboardWouldBe: 'Where dis game go stand',
   leaderboardThisGame: 'Dis game',
+  leaderboardRanksHere: 'Where dis game dey stand',
+  leaderboardOutside: 'Outside di top five.',
   tutAccountTitle: 'Keep your score',
   tutAccountBody:
     'Account go save your game, put your score on di leaderboard, and hold your profile.',

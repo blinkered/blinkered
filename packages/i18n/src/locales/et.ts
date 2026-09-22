@@ -139,10 +139,10 @@ export const et: Messages = {
   quitConfirm: 'Lõpeta',
   keepPlaying: 'Mängi edasi',
   personalBest: 'Teie parimad mängud',
-  thisGame: 'see mäng',
   newPersonalBest: 'Uus isiklik rekord.',
   columnRank: '#',
   notRanked: 'Omareeglid, seega see mäng edetabelisse ei lähe.',
+  notRankedPaused: 'Kell peatus, seega see mäng edetabelisse ei lähe.',
   rankOfTotal: '{rank} / {total}',
 
   howToPlay: 'Kuidas mängida',
@@ -235,6 +235,8 @@ export const et: Messages = {
   leaderboardEmpty: 'Selles edetabelis pole veel mänge. Ole esimene.',
   leaderboardWouldBe: 'Kus see mäng asuks',
   leaderboardThisGame: 'See mäng',
+  leaderboardRanksHere: 'Kus see mäng asub',
+  leaderboardOutside: 'Väljaspool esiviisikut.',
   tutAccountTitle: 'Hoia oma tulemused alles',
   tutAccountBody:
     'Konto salvestab sinu mängud, paneb tulemused edetabelisse ja hoiab sinu profiili.',

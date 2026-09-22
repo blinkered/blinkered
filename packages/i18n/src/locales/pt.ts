@@ -132,10 +132,10 @@ export const pt: Messages = {
   quitConfirm: 'Sair',
   keepPlaying: 'Continuar a jogar',
   personalBest: 'Os seus melhores jogos',
-  thisGame: 'este jogo',
   newPersonalBest: 'Novo recorde pessoal.',
   columnRank: '#',
   notRanked: 'Regras próprias: este jogo não é classificado.',
+  notRankedPaused: 'O relógio parou: este jogo não é classificado.',
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Como jogar',
@@ -233,6 +233,8 @@ export const pt: Messages = {
   leaderboardEmpty: 'Ainda não há jogos nesta classificação. Sê o primeiro.',
   leaderboardWouldBe: 'Onde ficaria este jogo',
   leaderboardThisGame: 'Este jogo',
+  leaderboardRanksHere: 'Onde fica este jogo',
+  leaderboardOutside: 'Fora das cinco primeiras.',
   tutAccountTitle: 'Guarda as tuas pontuações',
   tutAccountBody:
     'Uma conta guarda os teus jogos, põe as tuas pontuações na classificação e mantém o teu perfil.',

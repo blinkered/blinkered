@@ -132,10 +132,10 @@ export const el: Messages = {
   quitConfirm: 'Έξοδος',
   keepPlaying: 'Συνέχεια',
   personalBest: 'Τα καλύτερά σας παιχνίδια',
-  thisGame: 'αυτό το παιχνίδι',
   newPersonalBest: 'Νέο προσωπικό ρεκόρ.',
   columnRank: '#',
   notRanked: 'Δικοί σας κανόνες, οπότε αυτό το παιχνίδι δεν κατατάσσεται.',
+  notRankedPaused: 'Το ρολόι σταμάτησε, οπότε αυτό το παιχνίδι δεν κατατάσσεται.',
   rankOfTotal: '{rank} από {total}',
 
   howToPlay: 'Πώς παίζεται',
@@ -232,6 +232,8 @@ export const el: Messages = {
   leaderboardEmpty: 'Δεν υπάρχουν ακόμη παιχνίδια σε αυτήν την κατάταξη. Γίνε ο πρώτος.',
   leaderboardWouldBe: 'Πού θα έμπαινε αυτό το παιχνίδι',
   leaderboardThisGame: 'Αυτό το παιχνίδι',
+  leaderboardRanksHere: 'Πού μπαίνει αυτό το παιχνίδι',
+  leaderboardOutside: 'Εκτός πρώτης πεντάδας.',
   tutAccountTitle: 'Κρατήστε τα σκορ σας',
   tutAccountBody:
     'Ένας λογαριασμός κρατά τα παιχνίδια σας, βάζει τα σκορ σας στην κατάταξη και διατηρεί το προφίλ σας.',

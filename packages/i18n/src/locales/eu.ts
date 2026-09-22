@@ -140,10 +140,10 @@ export const eu: Messages = {
   quitConfirm: 'Utzi',
   keepPlaying: 'Jarraitu jokatzen',
   personalBest: 'Zure partidarik onenak',
-  thisGame: 'partida hau',
   newPersonalBest: 'Marka pertsonal berria.',
   columnRank: '#',
   notRanked: 'Arau propioak, beraz partida hau ez da sailkatzen.',
+  notRankedPaused: 'Erlojua gelditu da, beraz partida hau ez da sailkatzen.',
   rankOfTotal: '{total}(e)tik {rank}.',
 
   howToPlay: 'Nola jokatu',
@@ -241,6 +241,8 @@ export const eu: Messages = {
   leaderboardEmpty: 'Oraindik ez dago partidarik sailkapen honetan. Izan zaitez lehena.',
   leaderboardWouldBe: 'Non egongo litzateke partida hau',
   leaderboardThisGame: 'Partida hau',
+  leaderboardRanksHere: 'Non dago partida hau',
+  leaderboardOutside: 'Lehen bostetik kanpo.',
   tutAccountTitle: 'Gorde zure puntuazioak',
   tutAccountBody:
     'Kontu batek zure partidak gordetzen ditu, puntuazioak sailkapenean jartzen eta zure profila mantentzen.',

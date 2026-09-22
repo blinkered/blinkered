@@ -147,10 +147,10 @@ export const ja: Messages = {
   quitConfirm: 'やめる',
   keepPlaying: '続ける',
   personalBest: 'あなたの最高記録',
-  thisGame: 'このゲーム',
   newPersonalBest: '自己ベストを更新しました。',
   columnRank: '#',
   notRanked: '独自ルールのため、このゲームは順位に入りません。',
+  notRankedPaused: '時間が止まったため、このゲームは順位に入りません。',
   rankOfTotal: '{total}中{rank}',
 
   howToPlay: '遊び方',
@@ -243,6 +243,8 @@ export const ja: Messages = {
   leaderboardEmpty: 'このランキングにはまだ記録がありません。最初の一人になりましょう。',
   leaderboardWouldBe: 'この記録が入る位置',
   leaderboardThisGame: 'この記録',
+  leaderboardRanksHere: 'この記録が入った位置',
+  leaderboardOutside: '上位5位圏外です。',
   tutAccountTitle: 'スコアを残す',
   tutAccountBody:
     'アカウントがあれば、記録が保存され、スコアがランキングに載り、プロフィールを管理できます。',

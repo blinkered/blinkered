@@ -232,6 +232,48 @@ export interface AccountStore extends ReportWriter {
   /** Somebody's games, most recently finished first. */
   gamesOf(userId: string, limit: number): Promise<readonly GameSummary[]>
   /**
+   * Somebody's best games in one group, and how many they have in it.
+   *
+   * `gamesOf` cannot answer this. It is the newest fifty, across every language and difficulty,
+   * so ranking its answer gives "your best of the last fifty games you played" -- which is a
+   * different sentence from the one the game-over panel puts a heading on, and is wrong in the
+   * one direction that matters: the game somebody is proudest of is the one that ages out.
+   *
+   * Ordered the way `compareResults` in @blinkered/engine orders, which is the order `leaderboard`
+   * above uses and the order the client's own table uses. Three places, one rule.
+   *
+   * Grouped on `canonical` rather than `leaderboard_eligible`, and that is deliberate: a game
+   * whose clock stopped is off the public board and still yours. Your own table has always
+   * counted it, because `rankedResults` groups on `canonical` too, and a personal history that
+   * quietly drops games you played is a worse lie than a board that declines to rank them.
+   *
+   * `placing` is the game being put into this table, and it does two things.
+   *
+   * It comes out of both the rows and the count, for a race the game-over panel cannot otherwise
+   * win: that panel asks this while the game it is about is being uploaded, so the answer may or
+   * may not already hold it depending on which request the server finishes first, and a total
+   * that is sometimes off by one is worse than either answer consistently. The client adds it
+   * back, once, so the panel reads the same whichever way the race goes.
+   *
+   * And it is what `ahead` counts against. Without that the client could only rank it among the
+   * rows it was sent, which is a table's worth rather than a history's: a game that came tenth of
+   * ten, asked for with a limit of five, would call itself sixth. Counted here because the count
+   * is over rows the client does not have.
+   */
+  bestOf(query: {
+    userId: string
+    language: string
+    difficulty: string
+    engineVersion: string
+    placing: { score: number; rounds: number; at: Date } | null
+    limit: number
+  }): Promise<{
+    games: readonly GameSummary[]
+    total: number
+    /** How many of them beat `placing`, by the board's order. Zero when nothing was placed. */
+    ahead: number
+  }>
+  /**
    * One board: the top `limit` players for a language, a difficulty and an engine version.
    *
    * **One row per player, their best game**, which docs/ACCOUNTS.md settled and which is not a

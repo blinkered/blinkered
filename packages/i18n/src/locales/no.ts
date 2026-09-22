@@ -132,10 +132,10 @@ export const no: Messages = {
   quitConfirm: 'Avslutt',
   keepPlaying: 'Fortsett å spille',
   personalBest: 'Dine beste spill',
-  thisGame: 'dette spillet',
   newPersonalBest: 'Ny personlig rekord.',
   columnRank: '#',
   notRanked: 'Egne regler, så dette spillet rangeres ikke.',
+  notRankedPaused: 'Klokken stoppet, så dette spillet rangeres ikke.',
   rankOfTotal: '{rank} av {total}',
 
   howToPlay: 'Slik spiller du',
@@ -231,6 +231,8 @@ export const no: Messages = {
   leaderboardEmpty: 'Ingen spill på denne ranglisten ennå. Bli den første.',
   leaderboardWouldBe: 'Hvor dette spillet ville stå',
   leaderboardThisGame: 'Dette spillet',
+  leaderboardRanksHere: 'Hvor dette spillet står',
+  leaderboardOutside: 'Utenfor topp fem.',
   tutAccountTitle: 'Behold poengene dine',
   tutAccountBody:
     'En konto lagrer spillene dine, setter poengene dine på ranglisten og tar vare på profilen din.',

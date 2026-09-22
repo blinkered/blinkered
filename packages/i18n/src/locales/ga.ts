@@ -141,10 +141,10 @@ export const ga: Messages = {
   quitConfirm: 'Éirigh as',
   keepPlaying: 'Lean ort ag imirt',
   personalBest: 'Na cluichí is fearr agat',
-  thisGame: 'an cluiche seo',
   newPersonalBest: 'Curiarracht phearsanta nua.',
   columnRank: '#',
   notRanked: 'Rialacha féin, mar sin níl an cluiche seo ar an liosta.',
+  notRankedPaused: 'Stop an clog, mar sin níl an cluiche seo ar an liosta.',
   rankOfTotal: '{rank} as {total}',
 
   howToPlay: 'Conas imirt',
@@ -244,6 +244,8 @@ export const ga: Messages = {
   leaderboardEmpty: 'Níl aon chluiche ar an gclár seo go fóill. Bí ar an gcéad duine.',
   leaderboardWouldBe: 'Cén áit a mbeadh an cluiche seo',
   leaderboardThisGame: 'An cluiche seo',
+  leaderboardRanksHere: 'Cén áit a bhfuil an cluiche seo',
+  leaderboardOutside: 'Taobh amuigh de na cúig cinn is fearr.',
   tutAccountTitle: 'Coinnigh do scóir',
   tutAccountBody:
     'Sábhálann cuntas do chluichí, cuireann sé do scóir ar an gclár, agus coinníonn sé do phróifíl.',

@@ -132,10 +132,10 @@ export const nl: Messages = {
   quitConfirm: 'Stoppen',
   keepPlaying: 'Doorspelen',
   personalBest: 'Je beste spellen',
-  thisGame: 'dit spel',
   newPersonalBest: 'Nieuw persoonlijk record.',
   columnRank: '#',
   notRanked: 'Eigen regels, dus dit spel telt niet mee.',
+  notRankedPaused: 'De klok stopte, dus dit spel telt niet mee.',
   rankOfTotal: '{rank} van {total}',
 
   howToPlay: 'Hoe je speelt',
@@ -232,6 +232,8 @@ export const nl: Messages = {
   leaderboardEmpty: 'Nog geen spellen op deze ranglijst. Wees de eerste.',
   leaderboardWouldBe: 'Waar dit spel zou staan',
   leaderboardThisGame: 'Dit spel',
+  leaderboardRanksHere: 'Waar dit spel staat',
+  leaderboardOutside: 'Buiten de top vijf.',
   tutAccountTitle: 'Bewaar je scores',
   tutAccountBody:
     'Een account bewaart je spellen, zet je scores op de ranglijst en houdt je profiel bij.',

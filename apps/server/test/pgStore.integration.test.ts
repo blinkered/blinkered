@@ -456,6 +456,105 @@ describe('keeping games', () => {
     expect(await theStore().gamesOf(theirs.userId, 10)).toEqual([])
   })
 
+  /*
+   * Your best games in one group, which is a different question from your newest games.
+   *
+   * Here rather than only against the fake because every clause is a property of the database:
+   * the ordering is the one the board's SQL uses, the count has to agree with the rows it counts,
+   * and the excluded finish time has to come out of both. The fake models all of it and can only
+   * prove that the model agrees with itself.
+   */
+  it('ranks one group best first, counts it, and can leave one game out', async () => {
+    const { userId } = await account()
+    const other = await account()
+    const bare = { boards: [{ tiles: 'A B C' }], words: [] }
+    const at = (ms: number): Date => new Date(Date.now() - ms)
+
+    const middle = at(3000)
+    for (const [when, score] of [
+      [at(5000), 50],
+      [middle, 150],
+      [at(1000), 100],
+    ] as const) {
+      await theStore().insertGame(gameFor(userId, when, score), bare)
+    }
+    // Somebody else's game in the same group, and one of yours in another: neither belongs in
+    // this answer.
+    await theStore().insertGame(gameFor(other.userId, at(2000), 999), bare)
+    await theStore().insertGame(
+      { ...gameFor(userId, at(4000), 888), id: 'game-other-group', difficulty: 'hard' },
+      bare,
+    )
+
+    const group = {
+      userId,
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: '0.3.0',
+      limit: 5,
+    }
+
+    const best = await theStore().bestOf({ ...group, placing: null })
+    expect(best.games.map((game) => game.score)).toEqual([150, 100, 50])
+    expect(best.total).toBe(3)
+    expect(best.ahead).toBe(0)
+
+    // The game the panel is about, taken out of the rows *and* out of the count, and counted
+    // against. A total that dropped one but kept the other is the off-by-one this prevents.
+    const without = await theStore().bestOf({
+      ...group,
+      placing: { score: 150, rounds: 6, at: middle },
+    })
+    expect(without.games.map((game) => game.score)).toEqual([100, 50])
+    expect(without.total).toBe(2)
+    expect(without.ahead).toBe(0)
+
+    // The count that makes a rank: two of these beat a score of 60, and the rows it came back
+    // with do not have to contain them.
+    const low = await theStore().bestOf({
+      ...group,
+      placing: { score: 60, rounds: 6, at: new Date() },
+      limit: 1,
+    })
+    expect(low.ahead).toBe(2)
+
+    // The limit trims the rows and leaves the count alone: one of three is still three.
+    const trimmed = await theStore().bestOf({ ...group, placing: null, limit: 1 })
+    expect(trimmed.games.map((game) => game.score)).toEqual([150])
+    expect(trimmed.total).toBe(3)
+  })
+
+  it('keeps a paused game in your own table and a custom one out of it', async () => {
+    const { userId } = await account()
+    const bare = { boards: [{ tiles: 'A B C' }], words: [] }
+    const paused = {
+      ...gameFor(userId, new Date(Date.now() - 2000), 70),
+      paused: true,
+      leaderboardEligible: false,
+    }
+    const custom = {
+      ...gameFor(userId, new Date(Date.now() - 1000), 500),
+      id: 'game-custom-rules',
+      canonical: false,
+    }
+    await theStore().insertGame(paused, bare)
+    await theStore().insertGame(custom, bare)
+
+    // Grouped on `canonical`, not on `leaderboard_eligible`: a game whose clock stopped is off
+    // the public board and is still one of yours, and a game on rules nobody else is playing is
+    // ranked against nothing. The client's own `rankedResults` draws the line in the same place.
+    const best = await theStore().bestOf({
+      userId,
+      language: 'en',
+      difficulty: 'medium',
+      engineVersion: '0.3.0',
+      placing: null,
+      limit: 5,
+    })
+    expect(best.games.map((game) => game.score)).toEqual([70])
+    expect(best.total).toBe(1)
+  })
+
   it('leaves a hidden game out, including from the person who set it', async () => {
     const { userId } = await account()
     const at = new Date()

@@ -340,6 +340,49 @@ export function fakeStore(): FakeStore {
         .sort((a, b) => b.finishedAt.getTime() - a.finishedAt.getTime())
       return Promise.resolve(mine.slice(0, limit))
     },
+    bestOf: (query) => {
+      // The rules `bestOf` in account/types.ts states, modelled rather than skipped: grouped on
+      // `canonical` so a paused game still counts as one of yours, ordered the way
+      // `compareResults` orders, and with the excluded finish time out of both answers.
+      const mine = games
+        .map((entry) => entry.row)
+        .filter(
+          (row) =>
+            row.userId === query.userId &&
+            !hidden.has(row.id) &&
+            row.canonical &&
+            row.language === query.language &&
+            row.difficulty === query.difficulty &&
+            row.engineVersion === query.engineVersion &&
+            (query.placing === null || row.finishedAt.getTime() !== query.placing.at.getTime()),
+        )
+        .sort(
+          (a, b) =>
+            b.score - a.score ||
+            a.roundsPlayed - b.roundsPlayed ||
+            a.finishedAt.getTime() - b.finishedAt.getTime(),
+        )
+      // The same order as a predicate: a better score, or the same score in fewer rounds, or the
+      // same score in the same rounds finished earlier.
+      const placing = query.placing
+      const ahead =
+        placing === null
+          ? 0
+          : mine.filter(
+              (row) =>
+                row.score > placing.score ||
+                (row.score === placing.score && row.roundsPlayed < placing.rounds) ||
+                (row.score === placing.score &&
+                  row.roundsPlayed === placing.rounds &&
+                  row.finishedAt.getTime() < placing.at.getTime()),
+            ).length
+      return Promise.resolve({
+        games: mine.slice(0, query.limit).map(summaryOf),
+        total: mine.length,
+        ahead,
+      })
+    },
+
     gameById: (gameId) => {
       const kept = games.find((one) => one.row.id === gameId)
       if (kept === undefined || hidden.has(gameId)) return Promise.resolve(null)

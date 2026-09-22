@@ -139,10 +139,10 @@ export const ro: Messages = {
   quitConfirm: 'Renunță',
   keepPlaying: 'Continuă jocul',
   personalBest: 'Cele mai bune jocuri ale dumneavoastră',
-  thisGame: 'acest joc',
   newPersonalBest: 'Un nou record personal.',
   columnRank: '#',
   notRanked: 'Reguli proprii, deci acest joc nu intră în clasament.',
+  notRankedPaused: 'Ceasul s-a oprit, deci acest joc nu intră în clasament.',
   rankOfTotal: '{rank} din {total}',
 
   howToPlay: 'Cum se joacă',
@@ -238,6 +238,8 @@ export const ro: Messages = {
   leaderboardEmpty: 'Încă nu există jocuri în acest clasament. Fii primul.',
   leaderboardWouldBe: 'Unde s-ar clasa acest joc',
   leaderboardThisGame: 'Acest joc',
+  leaderboardRanksHere: 'Unde se clasează acest joc',
+  leaderboardOutside: 'În afara primelor cinci.',
   tutAccountTitle: 'Păstrează-ți scorurile',
   tutAccountBody:
     'Un cont salvează jocurile tale, pune scorurile în clasament și păstrează profilul tău.',

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { configFor } from '@blinkered/engine'
+import { ENGINE_VERSION, configFor } from '@blinkered/engine'
 import { createApp } from '../src/app.js'
 import type { ApiDeps } from '../src/app.js'
 import { BIO_MAX } from '../src/account/profile.js'
@@ -471,6 +471,149 @@ describe('the account surface', () => {
 
     it('is 401 signed out', async () => {
       expect((await get('/v1/me/games', {})).status).toBe(401)
+    })
+  })
+
+  /*
+   * The table of your own best games on the game-over panel.
+   *
+   * Separate from `/me/games` because it answers a different question, and the tests are separate
+   * for the same reason: this one is ordered by what a score is worth rather than by when it
+   * happened, and it is asked about one group while the game it is about is still being uploaded.
+   */
+  describe('my best games', () => {
+    const BEST = `/v1/me/best/en/medium?engineVersion=${ENGINE_VERSION}`
+
+    /*
+     * Six distinct words, because a submission carrying the same word twice is refused.
+     *
+     * Five tiles each, so the score rises evenly with the count and the order this table is in is
+     * unambiguous: three words always beat two.
+     */
+    const POOL = ['HOUSE', 'MOUSE', 'PLANT', 'STONE', 'BRAVE', 'CRANE']
+
+    /** A game whose score rises with the number of words, which is what orders this table. */
+    const importOne = async (finishedAt: number, seed: number, words: number): Promise<void> => {
+      await send('POST', '/v1/games/import', {
+        startedAt: finishedAt - 60_000,
+        finishedAt,
+        seed,
+        difficulty: 'medium',
+        source: 'web',
+        config: { ...CONFIG },
+        boards: [BOARD],
+        words: POOL.slice(0, words).map((word, at) => ({ word, round: at, flips: 8, tick: 12 })),
+        rounds: 6,
+      })
+    }
+
+    const best = async (
+      path = BEST,
+      headers: Record<string, string> = { cookie },
+    ): Promise<{ games: { score: number; finishedAt: string }[]; total: number; ahead: number }> =>
+      (await (await get(path, headers)).json()) as {
+        games: { score: number; finishedAt: string }[]
+        total: number
+        ahead: number
+      }
+
+    /** The query a panel sends: the game it is placing, by the three numbers that place it. */
+    const placing = (score: number, rounds: number, at: number): string =>
+      `&score=${String(score)}&rounds=${String(rounds)}&at=${String(at)}`
+
+    it('is your best first, not your newest first', async () => {
+      // Newest last, so an answer that came back in the order `/me/games` uses would be the
+      // reverse of the one this asserts.
+      await importOne(clock.getTime() - 100_000, 1, 3)
+      await importOne(clock.getTime() - 50_000, 2, 1)
+      await importOne(clock.getTime() - 1000, 3, 2)
+      const { games, total } = await best()
+      expect(games.map((game) => game.score)).toEqual(
+        [...games.map((g) => g.score)].sort((a, b) => b - a),
+      )
+      expect(games).toHaveLength(3)
+      expect(total).toBe(3)
+    })
+
+    it('leaves out the game it is placing, and does not count it either', async () => {
+      const placed = clock.getTime() - 100_000
+      await importOne(placed, 1, 3)
+      await importOne(clock.getTime() - 1000, 2, 1)
+      const { games, total } = await best(`${BEST}${placing(15, 6, placed)}`)
+      expect(games).toHaveLength(1)
+      expect(games.map((game) => Date.parse(game.finishedAt))).not.toContain(placed)
+      // The count has to drop with the row. A total that still says two while one row came back
+      // is the off-by-one this prevents.
+      expect(total).toBe(1)
+    })
+
+    it('counts what beats the game being placed, however few rows came back', async () => {
+      for (let i = 0; i < 6; i += 1) await importOne(clock.getTime() - 1000 * (i + 1), i, i + 1)
+      // Worse than all six, asked for with room for one row. Ranked inside the answer this would
+      // call itself second; the count is over every game, so it is seventh.
+      const { ahead, games } = await best(`${BEST}&limit=1${placing(1, 60, clock.getTime())}`)
+      expect(games).toHaveLength(1)
+      expect(ahead).toBe(6)
+    })
+
+    it('counts a tie the way the board breaks one', async () => {
+      const first = clock.getTime() - 100_000
+      await importOne(first, 1, 2)
+      // The same score in the same rounds: whoever got there first stays ahead, so a game
+      // finished later is behind it and one finished earlier is not.
+      expect((await best(`${BEST}${placing(10, 6, first + 1000)}`)).ahead).toBe(1)
+      expect((await best(`${BEST}${placing(10, 6, first - 1000)}`)).ahead).toBe(0)
+      // The same score in fewer rounds wins, and in more rounds loses.
+      expect((await best(`${BEST}${placing(10, 5, first + 1000)}`)).ahead).toBe(0)
+      expect((await best(`${BEST}${placing(10, 7, first - 1000)}`)).ahead).toBe(1)
+    })
+
+    it('places nothing for a game given by halves', async () => {
+      await importOne(clock.getTime() - 1000, 1, 1)
+      // A score with no finish time cannot be taken out of the rows it is being ranked against,
+      // so it is not ranked at all rather than ranked and double counted.
+      const half = await best(`${BEST}&score=10`)
+      expect(half.total).toBe(1)
+      expect(half.ahead).toBe(0)
+      expect(
+        (await best(`${BEST}&score=nonsense&rounds=6&at=${String(clock.getTime())}`)).ahead,
+      ).toBe(0)
+    })
+
+    it('answers only about the group it was asked about', async () => {
+      await importOne(clock.getTime() - 1000, 1, 1)
+      expect((await best(`/v1/me/best/en/hard?engineVersion=${ENGINE_VERSION}`)).total).toBe(0)
+      expect((await best(`/v1/me/best/fr/medium?engineVersion=${ENGINE_VERSION}`)).total).toBe(0)
+      // A score means nothing across a change to what a difficulty is, which is why the version
+      // is part of the group rather than a detail of it.
+      expect((await best('/v1/me/best/en/medium?engineVersion=0.0.1')).total).toBe(0)
+    })
+
+    it('honours a limit, caps it, and ignores a nonsensical one', async () => {
+      for (let i = 0; i < 6; i += 1) await importOne(clock.getTime() - 1000 * (i + 1), i, i + 1)
+      const count = async (query: string): Promise<number> =>
+        (await best(`${BEST}${query}`)).games.length
+      expect(await count('&limit=2')).toBe(2)
+      // Six games, a five-row default, and a ceiling well above both.
+      expect(await count('')).toBe(5)
+      expect(await count('&limit=100000')).toBe(6)
+      expect(await count('&limit=nonsense')).toBe(5)
+      expect(await count('&limit=0')).toBe(5)
+    })
+
+    it('refuses without an engine version, rather than guessing one', async () => {
+      expect((await get('/v1/me/best/en/medium')).status).toBe(400)
+      expect((await get('/v1/me/best/en/medium?engineVersion=')).status).toBe(400)
+    })
+
+    it('shows nobody else’s', async () => {
+      await importOne(clock.getTime() - 1000, 1, 1)
+      const second = await signIn('other@example.com')
+      expect((await best(BEST, { cookie: second })).total).toBe(0)
+    })
+
+    it('is 401 signed out', async () => {
+      expect((await get(BEST, {})).status).toBe(401)
     })
   })
 

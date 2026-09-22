@@ -141,10 +141,10 @@ export const cy: Messages = {
   quitConfirm: 'Gadael',
   keepPlaying: 'Dal ati i chwarae',
   personalBest: 'Eich gemau gorau',
-  thisGame: 'y gêm hon',
   newPersonalBest: 'Record bersonol newydd.',
   columnRank: '#',
   notRanked: 'Rheolau eich hun, felly ni chaiff y gêm hon ei rhestru.',
+  notRankedPaused: 'Fe stopiodd y cloc, felly ni chaiff y gêm hon ei rhestru.',
   rankOfTotal: '{rank} o {total}',
 
   howToPlay: 'Sut i chwarae',
@@ -241,6 +241,8 @@ export const cy: Messages = {
   leaderboardEmpty: 'Dim gemau ar y bwrdd hwn eto. Bydd y cyntaf.',
   leaderboardWouldBe: "Lle byddai'r gêm hon",
   leaderboardThisGame: 'Y gêm hon',
+  leaderboardRanksHere: "Lle mae'r gêm hon",
+  leaderboardOutside: "Y tu allan i'r pump uchaf.",
   tutAccountTitle: 'Cadw dy sgoriau',
   tutAccountBody:
     'Mae cyfrif yn cadw dy gemau, yn rhoi dy sgoriau ar y bwrdd arwain, ac yn cadw dy broffil.',

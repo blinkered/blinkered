@@ -136,10 +136,10 @@ export const fr: Messages = {
   quitConfirm: 'Quitter',
   keepPlaying: 'Continuer',
   personalBest: 'Vos meilleures parties',
-  thisGame: 'cette partie',
   newPersonalBest: 'Nouveau record personnel.',
   columnRank: '#',
   notRanked: 'Règles personnalisées : cette partie n’est pas classée.',
+  notRankedPaused: 'L’horloge s’est arrêtée : cette partie n’est pas classée.',
   rankOfTotal: '{rank} sur {total}',
 
   howToPlay: 'Comment jouer',
@@ -238,6 +238,8 @@ export const fr: Messages = {
   leaderboardEmpty: 'Aucune partie dans ce classement pour l’instant. Sois le premier.',
   leaderboardWouldBe: 'Où se classerait cette partie',
   leaderboardThisGame: 'Cette partie',
+  leaderboardRanksHere: 'Où se classe cette partie',
+  leaderboardOutside: 'Hors des cinq premières.',
   tutAccountTitle: 'Gardez vos scores',
   tutAccountBody:
     'Un compte enregistre vos parties, place vos scores au classement et conserve votre profil.',

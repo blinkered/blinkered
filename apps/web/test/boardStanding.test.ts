@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { GameResult } from '@blinkered/engine'
-import { placeInto } from '../src/BoardPreview.js'
+import { isThisGame, placeInto } from '../src/BoardStanding.js'
 import type { BoardRow } from '../src/account.js'
 import { routeOf, pathOf } from '../src/route.js'
 
@@ -161,5 +161,29 @@ describe('the address a board lives at', () => {
     expect(routeOf('/u/nick')).toEqual({ at: 'player', username: 'nick' })
     expect(routeOf('/admin')).toEqual({ at: 'admin' })
     expect(routeOf('/')).toEqual({ at: 'game' })
+  })
+})
+
+/**
+ * Telling your own game apart from the board's copy of it.
+ *
+ * Signed in, the upload of the game that just ended races the board request the panel makes, so
+ * the board may come back already holding it. Without this the panel projects a second row for a
+ * game that is already there and somebody sees themselves twice, and which way the race went is
+ * not something a results screen should be able to show.
+ */
+describe('the game that just ended, on a board that already has it', () => {
+  const finished = { at: 1_700_000_000_000 } as GameResult
+
+  it('recognises it by the finish time the client sent', () => {
+    const same = row({ score: 120, finishedAt: new Date(finished.at).toISOString() })
+    expect(isThisGame(same, finished)).toBe(true)
+  })
+
+  it('leaves every other row alone, however alike', () => {
+    // The same score, the same rounds, one second apart: two games, and only one of them is this
+    // one. Matching on the numbers instead would have hidden somebody else's row.
+    const other = row({ score: 120, finishedAt: new Date(finished.at + 1000).toISOString() })
+    expect(isThisGame(other, finished)).toBe(false)
   })
 })

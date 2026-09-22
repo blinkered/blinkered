@@ -132,10 +132,10 @@ export const sv: Messages = {
   quitConfirm: 'Avsluta',
   keepPlaying: 'Fortsätt spela',
   personalBest: 'Dina bästa spel',
-  thisGame: 'det här spelet',
   newPersonalBest: 'Nytt personbästa.',
   columnRank: '#',
   notRanked: 'Egna regler, så det här spelet rankas inte.',
+  notRankedPaused: 'Klockan stannade, så det här spelet rankas inte.',
   rankOfTotal: '{rank} av {total}',
 
   howToPlay: 'Så spelar du',
@@ -231,6 +231,8 @@ export const sv: Messages = {
   leaderboardEmpty: 'Inga spel på den här topplistan än. Bli först.',
   leaderboardWouldBe: 'Var det här spelet skulle hamna',
   leaderboardThisGame: 'Det här spelet',
+  leaderboardRanksHere: 'Var det här spelet hamnar',
+  leaderboardOutside: 'Utanför topp fem.',
   tutAccountTitle: 'Behåll dina poäng',
   tutAccountBody:
     'Ett konto sparar dina spel, sätter dina poäng på topplistan och behåller din profil.',

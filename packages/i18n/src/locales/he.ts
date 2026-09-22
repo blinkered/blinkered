@@ -141,10 +141,10 @@ export const he: Messages = {
   quitConfirm: 'צא',
   keepPlaying: 'המשיכו לשחק',
   personalBest: 'המשחקים הטובים שלכם',
-  thisGame: 'המשחק הזה',
   newPersonalBest: 'שיא אישי חדש.',
   columnRank: '#',
   notRanked: 'חוקים משלכם, ולכן המשחק הזה אינו מדורג.',
+  notRankedPaused: 'השעון נעצר, ולכן המשחק הזה אינו מדורג.',
   rankOfTotal: '{rank} מתוך {total}',
 
   howToPlay: 'איך משחקים',
@@ -239,6 +239,8 @@ export const he: Messages = {
   leaderboardEmpty: 'אין עדיין משחקים בטבלה הזו. היה הראשון.',
   leaderboardWouldBe: 'איפה המשחק הזה היה מדורג',
   leaderboardThisGame: 'המשחק הזה',
+  leaderboardRanksHere: 'איפה המשחק הזה מדורג',
+  leaderboardOutside: 'מחוץ לחמישייה המובילה.',
   tutAccountTitle: 'שמור את הניקוד שלך',
   tutAccountBody:
     'חשבון שומר את המשחקים שלך, מכניס את הניקוד שלך לטבלת המובילים, ושומר את הפרופיל שלך.',

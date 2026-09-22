@@ -1509,19 +1509,19 @@ kbd {
   min-width: 11rem;
 }
 
-.leaderboard {
+.personal-best {
   display: grid;
   gap: 0.5rem;
   width: 100%;
   max-width: 22rem;
 }
-.leaderboard-head {
+.personal-best-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
 }
-.leaderboard-head h2 {
+.personal-best-head h2 {
   margin: 0;
   font-size: 0.95rem;
 }
@@ -1529,9 +1529,18 @@ kbd {
   margin: 0;
   color: var(--good);
 }
-.leaderboard .nerd-table tbody tr.is-current {
+.personal-best .nerd-table tbody tr.is-current {
   background: color-mix(in srgb, var(--sel) 20%, transparent);
   color: var(--up);
+}
+/* The row that skipped a gap to get here.
+
+   Five rows, always, and when the game that just ended is not in the top five the last row is
+   it -- ranked twelfth, sitting under a row ranked fourth. The break says so. Without it the
+   numbers read as a table that lost count, which is worse than the scrolling it saves. */
+.personal-best .nerd-table tbody tr.is-jumped td {
+  border-block-start: 1px dashed var(--line);
+  padding-block-start: 0.5rem;
 }
 .board-note {
   margin: 0;
@@ -4154,26 +4163,36 @@ kbd {
  * rather than the feature: a board is still reached from the link under a finished game.
  */
 
-/* The projected board on the game-over panel. See BoardPreview.tsx.
+/* The global board on the game-over panel. See BoardStanding.tsx.
 
-   Set apart from the personal table below it with a border and the selected colour, because it
-   is making a claim about the world rather than about this browser, and a reader has to be able
-   to tell which is which. The heading says "would", which is the other half of that. */
-.board-preview {
+   Set apart from the table of your own games above it with a border and the selected colour,
+   because it is making a claim about the world rather than about your history, and a reader has
+   to be able to tell which is which. The heading says which tense it is in, which is the other
+   half of that.
+
+   The box is `is-placed` rather than the section, so a score that missed the board is one quiet
+   line and a link rather than a line framed like an announcement. The section is always here
+   either way: a panel that grows a block after a good game and loses it after an ordinary one
+   has no order anybody can learn. */
+.board-standing {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+  max-width: 22rem;
+}
+.board-standing.is-placed {
   padding: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--sel) 45%, var(--line));
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--sel) 7%, transparent);
 }
-.board-preview h3 {
+.board-standing h3 {
   margin: 0;
   font-size: 0.95rem;
 }
-/* Tighter than the full board: this sits above a panel somebody is already reading. */
-.board-preview .board-row {
+/* Tighter than the full board: this sits in a panel somebody is already reading. */
+.board-standing .board-row {
   grid-template-columns: 2.8rem 1fr auto auto;
   padding: 0.35rem 0.15rem;
 }
@@ -4185,11 +4204,26 @@ kbd {
    *named* strangers, so the names are the last thing that may be truncated. The heading already
    says what the numbers are.
 */
-.board-preview .board-country,
-.board-preview .board-unit {
+/* The line and the link under it start at the same edge. The panel centres its text, which left
+   a one-line section reading as a centred announcement above a left-aligned link. */
+.board-standing .board-note {
+  align-self: start;
+  text-align: start;
+}
+.board-standing .board-country,
+.board-standing .board-unit {
   display: none;
 }
-.board-preview .btn {
+.board-standing .btn {
   align-self: start;
   margin-block-start: 0.25rem;
+}
+/* The link sits at the end of the section it is about, and reads as a footnote to it: dim
+   rather than the selected colour, because the way to a board nobody asked for should not be
+   the brightest thing on a screen showing somebody their own score. It was a call to action in
+   the middle of the personal table, which is the confusion this whole panel was rebuilt over. */
+.board-standing .board-global-link {
+  min-height: 2.25rem;
+  color: var(--dim);
+  font-size: 0.85rem;
 }

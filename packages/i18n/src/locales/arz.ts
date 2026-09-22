@@ -143,10 +143,10 @@ export const arz: Messages = {
   quitConfirm: 'اخرج',
   keepPlaying: 'كمّل لعب',
   personalBest: 'أحسن لعبات ليك',
-  thisGame: 'اللعبة دي',
   newPersonalBest: 'رقم شخصي جديد.',
   columnRank: '#',
   notRanked: 'قواعد بتاعتك انت، فاللعبة دي مش هتتحسب في الترتيب.',
+  notRankedPaused: 'الساعة وقفت، فاللعبة دي مش هتتحسب في الترتيب.',
   rankOfTotal: '{rank} من {total}',
 
   howToPlay: 'إزاي تلعب',
@@ -236,6 +236,8 @@ export const arz: Messages = {
   leaderboardEmpty: 'مفيش مباريات على اللوحة دى لسه. كون الأول.',
   leaderboardWouldBe: 'المباراة دى هتبقى فين',
   leaderboardThisGame: 'المباراة دى',
+  leaderboardRanksHere: 'المباراة دي بقت فين',
+  leaderboardOutside: 'برة أول خمسة.',
   tutAccountTitle: 'احفظ نتايجك',
   tutAccountBody:
     'الحساب بيحفظ مبارياتك، وبيحط نتايجك على لوحة المتصدرين، وبيحتفظ بالبروفايل بتاعك.',

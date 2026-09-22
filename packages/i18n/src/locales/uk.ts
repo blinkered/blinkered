@@ -138,10 +138,10 @@ export const uk: Messages = {
   quitConfirm: 'Вийти',
   keepPlaying: 'Грати далі',
   personalBest: 'Ваші найкращі ігри',
-  thisGame: 'ця гра',
   newPersonalBest: 'Новий особистий рекорд.',
   columnRank: '#',
   notRanked: 'Власні правила, тож ця гра не потрапляє до таблиці.',
+  notRankedPaused: 'Годинник зупинився, тож ця гра не потрапляє до таблиці.',
   rankOfTotal: '{rank} з {total}',
 
   howToPlay: 'Як грати',
@@ -234,6 +234,8 @@ export const uk: Messages = {
   leaderboardEmpty: 'У цій таблиці ще немає ігор. Стань першим.',
   leaderboardWouldBe: 'Де була б ця гра',
   leaderboardThisGame: 'Ця гра',
+  leaderboardRanksHere: 'Де ця гра стоїть',
+  leaderboardOutside: 'Поза першою п’ятіркою.',
   tutAccountTitle: 'Збережи свої результати',
   tutAccountBody:
     'Акаунт зберігає твої ігри, додає результати до таблиці лідерів і зберігає твій профіль.',

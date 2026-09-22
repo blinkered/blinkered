@@ -136,10 +136,10 @@ export const ptBR: Messages = {
   quitConfirm: 'Sair',
   keepPlaying: 'Continuar jogando',
   personalBest: 'Seus melhores jogos',
-  thisGame: 'este jogo',
   newPersonalBest: 'Novo recorde pessoal.',
   columnRank: '#',
   notRanked: 'Regras próprias: este jogo não é classificado.',
+  notRankedPaused: 'O relógio parou: este jogo não é classificado.',
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Como jogar',
@@ -235,6 +235,8 @@ export const ptBR: Messages = {
   leaderboardEmpty: 'Ainda não há partidas nesta classificação. Seja o primeiro.',
   leaderboardWouldBe: 'Onde esta partida ficaria',
   leaderboardThisGame: 'Esta partida',
+  leaderboardRanksHere: 'Onde esta partida fica',
+  leaderboardOutside: 'Fora do top 5.',
   tutAccountTitle: 'Guarde suas pontuações',
   tutAccountBody:
     'Uma conta salva suas partidas, coloca suas pontuações na classificação e mantém seu perfil.',

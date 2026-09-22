@@ -143,10 +143,10 @@ export const vi: Messages = {
   quitConfirm: 'Thoát',
   keepPlaying: 'Chơi tiếp',
   personalBest: 'Những ván hay nhất của bạn',
-  thisGame: 'ván này',
   newPersonalBest: 'Kỷ lục mới của bạn.',
   columnRank: '#',
   notRanked: 'Luật riêng, nên ván này không vào bảng xếp hạng.',
+  notRankedPaused: 'Đồng hồ đã dừng, nên ván này không vào bảng xếp hạng.',
   rankOfTotal: '{rank} trên {total}',
 
   howToPlay: 'Cách chơi',
@@ -238,6 +238,8 @@ export const vi: Messages = {
   leaderboardEmpty: 'Chưa có trận nào trên bảng này. Hãy là người đầu tiên.',
   leaderboardWouldBe: 'Trận này sẽ đứng ở đâu',
   leaderboardThisGame: 'Trận này',
+  leaderboardRanksHere: 'Trận này đứng ở đâu',
+  leaderboardOutside: 'Ngoài top 5.',
   tutAccountTitle: 'Giữ lại điểm của bạn',
   tutAccountBody:
     'Tài khoản lưu các trận của bạn, đưa điểm lên bảng xếp hạng và giữ hồ sơ của bạn.',

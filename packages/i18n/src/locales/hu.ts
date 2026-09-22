@@ -139,10 +139,10 @@ export const hu: Messages = {
   quitConfirm: 'Kilépés',
   keepPlaying: 'Játék folytatása',
   personalBest: 'Az ön legjobb játékai',
-  thisGame: 'ez a játék',
   newPersonalBest: 'Új egyéni csúcs.',
   columnRank: '#',
   notRanked: 'Saját szabályok, ezért ez a játék nem kerül a listára.',
+  notRankedPaused: 'Az idő megállt, ezért ez a játék nem kerül a listára.',
   rankOfTotal: '{rank} / {total}',
 
   howToPlay: 'Hogyan kell játszani',
@@ -238,6 +238,8 @@ export const hu: Messages = {
   leaderboardEmpty: 'Ezen a ranglistán még nincsenek játékok. Legyél az első.',
   leaderboardWouldBe: 'Hol állna ez a játék',
   leaderboardThisGame: 'Ez a játék',
+  leaderboardRanksHere: 'Hol áll ez a játék',
+  leaderboardOutside: 'Nincs az első öt között.',
   tutAccountTitle: 'Őrizd meg a pontjaid',
   tutAccountBody:
     'A fiók elmenti a játékaidat, felteszi a pontjaidat a ranglistára, és megtartja a profilodat.',

@@ -140,10 +140,10 @@ export const en: Messages = {
   quitConfirm: 'Quit',
   keepPlaying: 'Keep playing',
   personalBest: 'Your best games',
-  thisGame: 'this game',
   newPersonalBest: 'A new personal best.',
   columnRank: '#',
   notRanked: 'Custom rules, so this game is not ranked.',
+  notRankedPaused: 'The clock stopped, so this game is not ranked.',
   rankOfTotal: '{rank} of {total}',
 
   howToPlay: 'How to play',
@@ -238,6 +238,8 @@ export const en: Messages = {
   leaderboardEmpty: 'No games on this board yet. Be the first.',
   leaderboardWouldBe: 'Where this game would rank',
   leaderboardThisGame: 'This game',
+  leaderboardRanksHere: 'Where this game ranks',
+  leaderboardOutside: 'Outside the top five.',
   tutAccountTitle: 'Keep your scores',
   tutAccountBody:
     'An account saves your games, puts your scores on the leaderboard, and keeps your profile.',

@@ -138,10 +138,10 @@ export const is: Messages = {
   quitConfirm: 'Hætta',
   keepPlaying: 'Halda áfram að spila',
   personalBest: 'Bestu leikirnir þínir',
-  thisGame: 'þessi leikur',
   newPersonalBest: 'Nýtt persónulegt met.',
   columnRank: '#',
   notRanked: 'Eigin reglur, svo þessi leikur kemst ekki á listann.',
+  notRankedPaused: 'Tíminn stöðvaðist, svo þessi leikur kemst ekki á listann.',
   rankOfTotal: '{rank} af {total}',
 
   howToPlay: 'Hvernig á að spila',
@@ -236,6 +236,8 @@ export const is: Messages = {
   leaderboardEmpty: 'Engir leikir á þessari töflu enn. Verðu fyrstur.',
   leaderboardWouldBe: 'Hvar þessi leikur myndi standa',
   leaderboardThisGame: 'Þessi leikur',
+  leaderboardRanksHere: 'Hvar þessi leikur stendur',
+  leaderboardOutside: 'Ekki meðal fimm efstu.',
   tutAccountTitle: 'Haltu stigunum þínum',
   tutAccountBody:
     'Reikningur vistar leikina þína, setur stigin þín á stigatöfluna og heldur sniðinu þínu.',

@@ -139,10 +139,10 @@ export const ca: Messages = {
   quitConfirm: 'Deixa-ho',
   keepPlaying: 'Continua jugant',
   personalBest: 'Les vostres millors partides',
-  thisGame: 'aquesta partida',
   newPersonalBest: 'Un rècord personal nou.',
   columnRank: '#',
   notRanked: 'Regles pròpies, així que aquesta partida no es classifica.',
+  notRankedPaused: 'El rellotge s’ha aturat, així que aquesta partida no es classifica.',
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Com s’hi juga',
@@ -238,6 +238,8 @@ export const ca: Messages = {
   leaderboardEmpty: 'Encara no hi ha partides en aquesta classificació. Sigues el primer.',
   leaderboardWouldBe: 'On quedaria aquesta partida',
   leaderboardThisGame: 'Aquesta partida',
+  leaderboardRanksHere: 'On queda aquesta partida',
+  leaderboardOutside: 'Fora de les cinc primeres.',
   tutAccountTitle: 'Guarda les teves puntuacions',
   tutAccountBody:
     'Un compte guarda les teves partides, posa les teves puntuacions a la classificació i manté el teu perfil.',

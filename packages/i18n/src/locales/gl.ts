@@ -139,10 +139,10 @@ export const gl: Messages = {
   quitConfirm: 'Deixalo',
   keepPlaying: 'Seguir xogando',
   personalBest: 'As súas mellores partidas',
-  thisGame: 'esta partida',
   newPersonalBest: 'Un novo récord persoal.',
   columnRank: '#',
   notRanked: 'Regras propias, así que esta partida non se clasifica.',
+  notRankedPaused: 'O reloxo detívose, así que esta partida non se clasifica.',
   rankOfTotal: '{rank} de {total}',
 
   howToPlay: 'Como se xoga',
@@ -238,6 +238,8 @@ export const gl: Messages = {
   leaderboardEmpty: 'Aínda non hai partidas nesta clasificación. Se o primeiro.',
   leaderboardWouldBe: 'Onde quedaría esta partida',
   leaderboardThisGame: 'Esta partida',
+  leaderboardRanksHere: 'Onde queda esta partida',
+  leaderboardOutside: 'Fóra das cinco primeiras.',
   tutAccountTitle: 'Garda as túas puntuacións',
   tutAccountBody:
     'Unha conta garda as túas partidas, pon as túas puntuacións na clasificación e mantén o teu perfil.',
