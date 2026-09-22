@@ -901,6 +901,10 @@ PATCH  /v1/me                    edit username, bio, country, languages
 POST   /v1/me/deletion-code      a code that authorises the next call
 DELETE /v1/me                    account deletion, in-app, required
 GET    /v1/me/games?limit=
+GET    /v1/me/best/:language/:difficulty       your best games in one group, for the game-over
+                                               panel. ?engineVersion= required; ?score= ?rounds=
+                                               ?at= name the game being placed, which is left out
+                                               of the rows and the total and counted by `ahead`
 POST   /v1/games/import          the local store and the upload queue. 201 new, 200 already stored
 GET    /v1/games/:id             one game, for a shared link
 GET    /v1/users/:username       a public profile
