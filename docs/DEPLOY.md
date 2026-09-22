@@ -118,12 +118,22 @@ router out of service rather than failing quietly, so it is not a thing to be re
 
 ## The word lists, and who compresses them
 
-They are the payload: 126MB of text across fifty-one languages. Hungarian alone is 17.2MB,
-Arabic is 9.8MB, and Russian and Turkish are 8.5MB each. Those are byte counts in decimal MB,
-which is worth saying because `du -sm` reports the directory as 122 and the difference is block
-rounding, not disagreement; the two numbers were both in these docs, quoted against each other. Only the chosen language is ever fetched, when
-it is chosen, so nobody downloads all of it. The manifest at `/words/manifest.json` is 3KB and is
-all the app needs to know what exists.
+They are the payload, by a distance: the word lists outweigh everything else deployed here put
+together. How much by is not written down in this file on purpose. It changes whenever a language
+is borrowed, withdrawn or re-cut upstream, and a figure sitting in a document reads as though
+somebody had checked it long after nobody has. `du -sh packages/words/data` answers it, and
+`/words/manifest.json` says exactly which languages are deployed.
+
+The spread between languages is wide and is a fact about the languages rather than about
+anything here: a heavily inflected language admits far more written forms than an analytic one,
+so its list is larger by a multiple and not by a margin.
+
+**If you do quote a size somewhere, say which megabyte you mean.** These were once recorded in
+decimal MB in one paragraph and in `du -sm` blocks in another, and the two were quoted against
+each other as though they disagreed, when the whole difference was block rounding.
+
+Only the chosen language is ever fetched, when it is chosen, so nobody downloads all of it. The
+manifest is a few kilobytes and is all the app needs to know what exists.
 
 **Traefik compresses them, not nginx**, and finding that out was worth the trouble. The build
 writes a `.gz` beside every text file and nginx serves it with `gzip_static`, which works
@@ -425,18 +435,24 @@ kubectl port-forward deployment/blinkered 8099:8080
 
 Then, against `http://localhost:8099`:
 
-| check                     | expect               |
-| ------------------------- | -------------------- |
-| `/healthz`                | `ok`                 |
-| `/`                       | 200, `text/html`     |
-| `/how-to-play.html`       | 200, the rules page  |
-| `/words/manifest.json`    | 200, every language  |
-| `/words/ru.txt` with gzip | ~1.2MB, not 8.3MB    |
-| `/nope`                   | **404**, not the app |
+| check                     | expect                                                                     |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `/healthz`                | `ok`                                                                       |
+| `/`                       | 200, `text/html`                                                           |
+| `/how-to-play.html`       | 200, the rules page                                                        |
+| `/words/manifest.json`    | 200, every language                                                        |
+| `/words/ru.txt` with gzip | `content-encoding: gzip`, and fewer bytes than the same request without it |
+| `/nope`                   | **404**, not the app                                                       |
 
 That last one is deliberate. There is no client-side router, so an unknown path is an error and
 should say so. A server that answers every path with `index.html` is what once made a missing
 word list look like a parse failure.
+
+**The gzip row checks the header rather than a size**, and that is the difference between a check
+and a number that used to be true. A byte count there tests the Russian word list, not the
+deployment, so it goes wrong every time that list is re-cut upstream -- and when it does, a
+perfectly good deploy reads as a broken one, which costs you the confidence the row was there to
+buy. The only claim worth making is that compression is on.
 
 At the edge rather than at the pod, two more, both of which need the same request twice:
 
