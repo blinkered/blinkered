@@ -9,7 +9,7 @@ import { PageHead } from './PageHead.js'
 import { leaderboard } from './account.js'
 import type { Board, BoardRow as BoardRow_ } from './account.js'
 import { countryName } from './countries.js'
-import { goTo } from './route.js'
+import { goTo, isPlainClick, pathOf } from './route.js'
 import type { CatalogueEntry } from './dictionary.js'
 
 /**
@@ -192,6 +192,7 @@ export function BoardRow({
   readonly mine: boolean
   readonly linked?: boolean
 }): React.JSX.Element {
+  const gameId = row.gameId
   const who = (
     <>
       <Avatar seed={row.avatarSeed} size={28} />
@@ -219,8 +220,21 @@ export function BoardRow({
         ) : null}
         <span className="board-place">{row.rank}</span>
       </span>
-      {linked && row.gameId !== null ? (
-        <a className="board-who" href={`/g/${encodeURIComponent(row.gameId)}`}>
+      {linked && gameId !== null ? (
+        /*
+          The same anchor-plus-handler as the games table. The plain `href` alone reloaded the whole
+          app to open one game, which in the native shell meant the splash screen played between
+          the board and the game somebody tapped.
+        */
+        <a
+          className="board-who"
+          href={pathOf({ at: 'played-game', id: gameId })}
+          onClick={(event) => {
+            if (!isPlainClick(event)) return
+            event.preventDefault()
+            goTo({ at: 'played-game', id: gameId })
+          }}
+        >
           {who}
         </a>
       ) : (

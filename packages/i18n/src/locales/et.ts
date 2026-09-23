@@ -156,6 +156,11 @@ export const et: Messages = {
   tutorialHideAgain: 'Ära seda enam näita',
   tutorialProgress: '{n} / {total}',
   tutorialSkipTitle: 'Kas jätta tutvustus vahele?',
+  tutGoalTitle: 'Blinkered on võidujooks',
+  tutGoalBody:
+    'Alustate mängu kindla arvu käikudega ja iga pöörduv nupp maksab ühe käigu. Kui käigud otsa saavad, on mäng läbi. Sõnad toovad käike juurde, ja mida pikem sõna, seda rohkem käike saate.',
+  tutSpentBody:
+    'Sõnas kasutatud tähed jäävad kummuli kuni järgmise vooruni. Ainult tähevahetus muudab, millised tähed laual on.',
   tutPickLetters: 'Puudutage soovitud tähti järjekorras, et moodustada sõna.',
   tutMoreTurn: 'Nupud pöörduvad ka mõtlemise ajal, nii et parem täht võib alles tulla.',
   tutTapBack:

@@ -92,6 +92,22 @@ export interface Messages {
   /** `{n}` `{total}` */
   readonly tutorialProgress: string
   readonly tutorialSkipTitle: string
+  /**
+   * The tour's first screen: what the game is for, before any of how it works.
+   *
+   * A beta tester learned the mechanics from the tour and still took a game or two to learn the
+   * point, that flips are the budget, words refill it, and long words refill it most. Without that
+   * nobody prioritizes long words. The English is Nick's.
+   */
+  readonly tutGoalTitle: string
+  readonly tutGoalBody: string
+  /**
+   * What happens to the letters a finished word used: face down for the rest of the round.
+   *
+   * The same tester could not tell whether used letters were replaced or kept. They are kept and
+   * come back at the next deal; only a swap changes a letter.
+   */
+  readonly tutSpentBody: string
   readonly tutPickLetters: string
   readonly tutMoreTurn: string
   readonly tutTapBack: string

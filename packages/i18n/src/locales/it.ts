@@ -151,6 +151,11 @@ export const it: Messages = {
   tutorialHideAgain: 'Non mostrare più',
   tutorialProgress: '{n} di {total}',
   tutorialSkipTitle: 'Saltare la presentazione?',
+  tutGoalTitle: 'Blinkered è una corsa',
+  tutGoalBody:
+    'Inizi la partita con un numero fisso di giri, e ogni tessera che si gira costa un giro. Quando i giri finiscono, la partita è chiusa. Le parole fanno guadagnare giri, e più la parola è lunga, più giri guadagni.',
+  tutSpentBody:
+    'Le lettere che usi in una parola restano a faccia in giù fino al turno successivo. Solo un cambio di lettera modifica quali lettere ci sono sul tabellone.',
   tutPickLetters: 'Tocca le lettere che vuoi, in ordine, per comporre una parola.',
   tutMoreTurn:
     'Le tessere continuano a girarsi mentre pensi, quindi può ancora arrivare una lettera migliore.',

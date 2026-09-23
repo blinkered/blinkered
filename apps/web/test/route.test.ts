@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { pathOf, routeOf, urlOf } from '../src/route.js'
+import { isPlainClick, pathOf, routeOf, urlOf } from '../src/route.js'
 
 /**
  * Addresses, and the one about them that reached a phone: a shared link nobody could open.
@@ -83,5 +83,20 @@ describe('reading an address', () => {
     for (const path of ['/', '/nonsense', '/g', '/g/', '/u', '/l/en', '/about/more', '/admin/x']) {
       expect(routeOf(path)).toEqual({ at: 'game' })
     }
+  })
+})
+
+describe('isPlainClick', () => {
+  const plain = { metaKey: false, ctrlKey: false, shiftKey: false, altKey: false, button: 0 }
+
+  it('keeps a plain left click in the app', () => {
+    expect(isPlainClick(plain)).toBe(true)
+  })
+
+  it('leaves a modified or non-left click to the browser', () => {
+    for (const key of ['metaKey', 'ctrlKey', 'shiftKey', 'altKey'] as const) {
+      expect(isPlainClick({ ...plain, [key]: true })).toBe(false)
+    }
+    expect(isPlainClick({ ...plain, button: 1 })).toBe(false)
   })
 })

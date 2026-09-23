@@ -1470,6 +1470,11 @@ kbd {
   gap: 0.45rem;
   justify-items: center;
 }
+.ruleset-facts {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
 .ruleset-options {
   display: flex;
   flex-wrap: wrap;
@@ -2673,6 +2678,50 @@ kbd {
 }
 .tut-language .field {
   width: min(16rem, 100%);
+}
+
+/* The tick bar over the tour's board: the HUD's own, a little narrower than the card. */
+.tut-ticks {
+  width: min(100%, 18rem);
+}
+
+/* The flips counter on the tour's first screen, the HUD's figure standing on its own. */
+.tut-flips {
+  display: flex;
+  justify-content: center;
+}
+/* A flip spent: the figure dips and flashes the warning color. A flip earned: it pops in green. */
+.tut-flips.is-down .stat-value {
+  animation: tut-flip-down 380ms ease-out;
+}
+.tut-flips.is-up .stat-value {
+  animation: tut-flip-up 220ms ease-out;
+}
+@keyframes tut-flip-down {
+  0% {
+    color: var(--bad);
+    transform: translateY(0.2rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes tut-flip-up {
+  0% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tut-flips.is-down .stat-value,
+  .tut-flips.is-up .stat-value {
+    animation: none;
+  }
+}
+.tut-flips .stat-value {
+  display: inline-block;
 }
 
 /* The word being built, in the game's own shape but smaller: the tour's board is smaller too. */

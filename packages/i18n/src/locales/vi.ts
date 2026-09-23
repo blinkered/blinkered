@@ -160,6 +160,11 @@ export const vi: Messages = {
   tutorialHideAgain: 'Đừng hiện lại nữa',
   tutorialProgress: '{n} trên {total}',
   tutorialSkipTitle: 'Bỏ qua phần giới thiệu?',
+  tutGoalTitle: 'Blinkered là một cuộc đua',
+  tutGoalBody:
+    'Bạn bắt đầu ván với một số nước cố định, và mỗi quân mở ra tốn một nước. Khi hết nước là hết ván. Ghép từ sẽ được thêm nước, và từ càng dài thì càng được nhiều nước.',
+  tutSpentBody:
+    'Những chữ bạn dùng trong một từ sẽ bị úp xuống cho đến vòng sau. Chỉ có đổi chữ mới thay đổi các chữ trên bàn.',
   tutPickLetters: 'Chạm vào các chữ bạn muốn, theo thứ tự, để ghép thành từ.',
   tutMoreTurn: 'Quân vẫn tiếp tục mở trong lúc bạn nghĩ, nên chữ tốt hơn có thể vẫn đang tới.',
   tutTapBack: 'Lỡ lấy chữ không muốn? Chạm lại để trả về. Chữ nào cũng được, không riêng chữ cuối.',

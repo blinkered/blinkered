@@ -156,6 +156,11 @@ export const pl: Messages = {
   tutorialHideAgain: 'Nie pokazuj tego więcej',
   tutorialProgress: '{n} z {total}',
   tutorialSkipTitle: 'Pominąć wprowadzenie?',
+  tutGoalTitle: 'Blinkered to wyścig',
+  tutGoalBody:
+    'Zaczynasz grę ze stałą liczbą ruchów, a każda odkryta płytka kosztuje jeden ruch. Gdy ruchy się skończą, gra dobiega końca. Słowa dają ruchy, a im dłuższe słowo, tym więcej ruchów zdobywasz.',
+  tutSpentBody:
+    'Litery użyte w słowie pozostają zakryte do następnej rundy. Tylko zmiana litery zmienia to, jakie litery są na planszy.',
   tutPickLetters: 'Dotykaj liter po kolei, aby ułożyć słowo.',
   tutMoreTurn: 'Płytki odkrywają się, kiedy myślisz, więc lepsza litera może dopiero nadejść.',
   tutTapBack:

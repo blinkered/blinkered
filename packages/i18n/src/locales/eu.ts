@@ -157,6 +157,11 @@ export const eu: Messages = {
   tutorialHideAgain: 'Ez erakutsi hau berriro',
   tutorialProgress: '{total}(e)tik {n}.',
   tutorialSkipTitle: 'Aurkezpena saltatu?',
+  tutGoalTitle: 'Blinkered lasterketa bat da',
+  tutGoalBody:
+    'Partida jokaldi kopuru finko batekin hasten duzu, eta biratzen den fitxa bakoitzak jokaldi bat balio du. Jokaldiak amaitzean, partida amaitu da. Hitzek jokaldiak ematen dituzte, eta zenbat eta luzeagoa hitza, orduan eta jokaldi gehiago irabazten duzu.',
+  tutSpentBody:
+    'Hitz batean erabiltzen dituzun letrak ahoz behera geratzen dira hurrengo txandara arte. Letra aldaketa batek bakarrik aldatzen du taulan zein letra dauden.',
   tutPickLetters: 'Ukitu nahi dituzun letrak, ordenan, hitz bat osatzeko.',
   tutMoreTurn:
     'Fitxak biratzen jarraitzen dute pentsatzen ari zaren bitartean, beraz letra hobea etor daiteke oraindik.',

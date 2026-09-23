@@ -156,6 +156,11 @@ export const sw: Messages = {
   tutorialHideAgain: 'Usionyeshe hii tena',
   tutorialProgress: '{n} kati ya {total}',
   tutorialSkipTitle: 'Uruke maelezo?',
+  tutGoalTitle: 'Blinkered ni mbio',
+  tutGoalBody:
+    'Unaanza mchezo ukiwa na idadi maalum ya hatua, na kila kigae kinachofunuka hugharimu hatua moja. Hatua zikiisha, mchezo umekwisha. Maneno hukupa hatua, na kadiri neno linavyokuwa refu, ndivyo unavyopata hatua nyingi zaidi.',
+  tutSpentBody:
+    'Herufi unazotumia katika neno hufunikwa hadi raundi inayofuata. Ni ubadilishaji wa herufi pekee unaobadilisha herufi zilizo ubaoni.',
   tutPickLetters: 'Gusa herufi unazotaka, kwa mpangilio, ili kuunda neno.',
   tutMoreTurn: 'Vigae vinaendelea kufunuka unapofikiri, kwa hivyo herufi bora bado inaweza kuja.',
   tutTapBack:

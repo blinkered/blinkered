@@ -155,6 +155,11 @@ export const sk: Messages = {
   tutorialHideAgain: 'Nabudúce nezobrazovať',
   tutorialProgress: '{n} z {total}',
   tutorialSkipTitle: 'Preskočiť úvod?',
+  tutGoalTitle: 'Blinkered je pretek',
+  tutGoalBody:
+    'Hru začínate s pevným počtom ťahov a každý odkrytý kameň stojí jeden ťah. Keď sa ťahy minú, hra sa končí. Za slová ťahy získavate, a čím dlhšie slovo, tým viac ťahov dostanete.',
+  tutSpentBody:
+    'Písmená, ktoré použijete v slove, zostanú zakryté až do ďalšieho kola. Ktoré písmená sú na ploche, zmení len výmena písmena.',
   tutPickLetters: 'Ťukajte na písmená v poradí, v akom chcete zložiť slovo.',
   tutMoreTurn: 'Kamene sa odkrývajú, aj kým premýšľate, takže lepšie písmeno môže ešte prísť.',
   tutTapBack:

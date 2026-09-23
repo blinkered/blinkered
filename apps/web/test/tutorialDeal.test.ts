@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { configFor } from '@blinkered/engine'
+import { configFor, flipReward } from '@blinkered/engine'
 import { TUTORIAL_BOARDS } from '@blinkered/words'
 import { LOCALES, messagesFor } from '@blinkered/i18n'
-import { FACE_DOWN, boardFor, stepsFor } from '../src/tutorialScript.js'
+import { FACE_DOWN, FACE_SPENT, boardFor, showsTicks, stepsFor, ticksAt } from '../src/tutorialScript.js'
 import type { Step } from '../src/tutorialScript.js'
 
 /**
@@ -39,7 +39,7 @@ function tourFor(language: string): Step[] {
 }
 
 describe('the board screen', () => {
-  const [board] = tourFor('en')
+  const board = tourFor('en')[1]
 
   it('turns one tile at a time until the board is up', () => {
     const steps = board as Step
@@ -64,7 +64,7 @@ describe('the words screen', () => {
      * would have the tour tapping tiles that are still face down.
      */
     for (const language of Object.keys(TUTORIAL_BOARDS)) {
-      const words = tourFor(language)[1] as Step
+      const words = tourFor(language)[2] as Step
       expect(up(words, 0), language).toEqual([0, 1, 2])
       const rest = turnOrder(words)
       expect(
@@ -76,7 +76,7 @@ describe('the words screen', () => {
   })
 
   it('has the whole board up by the time a word is completed', () => {
-    const words = tourFor('en')[1] as Step
+    const words = tourFor('en')[2] as Step
     const pressed = words.frames.findIndex((frame) => frame.pressing === true)
     expect(pressed).toBeGreaterThan(0)
     expect(up(words, pressed)).toHaveLength(words.tiles.length)
@@ -90,5 +90,65 @@ describe('the hiding screen', () => {
       expect(step, tag).toBeDefined()
       for (const frame of step?.frames ?? []) expect(frame.caption, tag).toBe(messages.tutHideBody)
     }
+  })
+})
+
+describe('the goal screen', () => {
+  it('comes first, and runs the flips down a tile at a time before a word buys some back', () => {
+    for (const { tag, messages } of LOCALES) {
+      const [goal] = tourFor(tag)
+      const n = boardFor(tag).tiles.length
+      const config = configFor('easy', { n, language: tag })
+      expect(goal?.title, tag).toBe(messages.tutGoalTitle)
+      const frames = goal?.frames ?? []
+      const flips = frames.map((frame) => frame.flips)
+      expect(flips[0], tag).toBe(config.initialFlips)
+      // One flip for each tile that turns, and nothing for spelling.
+      for (let at = 1; at < frames.length - 1; at += 1) {
+        const turned = up(goal as Step, at).length - up(goal as Step, at - 1).length
+        expect((flips[at - 1] ?? 0) - (flips[at] ?? 0), `${tag} frame ${String(at)}`).toBe(turned)
+      }
+      const paid = frames.at(-1)
+      const word = paid?.sel.length ?? 0
+      expect(paid?.gain?.flips, tag).toBe(flipReward(word, config))
+      expect(paid?.flips, tag).toBe(config.initialFlips - n + flipReward(word, config))
+    }
+  })
+})
+
+describe('the words screen, after Complete', () => {
+  it('spends the letters the word used', () => {
+    const words = tourFor('en')[2] as Step
+    const pressed = words.frames.find((frame) => frame.pressing === true)
+    const last = words.frames.at(-1)
+    expect(last?.caption).toBe(messagesFor('en').tutSpentBody)
+    const spent = [...(last?.up ?? '')].flatMap((face, at) => (face === FACE_SPENT ? [at] : []))
+    expect(spent).toEqual([...(pressed?.sel ?? [])].sort((a, b) => a - b))
+  })
+})
+
+describe('the tick bar', () => {
+  const tour = tourFor('en')
+  const en = messagesFor('en')
+  const total = 11
+
+  it('is over every board that turns tiles, and no other', () => {
+    const shown = tour.filter(showsTicks).map((step) => step.title)
+    expect(shown).toEqual([en.tutGoalTitle, en.htBoardTitle, en.htWordsTitle, en.htHideTitle])
+  })
+
+  it('spends a tick for every tile that turns', () => {
+    const board = tour[1] as Step
+    board.frames.forEach((_, at) => {
+      expect(ticksAt(board, at, total).remaining).toBe(total - at)
+    })
+  })
+
+  it('hands a tick back for a letter that hides, above the lowest the bar has been', () => {
+    const hide = tour.find((step) => step.title === en.htHideTitle) as Step
+    const before = ticksAt(hide, 0, total)
+    const away = ticksAt(hide, 2, total)
+    expect(away.floor).toBe(before.remaining)
+    expect(away.remaining).toBe(before.remaining + 2)
   })
 })

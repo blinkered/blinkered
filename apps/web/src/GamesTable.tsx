@@ -1,6 +1,6 @@
 import type { Messages } from '@blinkered/i18n'
 import type { PlayedGame } from './account.js'
-import { goTo, pathOf } from './route.js'
+import { goTo, isPlainClick, pathOf } from './route.js'
 
 /**
  * A list of finished games, with the date as the way in.
@@ -49,10 +49,7 @@ export function GamesTable({
                 className="game-open"
                 href={pathOf({ at: 'played-game', id: game.id })}
                 onClick={(event) => {
-                  // Let the browser have the clicks that mean "somewhere else": a new tab, a new
-                  // window, a download. Only the plain one is ours.
-                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-                  if (event.button !== 0) return
+                  if (!isPlainClick(event)) return
                   event.preventDefault()
                   if (onOpen === undefined) goTo({ at: 'played-game', id: game.id })
                   else onOpen(game.id)

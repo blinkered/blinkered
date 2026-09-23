@@ -4,10 +4,22 @@ import type { GameState, Tile } from '@blinkered/engine'
 import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { Board } from './Board.js'
+import { Stat, TickBar } from './Hud.js'
 import { Icon } from './Icon.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { LetterSwap } from './LetterSwap.js'
-import { FACE_DOWN, boardFor, showsGain, showsWord, stepsFor, wordOf } from './tutorialScript.js'
+import {
+  FACE_DOWN,
+  FACE_SPENT,
+  boardFor,
+  showsFlips,
+  showsGain,
+  showsTicks,
+  showsWord,
+  stepsFor,
+  ticksAt,
+  wordOf,
+} from './tutorialScript.js'
 import type { Frame, Step } from './tutorialScript.js'
 import type { CatalogueEntry } from './dictionary.js'
 import { withoutStealingFocus } from './focus.js'
@@ -110,18 +122,61 @@ export function holdFor(frames: readonly Frame[], at: number): number {
   return Math.max(busiest, Math.round(read / length))
 }
 
+/** How long each flip takes to count in, when a word pays several. */
+const COUNT_UP_MS = 110
+
+/**
+ * The flips counter on the goal screen, ticking rather than jumping.
+ *
+ * Down is one flip per frame already, because the tiles turn one at a time, and each of those
+ * gets a short red tick. Up is a word paying several at once, and a number that simply changes
+ * from 36 to 44 reads as a different number rather than as eight flips arriving; so it counts in,
+ * a flip at a time, in green. Reduced motion gets the new number straight away.
+ */
+function FlipCounter({ value, label }: { value: number; label: string }): React.JSX.Element {
+  const [shown, setShown] = useState(value)
+  const [moved, setMoved] = useState<{ way: 'up' | 'down'; epoch: number } | null>(null)
+
+  useEffect(() => {
+    if (value === shown) return undefined
+    const still = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (value < shown || still) {
+      setShown(value)
+      setMoved((last) => ({ way: value < shown ? 'down' : 'up', epoch: (last?.epoch ?? 0) + 1 }))
+      return undefined
+    }
+    const timer = setTimeout(() => {
+      setShown((at) => at + 1)
+      setMoved((last) => ({ way: 'up', epoch: (last?.epoch ?? 0) + 1 }))
+    }, COUNT_UP_MS)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [value, shown])
+
+  return (
+    <div
+      key={moved?.epoch ?? 0}
+      className={`tut-flips${moved === null ? '' : ` is-${moved.way}`}`}
+      aria-hidden="true"
+    >
+      <Stat label={label} value={shown} emphasis="strong" />
+    </div>
+  )
+}
+
 function stateOf(frame: Frame, tiles: readonly string[], language: string): GameState {
   // The language matters here now: the board reads it to decide which way the grid runs, and a
   // Hebrew tour dealt left to right would be teaching the wrong thing on the first screen.
   const config = configFor('easy', { n: tiles.length, language })
   const board: Tile[] = tiles.map((letter, id) => {
-    const face = frame.up[id] ?? '.'
+    const face = frame.up[id] ?? FACE_DOWN
     return {
       id,
       letter,
       position: id,
-      revealed: face !== '.',
-      spent: false,
+      revealed: face !== FACE_DOWN && face !== FACE_SPENT,
+      spent: face === FACE_SPENT,
       wild: face === '*',
     }
   })
@@ -400,6 +455,14 @@ export function Tutorial({
                 hold that height on a screen where no word is ever built, and most of them
                 never build one: there it was a blank line above the board.
               */}
+              {/*
+                The flips counter, drawn by the HUD's own component, on the screen about flips.
+                Keyed by the step so that coming back to the screen starts it from the top rather
+                than counting down from wherever it was left.
+              */}
+              {showsFlips(current) && beat.flips !== undefined ? (
+                <FlipCounter key={step} value={beat.flips} label={messages.flips} />
+              ) : null}
               {showsWord(current) ? (
                 <p className="tut-word" dir={alphabetFor(language).direction}>
                   {word === ''
@@ -437,6 +500,21 @@ export function Tutorial({
                     </>
                   )}
                 </p>
+              ) : null}
+              {/*
+                The round's ticks, above every board that turns tiles, because each tile that
+                turns spends one of them and one flip. Nick: "every board that shows flipping
+                letters should have the tick bar above it, to emphasize the relationship between
+                flips and ticks."
+              */}
+              {showsTicks(current) ? (
+                <div className="tut-ticks">
+                  <TickBar
+                    total={config.n + config.holdTicks}
+                    {...ticksAt(current, frame, config.n + config.holdTicks)}
+                    label={messages.ticksLeftLabel}
+                  />
+                </div>
               ) : null}
               <div className="board-wrap">
                 <Board

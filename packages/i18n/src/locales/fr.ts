@@ -153,6 +153,11 @@ export const fr: Messages = {
   tutorialHideAgain: 'Ne plus afficher',
   tutorialProgress: '{n} sur {total}',
   tutorialSkipTitle: 'Passer la visite ?',
+  tutGoalTitle: 'Blinkered est une course',
+  tutGoalBody:
+    'Vous commencez la partie avec un nombre fixe de coups, et chaque tuile qui se retourne coûte un coup. Quand les coups sont épuisés, la partie est terminée. Les mots rapportent des coups, et plus le mot est long, plus vous en gagnez.',
+  tutSpentBody:
+    'Les lettres utilisées dans un mot restent face cachée jusqu’à la manche suivante. Seul un changement de lettre modifie les lettres présentes sur le plateau.',
   tutPickLetters: 'Touchez les lettres voulues, dans l’ordre, pour former un mot.',
   tutMoreTurn:
     'Les tuiles continuent de se retourner pendant que vous réfléchissez : une meilleure lettre peut encore arriver.',

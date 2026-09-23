@@ -153,6 +153,11 @@ export const da: Messages = {
   tutorialHideAgain: 'Vis ikke dette igen',
   tutorialProgress: '{n} af {total}',
   tutorialSkipTitle: 'Springe rundvisningen over?',
+  tutGoalTitle: 'Blinkered er et kapløb',
+  tutGoalBody:
+    'Du starter spillet med et fast antal træk, og hver brik der vendes koster et træk. Når trækkene slipper op, er spillet forbi. Ord giver træk, og jo længere ordet er, jo flere træk får du.',
+  tutSpentBody:
+    'Bogstaver, du bruger i et ord, vendes med bagsiden op indtil næste runde. Kun et bogstavskift ændrer, hvilke bogstaver der er på brættet.',
   tutPickLetters: 'Tryk på de bogstaver du vil have, i rækkefølge, for at danne et ord.',
   tutMoreTurn:
     'Brikker bliver ved med at vende mens du tænker, så et bedre bogstav kan være på vej.',

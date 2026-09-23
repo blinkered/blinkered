@@ -104,24 +104,12 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
         <Stat label={messages.round} value={state.roundIndex + 1} />
       </div>
 
-      <div
-        className="timer"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={total}
-        aria-valuenow={state.ticksRemaining}
-        aria-label={messages.ticksLeftLabel}
-      >
-        {Array.from({ length: total }, (_, i) => {
-          const lit = i < state.ticksRemaining
-          // Lit, and above the lowest this round has been: a tick handed back by a letter that
-          // turned over rather than one the round started with.
-          const added = lit && i >= floor
-          return (
-            <span key={i} className={`pip${lit ? ' is-lit' : ''}${added ? ' is-added' : ''}`} />
-          )
-        })}
-      </div>
+      <TickBar
+        total={total}
+        remaining={state.ticksRemaining}
+        floor={floor}
+        label={messages.ticksLeftLabel}
+      />
 
       {/*
        * One line, always exactly as tall as itself, and one place where it starts.
@@ -192,7 +180,45 @@ export function Hud({ state, feedback, gain, messages }: HudProps): React.JSX.El
   )
 }
 
-function Stat({
+/**
+ * The round's ticks, one pip each, lit while they remain.
+ *
+ * Its own component because the tour draws it too: every tile that turns spends a tick of the
+ * round and a flip of the game, and the tour is where that link has to be seen.
+ */
+export function TickBar({
+  total,
+  remaining,
+  floor,
+  label,
+}: {
+  readonly total: number
+  readonly remaining: number
+  /** The lowest `remaining` has been this round; lit pips above it were handed back. */
+  readonly floor: number
+  readonly label: string
+}): React.JSX.Element {
+  return (
+    <div
+      className="timer"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={total}
+      aria-valuenow={remaining}
+      aria-label={label}
+    >
+      {Array.from({ length: total }, (_, i) => {
+        const lit = i < remaining
+        // Lit, and above the lowest this round has been: a tick handed back by a letter that
+        // turned over rather than one the round started with.
+        const added = lit && i >= floor
+        return <span key={i} className={`pip${lit ? ' is-lit' : ''}${added ? ' is-added' : ''}`} />
+      })}
+    </div>
+  )
+}
+
+export function Stat({
   label,
   value,
   emphasis,

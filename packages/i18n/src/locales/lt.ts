@@ -156,6 +156,11 @@ export const lt: Messages = {
   tutorialHideAgain: 'Daugiau nerodyti',
   tutorialProgress: '{n} iš {total}',
   tutorialSkipTitle: 'Praleisti apžvalgą?',
+  tutGoalTitle: 'Blinkered yra lenktynės',
+  tutGoalBody:
+    'Žaidimą pradedate su nustatytu ėjimų skaičiumi, o kiekvienas atsiverčiantis kauliukas kainuoja vieną ėjimą. Kai ėjimai baigiasi, žaidimas baigtas. Žodžiai atneša ėjimų, ir kuo ilgesnis žodis, tuo daugiau ėjimų gaunate.',
+  tutSpentBody:
+    'Žodyje panaudotos raidės lieka užverstos iki kito raundo. Tik raidės pakeitimas keičia, kurios raidės yra lentoje.',
   tutPickLetters: 'Lieskite norimas raides iš eilės, kad sudarytumėte žodį.',
   tutMoreTurn: 'Kauliukai verčiasi ir jums begalvojant, tad geresnė raidė gali dar ateiti.',
   tutTapBack:

@@ -153,6 +153,11 @@ export const id: Messages = {
   tutorialHideAgain: 'Jangan tampilkan lagi',
   tutorialProgress: '{n} dari {total}',
   tutorialSkipTitle: 'Lewati pengenalan?',
+  tutGoalTitle: 'Blinkered adalah perlombaan',
+  tutGoalBody:
+    'Anda memulai permainan dengan jumlah balikan yang tetap, dan setiap kartu yang berbalik memakan satu balikan. Ketika balikan habis, permainan berakhir. Menyusun kata menghasilkan balikan, dan makin panjang katanya, makin banyak balikan yang Anda dapat.',
+  tutSpentBody:
+    'Huruf yang Anda pakai dalam kata tertutup sampai putaran berikutnya. Hanya pergantian huruf yang mengubah huruf apa saja yang ada di papan.',
   tutPickLetters: 'Ketuk huruf yang Anda inginkan secara berurutan untuk menyusun kata.',
   tutMoreTurn:
     'Ubin terus terbuka selagi Anda berpikir, jadi huruf yang lebih baik mungkin masih datang.',

@@ -156,6 +156,11 @@ export const ca: Messages = {
   tutorialHideAgain: 'No ho tornis a mostrar',
   tutorialProgress: '{n} de {total}',
   tutorialSkipTitle: 'Voleu ometre la presentació?',
+  tutGoalTitle: 'Blinkered és una cursa',
+  tutGoalBody:
+    'Comenceu la partida amb un nombre fix de jugades, i cada fitxa que es gira costa una jugada. Quan s’acaben les jugades, la partida s’acaba. Formar mots dona jugades, i com més llarg és el mot, més jugades guanyeu.',
+  tutSpentBody:
+    'Les lletres que feu servir en un mot queden tapades fins a la ronda següent. Només un canvi de lletra altera quines lletres hi ha al tauler.',
   tutPickLetters: 'Toqueu les lletres que voleu, en ordre, per formar un mot.',
   tutMoreTurn: 'Les fitxes continuen girant mentre penseu, i encara pot venir una lletra millor.',
   tutTapBack:

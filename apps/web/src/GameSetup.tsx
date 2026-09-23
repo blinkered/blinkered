@@ -1,6 +1,6 @@
 import type { Messages } from '@blinkered/i18n'
 import { withoutStealingFocus } from './focus.js'
-import { CUSTOM_RULES, offeredRulesets, rulesetOf } from './settings.js'
+import { CUSTOM_RULES, configOf, offeredRulesets, rulesetOf } from './settings.js'
 import type { Ruleset, Settings } from './settings.js'
 
 interface GameSetupProps {
@@ -75,6 +75,20 @@ export function RulesetPicker({
   const current = rulesetOf(settings)
   const offered = offeredRulesets(settings)
 
+  /*
+   * The two numbers that tell the levels apart at a glance, for whichever one is lit.
+   *
+   * From `configOf` rather than the preset table, so the custom ruleset shows its own numbers and
+   * a preset shows exactly what the game will be dealt with. The labels are the nerd panel's, which
+   * every locale already has; the decimal is written the way the interface language writes one.
+   */
+  const config = configOf(settings)
+  const perTick = config.speedMultiplier.toLocaleString(settings.uiLanguage, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })
+  const minWord = config.minWordLength.toLocaleString(settings.uiLanguage)
+
   return (
     <div className="ruleset" role="group" aria-label={messages.difficulty}>
       <span className="picker-label">{messages.difficulty}</span>
@@ -102,6 +116,9 @@ export function RulesetPicker({
           </button>
         ))}
       </div>
+      <p className="ruleset-facts">
+        {messages.minWord} {minWord} · {messages.secondsPerTick} {perTick}
+      </p>
     </div>
   )
 }

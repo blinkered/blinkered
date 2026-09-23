@@ -156,6 +156,11 @@ export const tr: Messages = {
   tutorialHideAgain: 'Bunu bir daha gösterme',
   tutorialProgress: '{total} içinde {n}',
   tutorialSkipTitle: 'Tanıtım atlansın mı?',
+  tutGoalTitle: 'Blinkered bir yarıştır',
+  tutGoalBody:
+    'Oyuna belirli sayıda çevirmeyle başlarsınız ve dönen her taş bir çevirmeye mal olur. Çevirmeler bitince oyun biter. Kelimeler çevirme kazandırır ve kelime uzadıkça daha çok çevirme kazanırsınız.',
+  tutSpentBody:
+    'Bir kelimede kullandığınız harfler bir sonraki tura kadar kapalı kalır. Tahtadaki harfleri yalnızca harf değişimi değiştirir.',
   tutPickLetters: 'İstediğiniz harflere sırayla dokunarak bir kelime kurun.',
   tutMoreTurn: 'Siz düşünürken taşlar dönmeye devam eder, daha iyi bir harf hâlâ gelebilir.',
   tutTapBack:

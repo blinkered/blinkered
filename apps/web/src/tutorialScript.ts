@@ -17,9 +17,11 @@ import type { Messages } from '@blinkered/i18n'
 const DOWN = '.'
 const UP = '#'
 const CARD = '*'
+/** Face down because a finished word used it, which is not the same as not dealt yet. */
+const SPENT = '-'
 
 export interface Frame {
-  /** One character per tile: `.` face down, `#` face up, `*` showing a card. */
+  /** One character per tile: `.` face down, `#` face up, `*` showing a card, `-` spent. */
   readonly up: string
   /** Tile indices in tap order, so `[0, 3]` is the first tile then the fourth. */
   readonly sel: readonly number[]
@@ -39,6 +41,13 @@ export interface Frame {
    * is showing you.
    */
   readonly pressing?: boolean
+  /**
+   * The flips counter, on the screen that is about flips.
+   *
+   * Counted from the engine's own numbers like the badges are: the easy level's starting budget,
+   * one off for every tile that turns, and `flipReward` back for the word.
+   */
+  readonly flips?: number
 }
 
 export interface Step {
@@ -68,6 +77,42 @@ export function showsWord(step: Step): boolean {
 
 export function showsGain(step: Step): boolean {
   return step.frames.some((frame) => frame.gain !== undefined)
+}
+
+/** How many tiles a frame has dealt: every one not face down, spent ones included. */
+function dealtIn(frame: Frame): number {
+  return [...frame.up].filter((face) => face !== DOWN).length
+}
+
+/**
+ * Whether a screen turns tiles, which is what earns it the tick bar.
+ *
+ * A screen whose board never changes would show a bar that never moves, which says nothing.
+ */
+export function showsTicks(step: Step): boolean {
+  return new Set(step.frames.map(dealtIn)).size > 1
+}
+
+/**
+ * The tick bar for a frame: what is left of the round, and the lowest it has been on this screen.
+ *
+ * Worked out from the faces rather than written on the frames, the way the game works it out: a
+ * tile turning spends a tick, so a round of `total` ticks has `total` less the tiles dealt left.
+ * A letter hiding puts one back, and because the floor remembers the lowest the bar has been,
+ * that tick lights red exactly as it does in a game.
+ */
+export function ticksAt(
+  step: Step,
+  at: number,
+  total: number,
+): { remaining: number; floor: number } {
+  const left = (frame: Frame): number => total - dealtIn(frame)
+  const seen = step.frames.slice(0, at + 1).map(left)
+  return { remaining: seen.at(-1) ?? total, floor: Math.min(...seen) }
+}
+
+export function showsFlips(step: Step): boolean {
+  return step.frames.some((frame) => frame.flips !== undefined)
 }
 
 export function boardFor(language: string): TutorialBoard {
@@ -197,6 +242,18 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     pressing: true,
     gain: gainFor(longWord.length, config),
   })
+  /*
+   * And then the letters it used are gone for the rest of the round.
+   *
+   * A beta tester, after a game or two: "I'm still not entirely certain on how letters are
+   * retained or replaced." Every level spends them, so they turn face down and come back at the
+   * next deal; nothing on this screen said so, and the tour ended on a board still full of them.
+   */
+  say(
+    messages.tutSpentBody,
+    [],
+    [...all].map((face, at) => (longOrder.includes(at) ? SPENT : face)).join(''),
+  )
 
   const carded = tilesWithCard(board)
   const cardWord = alphabet.segment(board.card.word)
@@ -252,7 +309,45 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   const swapped = [...tiles]
   swapped[tiles.indexOf(board.swap.from)] = board.swap.to
 
+  /*
+   * What the game is for, before any of how it works.
+   *
+   * The board deals with the counter running down a flip per tile, and then the long word buys a
+   * handful back. That is the whole economy in one loop: the counter is the only thing on screen
+   * that says the game can end, and the only thing that says long words are the way to stop it.
+   */
+  const goalFrames: Frame[] = []
+  let flips = config.initialFlips
+  goalFrames.push({ up: facesUp(n, []), sel: [], caption: messages.tutGoalBody, flips })
+  for (let shown = 1; shown <= n; shown += 1) {
+    flips -= 1
+    goalFrames.push({
+      up: facesUp(n, dealt.slice(0, shown)),
+      sel: [],
+      caption: messages.tutGoalBody,
+      flips,
+    })
+  }
+  for (let taken = 1; taken <= longOrder.length; taken += 1) {
+    goalFrames.push({
+      up: all,
+      sel: longOrder.slice(0, taken),
+      caption: messages.tutGoalBody,
+      flips,
+    })
+  }
+  const paid = gainFor(longWord.length, config)
+  goalFrames.push({
+    up: all,
+    sel: longOrder,
+    caption: messages.tutGoalBody,
+    word: board.six,
+    gain: paid,
+    flips: flips + paid.flips,
+  })
+
   return [
+    { title: messages.tutGoalTitle, tiles, frames: goalFrames },
     {
       title: messages.htBoardTitle,
       tiles,
@@ -334,3 +429,4 @@ export function wordOf(frame: Frame, tiles: readonly string[], alphabet: Alphabe
 
 export const FACE_CARD = CARD
 export const FACE_DOWN = DOWN
+export const FACE_SPENT = SPENT

@@ -152,6 +152,11 @@ export const de: Messages = {
   tutorialHideAgain: 'Nicht mehr anzeigen',
   tutorialProgress: '{n} von {total}',
   tutorialSkipTitle: 'Einführung überspringen?',
+  tutGoalTitle: 'Blinkered ist ein Wettlauf',
+  tutGoalBody:
+    'Du beginnst das Spiel mit einer festen Zahl an Zügen, und jeder Stein, der sich dreht, kostet einen Zug. Sind die Züge aufgebraucht, ist das Spiel vorbei. Wörter bringen Züge, und je länger das Wort, desto mehr Züge bekommst du.',
+  tutSpentBody:
+    'Buchstaben, die du in einem Wort verwendest, liegen bis zur nächsten Runde verdeckt. Nur ein Buchstabenwechsel ändert, welche Buchstaben auf dem Feld liegen.',
   tutPickLetters: 'Tippe die Buchstaben, die du willst, der Reihe nach an, um ein Wort zu bilden.',
   tutMoreTurn:
     'Während Sie überlegen, drehen sich weitere Plättchen um: ein besserer Buchstabe kann noch kommen.',

@@ -158,6 +158,11 @@ export const ga: Messages = {
   tutorialHideAgain: 'Ná taispeáin é seo arís',
   tutorialProgress: '{n} as {total}',
   tutorialSkipTitle: 'An turas a scipeáil?',
+  tutGoalTitle: 'Rás is ea Blinkered',
+  tutGoalBody:
+    'Tosaíonn tú an cluiche le líon socraithe beart, agus cosnaíonn gach tíl a iompaítear beart amháin. Nuair a ídítear na bearta, tá an cluiche thart. Tuilleann focail bearta, agus dá fhaide an focal, is ea is mó beart a thuilleann tú.',
+  tutSpentBody:
+    'Casann na litreacha a úsáideann tú i bhfocal ar a n-aghaidh go dtí an chéad bhabhta eile. Ní athraítear na litreacha ar an gclár ach nuair a chuirtear litir eile in ionad litreach.',
   tutPickLetters: 'Tapáil na litreacha atá uait, in ord, chun focal a dhéanamh.',
   tutMoreTurn:
     'Leanann na tíleanna ag iompú fad is atá tú ag machnamh, mar sin d’fhéadfadh litir níos fearr a bheith ar an mbealach.',

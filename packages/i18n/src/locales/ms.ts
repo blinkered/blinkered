@@ -149,6 +149,11 @@ export const ms: Messages = {
   tutorialHideAgain: 'Jangan tunjuk lagi',
   tutorialProgress: '{n} daripada {total}',
   tutorialSkipTitle: 'Langkau pengenalan?',
+  tutGoalTitle: 'Blinkered ialah perlumbaan',
+  tutGoalBody:
+    'Anda memulakan permainan dengan bilangan balikan yang tetap, dan setiap jubin yang terbalik memakan satu balikan. Apabila balikan habis, permainan tamat. Membina perkataan memberi balikan, dan lebih panjang perkataan itu, lebih banyak balikan yang anda peroleh.',
+  tutSpentBody:
+    'Huruf yang anda gunakan dalam perkataan tertutup sehingga pusingan seterusnya. Hanya pertukaran huruf yang mengubah huruf yang ada di papan.',
   tutPickLetters: 'Ketik huruf yang anda mahu mengikut urutan untuk membina perkataan.',
   tutMoreTurn:
     'Jubin terus terbalik semasa anda berfikir, jadi huruf yang lebih baik mungkin masih akan datang.',

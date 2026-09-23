@@ -164,6 +164,11 @@ export const ja: Messages = {
   tutorialHideAgain: '次から表示しない',
   tutorialProgress: '{total}中{n}',
   tutorialSkipTitle: '説明をスキップしますか？',
+  tutGoalTitle: 'Blinkered はレースです',
+  tutGoalBody:
+    'ゲームは決まった数の手で始まり、もじが1枚表になるごとに1手かかります。手がなくなるとゲームは終わりです。単語を作ると手がもらえ、長い単語ほど多くの手がもらえます。',
+  tutSpentBody:
+    '単語に使ったもじは、次のラウンドまで裏返しになります。盤のもじが変わるのは、入れ替わりのときだけです。',
   tutPickLetters: '使いたいもじを順にタップして単語を作ります。',
   tutMoreTurn: '考えているあいだももじは開き続けるので、もっといいもじがまだ来るかもしれません。',
   tutTapBack:

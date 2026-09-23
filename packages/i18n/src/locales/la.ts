@@ -160,6 +160,11 @@ export const la: Messages = {
   tutorialHideAgain: 'Ne iterum monstretur',
   tutorialProgress: '{n} ex {total}',
   tutorialSkipTitle: 'Institutionem omittis?',
+  tutGoalTitle: 'Blinkered cursus est',
+  tutGoalBody:
+    'Ludum incipis certo versuum numero, et quaeque tessera quae vertitur unum versum constat. Versibus consumptis ludus finitur. Verba versus merent, et quo longius verbum, eo plures versus meres.',
+  tutSpentBody:
+    'Litterae quas in verbo adhibes aversae manent usque ad proximum ambitum. Sola litterae mutatio mutat quae litterae in tabula sint.',
   tutPickLetters: 'Litteras quas vis ordine tange, ut verbum facias.',
   tutMoreTurn: 'Tesserae dum cogitas verti pergunt, itaque littera melior adhuc venire potest.',
   tutTapBack:

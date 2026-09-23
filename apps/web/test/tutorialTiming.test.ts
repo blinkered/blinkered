@@ -54,7 +54,7 @@ describe('the pace of a screen', () => {
 
   it('gives the words screen one pace per sentence rather than a pause and a scramble', () => {
     // The screen Nick was watching, in the language he was watching it in.
-    const words = tourFor('en')[1] as Step
+    const words = tourFor('en')[2] as Step
     const runs = sentences(words)
     expect(runs.map((run) => run.holds)).toEqual([
       [900, 900, 900, 900],
@@ -62,6 +62,8 @@ describe('the pace of a screen', () => {
       [1950, 1950],
       [900, 900, 900, 900],
       [1170, 1800],
+      // The used letters going face down, which is one frame and a whole sentence to read.
+      [4620],
     ])
   })
 
@@ -69,7 +71,7 @@ describe('the pace of a screen', () => {
     // The board screen deals at `DEAL_MS` throughout and always did: one caption for the whole
     // loop, so the loop is the reading time and dividing it would slow down the one screen whose
     // subject is how fast the game deals.
-    const board = tourFor('en')[0] as Step
+    const board = tourFor('en')[1] as Step
     expect(new Set(sentences(board)[0]?.holds)).toEqual(new Set([520]))
   })
 })

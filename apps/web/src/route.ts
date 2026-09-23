@@ -132,6 +132,24 @@ function shareOrigin(): string {
   return isNativeApp() ? NATIVE_API_ORIGIN : globalThis.location.origin
 }
 
+/**
+ * Whether a click on an in-app link is ours to handle, rather than the browser's.
+ *
+ * A modified click or a middle click means "somewhere else": a new tab, a new window, a download.
+ * Only the plain left click should move the page without loading it again. That matters most in
+ * the native shell, where letting the anchor load the page reloads the whole webview and plays the
+ * splash screen before the destination.
+ */
+export function isPlainClick(event: {
+  readonly metaKey: boolean
+  readonly ctrlKey: boolean
+  readonly shiftKey: boolean
+  readonly altKey: boolean
+  readonly button: number
+}): boolean {
+  return !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && event.button === 0
+}
+
 /** Moves without reloading, and leaves a history entry so Back works. */
 export function goTo(route: Route): void {
   globalThis.history.pushState(null, '', pathOf(route))
