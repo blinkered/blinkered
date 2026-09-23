@@ -169,13 +169,6 @@ export const ko: Messages = {
   tutTapBack:
     '원하지 않은 글자를 눌렀나요? 다시 누르면 되돌아갑니다. 마지막 글자만이 아니라 어느 것이든요.',
   tutComplete: '단어가 준비되면 완성을 누르세요.',
-  tutControlsTitle: '버튼',
-  tutReset: '지우기는 만들던 단어를 지웁니다. 타일은 그대로 있습니다.',
-  tutPause: '일시정지는 시계를 멈추고 판을 가립니다. 쉬는 동안 판을 외울 수 없게요.',
-  tutRestart: '다시 시작은 처음부터 새 판을 돌립니다. 먼저 물어봅니다.',
-  tutQuit: '나가기는 게임을 끝내고 점수를 보여줍니다. 먼저 물어봅니다.',
-  tutDoneTitle: '규칙은 이것뿐입니다',
-  tutDoneBody: '게임 방법은 언제나 제목 줄에 있습니다.',
   htBoardTitle: '판',
   htBoardBody: '타일은 무작위 순서로 하나씩 열립니다. 열린 타일로 단어를 만듭니다.',
   htWordsTitle: '단어',
@@ -316,11 +309,14 @@ export const ko: Messages = {
   deleteNoAddress:
     '이 계정에는 확인된 주소가 없어 삭제를 확인할 수 없습니다. 연락 주시면 직접 처리해 드립니다.',
 
+  rulesetFacts: '{letters}의 단어 · {seconds}마다 새 타일',
   plurals: {
     words: { other: '단어 {n}개' },
     rounds: { other: '{n}라운드' },
     flips: { other: '{n}수' },
     ticks: { other: '{n}박자' },
     points: { other: '{n}점' },
+    minLetters: { other: '{n}글자 이상' },
+    seconds: { other: '{n}초' },
   },
 }

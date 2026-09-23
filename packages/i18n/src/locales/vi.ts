@@ -172,13 +172,6 @@ export const vi: Messages = {
   tutMoreTurn: 'Quân vẫn tiếp tục mở trong lúc bạn nghĩ, nên chữ tốt hơn có thể vẫn đang tới.',
   tutTapBack: 'Lỡ lấy chữ không muốn? Chạm lại để trả về. Chữ nào cũng được, không riêng chữ cuối.',
   tutComplete: 'Nhấn Xong khi từ đã sẵn sàng.',
-  tutControlsTitle: 'Các nút',
-  tutReset: 'Xóa sẽ bỏ từ bạn đang ghép. Các quân vẫn nằm nguyên chỗ cũ.',
-  tutPause: 'Tạm dừng ngừng đồng hồ và che bàn, để giờ nghỉ không dùng để học thuộc bàn.',
-  tutRestart: 'Chơi lại từ đầu chia một bàn mới từ đầu. Nó hỏi trước.',
-  tutQuit: 'Thoát kết thúc ván và cho xem điểm. Nó hỏi trước.',
-  tutDoneTitle: 'Luật chơi chỉ có vậy',
-  tutDoneBody: 'Cách chơi luôn nằm cạnh tên trò chơi.',
   htBoardTitle: 'Bàn chơi',
   htBoardBody:
     'Các quân mở lần lượt, theo thứ tự ngẫu nhiên. Ghép từ bằng những quân đã mở. Dấu thanh nằm ngay trên quân, nên À và Á là hai quân khác nhau. Khoảng trắng giữa các tiếng thì không phải là quân: SINH VIÊN ghép bằng sáu quân, không có chỗ trống.',
@@ -321,11 +314,14 @@ export const vi: Messages = {
   deleteNoAddress:
     'Tài khoản này không có địa chỉ đã xác nhận, nên không thể kiểm tra việc xoá. Hãy liên hệ và chúng tôi sẽ làm thủ công.',
 
+  rulesetFacts: 'Từ có {letters} · mỗi {seconds} mở một quân mới',
   plurals: {
     words: { other: '{n} từ' },
     rounds: { other: '{n} vòng' },
     flips: { other: '{n} nước' },
     ticks: { other: '{n} nhịp' },
     points: { other: '{n} điểm' },
+    minLetters: { other: '{n} chữ trở lên' },
+    seconds: { other: '{n} giây' },
   },
 }

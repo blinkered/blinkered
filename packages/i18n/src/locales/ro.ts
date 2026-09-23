@@ -170,14 +170,6 @@ export const ro: Messages = {
   tutTapBack:
     'Ați luat una pe care nu o voiați? Atingeți-o din nou și se întoarce. Oricare, nu doar ultima.',
   tutComplete: 'Apăsați Gata când cuvântul e pregătit.',
-  tutControlsTitle: 'Butoanele',
-  tutReset: 'Șterge înlătură cuvântul pe care îl formați. Piesele rămân unde sunt.',
-  tutPause:
-    'Pauza oprește ceasul și ascunde tabla, ca o pauză să nu fie folosită pentru a o învăța.',
-  tutRestart: 'De la capăt împarte o tablă nouă de la început. Întreabă mai întâi.',
-  tutQuit: 'Renunță încheie jocul și arată cât ați făcut. Întreabă mai întâi.',
-  tutDoneTitle: 'Acestea sunt regulile',
-  tutDoneBody: 'Cum se joacă este mereu lângă titlu.',
   htBoardTitle: 'Tabla',
   htBoardBody:
     'Piesele se întorc una câte una, într-o ordine aleatorie. Din cele întoarse se formează cuvinte.',
@@ -321,11 +313,18 @@ export const ro: Messages = {
   deleteNoAddress:
     'Nu există o adresă confirmată pe acest cont, deci o ștergere nu poate fi verificată. Scrie-ne și o facem manual.',
 
+  rulesetFacts: 'Cuvinte de {letters} · o piesă nouă la fiecare {seconds}',
   plurals: {
     words: { one: '{n} cuvânt', few: '{n} cuvinte', other: '{n} de cuvinte' },
     rounds: { one: '{n} rundă', few: '{n} runde', other: '{n} de runde' },
     flips: { one: '{n} mutare', few: '{n} mutări', other: '{n} de mutări' },
     ticks: { one: '{n} bătaie', few: '{n} bătăi', other: '{n} de bătăi' },
     points: { one: '{n} punct', few: '{n} puncte', other: '{n} de puncte' },
+    minLetters: {
+      one: 'cel puțin {n} literă',
+      few: 'cel puțin {n} litere',
+      other: 'cel puțin {n} de litere',
+    },
+    seconds: { one: '{n} secundă', few: '{n} secunde', other: '{n} de secunde' },
   },
 }

@@ -169,14 +169,6 @@ export const pl: Messages = {
   tutTapBack:
     'Wzięłaś lub wziąłeś nie tę literę? Dotknij jej jeszcze raz, aby ją oddać. Dowolną, nie tylko ostatnią.',
   tutComplete: 'Naciśnij Zatwierdź, gdy słowo jest gotowe.',
-  tutControlsTitle: 'Przyciski',
-  tutReset: 'Wyczyść usuwa układane słowo. Płytki zostają na swoich miejscach.',
-  tutPause:
-    'Pauza zatrzymuje zegar i zakrywa planszę, żeby przerwa nie służyła do uczenia się jej.',
-  tutRestart: 'Od nowa rozdaje planszę od początku. Najpierw pyta.',
-  tutQuit: 'Zakończ kończy grę i pokazuje wynik. Najpierw pyta.',
-  tutDoneTitle: 'To wszystkie zasady',
-  tutDoneBody: 'Jak grać jest zawsze przy tytule, gdybyś chciał wrócić.',
   htBoardTitle: 'Plansza',
   htBoardBody:
     'Płytki odkrywają się pojedynczo, w losowej kolejności. Z odkrytych układa się słowa.',
@@ -319,11 +311,14 @@ export const pl: Messages = {
   deleteNoAddress:
     'Na tym koncie nie ma potwierdzonego adresu, więc nie można sprawdzić usunięcia. Napisz do nas, a zrobimy to ręcznie.',
 
+  rulesetFacts: 'Słowa od {letters} · nowa płytka co {seconds}',
   plurals: {
     words: { one: '{n} słowo', few: '{n} słowa', many: '{n} słów', other: '{n} słowa' },
     rounds: { one: '{n} runda', few: '{n} rundy', many: '{n} rund', other: '{n} rundy' },
     flips: { one: '{n} ruch', few: '{n} ruchy', many: '{n} ruchów', other: '{n} ruchu' },
     ticks: { one: '{n} takt', few: '{n} takty', many: '{n} taktów', other: '{n} taktu' },
     points: { one: '{n} punkt', few: '{n} punkty', many: '{n} punktów', other: '{n} punktu' },
+    minLetters: { one: '{n} litery', few: '{n} liter', many: '{n} liter', other: '{n} litery' },
+    seconds: { one: '{n} sekundy', few: '{n} sekundy', many: '{n} sekundy', other: '{n} sekundy' },
   },
 }

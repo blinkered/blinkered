@@ -164,14 +164,6 @@ export const es: Messages = {
   tutTapBack:
     '¿Has tocado una que no querías? Tócala otra vez para devolverla. Cualquiera, no solo la última.',
   tutComplete: 'Pulsa Completar cuando la palabra esté lista.',
-  tutControlsTitle: 'Los botones',
-  tutReset: 'Borrar vacía la palabra que estás formando. Las fichas se quedan donde están.',
-  tutPause:
-    'Pausa detiene el reloj y oculta el tablero, para que un descanso no sirva para estudiarlo.',
-  tutRestart: 'Reiniciar reparte un tablero nuevo desde el principio. Pide confirmación.',
-  tutQuit: 'Salir termina la partida y muestra tu puntuación. Pide confirmación.',
-  tutDoneTitle: 'Esas son las reglas',
-  tutDoneBody: 'Cómo jugar está siempre en la barra de título.',
   htBoardTitle: 'El tablero',
   htBoardBody:
     'Las fichas se descubren una a una, en un orden aleatorio. Las fichas descubiertas sirven para formar palabras.',
@@ -317,11 +309,14 @@ export const es: Messages = {
   deleteNoAddress:
     'No hay una dirección confirmada en esta cuenta, así que no se puede comprobar una eliminación. Escríbenos y lo haremos a mano.',
 
+  rulesetFacts: 'Palabras de {letters} · una ficha nueva cada {seconds}',
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },
     rounds: { one: '{n} ronda', other: '{n} rondas' },
     flips: { one: '{n} giro', other: '{n} giros' },
     ticks: { one: '{n} tiempo', other: '{n} tiempos' },
     points: { one: '{n} punto', other: '{n} puntos' },
+    minLetters: { one: '{n} letra o más', other: '{n} letras o más' },
+    seconds: { one: '{n} segundo', other: '{n} segundos' },
   },
 }

@@ -169,13 +169,6 @@ export const lt: Messages = {
   tutTapBack:
     'Paėmėte ne tą raidę? Palieskite ją dar kartą ir ji grįš. Bet kurią, ne tik paskutinę.',
   tutComplete: 'Kai žodis parengtas, spauskite Užbaigti.',
-  tutControlsTitle: 'Mygtukai',
-  tutReset: 'Išvalyti ištrina kuriamą žodį. Kauliukai lieka savo vietose.',
-  tutPause: 'Pauzė sustabdo laikrodį ir paslepia lentą, kad pertrauka nebūtų skirta jai mokytis.',
-  tutRestart: 'Iš naujo išdalija naują lentą nuo pradžių. Pirma paklausia.',
-  tutQuit: 'Baigti užbaigia žaidimą ir parodo rezultatą. Pirma paklausia.',
-  tutDoneTitle: 'Tokios yra taisyklės',
-  tutDoneBody: 'Kaip žaisti visada rasite prie pavadinimo.',
   htBoardTitle: 'Lenta',
   htBoardBody: 'Kauliukai verčiasi po vieną, atsitiktine tvarka. Iš atverstų sudaromi žodžiai.',
   htWordsTitle: 'Žodžiai',
@@ -318,11 +311,19 @@ export const lt: Messages = {
   deleteNoAddress:
     'Šioje paskyroje nėra patvirtinto adreso, todėl ištrynimo patikrinti negalime. Susisiek su mumis ir padarysime tai rankomis.',
 
+  rulesetFacts: 'Žodžiai nuo {letters} · naujas kauliukas kas {seconds}',
   plurals: {
     words: { one: '{n} žodis', few: '{n} žodžiai', many: '{n} žodžio', other: '{n} žodžių' },
     rounds: { one: '{n} raundas', few: '{n} raundai', many: '{n} raundo', other: '{n} raundų' },
     flips: { one: '{n} ėjimas', few: '{n} ėjimai', many: '{n} ėjimo', other: '{n} ėjimų' },
     ticks: { one: '{n} taktas', few: '{n} taktai', many: '{n} takto', other: '{n} taktų' },
     points: { one: '{n} taškas', few: '{n} taškai', many: '{n} taško', other: '{n} taškų' },
+    minLetters: { one: '{n} raidės', few: '{n} raidžių', many: '{n} raidės', other: '{n} raidžių' },
+    seconds: {
+      one: '{n} sekundės',
+      few: '{n} sekundės',
+      many: '{n} sekundės',
+      other: '{n} sekundės',
+    },
   },
 }

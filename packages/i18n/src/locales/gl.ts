@@ -169,14 +169,6 @@ export const gl: Messages = {
   tutTapBack:
     'Colleu unha que non quería? Tóquea outra vez para devolvela. Calquera, non só a última.',
   tutComplete: 'Prema Completar cando a palabra estea lista.',
-  tutControlsTitle: 'Os botóns',
-  tutReset: 'Limpar borra a palabra que está a formar. As fichas quedan onde están.',
-  tutPause:
-    'A pausa detén o reloxo e agocha o taboleiro, para que un descanso non sirva para estudalo.',
-  tutRestart: 'Reiniciar reparte un taboleiro novo desde o principio. Pregunta antes.',
-  tutQuit: 'Deixalo remata a partida e amosa o que puntuou. Pregunta antes.',
-  tutDoneTitle: 'Esas son as regras',
-  tutDoneBody: 'Como se xoga está sempre na barra do título.',
   htBoardTitle: 'O taboleiro',
   htBoardBody:
     'As fichas viran unha a unha, nunha orde aleatoria. Coas descubertas fórmanse palabras.',
@@ -322,11 +314,14 @@ export const gl: Messages = {
   deleteNoAddress:
     'Non hai un enderezo confirmado nesta conta, así que non se pode comprobar unha eliminación. Escríbenos e farémolo a man.',
 
+  rulesetFacts: 'Palabras de {letters} · unha ficha nova cada {seconds}',
   plurals: {
     words: { one: '{n} palabra', other: '{n} palabras' },
     rounds: { one: '{n} rolda', other: '{n} roldas' },
     flips: { one: '{n} xogada', other: '{n} xogadas' },
     ticks: { one: '{n} batida', other: '{n} batidas' },
     points: { one: '{n} punto', other: '{n} puntos' },
+    minLetters: { one: '{n} letra ou máis', other: '{n} letras ou máis' },
+    seconds: { one: '{n} segundo', other: '{n} segundos' },
   },
 }

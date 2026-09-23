@@ -164,13 +164,6 @@ export const hr: Messages = {
   tutMoreTurn: 'Pločice se okreću i dok razmišljate, pa još može stići bolje slovo.',
   tutTapBack: 'Uzeli ste krivo? Dodirnite ga ponovno da ga vratite. Bilo koje, ne samo zadnje.',
   tutComplete: 'Pritisnite Gotovo kad je riječ spremna.',
-  tutControlsTitle: 'Gumbi',
-  tutReset: 'Očisti prazni riječ koju slažete. Pločice ostaju gdje jesu.',
-  tutPause: 'Pauza zaustavlja sat i skriva ploču, da se stanka ne bi iskoristila za proučavanje.',
-  tutRestart: 'Ponovno dijeli novu ploču od početka. Prije toga pita.',
-  tutQuit: 'Izlaz završava igru i pokazuje rezultat. Prije toga pita.',
-  tutDoneTitle: 'To su pravila',
-  tutDoneBody: 'Upute su uvijek u naslovnoj traci.',
   htBoardTitle: 'Ploča',
   htBoardBody:
     'Pločice se otkrivaju jedna po jedna, u slučajnom redoslijedu. Od otkrivenih pločica slažete riječi.',
@@ -314,11 +307,18 @@ export const hr: Messages = {
   deleteNoAddress:
     'Na ovom računu nema potvrđene adrese, pa se brisanje ne može provjeriti. Javi nam se i učinit ćemo to ručno.',
 
+  rulesetFacts: 'Riječi od {letters} · {seconds} po pločici',
   plurals: {
     words: { one: '{n} riječ', few: '{n} riječi', other: '{n} riječi' },
     rounds: { one: '{n} runda', few: '{n} runde', other: '{n} rundi' },
     flips: { one: '{n} okret', few: '{n} okreta', other: '{n} okreta' },
     ticks: { one: '{n} takt', few: '{n} takta', other: '{n} taktova' },
     points: { one: '{n} bod', few: '{n} boda', other: '{n} bodova' },
+    minLetters: {
+      one: 'najmanje {n} slova',
+      few: 'najmanje {n} slova',
+      other: 'najmanje {n} slova',
+    },
+    seconds: { one: '{n} sekunda', few: '{n} sekunde', other: '{n} sekundi' },
   },
 }

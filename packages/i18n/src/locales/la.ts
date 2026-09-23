@@ -173,14 +173,6 @@ export const la: Messages = {
   tutTapBack:
     'Unam tetigisti quam nolebas? Tange iterum ut reddas. Quamlibet earum, non modo ultimam.',
   tutComplete: 'Preme Perfice cum verbum paratum est.',
-  tutControlsTitle: 'Pulsatoria',
-  tutReset: 'Dele verbum quod facis tollit. Tesserae ubi sunt manent.',
-  tutPause:
-    'Intermitte horologium sistit et tabulam occultat, ne quies ad eam ediscendam adhibeatur.',
-  tutRestart: 'Redintegra novam tabulam ab initio distribuit. Prius rogat.',
-  tutQuit: 'Desiste ludum finit et ostendit quantum tuleris. Prius rogat.',
-  tutDoneTitle: 'Hae sunt regulae',
-  tutDoneBody: 'Quomodo ludendum sit semper in titulo est, si iterum vis.',
   htBoardTitle: 'Tabula',
   htBoardBody: 'Tesserae singulae vertuntur, ordine fortuito. Ex tesseris apertis verba facis.',
   htWordsTitle: 'Verba',
@@ -323,11 +315,14 @@ export const la: Messages = {
   deleteNoAddress:
     'Nulla inscriptio confirmata huic rationi adest, itaque deletio probari non potest. Nos conveni et manu faciemus.',
 
+  rulesetFacts: 'Verba {letters} · nova tessera singulis {seconds}',
   plurals: {
     words: { one: 'verbum {n}', other: 'verba {n}' },
     rounds: { one: 'ambitus {n}', other: 'ambitus {n}' },
     flips: { one: 'versus {n}', other: 'versus {n}' },
     ticks: { one: 'ictus {n}', other: 'ictus {n}' },
     points: { one: 'punctum {n}', other: 'puncta {n}' },
+    minLetters: { one: 'litterae {n} aut plurium', other: 'litterarum {n} aut plurium' },
+    seconds: { one: 'secundis {n}', other: 'secundis {n}' },
   },
 }

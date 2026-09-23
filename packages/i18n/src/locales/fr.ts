@@ -167,15 +167,6 @@ export const fr: Messages = {
   tutTapBack:
     "Vous en avez pris une par erreur ? Touchez-la de nouveau pour la rendre. N'importe laquelle, pas seulement la dernière.",
   tutComplete: 'Appuyez sur Terminer quand le mot est prêt.',
-  tutControlsTitle: 'Les boutons',
-  tutReset: 'Effacer vide le mot en cours. Les tuiles restent en place.',
-  tutPause:
-    "Pause arrête le chronomètre et cache le plateau, pour qu'une pause ne serve pas à l'étudier.",
-  tutRestart:
-    'Recommencer distribue un nouveau plateau depuis le début. Une confirmation est demandée.',
-  tutQuit: 'Quitter met fin à la partie et affiche votre score. Une confirmation est demandée.',
-  tutDoneTitle: 'Voilà les règles',
-  tutDoneBody: 'Comment jouer reste accessible dans la barre de titre.',
   htBoardTitle: 'Le plateau',
   htBoardBody:
     'Les tuiles se retournent une à une, dans un ordre aléatoire. Les tuiles visibles servent à former des mots.',
@@ -321,11 +312,14 @@ export const fr: Messages = {
   deleteNoAddress:
     'Aucune adresse confirmée sur ce compte, donc une suppression ne peut pas être vérifiée. Contactez-nous et nous le ferons à la main.',
 
+  rulesetFacts: 'Mots de {letters} · une nouvelle tuile toutes les {seconds}',
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} manche', other: '{n} manches' },
     flips: { one: '{n} coup', other: '{n} coups' },
     ticks: { one: '{n} temps', other: '{n} temps' },
     points: { one: '{n} point', other: '{n} points' },
+    minLetters: { one: '{n} lettre ou plus', other: '{n} lettres ou plus' },
+    seconds: { one: '{n} seconde', other: '{n} secondes' },
   },
 }

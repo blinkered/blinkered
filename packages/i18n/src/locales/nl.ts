@@ -163,14 +163,6 @@ export const nl: Messages = {
   tutTapBack:
     'Per ongeluk een aangetikt? Tik hem nog eens aan om hem terug te geven. Elke letter, niet alleen de laatste.',
   tutComplete: 'Druk op Klaar als het woord af is.',
-  tutControlsTitle: 'De knoppen',
-  tutReset: 'Wissen maakt het woord leeg dat je aan het vormen bent. De tegels blijven liggen.',
-  tutPause:
-    'Pauze stopt de klok en verbergt het bord, zodat een pauze niet gebruikt kan worden om het te bestuderen.',
-  tutRestart: 'Opnieuw deelt een nieuw bord vanaf het begin. Het vraagt eerst.',
-  tutQuit: 'Stoppen beëindigt het spel en toont je score. Het vraagt eerst.',
-  tutDoneTitle: 'Dat zijn de regels',
-  tutDoneBody: 'Spelregels staan altijd in de titelbalk.',
   htBoardTitle: 'Het bord',
   htBoardBody:
     'De stenen draaien één voor één om, in willekeurige volgorde. Met de open stenen vorm je woorden.',
@@ -315,11 +307,14 @@ export const nl: Messages = {
   deleteNoAddress:
     'Er staat geen bevestigd adres op dit account, dus een verwijdering kan niet worden gecontroleerd. Neem contact op en we doen het met de hand.',
 
+  rulesetFacts: 'Woorden van {letters} · elke {seconds} een nieuwe steen',
   plurals: {
     words: { one: '{n} woord', other: '{n} woorden' },
     rounds: { one: '{n} ronde', other: '{n} rondes' },
     flips: { one: '{n} zet', other: '{n} zetten' },
     ticks: { one: '{n} tik', other: '{n} tikken' },
     points: { one: '{n} punt', other: '{n} punten' },
+    minLetters: { one: '{n} letter of meer', other: '{n} letters of meer' },
+    seconds: { one: '{n} seconde', other: '{n} seconden' },
   },
 }

@@ -169,13 +169,6 @@ export const sw: Messages = {
   tutTapBack:
     'Umegusa moja usiyoitaka? Igusa tena ili kuirudisha. Yoyote kati yake, si ya mwisho tu.',
   tutComplete: 'Bonyeza Kamilisha neno likiwa tayari.',
-  tutControlsTitle: 'Vitufe',
-  tutReset: 'Futa huondoa neno unalounda. Vigae hubaki mahali pake.',
-  tutPause: 'Simamisha husimamisha saa na kuficha ubao, ili mapumziko yasitumike kuusoma.',
-  tutRestart: 'Anza upya hugawa ubao mpya kutoka mwanzo. Huuliza kwanza.',
-  tutQuit: 'Toka humaliza mchezo na kuonyesha ulichopata. Huuliza kwanza.',
-  tutDoneTitle: 'Hizo ni kanuni zote',
-  tutDoneBody: 'Jinsi ya kucheza iko kwenye mwambaa wa kichwa ukiitaka tena.',
   htBoardTitle: 'Ubao',
   htBoardBody:
     'Vigae hufunuka kimoja baada ya kingine, kwa mpangilio wa nasibu. Kutoka vigae vilivyo wazi unaunda maneno.',
@@ -319,11 +312,14 @@ export const sw: Messages = {
   deleteNoAddress:
     'Hakuna anwani iliyothibitishwa kwenye akaunti hii, kwa hivyo ufutaji hauwezi kuthibitishwa. Wasiliana nasi na tutafanya kwa mkono.',
 
+  rulesetFacts: 'Maneno ya {letters} · kigae kipya kila {seconds}',
   plurals: {
     words: { one: 'neno {n}', other: 'maneno {n}' },
     rounds: { one: 'raundi {n}', other: 'raundi {n}' },
     flips: { one: 'hatua {n}', other: 'hatua {n}' },
     ticks: { one: 'mpigo {n}', other: 'mipigo {n}' },
     points: { one: 'alama {n}', other: 'alama {n}' },
+    minLetters: { one: 'herufi {n} au zaidi', other: 'herufi {n} au zaidi' },
+    seconds: { one: 'sekunde {n}', other: 'sekunde {n}' },
   },
 }

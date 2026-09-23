@@ -163,14 +163,6 @@ export const ms: Messages = {
   tutTapBack:
     'Tersalah ketik? Ketik sekali lagi untuk memulangkannya. Mana-mana huruf, bukan yang terakhir sahaja.',
   tutComplete: 'Tekan Selesai apabila perkataan sudah siap.',
-  tutControlsTitle: 'Butang',
-  tutReset: 'Set semula mengosongkan perkataan yang sedang anda bina. Jubin kekal di tempatnya.',
-  tutPause:
-    'Jeda menghentikan jam dan menyembunyikan papan, supaya rehat tidak boleh digunakan untuk mengkajinya.',
-  tutRestart: 'Mula semula mengedar papan baharu dari awal. Ia bertanya dahulu.',
-  tutQuit: 'Keluar menamatkan permainan dan menunjukkan markah anda. Ia bertanya dahulu.',
-  tutDoneTitle: 'Itulah peraturannya',
-  tutDoneBody: 'Cara bermain sentiasa ada pada bar tajuk.',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Jubin dibuka satu demi satu, dalam susunan rawak. Daripada jubin yang terbuka anda membina perkataan.',
@@ -316,11 +308,14 @@ export const ms: Messages = {
   deleteNoAddress:
     'Tiada alamat yang disahkan pada akaun ini, jadi penghapusan tidak dapat diperiksa. Hubungi kami dan kami akan lakukan secara manual.',
 
+  rulesetFacts: 'Perkataan {letters} · jubin baharu setiap {seconds}',
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} pusingan' },
     flips: { other: '{n} balikan' },
     ticks: { other: '{n} denyut' },
     points: { other: '{n} mata' },
+    minLetters: { other: 'minimum {n} huruf' },
+    seconds: { other: '{n} detik' },
   },
 }

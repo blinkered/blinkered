@@ -173,13 +173,6 @@ export const pcm: Messages = {
   tutTapBack:
     'You tap one wey you no want? Tap am again make e go back. Any one, no be only di last one.',
   tutComplete: 'Press Complete when di word ready.',
-  tutControlsTitle: 'Di buttons',
-  tutReset: 'Clear go remove di word wey you dey build. Di tiles go remain where dem dey.',
-  tutPause: 'Pause go stop di clock and hide di board, so break no go help you study am.',
-  tutRestart: 'Start again go deal new board from di beginning. E go ask you first.',
-  tutQuit: 'Quit go end di game and show wetin you score. E go ask you first.',
-  tutDoneTitle: 'Na dat be di rules',
-  tutDoneBody: 'How to play dey always for di title bar.',
   htBoardTitle: 'Di board',
   htBoardBody:
     'Tiles dey turn face up one by one, na random order. You fit take di ones wey open form word.',
@@ -324,11 +317,14 @@ export const pcm: Messages = {
   deleteNoAddress:
     'No confirmed address dey on dis account, so we no fit check di delete. Talk to us and we go do am by hand.',
 
+  rulesetFacts: 'Word wey get {letters} · new tile every {seconds}',
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },
     flips: { one: '{n} move', other: '{n} moves' },
     ticks: { one: '{n} tick', other: '{n} ticks' },
     points: { one: '{n} point', other: '{n} points' },
+    minLetters: { one: '{n} letter or pass', other: '{n} letters or pass' },
+    seconds: { one: '{n} second', other: '{n} seconds' },
   },
 }

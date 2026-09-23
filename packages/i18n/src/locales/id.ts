@@ -167,14 +167,6 @@ export const id: Messages = {
   tutTapBack:
     'Salah ketuk? Ketuk lagi untuk mengembalikannya. Huruf mana pun, bukan hanya yang terakhir.',
   tutComplete: 'Tekan Selesai saat kata sudah siap.',
-  tutControlsTitle: 'Tombol',
-  tutReset: 'Atur ulang mengosongkan kata yang sedang Anda susun. Ubin tetap di tempatnya.',
-  tutPause:
-    'Jeda menghentikan waktu dan menyembunyikan papan, agar istirahat tidak dipakai untuk mempelajarinya.',
-  tutRestart: 'Ulangi membagikan papan baru dari awal. Ia bertanya dahulu.',
-  tutQuit: 'Keluar mengakhiri permainan dan menampilkan skor Anda. Ia bertanya dahulu.',
-  tutDoneTitle: 'Itulah aturannya',
-  tutDoneBody: 'Cara bermain selalu ada di bilah judul.',
   htBoardTitle: 'Papan',
   htBoardBody:
     'Kartu dibuka satu per satu, dalam urutan acak. Dari kartu yang terbuka Anda menyusun kata.',
@@ -320,11 +312,14 @@ export const id: Messages = {
   deleteNoAddress:
     'Tidak ada alamat terkonfirmasi di akun ini, jadi penghapusan tidak bisa diperiksa. Hubungi kami dan kami lakukan manual.',
 
+  rulesetFacts: 'Kata {letters} · kartu baru setiap {seconds}',
   plurals: {
     words: { other: '{n} kata' },
     rounds: { other: '{n} putaran' },
     flips: { other: '{n} balikan' },
     ticks: { other: '{n} ketukan' },
     points: { other: '{n} poin' },
+    minLetters: { other: 'minimal {n} huruf' },
+    seconds: { other: '{n} detik' },
   },
 }

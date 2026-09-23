@@ -166,14 +166,6 @@ export const fi: Messages = {
   tutTapBack:
     'Napautitko väärää? Napauta sitä uudelleen ja saat sen takaisin. Mitä tahansa, ei vain viimeistä.',
   tutComplete: 'Paina Valmis, kun sana on kasassa.',
-  tutControlsTitle: 'Painikkeet',
-  tutReset: 'Tyhjennä poistaa sanan, jota olet kokoamassa. Laatat jäävät paikoilleen.',
-  tutPause:
-    'Tauko pysäyttää kellon ja piilottaa laudan, jottei taukoa voi käyttää sen tutkimiseen.',
-  tutRestart: 'Aloita alusta jakaa uuden laudan alusta. Se kysyy ensin.',
-  tutQuit: 'Lopeta päättää pelin ja näyttää pistemääräsi. Se kysyy ensin.',
-  tutDoneTitle: 'Siinä säännöt',
-  tutDoneBody: 'Pelin ohjeet löytyvät aina otsikkopalkista.',
   htBoardTitle: 'Pelilauta',
   htBoardBody:
     'Laatat kääntyvät esiin yksi kerrallaan, satunnaisessa järjestyksessä. Näkyvistä laatoista muodostat sanoja.',
@@ -317,11 +309,14 @@ export const fi: Messages = {
   deleteNoAddress:
     'Tällä tilillä ei ole vahvistettua osoitetta, joten poistoa ei voi tarkistaa. Ota yhteyttä, niin teemme sen käsin.',
 
+  rulesetFacts: 'Sanan pituus {letters} · uusi laatta {seconds} välein',
   plurals: {
     words: { one: '{n} sana', other: '{n} sanaa' },
     rounds: { one: '{n} kierros', other: '{n} kierrosta' },
     flips: { one: '{n} siirto', other: '{n} siirtoa' },
     ticks: { one: '{n} askel', other: '{n} askelta' },
     points: { one: '{n} piste', other: '{n} pistettä' },
+    minLetters: { one: 'vähintään {n} kirjain', other: 'vähintään {n} kirjainta' },
+    seconds: { one: '{n} sekunnin', other: '{n} sekunnin' },
   },
 }

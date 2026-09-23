@@ -167,14 +167,6 @@ export const da: Messages = {
   tutTapBack:
     'Kom du til at tage et forkert? Tryk på det igen for at give det tilbage. Et hvilket som helst, ikke kun det sidste.',
   tutComplete: 'Tryk på Færdig når ordet er klart.',
-  tutControlsTitle: 'Knapperne',
-  tutReset: 'Ryd sletter det ord du er ved at danne. Brikkerne bliver hvor de er.',
-  tutPause:
-    'Pause stopper uret og skjuler brættet, så en pause ikke kan bruges til at studere det.',
-  tutRestart: 'Forfra deler et nyt bræt fra begyndelsen. Den spørger først.',
-  tutQuit: 'Afslut slutter spillet og viser hvad du fik. Den spørger først.',
-  tutDoneTitle: 'Det er reglerne',
-  tutDoneBody: 'Sådan spiller du står altid ved titlen.',
   htBoardTitle: 'Brættet',
   htBoardBody:
     'Brikkerne vendes én ad gangen, i tilfældig rækkefølge. Vendte brikker kan bruges til at danne ord.',
@@ -319,11 +311,14 @@ export const da: Messages = {
   deleteNoAddress:
     'Der er ingen bekræftet adresse på denne konto, så en sletning kan ikke kontrolleres. Kontakt os, og vi gør det manuelt.',
 
+  rulesetFacts: 'Ord på {letters} · en ny brik hvert {seconds}',
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },
     flips: { one: '{n} træk', other: '{n} træk' },
     ticks: { one: '{n} tik', other: '{n} tik' },
     points: { one: '{n} point', other: '{n} point' },
+    minLetters: { one: 'mindst {n} bogstav', other: 'mindst {n} bogstaver' },
+    seconds: { one: '{n} sekund', other: '{n} sekunder' },
   },
 }

@@ -177,13 +177,6 @@ export const ja: Messages = {
   tutTapBack:
     '取りたくないものを取ってしまいましたか。もう一度タップすると戻せます。最後の1つだけでなく、どれでも。',
   tutComplete: '単語ができたら完成を押します。',
-  tutControlsTitle: 'ボタン',
-  tutReset: 'クリアは作りかけの単語を消します。もじはそのまま残ります。',
-  tutPause: '一時停止は時計を止めて盤を隠します。休憩のあいだに覚えられないように。',
-  tutRestart: 'やり直すは最初から新しい盤を配ります。先に確認します。',
-  tutQuit: 'やめるはゲームを終えて得点を見せます。先に確認します。',
-  tutDoneTitle: 'ルールはこれで全部です',
-  tutDoneBody: '遊び方はいつでもタイトルの横にあります。',
   htBoardTitle: '盤',
   htBoardBody:
     'もじはランダムな順に1枚ずつ表になります。表になったもじで単語を作ります。盤の上では濁点も半濁点もつけて読めるので、「は」は「ば」として使えます。小さい「っ」「ゃ」「ゅ」「ょ」も大きいもじで表します。',
@@ -325,11 +318,14 @@ export const ja: Messages = {
   deleteNoAddress:
     'このアカウントには確認済みのアドレスがないため、削除を確認できません。ご連絡いただければ手作業で対応します。',
 
+  rulesetFacts: '{letters}の単語 · {seconds}ごとにもじが1枚表になる',
   plurals: {
     words: { other: '{n}語' },
     rounds: { other: '{n}ラウンド' },
     flips: { other: '{n}手' },
     ticks: { other: '{n}拍' },
     points: { other: '{n}点' },
+    minLetters: { other: '{n}もじ以上' },
+    seconds: { other: '{n}秒' },
   },
 }

@@ -168,13 +168,6 @@ export const sl: Messages = {
   tutTapBack:
     'Ste vzeli črko, ki je niste želeli? Tapnite jo znova in se vrne. Katero koli, ne le zadnjo.',
   tutComplete: 'Ko je beseda pripravljena, pritisnite Dokončaj.',
-  tutControlsTitle: 'Gumbi',
-  tutReset: 'Počisti izbriše besedo, ki jo sestavljate. Ploščice ostanejo, kjer so.',
-  tutPause: 'Premor ustavi uro in skrije ploščo, da odmor ne bi služil učenju na pamet.',
-  tutRestart: 'Znova razdeli novo ploščo od začetka. Prej vpraša.',
-  tutQuit: 'Končaj konča igro in pokaže rezultat. Prej vpraša.',
-  tutDoneTitle: 'To so pravila',
-  tutDoneBody: 'Kako igrati je vedno ob naslovu.',
   htBoardTitle: 'Plošča',
   htBoardBody:
     'Ploščice se odkrivajo ena za drugo, v naključnem vrstnem redu. Iz odkritih se sestavljajo besede.',
@@ -317,11 +310,19 @@ export const sl: Messages = {
   deleteNoAddress:
     'Na tem računu ni potrjenega naslova, zato izbrisa ni mogoče preveriti. Javi se nam in naredili bomo ročno.',
 
+  rulesetFacts: 'Besede z {letters} · nova ploščica na {seconds}',
   plurals: {
     words: { one: '{n} beseda', two: '{n} besedi', few: '{n} besede', other: '{n} besed' },
     rounds: { one: '{n} krog', two: '{n} kroga', few: '{n} krogi', other: '{n} krogov' },
     flips: { one: '{n} poteza', two: '{n} potezi', few: '{n} poteze', other: '{n} potez' },
     ticks: { one: '{n} utrip', two: '{n} utripa', few: '{n} utripi', other: '{n} utripov' },
     points: { one: '{n} točka', two: '{n} točki', few: '{n} točke', other: '{n} točk' },
+    minLetters: {
+      one: 'vsaj {n} črko',
+      two: 'vsaj {n} črkama',
+      few: 'vsaj {n} črkami',
+      other: 'vsaj {n} črkami',
+    },
+    seconds: { one: '{n} sekundo', two: '{n} sekundi', few: '{n} sekunde', other: '{n} sekund' },
   },
 }

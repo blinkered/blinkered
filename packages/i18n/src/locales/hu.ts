@@ -169,14 +169,6 @@ export const hu: Messages = {
   tutTapBack:
     'Olyat vett el, amit nem akart? Érintse meg újra, és visszakerül. Bármelyiket, nem csak az utolsót.',
   tutComplete: 'Ha a szó kész, nyomja meg a Kész gombot.',
-  tutControlsTitle: 'A gombok',
-  tutReset: 'A Törlés eltünteti az épp készülő szót. A lapkák a helyükön maradnak.',
-  tutPause:
-    'A Szünet megállítja az órát és elrejti a táblát, hogy a pihenő ne tanulásra menjen el.',
-  tutRestart: 'Az Újrakezdés új táblát oszt az elejéről. Előbb rákérdez.',
-  tutQuit: 'A Kilépés befejezi a játékot és megmutatja az eredményt. Előbb rákérdez.',
-  tutDoneTitle: 'Ennyi a szabály',
-  tutDoneBody: 'A leírás mindig ott van a cím mellett.',
   htBoardTitle: 'A tábla',
   htBoardBody:
     'A lapkák egyesével fordulnak fel, véletlen sorrendben. A felfordítottakból lehet szót alkotni.',
@@ -321,11 +313,14 @@ export const hu: Messages = {
   deleteNoAddress:
     'Ehhez a fiókhoz nincs megerősített cím, így a törlés nem ellenőrizhető. Írj nekünk, és kézzel elvégezzük.',
 
+  rulesetFacts: 'A szavak {letters} · {seconds} új lapka',
   plurals: {
     words: { one: '{n} szó', other: '{n} szó' },
     rounds: { one: '{n} kör', other: '{n} kör' },
     flips: { one: '{n} lépés', other: '{n} lépés' },
     ticks: { one: '{n} ütem', other: '{n} ütem' },
     points: { one: '{n} pont', other: '{n} pont' },
+    minLetters: { one: 'legalább {n} betűsek', other: 'legalább {n} betűsek' },
+    seconds: { one: '{n} másodpercenként', other: '{n} másodpercenként' },
   },
 }

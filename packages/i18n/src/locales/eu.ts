@@ -171,15 +171,6 @@ export const eu: Messages = {
   tutTapBack:
     'Nahi ez zenuen bat hartu duzu? Ukitu berriro itzultzeko. Edozein, ez azkena bakarrik.',
   tutComplete: 'Sakatu Osatu hitza prest dagoenean.',
-  tutControlsTitle: 'Botoiak',
-  tutReset:
-    'Garbitu botoiak osatzen ari zaren hitza ezabatzen du. Fitxak dauden tokian geratzen dira.',
-  tutPause:
-    'Etenak erlojua gelditzen du eta taula ezkutatzen, atsedena hura ikasteko erabil ez dadin.',
-  tutRestart: 'Berrabiarazi taula berri bat banatzen du hasieratik. Lehenik galdetzen du.',
-  tutQuit: 'Utzi partida amaitzen du eta puntuak erakusten. Lehenik galdetzen du.',
-  tutDoneTitle: 'Horiek dira arauak',
-  tutDoneBody: 'Nola jokatu beti dago izenburuaren ondoan.',
   htBoardTitle: 'Taula',
   htBoardBody:
     'Fitxak banaka biratzen dira, ausazko ordenan. Agerian daudenekin hitzak osatzen dira.',
@@ -325,11 +316,14 @@ export const eu: Messages = {
   deleteNoAddress:
     'Kontu honek ez du helbide baieztaturik, beraz ezabatzea ezin da egiaztatu. Jarri gurekin harremanetan eta eskuz egingo dugu.',
 
+  rulesetFacts: '{letters} hitzak · fitxa berri bat {seconds}',
   plurals: {
     words: { one: 'hitz {n}', other: '{n} hitz' },
     rounds: { one: 'txanda {n}', other: '{n} txanda' },
     flips: { one: 'jokaldi {n}', other: '{n} jokaldi' },
     ticks: { one: 'taupada {n}', other: '{n} taupada' },
     points: { one: 'puntu {n}', other: '{n} puntu' },
+    minLetters: { one: 'letra {n} edo gehiagoko', other: '{n} letra edo gehiagoko' },
+    seconds: { one: '{n} segundoro', other: '{n} segundoro' },
   },
 }

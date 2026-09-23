@@ -169,13 +169,6 @@ export const is: Messages = {
   tutTapBack:
     'Tókstu einn sem þú vildir ekki? Ýttu aftur á hann til að skila honum. Hvaða sem er, ekki bara þann síðasta.',
   tutComplete: 'Ýttu á Lokið þegar orðið er tilbúið.',
-  tutControlsTitle: 'Hnapparnir',
-  tutReset: 'Hreinsa eyðir orðinu sem þú ert að mynda. Flísarnar verða kyrrar.',
-  tutPause: 'Hlé stöðvar klukkuna og felur borðið, svo pása nýtist ekki til að læra það.',
-  tutRestart: 'Upp á nýtt gefur nýtt borð frá byrjun. Það spyr fyrst.',
-  tutQuit: 'Hætta lýkur leiknum og sýnir stigin. Það spyr fyrst.',
-  tutDoneTitle: 'Þetta eru reglurnar',
-  tutDoneBody: 'Hvernig á að spila er alltaf við titilinn.',
   htBoardTitle: 'Borðið',
   htBoardBody:
     'Flísarnar snúast við ein í einu, í tilviljanakenndri röð. Úr þeim sem snúa upp má mynda orð.',
@@ -319,11 +312,14 @@ export const is: Messages = {
   deleteNoAddress:
     'Það er ekkert staðfest netfang á þessum reikningi, svo ekki er unnt að staðfesta eyðingu. Hafðu samband og við gerum það handvirkt.',
 
+  rulesetFacts: 'Orð með {letters} · ný flís á {seconds} fresti',
   plurals: {
     words: { one: '{n} orð', other: '{n} orð' },
     rounds: { one: '{n} umferð', other: '{n} umferðir' },
     flips: { one: '{n} leikur', other: '{n} leikir' },
     ticks: { one: '{n} taktur', other: '{n} taktar' },
     points: { one: '{n} stig', other: '{n} stig' },
+    minLetters: { one: 'minnst {n} staf', other: 'minnst {n} stöfum' },
+    seconds: { one: '{n} sekúndu', other: '{n} sekúndna' },
   },
 }

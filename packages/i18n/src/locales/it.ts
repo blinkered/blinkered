@@ -165,13 +165,6 @@ export const it: Messages = {
   tutTapBack:
     "Ne hai presa una per sbaglio? Toccala di nuovo per restituirla. Una qualsiasi, non solo l'ultima.",
   tutComplete: 'Premi Completa quando la parola è pronta.',
-  tutControlsTitle: 'I pulsanti',
-  tutReset: 'Azzera svuota la parola che stai formando. Le tessere restano dove sono.',
-  tutPause: 'Pausa ferma il tempo e nasconde il tabellone, così una pausa non serve a studiarlo.',
-  tutRestart: "Ricomincia distribuisce un tabellone nuovo dall'inizio. Chiede conferma.",
-  tutQuit: 'Esci chiude la partita e mostra il punteggio. Chiede conferma.',
-  tutDoneTitle: 'Queste sono le regole',
-  tutDoneBody: 'Come si gioca resta sempre nella barra del titolo.',
   htBoardTitle: 'Il tabellone',
   htBoardBody:
     'Le tessere si girano una alla volta, in ordine casuale. Le tessere scoperte servono a comporre parole.',
@@ -318,11 +311,14 @@ export const it: Messages = {
   deleteNoAddress:
     'Su questo account non c’è un indirizzo confermato, quindi un’eliminazione non può essere verificata. Scrivici e lo faremo a mano.',
 
+  rulesetFacts: 'Parole di {letters} · una nuova tessera ogni {seconds}',
   plurals: {
     words: { one: '{n} parola', other: '{n} parole' },
     rounds: { one: '{n} turno', other: '{n} turni' },
     flips: { one: '{n} giro', other: '{n} giri' },
     ticks: { one: '{n} tempo', other: '{n} tempi' },
     points: { one: '{n} punto', other: '{n} punti' },
+    minLetters: { one: '{n} lettera o più', other: '{n} lettere o più' },
+    seconds: { one: '{n} secondo', other: '{n} secondi' },
   },
 }

@@ -178,15 +178,6 @@ export const tl: Messages = {
   tutTapBack:
     'May napindot kang ayaw mo? Pindutin ulit para ibalik. Kahit alin, hindi lang ang huli.',
   tutComplete: 'Pindutin ang Tapusin kapag handa na ang salita.',
-  tutControlsTitle: 'Ang mga pindutan',
-  tutReset: 'Binubura ng Burahin ang salitang binubuo mo. Nananatili sa lugar nila ang mga piyesa.',
-  tutPause:
-    'Hinihinto ng Ihinto ang orasan at itinatago ang tablero, para hindi magamit ang pahinga sa ' +
-    'pag-aaral nito.',
-  tutRestart: 'Nagbibigay ang Simulan muli ng bagong tablero mula sa umpisa. Nagtatanong muna.',
-  tutQuit: 'Tinatapos ng Umalis ang laro at ipinapakita ang puntos mo. Nagtatanong muna.',
-  tutDoneTitle: 'Iyan ang mga patakaran',
-  tutDoneBody: 'Nasa title bar palagi ang Paano maglaro kung kailanganin mo ulit.',
   htBoardTitle: 'Ang tablero',
   htBoardBody:
     'Isa-isang bumubukas ang mga piyesa, sa random na pagkakasunod. Mula sa mga bukas na piyesa ka bumubuo ng salita.',
@@ -332,11 +323,14 @@ export const tl: Messages = {
   deleteNoAddress:
     'Walang nakumpirmang address sa account na ito, kaya hindi masusuri ang pagbura. Makipag-ugnayan sa amin at gagawin namin ito nang manu-mano.',
 
+  rulesetFacts: 'Mga salitang may {letters} · bagong piyesa kada {seconds}',
   plurals: {
     words: { one: '{n} salita', other: '{n} salita' },
     rounds: { one: '{n} ikot', other: '{n} ikot' },
     flips: { one: '{n} tira', other: '{n} tira' },
     ticks: { one: '{n} tibok', other: '{n} tibok' },
     points: { one: '{n} puntos', other: '{n} puntos' },
+    minLetters: { one: '{n} titik o higit pa', other: '{n} titik o higit pa' },
+    seconds: { one: '{n} segundo', other: '{n} segundo' },
   },
 }

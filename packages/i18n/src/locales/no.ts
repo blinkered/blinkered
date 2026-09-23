@@ -162,14 +162,6 @@ export const no: Messages = {
   tutTapBack:
     'Tok du feil? Trykk på den igjen for å levere den tilbake. Hvilken som helst, ikke bare den siste.',
   tutComplete: 'Trykk Ferdig når ordet er klart.',
-  tutControlsTitle: 'Knappene',
-  tutReset: 'Tøm rydder ordet du holder på med. Brikkene blir liggende.',
-  tutPause:
-    'Pause stopper klokken og skjuler brettet, slik at en pause ikke kan brukes til å studere det.',
-  tutRestart: 'Start på nytt deler ut et nytt brett fra begynnelsen. Den spør først.',
-  tutQuit: 'Avslutt avslutter partiet og viser poengsummen din. Den spør først.',
-  tutDoneTitle: 'Det er reglene',
-  tutDoneBody: 'Slik spiller du ligger alltid i tittellinjen.',
   htBoardTitle: 'Brettet',
   htBoardBody:
     'Brikkene snus opp én om gangen, i tilfeldig rekkefølge. Av brikkene som ligger åpne lager du ord.',
@@ -314,11 +306,14 @@ export const no: Messages = {
   deleteNoAddress:
     'Det finnes ingen bekreftet adresse på denne kontoen, så en sletting kan ikke sjekkes. Ta kontakt, og vi gjør det manuelt.',
 
+  rulesetFacts: 'Ord på {letters} · ny brikke hvert {seconds}',
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} runde', other: '{n} runder' },
     flips: { one: '{n} trekk', other: '{n} trekk' },
     ticks: { one: '{n} takt', other: '{n} takter' },
     points: { one: '{n} poeng', other: '{n} poeng' },
+    minLetters: { one: 'minst {n} bokstav', other: 'minst {n} bokstaver' },
+    seconds: { one: '{n} sekund', other: '{n} sekund' },
   },
 }

@@ -166,14 +166,6 @@ export const de: Messages = {
   tutTapBack:
     'Versehentlich einen genommen? Tippen Sie ihn noch einmal an, um ihn zurückzugeben. Jeden, nicht nur den letzten.',
   tutComplete: 'Drücken Sie Fertig, wenn das Wort steht.',
-  tutControlsTitle: 'Die Schaltflächen',
-  tutReset: 'Zurücksetzen leert das Wort, das Sie gerade bilden. Die Plättchen bleiben liegen.',
-  tutPause:
-    'Pause hält die Uhr an und verdeckt das Feld, damit eine Pause nicht zum Studieren dient.',
-  tutRestart: 'Neustart teilt ein neues Feld von vorn aus. Es fragt vorher nach.',
-  tutQuit: 'Beenden schließt die Partie ab und zeigt Ihr Ergebnis. Es fragt vorher nach.',
-  tutDoneTitle: 'Das sind die Regeln',
-  tutDoneBody: 'Die Anleitung bleibt oben in der Titelleiste.',
   htBoardTitle: 'Das Feld',
   htBoardBody:
     'Die Steine werden einzeln umgedreht, in zufälliger Reihenfolge. Aus den offenen Steinen bildest du Wörter.',
@@ -319,11 +311,14 @@ export const de: Messages = {
   deleteNoAddress:
     'Für dieses Konto gibt es keine bestätigte Adresse, also kann eine Löschung nicht geprüft werden. Melde dich, dann machen wir es von Hand.',
 
+  rulesetFacts: 'Wörter ab {letters} · alle {seconds} ein neuer Stein',
   plurals: {
     words: { one: '{n} Wort', other: '{n} Wörter' },
     rounds: { one: '{n} Runde', other: '{n} Runden' },
     flips: { one: '{n} Zug', other: '{n} Züge' },
     ticks: { one: '{n} Takt', other: '{n} Takte' },
     points: { one: '{n} Punkt', other: '{n} Punkte' },
+    minLetters: { one: '{n} Buchstaben', other: '{n} Buchstaben' },
+    seconds: { one: '{n} Sekunde', other: '{n} Sekunden' },
   },
 }

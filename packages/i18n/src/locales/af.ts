@@ -169,15 +169,6 @@ export const af: Messages = {
     'Een getik wat jy nie wou hê nie? Tik dit weer om dit terug te gee. Enigeen, nie net die ' +
     'laaste een nie.',
   tutComplete: 'Druk Voltooi wanneer die woord gereed is.',
-  tutControlsTitle: 'Die knoppies',
-  tutReset: 'Herstel wis die woord wat jy bou. Die blokkies bly waar hulle is.',
-  tutPause:
-    'Pouse stop die klok en steek die bord weg, sodat ’n blaaskans nie gebruik kan word om dit ' +
-    'te bestudeer nie.',
-  tutRestart: 'Herbegin deel ’n nuwe bord van voor af. Dit vra eers.',
-  tutQuit: 'Stop beëindig die spel en wys wat jy behaal het. Dit vra eers.',
-  tutDoneTitle: 'Dis die reëls',
-  tutDoneBody: 'Hoe om te speel is altyd in die titelbalk as jy dit weer wil hê.',
   htBoardTitle: 'Die bord',
   htBoardBody:
     'Blokkies draai een vir een oop, in willekeurige volgorde. Met die oop blokkies vorm jy woorde.',
@@ -321,11 +312,14 @@ export const af: Messages = {
   deleteNoAddress:
     'Daar is geen bevestigde adres op hierdie rekening nie, dus kan ’n skrapping nie nagegaan word nie. Kontak ons en ons doen dit met die hand.',
 
+  rulesetFacts: 'Woorde van {letters} · elke {seconds} ’n nuwe blokkie',
   plurals: {
     words: { one: '{n} woord', other: '{n} woorde' },
     rounds: { one: '{n} rondte', other: '{n} rondtes' },
     flips: { one: '{n} skuif', other: '{n} skuiwe' },
     ticks: { one: '{n} tik', other: '{n} tikke' },
     points: { one: '{n} punt', other: '{n} punte' },
+    minLetters: { one: 'minstens {n} letter', other: 'minstens {n} letters' },
+    seconds: { one: '{n} sekonde', other: '{n} sekondes' },
   },
 }

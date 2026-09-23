@@ -169,13 +169,6 @@ export const et: Messages = {
   tutTapBack:
     'Võtsite tähe, mida ei tahtnud? Puudutage seda uuesti ja see läheb tagasi. Ükskõik millise, mitte ainult viimase.',
   tutComplete: 'Kui sõna on valmis, vajutage Valmis.',
-  tutControlsTitle: 'Nupud',
-  tutReset: 'Tühjenda kustutab sõna, mida koostate. Nupud jäävad oma kohale.',
-  tutPause: 'Paus peatab kella ja peidab laua, et vaheaega ei saaks selle õppimiseks kasutada.',
-  tutRestart: 'Uuesti jagab uue laua algusest peale. Küsib enne.',
-  tutQuit: 'Lõpeta lõpetab mängu ja näitab tulemust. Küsib enne.',
-  tutDoneTitle: 'Need on reeglid',
-  tutDoneBody: 'Kuidas mängida on alati pealkirja juures.',
   htBoardTitle: 'Laud',
   htBoardBody:
     'Nupud pöörduvad ükshaaval, juhuslikus järjekorras. Lahtistest nuppudest moodustatakse sõnu.',
@@ -318,11 +311,14 @@ export const et: Messages = {
   deleteNoAddress:
     'Sellel kontol pole kinnitatud aadressi, seega ei saa kustutamist kontrollida. Võta ühendust ja teeme seda käsitsi.',
 
+  rulesetFacts: 'Sõnad alates {letters} · uus nupp iga {seconds} järel',
   plurals: {
     words: { one: '{n} sõna', other: '{n} sõna' },
     rounds: { one: '{n} voor', other: '{n} vooru' },
     flips: { one: '{n} käik', other: '{n} käiku' },
     ticks: { one: '{n} takt', other: '{n} takti' },
     points: { one: '{n} punkt', other: '{n} punkti' },
+    minLetters: { one: '{n} tähest', other: '{n} tähest' },
+    seconds: { one: '{n} sekundi', other: '{n} sekundi' },
   },
 }

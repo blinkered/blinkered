@@ -22,6 +22,10 @@ export interface Plurals {
   readonly flips: PluralForms
   readonly ticks: PluralForms
   readonly points: PluralForms
+  /** The shortest word a level accepts, as "3+ letters": a floor, not an exact length. */
+  readonly minLetters: PluralForms
+  /** Seconds, which can be fractional: 1.5 is `other` in English and its own form elsewhere. */
+  readonly seconds: PluralForms
 }
 
 export interface Messages {
@@ -125,22 +129,6 @@ export interface Messages {
   readonly tutMoreTurn: string
   readonly tutTapBack: string
   readonly tutComplete: string
-  readonly tutControlsTitle: string
-  readonly tutReset: string
-  readonly tutPause: string
-  readonly tutRestart: string
-  readonly tutQuit: string
-  /**
-   * The next-to-last screen of the tour, which says the rules are covered and nothing more.
-   *
-   * It used to read "That is the whole game" over "Pick a level and play", and then the tour
-   * showed another screen. Announcing the ending and then not ending is what Nick caught:
-   * "then...brings you to another screen. Seems weird." So the heading now closes the *rules*
-   * and the body keeps only the part that is a standing fact -- how to play is in the title bar.
-   * The send-off is gone from here; `tutorialStart` on the last screen is the send-off.
-   */
-  readonly tutDoneTitle: string
-  readonly tutDoneBody: string
 
   readonly htBoardTitle: string
   readonly htBoardBody: string
@@ -642,6 +630,17 @@ export interface Messages {
    * would be fifty-one more strings to keep in step for no new words.
    */
 
+  /**
+   * The line under the difficulty buttons: `{letters}` from `plurals.minLetters`, `{seconds}` from
+   * `plurals.seconds`.
+   *
+   * One sentence with its numbers as placeholders, not the nerd panel's two labels glued to two
+   * numbers. The setup screen is read by people who have not played yet, and "min word 3 · seconds
+   * / tick 1.5" was written for people who have: a tick means nothing until you have watched the
+   * bar, while a new tile every so often is something anyone can picture.
+   */
+  readonly rulesetFacts: string
+
   readonly plurals: Plurals
 }
 
@@ -665,7 +664,13 @@ export function format(template: string, values: Replacements = {}): string {
  * rule for Russian is a three-branch test on the last two digits, and nobody should be
  * writing that by hand in one file per locale.
  */
-export function plural(tag: string, forms: PluralForms, count: number): string {
+export function plural(
+  tag: string,
+  forms: PluralForms,
+  count: number,
+  /** How to write the number, when `String(count)` is not it: "1,5" in French. */
+  shown: string = String(count),
+): string {
   const rule = new Intl.PluralRules(tag).select(count)
-  return format(forms[rule] ?? forms.other, { n: count })
+  return format(forms[rule] ?? forms.other, { n: shown })
 }

@@ -172,14 +172,6 @@ export const cy: Messages = {
   tutTapBack:
     'Wedi cymryd un nad oeddech ei heisiau? Tapiwch hi eto i’w dychwelyd. Unrhyw un, nid yr olaf yn unig.',
   tutComplete: 'Pwyswch Cwblhau pan fydd y gair yn barod.',
-  tutControlsTitle: 'Y botymau',
-  tutReset: 'Mae Clirio yn dileu’r gair rydych yn ei ffurfio. Mae’r teils yn aros lle maent.',
-  tutPause:
-    'Mae Saib yn stopio’r cloc ac yn cuddio’r bwrdd, fel na ellir defnyddio egwyl i’w astudio.',
-  tutRestart: 'Mae Ailddechrau yn delio bwrdd newydd o’r dechrau. Mae’n gofyn yn gyntaf.',
-  tutQuit: 'Mae Gadael yn gorffen y gêm ac yn dangos eich sgôr. Mae’n gofyn yn gyntaf.',
-  tutDoneTitle: 'Dyna’r rheolau',
-  tutDoneBody: 'Mae Sut i chwarae bob amser wrth y teitl.',
   htBoardTitle: 'Y bwrdd',
   htBoardBody:
     'Mae’r teils yn troi fesul un, mewn trefn ar hap. Gellir defnyddio’r rhai sydd yn y golwg i ffurfio geiriau.',
@@ -324,6 +316,7 @@ export const cy: Messages = {
   deleteNoAddress:
     'Does dim cyfeiriad wedi’i gadarnhau ar y cyfrif hwn, felly does dim modd gwirio’r dileu. Cysyllta â ni ac fe wnawn ni hynny â llaw.',
 
+  rulesetFacts: 'Geiriau o {letters} · teilsen newydd bob {seconds}',
   plurals: {
     words: {
       zero: '{n} gair',
@@ -364,6 +357,22 @@ export const cy: Messages = {
       few: '{n} phwynt',
       many: '{n} phwynt',
       other: '{n} pwynt',
+    },
+    minLetters: {
+      zero: '{n} llythyren neu fwy',
+      one: '{n} llythyren neu fwy',
+      two: '{n} lythyren neu fwy',
+      few: '{n} llythyren neu fwy',
+      many: '{n} llythyren neu fwy',
+      other: '{n} llythyren neu fwy',
+    },
+    seconds: {
+      zero: '{n} eiliad',
+      one: '{n} eiliad',
+      two: '{n} eiliad',
+      few: '{n} eiliad',
+      many: '{n} eiliad',
+      other: '{n} eiliad',
     },
   },
 }

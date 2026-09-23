@@ -172,15 +172,6 @@ export const ga: Messages = {
   tutTapBack:
     'Ar thóg tú ceann nach raibh uait? Tapáil arís í chun í a thabhairt ar ais. Ceann ar bith, ní hí an ceann deireanach amháin.',
   tutComplete: 'Brúigh Críochnaigh nuair atá an focal réidh.',
-  tutControlsTitle: 'Na cnaipí',
-  tutReset: 'Glanann Glan an focal atá á dhéanamh agat. Fanann na tíleanna san áit a bhfuil siad.',
-  tutPause:
-    'Stopann Sos an clog agus cuireann sé an clár i bhfolach, ionas nach n-úsáidfí sos chun staidéar a dhéanamh air.',
-  tutRestart: 'Roinneann Atosaigh clár nua ón tús. Fiafraíonn sé ar dtús.',
-  tutQuit:
-    'Cuireann Éirigh as deireadh leis an gcluiche agus taispeánann sé do scór. Fiafraíonn sé ar dtús.',
-  tutDoneTitle: 'Sin na rialacha',
-  tutDoneBody: 'Tá Conas imirt i gcónaí in aice leis an teideal.',
   htBoardTitle: 'An clár',
   htBoardBody:
     'Iompaítear na tíleanna ceann ar cheann, in ord randamach. Is féidir focail a dhéanamh as na cinn atá iompaithe.',
@@ -328,6 +319,7 @@ export const ga: Messages = {
   deleteNoAddress:
     'Níl seoladh deimhnithe ar an gcuntas seo, mar sin ní féidir scriosadh a sheiceáil. Déan teagmháil linn agus déanfaimid de láimh é.',
 
+  rulesetFacts: 'Focail le {letters} · tíl nua gach {seconds}',
   plurals: {
     words: {
       one: '{n} fhocal',
@@ -363,6 +355,20 @@ export const ga: Messages = {
       few: '{n} phointe',
       many: '{n} bpointe',
       other: '{n} pointe',
+    },
+    minLetters: {
+      one: '{n} litir ar a laghad',
+      two: '{n} litir ar a laghad',
+      few: '{n} litir ar a laghad',
+      many: '{n} litir ar a laghad',
+      other: '{n} litir ar a laghad',
+    },
+    seconds: {
+      one: '{n} soicind',
+      two: '{n} shoicind',
+      few: '{n} shoicind',
+      many: '{n} soicind',
+      other: '{n} soicind',
     },
   },
 }

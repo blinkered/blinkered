@@ -36,6 +36,18 @@ describe('plural', () => {
     expect(plural('en', en.plurals.words, 3)).toBe('3 words')
   })
 
+  it('writes the number the way the caller shows it, and still picks the form from the number', () => {
+    expect(plural('en', en.plurals.seconds, 1.5, '1.5')).toBe('1.5 seconds')
+    expect(plural('en', en.plurals.seconds, 1, '1.0')).toBe('1.0 second')
+  })
+
+  it("has both placeholders in every locale's difficulty line", () => {
+    for (const { tag, messages } of LOCALES) {
+      expect(messages.rulesetFacts, tag).toContain('{letters}')
+      expect(messages.rulesetFacts, tag).toContain('{seconds}')
+    }
+  })
+
   it('picks all four Russian forms, which is why this is not hand-written', () => {
     const forms = messagesFor('ru').plurals.words
     expect(plural('ru', forms, 1)).toBe('1 слово')

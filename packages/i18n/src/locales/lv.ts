@@ -169,14 +169,6 @@ export const lv: Messages = {
   tutTapBack:
     'Paņēmāt burtu, kuru negribējāt? Pieskarieties tam vēlreiz, un tas atgriezīsies. Jebkuram, ne tikai pēdējam.',
   tutComplete: 'Kad vārds gatavs, nospiediet Pabeigt.',
-  tutControlsTitle: 'Pogas',
-  tutReset: 'Notīrīt izdzēš veidojamo vārdu. Kauliņi paliek savās vietās.',
-  tutPause:
-    'Pauze aptur pulksteni un paslēpj galdiņu, lai pārtraukumu neizmantotu tā iegaumēšanai.',
-  tutRestart: 'No jauna izdala jaunu galdiņu no sākuma. Vispirms pajautā.',
-  tutQuit: 'Beigt pabeidz spēli un parāda rezultātu. Vispirms pajautā.',
-  tutDoneTitle: 'Tādi ir noteikumi',
-  tutDoneBody: 'Kā spēlēt vienmēr ir pie nosaukuma.',
   htBoardTitle: 'Galdiņš',
   htBoardBody: 'Kauliņi atklājas pa vienam, nejaušā secībā. No atklātajiem veido vārdus.',
   htWordsTitle: 'Vārdi',
@@ -319,11 +311,18 @@ export const lv: Messages = {
   deleteNoAddress:
     'Šim kontam nav apstiprinātas adreses, tāpēc dzēšanu nevar pārbaudīt. Sazinies ar mums, un izdarīsim to ar roku.',
 
+  rulesetFacts: 'Vārdi no {letters} · jauns kauliņš ik {seconds}',
   plurals: {
     words: { zero: '{n} vārdu', one: '{n} vārds', other: '{n} vārdi' },
     rounds: { zero: '{n} raundu', one: '{n} raunds', other: '{n} raundi' },
     flips: { zero: '{n} gājienu', one: '{n} gājiens', other: '{n} gājieni' },
     ticks: { zero: '{n} taktu', one: '{n} takts', other: '{n} taktis' },
     points: { zero: '{n} punktu', one: '{n} punkts', other: '{n} punkti' },
+    minLetters: {
+      zero: 'vismaz {n} burtiem',
+      one: 'vismaz {n} burta',
+      other: 'vismaz {n} burtiem',
+    },
+    seconds: { zero: '{n} sekundes', one: '{n} sekundi', other: '{n} sekundes' },
   },
 }

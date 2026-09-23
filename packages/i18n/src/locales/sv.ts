@@ -162,14 +162,6 @@ export const sv: Messages = {
   tutTapBack:
     'Tog du fel? Tryck på den igen för att lämna tillbaka den. Vilken som helst, inte bara den sista.',
   tutComplete: 'Tryck på Klar när ordet är färdigt.',
-  tutControlsTitle: 'Knapparna',
-  tutReset: 'Rensa tömmer ordet du håller på med. Brickorna ligger kvar.',
-  tutPause:
-    'Paus stoppar klockan och döljer brädet, så att en paus inte går att använda för att studera det.',
-  tutRestart: 'Börja om delar ut ett nytt bräde från början. Den frågar först.',
-  tutQuit: 'Avsluta avslutar partiet och visar din poäng. Den frågar först.',
-  tutDoneTitle: 'Det är reglerna',
-  tutDoneBody: 'Så spelar du finns alltid i titelraden.',
   htBoardTitle: 'Brädet',
   htBoardBody:
     'Brickorna vänds upp en i taget, i slumpmässig ordning. Av de uppvända brickorna bildar du ord.',
@@ -314,11 +306,14 @@ export const sv: Messages = {
   deleteNoAddress:
     'Det finns ingen bekräftad adress på det här kontot, så en borttagning kan inte kontrolleras. Hör av dig och vi gör det för hand.',
 
+  rulesetFacts: 'Ord på {letters} · en ny bricka var {seconds}',
   plurals: {
     words: { one: '{n} ord', other: '{n} ord' },
     rounds: { one: '{n} omgång', other: '{n} omgångar' },
     flips: { one: '{n} drag', other: '{n} drag' },
     ticks: { one: '{n} takt', other: '{n} takter' },
     points: { one: '{n} poäng', other: '{n} poäng' },
+    minLetters: { one: 'minst {n} bokstav', other: 'minst {n} bokstäver' },
+    seconds: { one: '{n} sekund', other: '{n} sekund' },
   },
 }

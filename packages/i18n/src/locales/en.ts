@@ -170,13 +170,6 @@ export const en: Messages = {
   tutTapBack:
     'Tapped one you did not want? Tap it again to give it back. Any of them, not just the last.',
   tutComplete: 'Press Complete when the word is ready.',
-  tutControlsTitle: 'The buttons',
-  tutReset: 'Reset clears the word you are building. The tiles stay where they are.',
-  tutPause: 'Pause stops the clock and hides the board, so a break cannot be used to study it.',
-  tutRestart: 'Restart deals a new board from the beginning. It asks first.',
-  tutQuit: 'Quit ends the game and shows what you scored. It asks first.',
-  tutDoneTitle: 'Those are the rules',
-  tutDoneBody: 'How to play is always in the title bar if you want it again.',
   htBoardTitle: 'The board',
   htBoardBody:
     'Tiles turn face up one at a time, in random order. Exposed tiles can be used to form words.',
@@ -321,11 +314,14 @@ export const en: Messages = {
   deleteNoAddress:
     'There is no confirmed address on this account, so a deletion cannot be checked. Get in touch and we will do it by hand.',
 
+  rulesetFacts: 'Words of {letters} · a new tile every {seconds}',
   plurals: {
     words: { one: '{n} word', other: '{n} words' },
     rounds: { one: '{n} round', other: '{n} rounds' },
     flips: { one: '{n} flip', other: '{n} flips' },
     ticks: { one: '{n} tick', other: '{n} ticks' },
     points: { one: '{n} point', other: '{n} points' },
+    minLetters: { one: '{n}+ letter', other: '{n}+ letters' },
+    seconds: { one: '{n} second', other: '{n} seconds' },
   },
 }

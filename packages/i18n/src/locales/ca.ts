@@ -169,14 +169,6 @@ export const ca: Messages = {
   tutTapBack:
     'N’heu pres una que no volíeu? Torneu-la a tocar per retornar-la. Qualsevol, no només l’última.',
   tutComplete: 'Premeu Completa quan el mot sigui a punt.',
-  tutControlsTitle: 'Els botons',
-  tutReset: 'Neteja esborra el mot que esteu formant. Les fitxes es queden on són.',
-  tutPause:
-    'Pausa atura el rellotge i amaga el tauler, perquè un descans no serveixi per estudiar-lo.',
-  tutRestart: 'Reinicia reparteix un tauler nou des del principi. Ho pregunta abans.',
-  tutQuit: 'Deixa-ho acaba la partida i mostra els punts. Ho pregunta abans.',
-  tutDoneTitle: 'Aquestes són les regles',
-  tutDoneBody: 'Com s’hi juga sempre és a la barra del títol.',
   htBoardTitle: 'El tauler',
   htBoardBody:
     'Les fitxes es giren d’una en una, en un ordre aleatori. Amb les destapades es formen mots.',
@@ -322,11 +314,14 @@ export const ca: Messages = {
   deleteNoAddress:
     'En aquest compte no hi ha cap adreça confirmada, així que no es pot verificar la supressió. Posa’t en contacte i ho farem a mà.',
 
+  rulesetFacts: 'Mots de {letters} · una fitxa nova cada {seconds}',
   plurals: {
     words: { one: '{n} mot', other: '{n} mots' },
     rounds: { one: '{n} ronda', other: '{n} rondes' },
     flips: { one: '{n} jugada', other: '{n} jugades' },
     ticks: { one: '{n} batec', other: '{n} batecs' },
     points: { one: '{n} punt', other: '{n} punts' },
+    minLetters: { one: '{n} lletra o més', other: '{n} lletres o més' },
+    seconds: { one: '{n} segon', other: '{n} segons' },
   },
 }

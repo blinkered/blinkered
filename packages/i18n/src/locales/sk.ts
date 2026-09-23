@@ -168,13 +168,6 @@ export const sk: Messages = {
   tutTapBack:
     'Vzali ste písmeno, ktoré ste nechceli? Ťuknite naň znova a vráti sa. Ktorékoľvek, nielen posledné.',
   tutComplete: 'Keď je slovo hotové, stlačte Dokončiť.',
-  tutControlsTitle: 'Tlačidlá',
-  tutReset: 'Vymazať zruší skladané slovo. Kamene zostanú tam, kde sú.',
-  tutPause: 'Prestávka zastaví hodiny a skryje plochu, aby prestávka neslúžila na jej učenie.',
-  tutRestart: 'Znova rozdá novú plochu od začiatku. Najprv sa opýta.',
-  tutQuit: 'Ukončiť hru zakončí a ukáže, koľko ste získali. Najprv sa opýta.',
-  tutDoneTitle: 'To sú pravidlá',
-  tutDoneBody: 'Ako hrať nájdete vždy pri názve.',
   htBoardTitle: 'Plocha',
   htBoardBody: 'Kamene sa odkrývajú po jednom, v náhodnom poradí. Z odkrytých sa skladajú slová.',
   htWordsTitle: 'Slová',
@@ -314,11 +307,14 @@ export const sk: Messages = {
   deleteNoAddress:
     'Na tomto účte nie je potvrdená adresa, takže zmazanie sa nedá overiť. Napíš nám a urobíme to ručne.',
 
+  rulesetFacts: 'Slová od {letters} · nový kameň raz za {seconds}',
   plurals: {
     words: { one: '{n} slovo', few: '{n} slová', many: '{n} slova', other: '{n} slov' },
     rounds: { one: '{n} kolo', few: '{n} kolá', many: '{n} kola', other: '{n} kôl' },
     flips: { one: '{n} ťah', few: '{n} ťahy', many: '{n} ťahu', other: '{n} ťahov' },
     ticks: { one: '{n} takt', few: '{n} takty', many: '{n} taktu', other: '{n} taktov' },
     points: { one: '{n} bod', few: '{n} body', many: '{n} bodu', other: '{n} bodov' },
+    minLetters: { one: '{n} písmena', few: '{n} písmen', many: '{n} písmena', other: '{n} písmen' },
+    seconds: { one: '{n} sekundy', few: '{n} sekundy', many: '{n} sekundy', other: '{n} sekundy' },
   },
 }

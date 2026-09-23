@@ -170,15 +170,6 @@ export const tr: Messages = {
     'İstemediğiniz birine mi dokundunuz? Geri vermek için tekrar dokunun. Sonuncusu değil, ' +
     'herhangi biri.',
   tutComplete: 'Kelime hazır olunca Tamamla’ya basın.',
-  tutControlsTitle: 'Düğmeler',
-  tutReset: 'Sıfırla kurmakta olduğunuz kelimeyi siler. Taşlar yerinde kalır.',
-  tutPause:
-    'Duraklat saati durdurur ve tahtayı gizler, böylece mola tahtayı incelemek için ' +
-    'kullanılamaz.',
-  tutRestart: 'Yeniden başlat baştan yeni bir tahta dağıtır. Önce sorar.',
-  tutQuit: 'Çık oyunu bitirir ve kaç puan aldığınızı gösterir. Önce sorar.',
-  tutDoneTitle: 'Kurallar bu kadar',
-  tutDoneBody: 'Nasıl oynanır her zaman başlık çubuğunda, tekrar isterseniz.',
   htBoardTitle: 'Tahta',
   htBoardBody: 'Taşlar rastgele sırayla, teker teker açılır. Açılan taşlardan kelime kurarsınız.',
   htWordsTitle: 'Kelimeler',
@@ -318,11 +309,14 @@ export const tr: Messages = {
   deleteNoAddress:
     'Bu hesapta doğrulanmış bir adres yok, bu yüzden silme kontrol edilemez. Bize yaz, elle yapalım.',
 
+  rulesetFacts: 'Kelimeler {letters} · her {seconds} yeni bir taş',
   plurals: {
     words: { one: '{n} kelime', other: '{n} kelime' },
     rounds: { one: '{n} tur', other: '{n} tur' },
     flips: { one: '{n} çevirme', other: '{n} çevirme' },
     ticks: { one: '{n} vuruş', other: '{n} vuruş' },
     points: { one: '{n} puan', other: '{n} puan' },
+    minLetters: { one: 'en az {n} harfli', other: 'en az {n} harfli' },
+    seconds: { one: '{n} saniyede', other: '{n} saniyede' },
   },
 }
