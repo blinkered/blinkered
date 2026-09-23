@@ -5,180 +5,270 @@
       "tag": "ar",
       "endonym": "العربية",
       "common": 17000,
-      "full": 313501,
-      "bytes": 4052408,
+      "full": 346516,
+      "bytes": 4511505,
       "license": "CC0-1.0",
-      "density": 251,
+      "density": 252,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-ar",
-        "commit": "787dcc3b9567fecdfbc28323b38184c290d4f746",
-        "committed": "2026-09-22T01:52:59Z",
-        "blob": "0be7c4056b6f6b49493c43a80970409af21d497c"
+        "commit": "2e8083d07131d0fdb302b44185392d9b00741b33",
+        "committed": "2026-09-22T04:32:17Z",
+        "blob": "3f6895f59f88c401686b021f1c3a60aed3a6635b"
+      }
+    },
+    {
+      "tag": "cs",
+      "endonym": "Čeština",
+      "common": 17000,
+      "full": 21486,
+      "bytes": 184268,
+      "license": "CC0-1.0",
+      "density": 60,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-cs",
+        "commit": "26c3ef80e66fa375ecf238eb0599036faee31001",
+        "committed": "2026-09-22T23:28:31Z",
+        "blob": "9c7479492876c607a6e0440b908c11ff10ab926c"
       }
     },
     {
       "tag": "de",
       "endonym": "Deutsch",
       "common": 16918,
-      "full": 36346,
-      "bytes": 352508,
+      "full": 36349,
+      "bytes": 352537,
       "license": "CC0-1.0",
-      "density": 114,
+      "density": 113,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-de",
-        "commit": "a0a937b719f68f4a06f12d0bf09d45aa92fbfdf6",
-        "committed": "2026-09-21T22:36:55Z",
-        "blob": "e94786e4f14802253b88bbead51213df0fef73db"
+        "commit": "f383d9bd9b151630cb6f28b07cbe3a43a0c3efc1",
+        "committed": "2026-09-22T13:01:33Z",
+        "blob": "7b7ae2c267803c05d646484dd35a1c0d3f997736"
       }
     },
     {
       "tag": "en",
       "endonym": "English",
       "common": 16575,
-      "full": 112115,
-      "bytes": 1052968,
+      "full": 112351,
+      "bytes": 1055435,
       "license": "CC0-1.0",
-      "density": 166,
+      "density": 165,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-en",
-        "commit": "c3dcffe3aa1a04fdf52d838b8cdce75407509671",
-        "committed": "2026-09-21T22:44:50Z",
-        "blob": "e4d44fe1d0876be088dc8a1f2de1130e9364d6bf"
+        "commit": "ec02c9d1be81d2eaece46b49bb33e6960aed5781",
+        "committed": "2026-09-22T13:09:30Z",
+        "blob": "714cbf2fc3ce66e9319e667cd5dc3a89ff7f68ff"
       }
     },
     {
       "tag": "es",
       "endonym": "Español",
       "common": 16993,
-      "full": 145334,
-      "bytes": 1464603,
+      "full": 145686,
+      "bytes": 1468425,
       "license": "CC0-1.0",
       "density": 124,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-es",
-        "commit": "b539125c2c9ed659a0e068d9bb5477fbdf3b252b",
-        "committed": "2026-09-21T22:39:20Z",
-        "blob": "622d6cb119ec825b3b0bb072781f15c4e109ab4f"
+        "commit": "86903a9816b54f1a2453e61507645dd4922396c3",
+        "committed": "2026-09-22T13:04:17Z",
+        "blob": "14a13b152f20d02445a046a2637e9458fb328562"
+      }
+    },
+    {
+      "tag": "fa",
+      "endonym": "فارسی",
+      "common": 17000,
+      "full": 41801,
+      "bytes": 519451,
+      "license": "CC0-1.0",
+      "density": 293,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-fa",
+        "commit": "29133a14426aa9315194f46aab7cec0e65b207a7",
+        "committed": "2026-09-22T23:53:58Z",
+        "blob": "1bdd8f21453307f25b91e1f57b0faa7904880ded"
       }
     },
     {
       "tag": "fi",
       "endonym": "Suomi",
       "common": 17000,
-      "full": 42609,
-      "bytes": 407257,
+      "full": 42730,
+      "bytes": 408509,
       "license": "CC0-1.0",
       "density": 99,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-fi",
-        "commit": "225ce1ec338ef027c2df8a6c2a7372a4df2f5186",
-        "committed": "2026-09-22T02:11:23Z",
-        "blob": "a67fef7b3d2deafd63fa3ee0dd963e94c6a6133b"
+        "commit": "3ddd2d26f7c3342c54a77ed5a5c90d21f5573f2e",
+        "committed": "2026-09-22T04:24:27Z",
+        "blob": "9cb3d6cb077157ab6f6b6a06fceaf1bd675588e2"
       }
     },
     {
       "tag": "fr",
       "endonym": "Français",
       "common": 16593,
-      "full": 103417,
-      "bytes": 1019143,
+      "full": 104090,
+      "bytes": 1026478,
       "license": "CC0-1.0",
       "density": 158,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-fr",
-        "commit": "91be05362bd7966a78cd99956acf1c5813541d66",
-        "committed": "2026-09-21T22:32:04Z",
-        "blob": "ba45f969bd039252c8aebbd6921de2527ba08838"
+        "commit": "d1cbf54c19baf7bdc6423dd77ce455a647390613",
+        "committed": "2026-09-22T12:58:35Z",
+        "blob": "a97fb89d79f7f20f747c391bea191afeaabc444b"
+      }
+    },
+    {
+      "tag": "hu",
+      "endonym": "Magyar",
+      "common": 17000,
+      "full": 459813,
+      "bytes": 5646677,
+      "license": "CC0-1.0",
+      "density": 59,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-hu",
+        "commit": "98ec7b4cb8bb7bdb13df6af6b91815bc6428c5fb",
+        "committed": "2026-09-22T23:47:26Z",
+        "blob": "af345ab046603fc3528ea56caeb5def25fb8c45a"
       }
     },
     {
       "tag": "id",
       "endonym": "Bahasa Indonesia",
       "common": 17000,
-      "full": 33725,
-      "bytes": 308672,
+      "full": 34539,
+      "bytes": 317588,
       "license": "CC0-1.0",
-      "density": 171,
+      "density": 169,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-id",
-        "commit": "8fa5a5f0bcfdd0223f8e91a37ff0b622d3fd824f",
-        "committed": "2026-09-22T00:13:25Z",
-        "blob": "dfee062dd6d90d510d4e4a70ac2b2c871ca4e33e"
+        "commit": "41383d1d0c655037f821deb7d35a49b2261dce42",
+        "committed": "2026-09-22T04:24:56Z",
+        "blob": "3236244ce94c88cb0f3c23010c55dbec51d60f3f"
       }
     },
     {
       "tag": "it",
       "endonym": "Italiano",
       "common": 17000,
-      "full": 40702,
-      "bytes": 383983,
+      "full": 40782,
+      "bytes": 384851,
       "license": "CC0-1.0",
-      "density": 157,
+      "density": 156,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-it",
-        "commit": "b0a2d6e76b80bdb6a367b1e9abdbacee1afebf39",
-        "committed": "2026-09-22T00:01:03Z",
-        "blob": "53b1651597ccd582a773ac1103e514f01ad65a43"
+        "commit": "6e8397ac98d3ed7de719884f59875f377e87a4a8",
+        "committed": "2026-09-22T04:22:41Z",
+        "blob": "9d745523555e36ac32e8053aba7deef7ec0e095d"
       }
     },
     {
       "tag": "ko",
       "endonym": "한국어",
       "common": 19257,
-      "full": 24395,
-      "bytes": 486069,
+      "full": 24400,
+      "bytes": 486188,
       "license": "CC0-1.0",
       "density": 112,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-ko",
-        "commit": "e8e949f7e4b2618119dc287d98a9bfc43cfb1c9a",
-        "committed": "2026-09-21T22:43:07Z",
-        "blob": "cb95a0d382a976946242670b1889600dde736d13"
+        "commit": "aa0e7ba265858c3eab5d46f7e4f6ca89b6cbc044",
+        "committed": "2026-09-22T12:55:29Z",
+        "blob": "b8c9bdd9746bbca5bd9eafa457d35b74dd7b6c2e"
       }
     },
     {
       "tag": "nl",
       "endonym": "Nederlands",
       "common": 17000,
-      "full": 159228,
-      "bytes": 1759699,
+      "full": 164989,
+      "bytes": 1830919,
       "license": "CC0-1.0",
-      "density": 162,
+      "density": 165,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-nl",
-        "commit": "ab9edfa3a3b52ea2b70e23575b02efc34af5ff24",
-        "committed": "2026-09-22T00:52:41Z",
-        "blob": "946d2bb423a662685384c0c79cd543d33e1528a5"
+        "commit": "07a02e4249ae5a33eb571e2274606b95bf4d875b",
+        "committed": "2026-09-22T04:28:50Z",
+        "blob": "b98cd725ca65cc3d6dc1c6a1bdb444e3d04b9061"
+      }
+    },
+    {
+      "tag": "pl",
+      "endonym": "Polski",
+      "common": 17000,
+      "full": 330328,
+      "bytes": 3599617,
+      "license": "CC0-1.0",
+      "density": 55,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-pl",
+        "commit": "e1c4f8c638335d9ca6b21fae717be588eb5a2047",
+        "committed": "2026-09-22T23:38:55Z",
+        "blob": "9c899f904b697152c5f8fb5b62bbc3f1599185e0"
       }
     },
     {
       "tag": "pt-BR",
       "endonym": "Português (Brasil)",
       "common": 17000,
-      "full": 153146,
-      "bytes": 1522363,
+      "full": 157040,
+      "bytes": 1565100,
       "license": "CC0-1.0",
-      "density": 156,
+      "density": 155,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-pt-BR",
-        "commit": "7b0dd93ed9178f9df8ccee198e1b2c6269d33801",
-        "committed": "2026-09-22T01:14:15Z",
-        "blob": "6be0521f525d94110e440fb2dbed85d7f1495fa2"
+        "commit": "b7f5bb67537914588b5312ad3ec781a9350928e3",
+        "committed": "2026-09-22T04:26:50Z",
+        "blob": "d1dbdec54c6b88084f097282beb935c839dd7fd4"
+      }
+    },
+    {
+      "tag": "ro",
+      "endonym": "Română",
+      "common": 17000,
+      "full": 142067,
+      "bytes": 1437474,
+      "license": "CC0-1.0",
+      "density": 125,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-ro",
+        "commit": "95a508d3d7c61278102c47cb88284bda3709726c",
+        "committed": "2026-09-22T23:32:19Z",
+        "blob": "765f0eb4e2ef32d7295dafd63b68d2bea95ca607"
       }
     },
     {
       "tag": "ru",
       "endonym": "Русский",
       "common": 18095,
-      "full": 371579,
-      "bytes": 7350734,
+      "full": 373007,
+      "bytes": 7380980,
       "license": "CC0-1.0",
       "density": 72,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-ru",
-        "commit": "6c7466b922b94b77ea7abb7f67430cf39147bb89",
-        "committed": "2026-09-21T22:41:58Z",
-        "blob": "1ed3a5965c31f1e1a48523d50d3c6b9c78476ee9"
+        "commit": "6f3d2ffee29d7bf145904902b8e4386b1c42cbce",
+        "committed": "2026-09-22T13:07:08Z",
+        "blob": "3e00536025b4155542e11e8ed07c23b9e6ff26c2"
+      }
+    },
+    {
+      "tag": "sv",
+      "endonym": "Svenska",
+      "common": 17000,
+      "full": 162041,
+      "bytes": 1780712,
+      "license": "CC0-1.0",
+      "density": 124,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-sv",
+        "commit": "42668dea567f0aeb606de5f4af999455718753a7",
+        "committed": "2026-09-22T23:34:48Z",
+        "blob": "af7ba7d151a7f33e24289041e15f0518bd6862b4"
       }
     },
     {
@@ -197,18 +287,33 @@
       }
     },
     {
+      "tag": "tr",
+      "endonym": "Türkçe",
+      "common": 17000,
+      "full": 327920,
+      "bytes": 4100184,
+      "license": "CC0-1.0",
+      "density": 94,
+      "upstream": {
+        "repo": "blinkered/blinkered-dictionary-tr",
+        "commit": "00070f43c224cff049dac9d07a2eb21b80533b0a",
+        "committed": "2026-09-22T23:42:26Z",
+        "blob": "35e2aee7b8bcbe422547c5f88217d3e7d2a77ed0"
+      }
+    },
+    {
       "tag": "uk",
       "endonym": "Українська",
       "common": 17000,
-      "full": 20541,
-      "bytes": 327359,
+      "full": 20640,
+      "bytes": 328984,
       "license": "CC0-1.0",
       "density": 58,
       "upstream": {
         "repo": "blinkered/blinkered-dictionary-uk",
-        "commit": "7dfeb903eeb0698c76544741267263f126e1450b",
-        "committed": "2026-09-22T00:35:23Z",
-        "blob": "c29b405005fa7a03889baad89b04f93dddebcf72"
+        "commit": "d2b8bb1a1ac9716ff072fee24fa1944b8aea417d",
+        "committed": "2026-09-22T04:23:51Z",
+        "blob": "d837c0223cb6512c4a2ffb4a0b5fbb95ab98a5d9"
       }
     }
   ]

@@ -31,6 +31,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 0, becomes: 'ا', word: 'يمكننا' },
     swap: { from: 'ك', to: 'ا' },
   },
+  cs: {
+    tiles: ['D', 'E', 'N', 'E', 'B', 'U'],
+    three: 'DEN',
+    six: 'NEBUDE',
+    card: { at: 2, becomes: 'M', word: 'BUDEME' },
+    swap: { from: 'B', to: 'O' },
+  },
   de: {
     tiles: ['D', 'E', 'R', 'W', 'E', 'N'],
     three: 'DER',
@@ -52,6 +59,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 3, becomes: 'I', word: 'QUIERO' },
     swap: { from: 'Q', to: 'A' },
   },
+  fa: {
+    tiles: ['ب', 'و', 'د', 'ا', 'ر', 'ه'],
+    three: 'بود',
+    six: 'دوباره',
+    card: { at: 1, becomes: 'ر', word: 'درباره' },
+    swap: { from: 'ب', to: 'ی' },
+  },
   fi: {
     tiles: ['I', 'S', 'Ä', 'E', 'L', 'L'],
     three: 'ISÄ',
@@ -65,6 +79,13 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     six: 'MAISON',
     card: { at: 0, becomes: 'R', word: 'RAISON' },
     swap: { from: 'M', to: 'E' },
+  },
+  hu: {
+    tiles: ['A', 'M', 'I', 'V', 'A', 'L'],
+    three: 'AMI',
+    six: 'VALAMI',
+    card: { at: 1, becomes: 'K', word: 'VALAKI' },
+    swap: { from: 'V', to: 'E' },
   },
   id: {
     tiles: ['A', 'P', 'A', 'K', 'E', 'N'],
@@ -94,12 +115,26 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 4, becomes: 'I', word: 'GEZIEN' },
     swap: { from: 'Z', to: 'A' },
   },
+  pl: {
+    tiles: ['B', 'E', 'Z', 'D', 'O', 'R'],
+    three: 'BEZ',
+    six: 'DOBRZE',
+    card: { at: 1, becomes: 'A', word: 'BARDZO' },
+    swap: { from: 'B', to: 'A' },
+  },
   'pt-BR': {
     tiles: ['U', 'M', 'A', 'A', 'L', 'G'],
     three: 'UMA',
     six: 'ALGUMA',
     card: { at: 2, becomes: 'E', word: 'ALGUEM' },
     swap: { from: 'G', to: 'E' },
+  },
+  ro: {
+    tiles: ['M', 'A', 'I', 'O', 'E', 'N'],
+    three: 'MAI',
+    six: 'OAMENI',
+    card: { at: 2, becomes: 'D', word: 'DOAMNE' },
+    swap: { from: 'M', to: 'R' },
   },
   ru: {
     tiles: ['О', 'Н', 'А', 'Д', 'Л', 'Ж'],
@@ -108,12 +143,26 @@ export const TUTORIAL_BOARDS: Readonly<Record<string, TutorialBoard>> = {
     card: { at: 2, becomes: 'Е', word: 'ДОЛЖЕН' },
     swap: { from: 'Ж', to: 'Е' },
   },
+  sv: {
+    tiles: ['N', 'Ä', 'R', 'K', 'N', 'E'],
+    three: 'NÄR',
+    six: 'KÄNNER',
+    card: { at: 0, becomes: 'T', word: 'TÄNKER' },
+    swap: { from: 'Ä', to: 'A' },
+  },
   tl: {
     tiles: ['A', 'N', 'G', 'G', 'L', 'I'],
     three: 'ANG',
     six: 'GALING',
     card: { at: 4, becomes: 'M', word: 'MAGING' },
     swap: { from: 'G', to: 'O' },
+  },
+  tr: {
+    tiles: ['B', 'A', 'Y', 'U', 'R', 'A'],
+    three: 'BAY',
+    six: 'BURAYA',
+    card: { at: 2, becomes: 'D', word: 'BURADA' },
+    swap: { from: 'B', to: 'E' },
   },
   uk: {
     tiles: ['Т', 'Р', 'И', 'П', 'О', 'С'],
