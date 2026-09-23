@@ -157,6 +157,7 @@ export const hr: Messages = {
     'Igru počinjete s određenim brojem okreta, a svaka pločica koja se okrene troši jedan okret. Kad okreti nestanu, igra je gotova. Riječi donose okrete, i što je riječ duža, to više okreta dobivate.',
   tutSpentBody:
     'Slova koja upotrijebite u riječi okreću se licem prema dolje do sljedeće runde. Samo zamjena slova mijenja koja su slova na ploči.',
+  tutChangeTitle: 'Slova koja se mijenjaju',
   tutPickLetters: 'Dodirnite slova koja želite, redom, da složite riječ.',
   tutMoreTurn: 'Pločice se okreću i dok razmišljate, pa još može stići bolje slovo.',
   tutTapBack: 'Uzeli ste krivo? Dodirnite ga ponovno da ga vratite. Bilo koje, ne samo zadnje.',

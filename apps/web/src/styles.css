@@ -2614,8 +2614,7 @@ kbd {
  * takes now differ between screens, which they already did -- what is gone is the space that was
  * not holding anything.
  */
-.tut-stage .board-wrap,
-.tut-swap {
+.tut-stage .board-wrap {
   position: relative;
   display: grid;
   place-items: center;
@@ -2623,13 +2622,18 @@ kbd {
   width: 100%;
 }
 /*
- * The swap panel keeps a height, and needs one: `LetterSwap` draws its letters absolutely, so an
- * `auto` box measures nothing and collapses to zero. Measured at 12rem rather than the 11rem it
- * shared with the board, because 11 was too small for it -- that screen was quietly overflowing
- * the box the fixed height existed to give it.
+ * The letter swap over the tour's board, which is two rows of six rather than the game's twelve.
+ *
+ * The game's veil is sized for a full board: a heading over two tiles a third of the board wide.
+ * Over this one that is taller than the board it covers, so it is set here the way the game sets
+ * it for a phone held sideways: a tighter gap and smaller tiles, still far larger than a real one.
  */
-.tut-swap {
-  height: 12rem;
+.tut-stage .swap-veil {
+  gap: 0.4rem;
+}
+.tut-stage .swap-tile {
+  width: min(20cqw, 4.5rem);
+  font-size: min(12cqw, 2.6rem);
 }
 .tut-stage .board {
   --tile-max: 3.1rem;
@@ -2799,8 +2803,7 @@ kbd {
   .tut-card {
     max-width: 34rem;
   }
-  .tut-stage .board-wrap,
-  .tut-swap {
+  .tut-stage .board-wrap {
     height: 7.5rem;
   }
   .tut-stage .board {

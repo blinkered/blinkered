@@ -163,6 +163,7 @@ export const cy: Messages = {
     'Rydych yn dechrau’r gêm gyda nifer penodol o symudiadau, ac mae pob teilsen sy’n troi yn costio un symudiad. Pan fydd y symudiadau’n dod i ben, mae’r gêm ar ben. Mae geiriau’n ennill symudiadau, a pho hiraf y gair, y mwyaf o symudiadau a gewch.',
   tutSpentBody:
     'Mae’r llythrennau a ddefnyddiwch mewn gair yn troi wyneb i lawr tan y rownd nesaf. Dim ond newid llythyren sy’n newid pa lythrennau sydd ar y bwrdd.',
+  tutChangeTitle: 'Llythrennau’n newid',
   tutPickLetters: 'Tapiwch y llythrennau rydych eu heisiau, yn eu trefn, i ffurfio gair.',
   tutMoreTurn:
     'Mae’r teils yn dal i droi tra byddwch yn meddwl, felly gall llythyren well fod ar ei ffordd.',

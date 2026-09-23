@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { configFor, flipReward } from '@blinkered/engine'
 import { TUTORIAL_BOARDS } from '@blinkered/words'
 import { LOCALES, messagesFor } from '@blinkered/i18n'
-import { FACE_DOWN, FACE_SPENT, boardFor, showsTicks, stepsFor, ticksAt } from '../src/tutorialScript.js'
+import {
+  FACE_DOWN,
+  FACE_SPENT,
+  boardFor,
+  showsTicks,
+  stepsFor,
+  ticksAt,
+} from '../src/tutorialScript.js'
 import type { Step } from '../src/tutorialScript.js'
 
 /**
@@ -38,11 +45,17 @@ function tourFor(language: string): Step[] {
   return stepsFor(messagesFor(language), language, configFor('easy', { n, language }))
 }
 
-describe('the board screen', () => {
-  const board = tourFor('en')[1]
+/** The first screen's deal: the frames up to the whole board being face up. */
+function dealOf(step: Step): Step {
+  const done = step.frames.findIndex((frame) => !frame.up.includes(FACE_DOWN))
+  return { ...step, frames: step.frames.slice(0, done + 1) }
+}
+
+describe('the deal, on the first screen', () => {
+  const board = dealOf(tourFor('en')[0] as Step)
 
   it('turns one tile at a time until the board is up', () => {
-    const steps = board as Step
+    const steps = board
     expect(up(steps, 0)).toEqual([])
     expect(turnOrder(steps)).toHaveLength(steps.tiles.length)
     expect([...turnOrder(steps)].sort((a, b) => a - b)).toEqual(steps.tiles.map((_, at) => at))
@@ -50,7 +63,7 @@ describe('the board screen', () => {
 
   it('does not turn them in reading order', () => {
     // The whole point. Reading order is the one order the game never deals in.
-    const order = turnOrder(board as Step)
+    const order = turnOrder(board)
     expect(order).not.toEqual(order.map((_, at) => at))
     expect(order).toEqual([0, 4, 2, 1, 5, 3])
   })
@@ -64,7 +77,7 @@ describe('the words screen', () => {
      * would have the tour tapping tiles that are still face down.
      */
     for (const language of Object.keys(TUTORIAL_BOARDS)) {
-      const words = tourFor(language)[2] as Step
+      const words = tourFor(language)[1] as Step
       expect(up(words, 0), language).toEqual([0, 1, 2])
       const rest = turnOrder(words)
       expect(
@@ -76,19 +89,47 @@ describe('the words screen', () => {
   })
 
   it('has the whole board up by the time a word is completed', () => {
-    const words = tourFor('en')[2] as Step
+    const words = tourFor('en')[1] as Step
     const pressed = words.frames.findIndex((frame) => frame.pressing === true)
     expect(pressed).toBeGreaterThan(0)
     expect(up(words, pressed)).toHaveLength(words.tiles.length)
   })
 })
 
-describe('the hiding screen', () => {
-  it('captions every frame with the tour text, which says nothing about the timer', () => {
+describe('the letters-that-change screen', () => {
+  it('hides with the tour text, which says nothing about the timer, then swaps over the board', () => {
     for (const { tag, messages } of LOCALES) {
-      const step = tourFor(tag).find((one) => one.title === messages.htHideTitle)
+      const step = tourFor(tag).find((one) => one.title === messages.tutChangeTitle)
       expect(step, tag).toBeDefined()
-      for (const frame of step?.frames ?? []) expect(frame.caption, tag).toBe(messages.tutHideBody)
+      const frames = step?.frames ?? []
+      const swap = frames.at(-1)
+      for (const frame of frames.slice(0, -1)) {
+        expect(frame.caption, tag).toBe(messages.tutHideBody)
+        expect(frame.swap, tag).toBeUndefined()
+      }
+      expect(swap?.caption, tag).toBe(messages.htSwapBody)
+      expect(swap?.swap, tag).toBe(true)
+      // The board under the cover already holds the new letter, so it is there when it lifts.
+      const { from, to } = boardFor(tag).swap
+      const tiles = boardFor(tag).tiles
+      expect(swap?.tiles?.[tiles.indexOf(from)], tag).toBe(to)
+    }
+  })
+})
+
+describe('the tour', () => {
+  it('is five screens: the goal, words, wild cards, letters that change, and the account', () => {
+    for (const { tag, messages } of LOCALES) {
+      expect(
+        tourFor(tag).map((step) => step.title),
+        tag,
+      ).toEqual([
+        messages.tutGoalTitle,
+        messages.htWordsTitle,
+        messages.htWildTitle,
+        messages.tutChangeTitle,
+        messages.tutAccountTitle,
+      ])
     }
   })
 })
@@ -118,7 +159,7 @@ describe('the goal screen', () => {
 
 describe('the words screen, after Complete', () => {
   it('spends the letters the word used', () => {
-    const words = tourFor('en')[2] as Step
+    const words = tourFor('en')[1] as Step
     const pressed = words.frames.find((frame) => frame.pressing === true)
     const last = words.frames.at(-1)
     expect(last?.caption).toBe(messagesFor('en').tutSpentBody)
@@ -134,18 +175,18 @@ describe('the tick bar', () => {
 
   it('is over every board that turns tiles, and no other', () => {
     const shown = tour.filter(showsTicks).map((step) => step.title)
-    expect(shown).toEqual([en.tutGoalTitle, en.htBoardTitle, en.htWordsTitle, en.htHideTitle])
+    expect(shown).toEqual([en.tutGoalTitle, en.htWordsTitle, en.tutChangeTitle])
   })
 
   it('spends a tick for every tile that turns', () => {
-    const board = tour[1] as Step
+    const board = dealOf(tour[0] as Step)
     board.frames.forEach((_, at) => {
       expect(ticksAt(board, at, total).remaining).toBe(total - at)
     })
   })
 
   it('hands a tick back for a letter that hides, above the lowest the bar has been', () => {
-    const hide = tour.find((step) => step.title === en.htHideTitle) as Step
+    const hide = tour.find((step) => step.title === en.tutChangeTitle) as Step
     const before = ticksAt(hide, 0, total)
     const away = ticksAt(hide, 2, total)
     expect(away.floor).toBe(before.remaining)

@@ -158,6 +158,7 @@ export const ptBR: Messages = {
     'Você começa o jogo com um número fixo de viradas, e cada peça que vira custa uma virada. Quando as viradas acabam, o jogo termina. Formar palavras rende viradas, e quanto mais longa a palavra, mais viradas você ganha.',
   tutSpentBody:
     'As letras que você usa em uma palavra ficam viradas para baixo até a próxima rodada. Só uma troca de letra muda quais letras estão no tabuleiro.',
+  tutChangeTitle: 'Letras que mudam',
   tutPickLetters: 'Toque nas letras que quiser, em ordem, para formar uma palavra.',
   tutMoreTurn:
     'As peças continuam virando enquanto você pensa, então ainda pode vir uma letra melhor.',

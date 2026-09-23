@@ -161,6 +161,7 @@ export const ro: Messages = {
     'Începeți jocul cu un număr fix de mutări, iar fiecare piesă întoarsă costă o mutare. Când mutările se termină, jocul s-a încheiat. Cuvintele aduc mutări, iar cu cât cuvântul e mai lung, cu atât câștigați mai multe mutări.',
   tutSpentBody:
     'Literele folosite într-un cuvânt rămân cu fața în jos până în runda următoare. Doar schimbarea unei litere modifică literele de pe tablă.',
+  tutChangeTitle: 'Litere care se schimbă',
   tutPickLetters: 'Atingeți literele dorite, în ordine, pentru a forma un cuvânt.',
   tutMoreTurn:
     'Piesele se întorc și în timp ce gândiți, așa că o literă mai bună poate încă să vină.',

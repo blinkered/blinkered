@@ -108,6 +108,12 @@ export interface Messages {
    * come back at the next deal; only a swap changes a letter.
    */
   readonly tutSpentBody: string
+  /**
+   * The one tour screen for both ways a letter changes: hiding inside a round, swapping between
+   * rounds. Two screens until the tour went from nine to five; they are the same idea at two
+   * speeds, and new players start on medium, where both happen.
+   */
+  readonly tutChangeTitle: string
   readonly tutPickLetters: string
   readonly tutMoreTurn: string
   readonly tutTapBack: string

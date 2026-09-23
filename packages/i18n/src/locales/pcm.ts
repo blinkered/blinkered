@@ -165,6 +165,7 @@ export const pcm: Messages = {
     'You go start di game with fixed number of moves, and every tile wey turn dey cost one move. When di moves finish, di game don end. Word wey you form dey give you moves, and di longer di word, di more moves you go get.',
   tutSpentBody:
     'Letters wey you use for word go face down until di next round. Na only when dem change letter, di letters for di board go change.',
+  tutChangeTitle: 'Letters wey dey change',
   tutPickLetters: 'Tap di letters wey you want, one after di other, make you form word.',
   tutMoreTurn: 'Tiles dey still turn while you dey think, so better letter fit still dey come.',
   tutTapBack:

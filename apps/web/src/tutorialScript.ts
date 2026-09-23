@@ -48,13 +48,17 @@ export interface Frame {
    * one off for every tile that turns, and `flipReward` back for the word.
    */
   readonly flips?: number
+  /** The letters on the tiles, when a frame's differ from its screen's: after a swap. */
+  readonly tiles?: readonly string[]
+  /** The letter-change interstitial, drawn over the board the way the game draws it. */
+  readonly swap?: boolean
 }
 
 export interface Step {
   readonly title: string
   readonly frames: readonly Frame[]
   /** Drawn alongside or instead of the board, on the screens that need something else. */
-  readonly panel?: 'controls' | 'swap' | 'complete' | 'account'
+  readonly panel?: 'complete' | 'account'
   /** The letters on the tiles. Only the last screen differs, having taken the swap. */
   readonly tiles: readonly string[]
 }
@@ -305,7 +309,7 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     { up: all, sel: [], caption: messages.tutHideBody },
   ]
 
-  // The board after the swap, which is what the last screen shows: one letter is not what it was.
+  // The board after the swap: one letter is not what it was.
   const swapped = [...tiles]
   swapped[tiles.indexOf(board.swap.from)] = board.swap.to
 
@@ -346,51 +350,24 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
     flips: flips + paid.flips,
   })
 
+  /*
+   * The two ways a letter changes, on one screen: hiding inside a round, then swapping between
+   * rounds. They were two screens when the tour ran to nine; they are one idea at two speeds, and
+   * medium, where new players start, does both.
+   *
+   * The swap is drawn over the board, as the game draws it, and the board under it already holds
+   * the new letter, so it is there when the cover lifts.
+   */
+  const changeFrames: Frame[] = [
+    ...hideFrames,
+    { up: all, sel: [], caption: messages.htSwapBody, tiles: swapped, swap: true },
+  ]
+
   return [
     { title: messages.tutGoalTitle, tiles, frames: goalFrames },
-    {
-      title: messages.htBoardTitle,
-      tiles,
-      // One tile at a time, and not from the left, which is the one rule the whole game rests on.
-      frames: Array.from({ length: n + 1 }, (_, shown) => ({
-        up: facesUp(n, dealt.slice(0, shown)),
-        sel: [],
-        caption: messages.htBoardBody,
-      })),
-    },
     { title: messages.htWordsTitle, tiles, panel: 'complete', frames: words },
-    {
-      title: messages.tutControlsTitle,
-      tiles,
-      panel: 'controls',
-      frames: [messages.tutReset, messages.tutPause, messages.tutRestart, messages.tutQuit].map(
-        (caption) => ({ up: all, sel: [], caption }),
-      ),
-    },
     { title: messages.htWildTitle, tiles, panel: 'complete', frames: cardFrames },
-    // Hiding before swapping, because the two are the same idea at different speeds: one takes a
-    // letter away and gives it back inside the round, the other changes one between rounds.
-    { title: messages.htHideTitle, tiles, frames: hideFrames },
-    {
-      title: messages.htSwapTitle,
-      tiles,
-      panel: 'swap',
-      frames: [{ up: all, sel: [], caption: messages.htSwapBody }],
-    },
-    /*
-     * The rules are covered, and this screen says only that.
-     *
-     * It is not the end of the deck and no longer talks like it. It used to be headed "That is
-     * the whole game" over "Pick a level and play", with the account offer folded in underneath
-     * -- a board, a closing line, a pitch, a button, a checkbox and the navigation on one card.
-     * Nick's two notes: it is too crowded, and do not say the tour is over when it is not.
-     */
-    {
-      title: messages.tutDoneTitle,
-      // The swapped board, face up. The one thing the game itself only shows for a moment.
-      tiles: swapped,
-      frames: [{ up: all, sel: [], caption: messages.tutDoneBody }],
-    },
+    { title: messages.tutChangeTitle, tiles, frames: changeFrames },
     /*
      * What an account is for, and it is last on purpose.
      *

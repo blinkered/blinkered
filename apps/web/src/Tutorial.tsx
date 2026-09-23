@@ -5,7 +5,6 @@ import { format } from '@blinkered/i18n'
 import type { Messages } from '@blinkered/i18n'
 import { Board } from './Board.js'
 import { Stat, TickBar } from './Hud.js'
-import { Icon } from './Icon.js'
 import { LanguagePicker } from './LanguagePicker.js'
 import { LetterSwap } from './LetterSwap.js'
 import {
@@ -197,35 +196,6 @@ function stateOf(frame: Frame, tiles: readonly string[], language: string): Game
   }
 }
 
-/** The control row, drawn but inert, with the one being described lit. */
-function ControlsPanel({ at, messages }: { at: number; messages: Messages }): React.JSX.Element {
-  const icons = [
-    { icon: 'reset', label: messages.reset },
-    { icon: 'pause', label: messages.pause },
-    { icon: 'restart', label: messages.restart },
-    { icon: 'quit', label: messages.quit },
-  ] as const
-  return (
-    /*
-     * `aria-hidden`, and not a set of real buttons. It is a picture of the row under the board,
-     * and a screen reader offering five buttons that do nothing is worse than one that says
-     * nothing: the caption beside it already names whichever control is lit.
-     */
-    <div className="tut-controls" aria-hidden="true">
-      <span className="btn btn-primary">{messages.completeShort}</span>
-      {icons.map((control, index) => (
-        <span
-          key={control.icon}
-          className={`btn btn-icon${index === at ? ' is-lit' : ''}`}
-          title={control.label}
-        >
-          <Icon name={control.icon} />
-        </span>
-      ))}
-    </div>
-  )
-}
-
 interface TutorialProps {
   readonly messages: Messages
   /** The language the tour is read and played in. Changing it changes the board as well. */
@@ -318,7 +288,7 @@ export function Tutorial({
       ? -1
       : [...beat.up].findIndex((face, at) => face === FACE_DOWN && before.up[at] !== FACE_DOWN)
   const hiding = wentDown < 0 ? null : wentDown
-  const word = wordOf(beat, current.tiles, alphabetFor(language))
+  const word = wordOf(beat, beat.tiles ?? current.tiles, alphabetFor(language))
 
   if (skipping) {
     return (
@@ -439,12 +409,6 @@ export function Tutorial({
                 {messages.signInTitle}
               </button>
             </div>
-          ) : current.panel === 'swap' ? (
-            // The real component, replayed on the tour's own clock: a key that changes every
-            // frame is what makes it start over rather than sit finished.
-            <div className="tut-swap">
-              <LetterSwap swap={{ ...boardFor(language).swap, epoch: frame }} messages={messages} />
-            </div>
           ) : (
             <>
               {/*
@@ -518,7 +482,7 @@ export function Tutorial({
               ) : null}
               <div className="board-wrap">
                 <Board
-                  state={stateOf(beat, current.tiles, language)}
+                  state={stateOf(beat, beat.tiles ?? current.tiles, language)}
                   portrait
                   concealed={false}
                   hiding={hiding}
@@ -527,10 +491,20 @@ export function Tutorial({
                     // A picture of a board. Tapping it does nothing on purpose.
                   }}
                 />
+                {/*
+                  The real component, over the board as the game draws it, replayed on the tour's
+                  own clock: a key that changes every frame makes it start over rather than sit
+                  finished.
+                */}
+                {beat.swap === true ? (
+                  <LetterSwap
+                    swap={{ ...boardFor(language).swap, epoch: step * 1000 + frame }}
+                    messages={messages}
+                  />
+                ) : null}
               </div>
             </>
           )}
-          {current.panel === 'controls' ? <ControlsPanel at={frame} messages={messages} /> : null}
           {/*
            * The Complete button, drawn but inert, on the screens that press it.
            *

@@ -154,6 +154,7 @@ export const sv: Messages = {
     'Du börjar spelet med ett bestämt antal drag, och varje bricka som vänds kostar ett drag. När dragen tar slut är spelet över. Ord ger drag, och ju längre ordet är, desto fler drag får du.',
   tutSpentBody:
     'Bokstäver du använder i ett ord vänds ned fram till nästa omgång. Bara ett bokstavsbyte ändrar vilka bokstäver som ligger på brädet.',
+  tutChangeTitle: 'Bokstäver som ändras',
   tutPickLetters: 'Tryck på de bokstäver du vill ha, i ordning, för att bilda ett ord.',
   tutMoreTurn: 'Brickorna fortsätter vändas medan du tänker, så en bättre bokstav kan vara på väg.',
   tutTapBack:

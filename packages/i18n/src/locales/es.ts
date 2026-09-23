@@ -155,6 +155,7 @@ export const es: Messages = {
     'Empiezas la partida con un número fijo de giros, y cada ficha que gira cuesta un giro. Cuando se acaban los giros, la partida termina. Formar palabras da giros, y cuanto más larga es la palabra, más giros ganas.',
   tutSpentBody:
     'Las letras que usas en una palabra quedan boca abajo hasta la ronda siguiente. Solo un cambio de letra altera qué letras hay en el tablero.',
+  tutChangeTitle: 'Letras que cambian',
   tutPickLetters: 'Toca las letras que quieras, en orden, para formar una palabra.',
   tutMoreTurn:
     'Las fichas siguen girándose mientras piensas, así que aún puede llegar una letra mejor.',

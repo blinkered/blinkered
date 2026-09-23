@@ -160,6 +160,7 @@ export const sl: Messages = {
     'Igro začnete z določenim številom potez, vsaka odkrita ploščica pa stane eno potezo. Ko potez zmanjka, je igre konec. Besede prinašajo poteze, in daljša kot je beseda, več potez dobite.',
   tutSpentBody:
     'Črke, ki jih uporabite v besedi, ostanejo obrnjene do naslednjega kroga. Katere črke so na plošči, spremeni le menjava črke.',
+  tutChangeTitle: 'Črke, ki se spreminjajo',
   tutPickLetters: 'Tapkajte črke po vrsti, da sestavite besedo.',
   tutMoreTurn: 'Ploščice se odkrivajo, medtem ko razmišljate, zato boljša črka morda še pride.',
   tutTapBack:

@@ -161,6 +161,7 @@ export const et: Messages = {
     'Alustate mängu kindla arvu käikudega ja iga pöörduv nupp maksab ühe käigu. Kui käigud otsa saavad, on mäng läbi. Sõnad toovad käike juurde, ja mida pikem sõna, seda rohkem käike saate.',
   tutSpentBody:
     'Sõnas kasutatud tähed jäävad kummuli kuni järgmise vooruni. Ainult tähevahetus muudab, millised tähed laual on.',
+  tutChangeTitle: 'Muutuvad tähed',
   tutPickLetters: 'Puudutage soovitud tähti järjekorras, et moodustada sõna.',
   tutMoreTurn: 'Nupud pöörduvad ka mõtlemise ajal, nii et parem täht võib alles tulla.',
   tutTapBack:

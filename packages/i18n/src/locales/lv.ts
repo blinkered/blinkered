@@ -161,6 +161,7 @@ export const lv: Messages = {
     'Spēli jūs sākat ar noteiktu gājienu skaitu, un katrs atklātais kauliņš maksā vienu gājienu. Kad gājieni beidzas, spēle ir galā. Vārdi nes gājienus, un jo garāks vārds, jo vairāk gājienu jūs nopelnāt.',
   tutSpentBody:
     'Vārdā izmantotie burti paliek apgriezti līdz nākamajam raundam. Tikai burta nomaiņa maina, kuri burti ir uz galdiņa.',
+  tutChangeTitle: 'Burti, kas mainās',
   tutPickLetters: 'Pieskarieties vēlamajiem burtiem pēc kārtas, lai izveidotu vārdu.',
   tutMoreTurn: 'Kauliņi turpina griezties, kamēr domājat, tāpēc labāks burts vēl var pienākt.',
   tutTapBack:

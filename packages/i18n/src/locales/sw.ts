@@ -161,6 +161,7 @@ export const sw: Messages = {
     'Unaanza mchezo ukiwa na idadi maalum ya hatua, na kila kigae kinachofunuka hugharimu hatua moja. Hatua zikiisha, mchezo umekwisha. Maneno hukupa hatua, na kadiri neno linavyokuwa refu, ndivyo unavyopata hatua nyingi zaidi.',
   tutSpentBody:
     'Herufi unazotumia katika neno hufunikwa hadi raundi inayofuata. Ni ubadilishaji wa herufi pekee unaobadilisha herufi zilizo ubaoni.',
+  tutChangeTitle: 'Herufi zinazobadilika',
   tutPickLetters: 'Gusa herufi unazotaka, kwa mpangilio, ili kuunda neno.',
   tutMoreTurn: 'Vigae vinaendelea kufunuka unapofikiri, kwa hivyo herufi bora bado inaweza kuja.',
   tutTapBack:
