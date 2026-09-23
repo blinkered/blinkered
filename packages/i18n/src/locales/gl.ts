@@ -161,7 +161,9 @@ export const gl: Messages = {
     'Comeza a partida cun número fixo de xogadas, e cada ficha que vira custa unha xogada. Cando as xogadas se esgotan, a partida remata. Formar palabras dá xogadas, e canto máis longa é a palabra, máis xogadas gaña.',
   tutSpentBody:
     'As letras que use nunha palabra quedan boca abaixo ata a rolda seguinte. Só un cambio de letra altera que letras hai no taboleiro.',
-  tutChangeTitle: 'Letras que cambian',
+  tutChangeTitle: 'As letras poden cambiar',
+  tutSameLetters:
+    'Viu unha palabra que non chegou a xogar? As mesmas letras volven na rolda seguinte, baralladas en lugares novos.',
   tutPickLetters: 'Toque as letras que queira, en orde, para formar unha palabra.',
   tutMoreTurn: 'As fichas seguen a virar mentres pensa, así que aínda pode vir unha letra mellor.',
   tutTapBack:

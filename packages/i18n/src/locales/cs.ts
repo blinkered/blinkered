@@ -160,7 +160,9 @@ export const cs: Messages = {
     'Hru začínáte s pevným počtem tahů a každý odkrytý kámen stojí jeden tah. Když tahy dojdou, hra končí. Za slova tahy získáváte, a čím delší slovo, tím víc tahů dostanete.',
   tutSpentBody:
     'Písmena, která použijete ve slově, zůstanou zakrytá až do dalšího kola. Která písmena jsou na ploše, změní jen výměna písmene.',
-  tutChangeTitle: 'Měnící se písmena',
+  tutChangeTitle: 'Písmena se mohou měnit',
+  tutSameLetters:
+    'Všimli jste si slova, které jste nestihli zahrát? Stejná písmena se vrátí v dalším kole, zamíchaná na nová místa.',
   tutPickLetters: 'Klepejte na písmena v pořadí, ve kterém chcete složit slovo.',
   tutMoreTurn: 'Kameny se odkrývají, i když přemýšlíte, takže lepší písmeno může teprve přijít.',
   tutTapBack:

@@ -114,6 +114,13 @@ export interface Messages {
    * speeds, and new players start on medium, where both happen.
    */
   readonly tutChangeTitle: string
+  /**
+   * The rule that comes before both exceptions: the same letters come back next round.
+   *
+   * Dawna, playing her first games, did not realize the letters carry over, so a word spotted too
+   * late looked lost rather than waiting for the next deal.
+   */
+  readonly tutSameLetters: string
   readonly tutPickLetters: string
   readonly tutMoreTurn: string
   readonly tutTapBack: string

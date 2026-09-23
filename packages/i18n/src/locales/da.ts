@@ -158,7 +158,9 @@ export const da: Messages = {
     'Du starter spillet med et fast antal træk, og hver brik der vendes koster et træk. Når trækkene slipper op, er spillet forbi. Ord giver træk, og jo længere ordet er, jo flere træk får du.',
   tutSpentBody:
     'Bogstaver, du bruger i et ord, vendes med bagsiden op indtil næste runde. Kun et bogstavskift ændrer, hvilke bogstaver der er på brættet.',
-  tutChangeTitle: 'Bogstaver der ændrer sig',
+  tutChangeTitle: 'Bogstaver kan ændre sig',
+  tutSameLetters:
+    'Så du et ord, du ikke nåede at spille? De samme bogstaver kommer igen i næste runde, blandet på nye pladser.',
   tutPickLetters: 'Tryk på de bogstaver du vil have, i rækkefølge, for at danne et ord.',
   tutMoreTurn:
     'Brikker bliver ved med at vende mens du tænker, så et bedre bogstav kan være på vej.',

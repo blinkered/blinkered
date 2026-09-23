@@ -160,7 +160,9 @@ export const is: Messages = {
     'Þú byrjar leikinn með ákveðinn fjölda leikja, og hver flís sem snýst kostar einn leik. Þegar leikirnir klárast er leiknum lokið. Orð gefa leiki, og því lengra sem orðið er, því fleiri leiki færðu.',
   tutSpentBody:
     'Stafir sem þú notar í orð snúa niður fram að næstu umferð. Aðeins stafaskipti breyta því hvaða stafir eru á borðinu.',
-  tutChangeTitle: 'Stafir sem breytast',
+  tutChangeTitle: 'Stafir geta breyst',
+  tutSameLetters:
+    'Sástu orð sem þú náðir ekki að spila? Sömu stafirnir koma aftur í næstu umferð, stokkaðir á nýja staði.',
   tutPickLetters: 'Ýttu á stafina sem þú vilt, í röð, til að mynda orð.',
   tutMoreTurn:
     'Flísar halda áfram að snúast meðan þú hugsar, svo betri stafur gæti enn verið á leiðinni.',

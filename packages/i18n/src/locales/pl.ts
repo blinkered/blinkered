@@ -161,7 +161,9 @@ export const pl: Messages = {
     'Zaczynasz grę ze stałą liczbą ruchów, a każda odkryta płytka kosztuje jeden ruch. Gdy ruchy się skończą, gra dobiega końca. Słowa dają ruchy, a im dłuższe słowo, tym więcej ruchów zdobywasz.',
   tutSpentBody:
     'Litery użyte w słowie pozostają zakryte do następnej rundy. Tylko zmiana litery zmienia to, jakie litery są na planszy.',
-  tutChangeTitle: 'Zmieniające się litery',
+  tutChangeTitle: 'Litery mogą się zmieniać',
+  tutSameLetters:
+    'Słowo, którego nie udało się ułożyć na czas? Te same litery wrócą w następnej rundzie, przetasowane na nowe miejsca.',
   tutPickLetters: 'Dotykaj liter po kolei, aby ułożyć słowo.',
   tutMoreTurn: 'Płytki odkrywają się, kiedy myślisz, więc lepsza litera może dopiero nadejść.',
   tutTapBack:

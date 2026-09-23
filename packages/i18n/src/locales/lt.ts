@@ -161,7 +161,9 @@ export const lt: Messages = {
     'Žaidimą pradedate su nustatytu ėjimų skaičiumi, o kiekvienas atsiverčiantis kauliukas kainuoja vieną ėjimą. Kai ėjimai baigiasi, žaidimas baigtas. Žodžiai atneša ėjimų, ir kuo ilgesnis žodis, tuo daugiau ėjimų gaunate.',
   tutSpentBody:
     'Žodyje panaudotos raidės lieka užverstos iki kito raundo. Tik raidės pakeitimas keičia, kurios raidės yra lentoje.',
-  tutChangeTitle: 'Besikeičiančios raidės',
+  tutChangeTitle: 'Raidės gali keistis',
+  tutSameLetters:
+    'Pastebėjote žodį, kurio nespėjote sužaisti? Tos pačios raidės grįžta kitame raunde, sumaišytos naujose vietose.',
   tutPickLetters: 'Lieskite norimas raides iš eilės, kad sudarytumėte žodį.',
   tutMoreTurn: 'Kauliukai verčiasi ir jums begalvojant, tad geresnė raidė gali dar ateiti.',
   tutTapBack:

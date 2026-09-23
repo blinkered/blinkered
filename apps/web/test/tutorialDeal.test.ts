@@ -96,23 +96,29 @@ describe('the words screen', () => {
   })
 })
 
-describe('the letters-that-change screen', () => {
-  it('hides with the tour text, which says nothing about the timer, then swaps over the board', () => {
+describe('the letters-can-change screen', () => {
+  it('deals the same letters back in new places, hides one, then swaps one over the board', () => {
     for (const { tag, messages } of LOCALES) {
-      const step = tourFor(tag).find((one) => one.title === messages.tutChangeTitle)
+      const step = tourFor(tag).find((one) => one.title === messages.tutChangeTitle) as Step
       expect(step, tag).toBeDefined()
-      const frames = step?.frames ?? []
+      const { frames } = step
+      const tiles = boardFor(tag).tiles
+      const same = frames.filter((frame) => frame.caption === messages.tutSameLetters)
+      const hide = frames.filter((frame) => frame.caption === messages.tutHideBody)
       const swap = frames.at(-1)
-      for (const frame of frames.slice(0, -1)) {
-        expect(frame.caption, tag).toBe(messages.tutHideBody)
-        expect(frame.swap, tag).toBeUndefined()
-      }
+      expect(same.length + hide.length + 1, tag).toBe(frames.length)
+
+      // The old board, the board turned over, then a deal of the same letters, every one moved.
+      expect(frames[0]?.tiles, tag).toEqual(tiles)
+      expect(up(step, 1), tag).toEqual([])
+      expect([...step.tiles].sort(), tag).toEqual([...tiles].sort())
+      expect(step.tiles, tag).not.toEqual(tiles)
+
       expect(swap?.caption, tag).toBe(messages.htSwapBody)
       expect(swap?.swap, tag).toBe(true)
       // The board under the cover already holds the new letter, so it is there when it lifts.
       const { from, to } = boardFor(tag).swap
-      const tiles = boardFor(tag).tiles
-      expect(swap?.tiles?.[tiles.indexOf(from)], tag).toBe(to)
+      expect(swap?.tiles?.[step.tiles.indexOf(from)], tag).toBe(to)
     }
   })
 })
@@ -178,6 +184,12 @@ describe('the tick bar', () => {
     expect(shown).toEqual([en.tutGoalTitle, en.htWordsTitle, en.tutChangeTitle])
   })
 
+  it('starts a full bar again when the board turns over for a new round, with nothing red', () => {
+    const change = tour.find((step) => step.title === en.tutChangeTitle) as Step
+    const turned = ticksAt(change, 1, total)
+    expect(turned).toEqual({ remaining: total, floor: total })
+  })
+
   it('spends a tick for every tile that turns', () => {
     const board = dealOf(tour[0] as Step)
     board.frames.forEach((_, at) => {
@@ -186,9 +198,10 @@ describe('the tick bar', () => {
   })
 
   it('hands a tick back for a letter that hides, above the lowest the bar has been', () => {
-    const hide = tour.find((step) => step.title === en.tutChangeTitle) as Step
-    const before = ticksAt(hide, 0, total)
-    const away = ticksAt(hide, 2, total)
+    const change = tour.find((step) => step.title === en.tutChangeTitle) as Step
+    const first = change.frames.findIndex((frame) => frame.caption === en.tutHideBody)
+    const before = ticksAt(change, first, total)
+    const away = ticksAt(change, first + 2, total)
     expect(away.floor).toBe(before.remaining)
     expect(away.remaining).toBe(before.remaining + 2)
   })

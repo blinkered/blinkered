@@ -156,7 +156,9 @@ export const it: Messages = {
     'Inizi la partita con un numero fisso di giri, e ogni tessera che si gira costa un giro. Quando i giri finiscono, la partita è chiusa. Le parole fanno guadagnare giri, e più la parola è lunga, più giri guadagni.',
   tutSpentBody:
     'Le lettere che usi in una parola restano a faccia in giù fino al turno successivo. Solo un cambio di lettera modifica quali lettere ci sono sul tabellone.',
-  tutChangeTitle: 'Lettere che cambiano',
+  tutChangeTitle: 'Le lettere possono cambiare',
+  tutSameLetters:
+    'Hai visto una parola ma non hai fatto in tempo a giocarla? Le stesse lettere tornano al turno successivo, mescolate in posti nuovi.',
   tutPickLetters: 'Tocca le lettere che vuoi, in ordine, per comporre una parola.',
   tutMoreTurn:
     'Le tessere continuano a girarsi mentre pensi, quindi può ancora arrivare una lettera migliore.',

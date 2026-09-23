@@ -154,7 +154,9 @@ export const nl: Messages = {
     'Je begint het spel met een vast aantal zetten, en elke steen die draait kost een zet. Zijn de zetten op, dan is het spel voorbij. Woorden leveren zetten op, en hoe langer het woord, hoe meer zetten je krijgt.',
   tutSpentBody:
     'Letters die je in een woord gebruikt, liggen tot de volgende ronde omgekeerd. Alleen een letterwissel verandert welke letters er op het bord liggen.',
-  tutChangeTitle: 'Letters die veranderen',
+  tutChangeTitle: 'Letters kunnen veranderen',
+  tutSameLetters:
+    'Een woord gezien dat je niet meer kon spelen? Dezelfde letters komen de volgende ronde terug, geschud op nieuwe plekken.',
   tutPickLetters: 'Tik de letters die je wilt op volgorde aan om een woord te vormen.',
   tutMoreTurn:
     'Er blijven tegels omdraaien terwijl je nadenkt, dus er kan nog een betere letter komen.',

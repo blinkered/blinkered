@@ -161,7 +161,9 @@ export const tr: Messages = {
     'Oyuna belirli sayıda çevirmeyle başlarsınız ve dönen her taş bir çevirmeye mal olur. Çevirmeler bitince oyun biter. Kelimeler çevirme kazandırır ve kelime uzadıkça daha çok çevirme kazanırsınız.',
   tutSpentBody:
     'Bir kelimede kullandığınız harfler bir sonraki tura kadar kapalı kalır. Tahtadaki harfleri yalnızca harf değişimi değiştirir.',
-  tutChangeTitle: 'Değişen harfler',
+  tutChangeTitle: 'Harfler değişebilir',
+  tutSameLetters:
+    'Oynamaya yetişemediğiniz bir kelime mi gördünüz? Aynı harfler bir sonraki turda, yeni yerlere karılmış olarak geri gelir.',
   tutPickLetters: 'İstediğiniz harflere sırayla dokunarak bir kelime kurun.',
   tutMoreTurn: 'Siz düşünürken taşlar dönmeye devam eder, daha iyi bir harf hâlâ gelebilir.',
   tutTapBack:

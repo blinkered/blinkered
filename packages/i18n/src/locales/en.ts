@@ -162,7 +162,9 @@ export const en: Messages = {
     'You start the game with a fixed set of flips, and every tile that turns over costs one flip. When the flips run out, the game is over. Making words earns flips, and the longer the word, the more flips you earn.',
   tutSpentBody:
     'Letters you use in a word turn face down until the next round. Only a swap changes which letters are on the board.',
-  tutChangeTitle: 'Letters that change',
+  tutChangeTitle: 'Letters can change',
+  tutSameLetters:
+    "Spotted a word you didn't get to play? The same letters come back next round, shuffled into new places.",
   tutPickLetters: 'Tap the letters you want, in order, to form a word.',
   tutMoreTurn: 'Tiles keep turning while you think, so a better letter may still be coming.',
   tutTapBack:

@@ -165,7 +165,9 @@ export const la: Messages = {
     'Ludum incipis certo versuum numero, et quaeque tessera quae vertitur unum versum constat. Versibus consumptis ludus finitur. Verba versus merent, et quo longius verbum, eo plures versus meres.',
   tutSpentBody:
     'Litterae quas in verbo adhibes aversae manent usque ad proximum ambitum. Sola litterae mutatio mutat quae litterae in tabula sint.',
-  tutChangeTitle: 'Litterae quae mutantur',
+  tutChangeTitle: 'Litterae mutari possunt',
+  tutSameLetters:
+    'Verbum vidisti quod ludere non potuisti? Eaedem litterae proximo ambitu redeunt, in nova loca permixtae.',
   tutPickLetters: 'Litteras quas vis ordine tange, ut verbum facias.',
   tutMoreTurn: 'Tesserae dum cogitas verti pergunt, itaque littera melior adhuc venire potest.',
   tutTapBack:

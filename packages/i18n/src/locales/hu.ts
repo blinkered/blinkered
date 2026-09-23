@@ -161,7 +161,9 @@ export const hu: Messages = {
     'A játékot meghatározott számú lépéssel kezdi, és minden felforduló lapka egy lépésbe kerül. Ha elfogynak a lépések, vége a játéknak. A szavak lépéseket hoznak, és minél hosszabb a szó, annál több lépést kap.',
   tutSpentBody:
     'A szóban felhasznált betűk a következő körig lefordítva maradnak. Csak egy betűcsere változtat azon, milyen betűk vannak a táblán.',
-  tutChangeTitle: 'Változó betűk',
+  tutChangeTitle: 'A betűk változhatnak',
+  tutSameLetters:
+    'Észrevett egy szót, amit már nem tudott kirakni? Ugyanazok a betűk jönnek vissza a következő körben, új helyekre keverve.',
   tutPickLetters: 'Érintse meg a kívánt betűket sorban, hogy szót alkosson.',
   tutMoreTurn: 'A lapkák akkor is fordulnak, amíg gondolkodik, így még jöhet jobb betű.',
   tutTapBack:

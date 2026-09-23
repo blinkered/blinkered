@@ -160,7 +160,9 @@ export const af: Messages = {
     'Jy begin die spel met ’n vaste aantal skuiwe, en elke blokkie wat draai kos een skuif. Wanneer die skuiwe op is, is die spel verby. Woorde verdien skuiwe, en hoe langer die woord, hoe meer skuiwe verdien jy.',
   tutSpentBody:
     'Letters wat jy in ’n woord gebruik, word omgedraai en bly so tot die volgende rondte. Net ’n lettervervanging verander watter letters op die bord is.',
-  tutChangeTitle: 'Letters wat verander',
+  tutChangeTitle: 'Letters kan verander',
+  tutSameLetters:
+    'Het jy ’n woord raakgesien wat jy nie betyds kon speel nie? Dieselfde letters kom volgende rondte terug, geskommel na nuwe plekke.',
   tutPickLetters: 'Tik die letters wat jy wil hê, in volgorde, om ’n woord te vorm.',
   tutMoreTurn: 'Blokkies draai aan terwyl jy dink, so ’n beter letter kan nog kom.',
   tutTapBack:

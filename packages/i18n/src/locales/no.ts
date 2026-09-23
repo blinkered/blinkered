@@ -154,7 +154,9 @@ export const no: Messages = {
     'Du starter spillet med et fast antall trekk, og hver brikke som snus koster ett trekk. Når trekkene er brukt opp, er spillet over. Ord gir trekk, og jo lengre ordet er, desto flere trekk får du.',
   tutSpentBody:
     'Bokstaver du bruker i et ord, snus ned til neste runde. Bare et bokstavbytte endrer hvilke bokstaver som ligger på brettet.',
-  tutChangeTitle: 'Bokstaver som endrer seg',
+  tutChangeTitle: 'Bokstaver kan endre seg',
+  tutSameLetters:
+    'Så du et ord du ikke rakk å spille? De samme bokstavene kommer tilbake neste runde, stokket til nye plasser.',
   tutPickLetters: 'Trykk på bokstavene du vil ha, i rekkefølge, for å lage et ord.',
   tutMoreTurn: 'Brikkene fortsetter å snus mens du tenker, så en bedre bokstav kan være på vei.',
   tutTapBack:

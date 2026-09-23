@@ -154,7 +154,9 @@ export const ms: Messages = {
     'Anda memulakan permainan dengan bilangan balikan yang tetap, dan setiap jubin yang terbalik memakan satu balikan. Apabila balikan habis, permainan tamat. Membina perkataan memberi balikan, dan lebih panjang perkataan itu, lebih banyak balikan yang anda peroleh.',
   tutSpentBody:
     'Huruf yang anda gunakan dalam perkataan tertutup sehingga pusingan seterusnya. Hanya pertukaran huruf yang mengubah huruf yang ada di papan.',
-  tutChangeTitle: 'Huruf yang berubah',
+  tutChangeTitle: 'Huruf boleh berubah',
+  tutSameLetters:
+    'Nampak perkataan yang tidak sempat anda mainkan? Huruf yang sama kembali pada pusingan seterusnya, dikocak ke tempat baharu.',
   tutPickLetters: 'Ketik huruf yang anda mahu mengikut urutan untuk membina perkataan.',
   tutMoreTurn:
     'Jubin terus terbalik semasa anda berfikir, jadi huruf yang lebih baik mungkin masih akan datang.',

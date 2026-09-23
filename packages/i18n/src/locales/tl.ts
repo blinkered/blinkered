@@ -168,7 +168,9 @@ export const tl: Messages = {
     'Sinisimulan mo ang laro nang may tiyak na bilang ng tira, at bawat piyesang bumubukas ay nagkakahalaga ng isang tira. Kapag naubos ang tira, tapos na ang laro. Nagbibigay ng tira ang mga salita, at habang humahaba ang salita, mas maraming tira ang makukuha mo.',
   tutSpentBody:
     'Nakataob ang mga titik na ginamit mo sa isang salita hanggang sa susunod na ikot. Pagpapalit ng titik lang ang nagbabago kung aling mga titik ang nasa tablero.',
-  tutChangeTitle: 'Mga titik na nagbabago',
+  tutChangeTitle: 'Maaaring magbago ang mga titik',
+  tutSameLetters:
+    'May nakita kang salitang hindi mo naabutang laruin? Babalik ang parehong mga titik sa susunod na ikot, binalasa sa mga bagong puwesto.',
   tutPickLetters: 'Pindutin ang mga titik na gusto mo, sunod-sunod, para bumuo ng salita.',
   tutMoreTurn:
     'Patuloy na bumubukas ang mga piyesa habang nag-iisip ka, kaya baka may mas magandang titik ' +

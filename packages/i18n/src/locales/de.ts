@@ -157,7 +157,9 @@ export const de: Messages = {
     'Du beginnst das Spiel mit einer festen Zahl an Zügen, und jeder Stein, der sich dreht, kostet einen Zug. Sind die Züge aufgebraucht, ist das Spiel vorbei. Wörter bringen Züge, und je länger das Wort, desto mehr Züge bekommst du.',
   tutSpentBody:
     'Buchstaben, die du in einem Wort verwendest, liegen bis zur nächsten Runde verdeckt. Nur ein Buchstabenwechsel ändert, welche Buchstaben auf dem Feld liegen.',
-  tutChangeTitle: 'Buchstaben, die sich ändern',
+  tutChangeTitle: 'Buchstaben können sich ändern',
+  tutSameLetters:
+    'Ein Wort entdeckt, das du nicht mehr spielen konntest? Dieselben Buchstaben kommen in der nächsten Runde wieder, an neue Stellen gemischt.',
   tutPickLetters: 'Tippe die Buchstaben, die du willst, der Reihe nach an, um ein Wort zu bilden.',
   tutMoreTurn:
     'Während Sie überlegen, drehen sich weitere Plättchen um: ein besserer Buchstabe kann noch kommen.',

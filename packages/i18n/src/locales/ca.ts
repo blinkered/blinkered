@@ -161,7 +161,9 @@ export const ca: Messages = {
     'Comenceu la partida amb un nombre fix de jugades, i cada fitxa que es gira costa una jugada. Quan s’acaben les jugades, la partida s’acaba. Formar mots dona jugades, i com més llarg és el mot, més jugades guanyeu.',
   tutSpentBody:
     'Les lletres que feu servir en un mot queden tapades fins a la ronda següent. Només un canvi de lletra altera quines lletres hi ha al tauler.',
-  tutChangeTitle: 'Lletres que canvien',
+  tutChangeTitle: 'Les lletres poden canviar',
+  tutSameLetters:
+    'Heu vist un mot que no heu arribat a jugar? Les mateixes lletres tornen a la ronda següent, barrejades en llocs nous.',
   tutPickLetters: 'Toqueu les lletres que voleu, en ordre, per formar un mot.',
   tutMoreTurn: 'Les fitxes continuen girant mentre penseu, i encara pot venir una lletra millor.',
   tutTapBack:

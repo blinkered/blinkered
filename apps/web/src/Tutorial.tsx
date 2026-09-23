@@ -285,9 +285,12 @@ export function Tutorial({
   const before = frame > 0 ? current.frames[frame - 1] : undefined
   const wentDown =
     before === undefined
-      ? -1
-      : [...beat.up].findIndex((face, at) => face === FACE_DOWN && before.up[at] !== FACE_DOWN)
-  const hiding = wentDown < 0 ? null : wentDown
+      ? []
+      : [...beat.up].flatMap((face, at) =>
+          face === FACE_DOWN && before.up[at] !== FACE_DOWN ? [at] : [],
+        )
+  // One tile, and only one. A whole board turning over is the end of a round, not a hide.
+  const hiding = wentDown.length === 1 ? (wentDown[0] ?? null) : null
   const word = wordOf(beat, beat.tiles ?? current.tiles, alphabetFor(language))
 
   if (skipping) {

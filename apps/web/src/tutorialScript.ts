@@ -102,8 +102,8 @@ export function showsTicks(step: Step): boolean {
  *
  * Worked out from the faces rather than written on the frames, the way the game works it out: a
  * tile turning spends a tick, so a round of `total` ticks has `total` less the tiles dealt left.
- * A letter hiding puts one back, and because the floor remembers the lowest the bar has been,
- * that tick lights red exactly as it does in a game.
+ * A letter hiding puts one back, and because the floor remembers the lowest the bar has been this
+ * round, that tick lights red exactly as it does in a game.
  */
 export function ticksAt(
   step: Step,
@@ -111,7 +111,11 @@ export function ticksAt(
   total: number,
 ): { remaining: number; floor: number } {
   const left = (frame: Frame): number => total - dealtIn(frame)
-  const seen = step.frames.slice(0, at + 1).map(left)
+  // From the start of the round this frame is in, which is the last frame with nothing dealt: the
+  // game starts its low-water mark again each round, or a new round's full bar would all read red.
+  let round = at
+  while (round > 0 && dealtIn(step.frames[round] as Frame) > 0) round -= 1
+  const seen = step.frames.slice(round, at + 1).map(left)
   return { remaining: seen.at(-1) ?? total, floor: Math.min(...seen) }
 }
 
@@ -314,6 +318,17 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
   swapped[tiles.indexOf(board.swap.from)] = board.swap.to
 
   /*
+   * The next round's board: the same letters, somewhere else.
+   *
+   * Turned half way round, so every tile moves and none of them lands where it was. A fixed
+   * rearrangement rather than a random one, for the reason the deal order is fixed.
+   */
+  const half = Math.floor(n / 2)
+  const reshuffled = tiles.map((_, at) => tiles[(at + half) % n] as string)
+  const reswapped = [...reshuffled]
+  reswapped[reshuffled.indexOf(board.swap.from)] = board.swap.to
+
+  /*
    * What the game is for, before any of how it works.
    *
    * The board deals with the counter running down a flip per tile, and then the long word buys a
@@ -358,16 +373,32 @@ export function stepsFor(messages: Messages, language: string, config: GameConfi
    * The swap is drawn over the board, as the game draws it, and the board under it already holds
    * the new letter, so it is there when the cover lifts.
    */
+  /*
+   * The rule first, then the two exceptions to it.
+   *
+   * Dawna did not realize the letters carry over from one round to the next, so a word she saw
+   * too late looked lost. The board turns over and the same letters deal back in new places; then
+   * a letter hides, and a letter is swapped. The screen's first frame is the old board and every
+   * frame after it is the new one, which is what makes the hiding and the swap happen to the
+   * letters that just came back.
+   */
   const changeFrames: Frame[] = [
+    { up: all, sel: [], caption: messages.tutSameLetters, tiles },
+    { up: facesUp(n, []), sel: [], caption: messages.tutSameLetters },
+    ...Array.from({ length: n }, (_, at) => ({
+      up: facesUp(n, dealt.slice(0, at + 1)),
+      sel: [],
+      caption: messages.tutSameLetters,
+    })),
     ...hideFrames,
-    { up: all, sel: [], caption: messages.htSwapBody, tiles: swapped, swap: true },
+    { up: all, sel: [], caption: messages.htSwapBody, tiles: reswapped, swap: true },
   ]
 
   return [
     { title: messages.tutGoalTitle, tiles, frames: goalFrames },
     { title: messages.htWordsTitle, tiles, panel: 'complete', frames: words },
     { title: messages.htWildTitle, tiles, panel: 'complete', frames: cardFrames },
-    { title: messages.tutChangeTitle, tiles, frames: changeFrames },
+    { title: messages.tutChangeTitle, tiles: reshuffled, frames: changeFrames },
     /*
      * What an account is for, and it is last on purpose.
      *

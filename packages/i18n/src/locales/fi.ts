@@ -157,7 +157,9 @@ export const fi: Messages = {
     'Aloitat pelin kiinteällä määrällä siirtoja, ja jokainen kääntyvä laatta kuluttaa yhden siirron. Kun siirrot loppuvat, peli päättyy. Sanoista saa siirtoja, ja mitä pidempi sana, sitä enemmän siirtoja saat.',
   tutSpentBody:
     'Sanassa käyttämäsi kirjaimet kääntyvät nurin seuraavaan kierrokseen asti. Vain kirjaimen vaihtuminen muuttaa sitä, mitä kirjaimia laudalla on.',
-  tutChangeTitle: 'Muuttuvat kirjaimet',
+  tutChangeTitle: 'Kirjaimet voivat muuttua',
+  tutSameLetters:
+    'Huomasitko sanan, jota et ehtinyt pelata? Samat kirjaimet palaavat seuraavalla kierroksella uusiin paikkoihin sekoitettuina.',
   tutPickLetters: 'Napauta haluamiasi kirjaimia järjestyksessä muodostaaksesi sanan.',
   tutMoreTurn:
     'Laatat kääntyvät edelleen sillä aikaa kun mietit, joten parempi kirjain voi olla vielä tulossa.',
