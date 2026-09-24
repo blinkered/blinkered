@@ -78,21 +78,31 @@ describe('every written form', () => {
     }
   })
 
-  it('has nothing to write for any language shipping today', () => {
+  it('writes the words the languages that ship actually mark', () => {
     /*
-     * A statement of fact, and a tripwire rather than a satisfying test.
+     * The dense case, pinned again now that there is one to pin.
      *
-     * The rail is exercised by two languages and neither ships right now: Vietnamese, where
-     * the fold eats the spaces out of 82% of the vocabulary, and Hebrew, which used it six
-     * times. The seven attested lists are all languages that fold onto themselves, so the
-     * spelling map is empty everywhere and the checks above run over nothing.
-     *
-     * That is a gap, and it is written down here rather than left for somebody to discover.
-     * When this fails, a language that writes its words differently from how it tiles them has
-     * come back, and the dense case is worth pinning again the way Vietnamese used to pin it:
-     * one known compound, and a spelling map covering over half the list.
+     * This used to be a tripwire asserting the spelling map was empty everywhere, because the
+     * two languages that exercised it, Vietnamese and Hebrew, had stopped shipping while their
+     * dictionaries were attested, and every attested list had arrived without its accents. They
+     * arrive with them now, so the checks above run over something real again, and these are
+     * the cases that say so. One known word each, with four kinds of mark: a tilde,
+     * an acute, an accent on a Spanish monosyllable that changes the word, and Arabic tanween.
      */
-    const carrying = shipped.filter((tag) => read(tag).written.size > 0)
-    expect(carrying, 'a language with written forms is back; restore the dense case').toEqual([])
+    const known: [tag: string, word: string, spelling: string][] = [
+      ['pt-BR', 'NAO', 'NÃO'],
+      ['fr', 'CATEGORIE', 'CATÉGORIE'],
+      ['es', 'MAS', 'MÁS'],
+      ['ar', 'ايضا', 'ايضاً'],
+    ]
+    for (const [tag, word, spelling] of known) {
+      expect(read(tag).written.get(word), tag).toBe(spelling)
+    }
+
+    // And a map that is the rail's ordinary work rather than an exception. A third of French
+    // carries a spelling on the day this was written. A writer that stopped running for most of
+    // a list could still leave four words in place, and this is what would notice.
+    const { written, full } = read('fr')
+    expect(written.size / full.length).toBeGreaterThan(0.25)
   })
 })

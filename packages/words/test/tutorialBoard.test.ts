@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { alphabetFor } from '@blinkered/engine'
+import { parseWordList } from '../src/index.js'
 import { TUTORIAL_BOARDS } from '../src/tutorialBoards.js'
 import { spellableFrom, tilesWithCard } from '../src/tutorialBoard.js'
 
@@ -18,13 +19,16 @@ import { spellableFrom, tilesWithCard } from '../src/tutorialBoard.js'
  */
 const DATA = fileURLToPath(new URL('../data/', import.meta.url))
 
+// Through the parser rather than by splitting lines, because a line can carry a written form
+// after a tab (ALGUEM, then ALGUÉM) and the word is only the first column.
+function listOf(tag: string): ReturnType<typeof parseWordList> {
+  return parseWordList(readFileSync(`${DATA}${tag}/words.txt`, 'utf8'))
+}
+
+// The common tier only. Everything after it is the credit tier, which is accepted for score but
+// is not what a tutorial should be showing anybody.
 function wordsOf(tag: string): Set<string> {
-  const text = readFileSync(`${DATA}${tag}/words.txt`, 'utf8')
-  const lines = text.split('\n')
-  // The header records where the common tier ends; everything after it is the credit tier, which
-  // is accepted for score but is not what a tutorial should be showing anybody.
-  const common = Number(/common=(\d+)/.exec(lines[0] ?? '')?.[1] ?? '0')
-  return new Set(lines.slice(1, 1 + common))
+  return new Set(listOf(tag).common)
 }
 
 const tags = Object.keys(TUTORIAL_BOARDS)
@@ -102,7 +106,6 @@ describe.each(tags)('the %s board', (tag) => {
     // Looser than the two above, and deliberately: English's GASSES is a real word in the credit
     // tier and is the best demonstration of a card in the whole set, because the board holds two
     // esses and the card is the third.
-    const text = readFileSync(`${DATA}${tag}/words.txt`, 'utf8')
-    expect(new Set(text.split('\n')).has(board.card.word)).toBe(true)
+    expect(new Set(listOf(tag).full).has(board.card.word)).toBe(true)
   })
 })
