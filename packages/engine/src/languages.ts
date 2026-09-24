@@ -400,9 +400,12 @@ export const CROATIAN: Alphabet = {
 
 /**
  * Malay and Indonesian share one alphabet and differ in vocabulary: Indonesian borrowed from
- * Dutch, Malaysian from English, and the spelling was unified in 1972. Two word lists, one
- * letter inventory, and no diacritics anywhere, which makes them the least friction of the
- * set.
+ * Dutch, Malaysian from English, and the spelling was unified in 1972. Two word lists, no
+ * diacritics anywhere, which makes them the least friction of the set.
+ *
+ * One letter apart in what is dealt. Malay has no X tile: the alphabet has the letter, but not a
+ * single word of the shipped Malaysian list uses it, so a dealt X could never be played.
+ * Indonesian's list does use one, and keeps it.
  */
 const MALAY_WEIGHTS = {
   A: 18,
@@ -422,13 +425,12 @@ const MALAY_WEIGHTS = {
   O: 2,
   P: 4,
   Q: 1,
-  R: 6,
+  R: 5,
   S: 5,
   T: 5,
   U: 6,
   V: 1,
   W: 1,
-  X: 1,
   Y: 1,
   Z: 1,
 }
@@ -474,7 +476,7 @@ export const MALAY: Alphabet = {
   direction: 'ltr',
   weights: MALAY_WEIGHTS,
   vowels: ['A', 'E', 'I', 'O', 'U'],
-  rareLetters: ['Q', 'V', 'X', 'Z'],
+  rareLetters: ['Q', 'V', 'Z'],
   requires: QU,
   fold: folder(),
   segment: byCodePoint,
@@ -486,6 +488,7 @@ export const INDONESIAN: Alphabet = {
   endonym: 'Bahasa Indonesia',
   direction: 'ltr',
   weights: INDONESIAN_WEIGHTS,
+  rareLetters: ['Q', 'V', 'X', 'Z'],
 }
 
 export const RUSSIAN: Alphabet = {
@@ -723,24 +726,26 @@ export const AFRIKAANS: Alphabet = {
   // Twenty-six letters and nothing exotic. Afrikaans writes several diacritics — ê ë ô û î ï
   // and the acute on é — and every one of them is decoration: SÊ and SE are the same letters
   // wearing a different hat, so they fold together the way French accents do.
+  //
+  // No Q. Afrikaans spells the sound KW, and not one word of the shipped list has a Q, so a
+  // dealt one could never be played.
   weights: {
     A: 7,
     B: 2,
     C: 1,
     D: 4,
-    E: 17,
+    E: 18,
     F: 1,
     G: 5,
     H: 1,
     I: 7,
     J: 1,
-    K: 5,
+    K: 4,
     L: 5,
     M: 2,
     N: 6,
     O: 7,
     P: 2,
-    Q: 1,
     R: 8,
     S: 7,
     T: 5,
@@ -754,8 +759,8 @@ export const AFRIKAANS: Alphabet = {
   // Y is a vowel here rather than the half-vowel it is in English: it spells the diphthong in
   // BYT and WYN and never stands in for a consonant, so the draw's vowel floor should count it.
   vowels: ['A', 'E', 'I', 'O', 'U', 'Y'],
-  rareLetters: ['C', 'F', 'H', 'J', 'Q', 'X', 'Z'],
-  requires: QU,
+  rareLetters: ['C', 'F', 'H', 'J', 'X', 'Z'],
+  requires: {},
   fold: folder(),
   segment: byCodePoint,
 }
@@ -1666,8 +1671,10 @@ export const ESTONIAN: Alphabet = {
   // are not: they occur only in borrowings, and not one word of the shipped list has either.
   // They fold onto S and Z instead of being dealt, which makes ŠOKOLAAD playable rather than
   // dropping it, and no Estonian word is merged by it.
+  //
+  // Q is not dealt either, for the plainer reason that no word in the list has one to fold.
   weights: {
-    A: 13,
+    A: 12,
     Ä: 1,
     B: 1,
     C: 1,
@@ -1686,11 +1693,10 @@ export const ESTONIAN: Alphabet = {
     Ö: 1,
     Õ: 1,
     P: 2,
-    Q: 1,
     R: 3,
     S: 9,
     T: 8,
-    U: 6,
+    U: 7,
     Ü: 1,
     V: 3,
     W: 1,
@@ -1699,7 +1705,7 @@ export const ESTONIAN: Alphabet = {
     Z: 1,
   },
   vowels: ['A', 'E', 'I', 'O', 'U', 'Õ', 'Ä', 'Ö', 'Ü'],
-  rareLetters: ['B', 'C', 'F', 'J', 'Q', 'W', 'X', 'Y', 'Z'],
+  rareLetters: ['B', 'C', 'F', 'J', 'W', 'X', 'Y', 'Z'],
   requires: {},
   fold: folder({ keep: ['Õ', 'Ä', 'Ö', 'Ü'] }),
   segment: byCodePoint,
@@ -2161,8 +2167,10 @@ export const GALICIAN: Alphabet = {
   id: 'gl',
   endonym: 'Galego',
   direction: 'ltr',
-  // Twenty-seven letters, the Spanish set. The accents mark stress and fold away; Ñ is a
-  // letter and does not. The digraph NH is Galician's own and is two tiles, as CH and LL are.
+  // The Spanish set less K, which the standard alphabet leaves to foreign words and the shipped
+  // list does not use once, so a dealt K could never be played. The accents mark stress and fold
+  // away; Ñ is a letter and does not. The digraph NH is Galician's own and is two tiles, as CH
+  // and LL are.
   weights: {
     A: 14,
     B: 2,
@@ -2174,15 +2182,14 @@ export const GALICIAN: Alphabet = {
     H: 1,
     I: 8,
     J: 1,
-    K: 1,
     L: 3,
     M: 3,
-    N: 6,
+    N: 7,
     Ñ: 1,
     O: 9,
     P: 3,
     Q: 1,
-    R: 9,
+    R: 8,
     S: 7,
     T: 5,
     U: 3,
@@ -2193,7 +2200,7 @@ export const GALICIAN: Alphabet = {
     Z: 1,
   },
   vowels: ['A', 'E', 'I', 'O', 'U'],
-  rareLetters: ['F', 'G', 'H', 'J', 'K', 'Q', 'V', 'W', 'X', 'Y', 'Z', 'Ñ'],
+  rareLetters: ['F', 'G', 'H', 'J', 'Q', 'V', 'W', 'X', 'Y', 'Z', 'Ñ'],
   requires: {},
   fold: folder({ keep: ['Ñ'] }),
   segment: byCodePoint,

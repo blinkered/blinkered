@@ -1,0 +1,18 @@
+Danish word list
+https://github.com/blinkered/blinkered-dictionary-da
+325b232f03ade3ab2df54c7dc35386f9533b2a6f
+
+CC0-1.0. Declared by the repository above, in its status.json, and
+copied here rather than decided here: the terms of a word list belong to whoever
+assembled the evidence for it.
+
+Note that this covers the list. A dictionary repository is not all one licence; its
+build scripts are under its own LICENSE, which is a different question and does not
+travel with the words.
+
+No upstream dictionary is named, because none was relied on. This list is not a copy of
+a dictionary and is not derived from one. Every word in it ships because three
+independent collections of Danish text were found to contain it, and the record of
+which collections, and where in them, is public at the repository above. A dictionary
+did propose the words worth looking up, and nothing it proposed survives here except as
+a question the evidence answered.
